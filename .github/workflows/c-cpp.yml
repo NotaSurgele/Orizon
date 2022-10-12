@@ -15,5 +15,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Running cmake
       run: cmake ./
-    -name: Compiling Programm
+    - name: Compiling Programm
       run: make -j
