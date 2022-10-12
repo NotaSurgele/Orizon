@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: running cmake
+    - name: Running cmake
       run: cmake ./
+    -name: Compiling Programm
+      run: make -j
