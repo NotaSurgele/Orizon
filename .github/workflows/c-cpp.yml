@@ -13,7 +13,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: creating build folder
-      run: md build && cd build
     - name: running cmake
-      run: cmake ..
+      run: cmake
