@@ -16,4 +16,4 @@ jobs:
     - name: Running cmake
       run: cmake ./
     - name: Compiling Programm
-      run: make -j
+      run: ls
