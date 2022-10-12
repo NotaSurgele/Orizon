@@ -16,4 +16,4 @@ jobs:
     - name: creating build folder
       run: md build && cd build
     - name: running cmake
-      run: cmake ..
+      run: cmake ../../
