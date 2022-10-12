@@ -14,6 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Running cmake
-      run: cmake ./
+      run: cmake -G "Unix Makefile" ./
     - name: Compiling Programm
-      run: ls
+      run: make -j
