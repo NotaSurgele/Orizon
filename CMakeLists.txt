@@ -10,14 +10,17 @@ FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TA
 message("Downloading SFML...")
 FetchContent_MakeAvailable(SFML)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 add_executable(${PROJECT_NAME} ${SRC})
 
+include_directories(
+    include/
+    include/Engine/
+)
 target_sources(${PROJECT_NAME} PUBLIC
-    src/test.cpp
+    src/Engine/Entity.cpp
     main.cpp
 )
 target_link_libraries(
@@ -25,3 +28,5 @@ target_link_libraries(
 	sfml-graphics
 	sfml-window
 )
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
