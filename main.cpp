@@ -2,10 +2,13 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-void test(void);
+#include "Engine/Entity.hpp"
 
 int main(void)
 {
+
+	Entity e = Entity();
+
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
 
 	while (window.isOpen()) {

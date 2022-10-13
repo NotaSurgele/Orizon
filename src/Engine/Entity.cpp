@@ -1,26 +1,26 @@
 #include "Engine/Entity.hpp"
 
 
-void Entity::setPosition(sf::Vector2<float> const &position)
+Entity& Entity::setPosition(sf::Vector2<float> const &position)
 {
     _position = position;
-    return;
+    return *this;
 }
 
-void Entity::setSize(sf::Vector2<float> const& size)
+Entity& Entity::setSize(sf::Vector2<float> const& size)
 {
     _size = size;
-    return;
+    return *this;
 }
 
-void Entity::setSprite(const sf::Sprite &sprite)
+Entity& Entity::setSprite(const sf::Sprite &sprite)
 {
     _sprite = sprite;
-    return;
+    return *this;
 }
 
-void Entity::setTexture(const sf::Texture &texture)
+Entity& Entity::setTexture(const sf::Texture &texture)
 {
     _texture = texture;
-    return;
+    return *this;
 }
