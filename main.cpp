@@ -2,8 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+void test(void);
+
 int main(void)
 {
+    test();
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
 
 	while (window.isOpen()) {
