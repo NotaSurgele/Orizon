@@ -10,6 +10,7 @@ FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TA
 message("Downloading SFML...")
 FetchContent_MakeAvailable(SFML)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 add_executable(
