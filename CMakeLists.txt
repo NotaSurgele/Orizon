@@ -12,12 +12,21 @@ FetchContent_MakeAvailable(SFML)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
-add_executable(
-	${PROJECT_NAME}
-	main.cpp
+
+add_executable(${PROJECT_NAME} ${SRC})
+
+include_directories(
+    include/
+    include/Engine/
+)
+target_sources(${PROJECT_NAME} PUBLIC
+    src/Engine/Entity.cpp
+    main.cpp
 )
 target_link_libraries(
  	${PROJECT_NAME}
 	sfml-graphics
 	sfml-window
 )
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
