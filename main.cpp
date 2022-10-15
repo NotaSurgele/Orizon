@@ -1,6 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include "Components/Sprite.hpp"
+#include "RessourcesManager.hpp"
+#include "Engine/Entity.hpp"
 
 #include "Engine/Entity.hpp"
 
@@ -10,6 +13,7 @@ int main(void)
 	Entity e = Entity();
 
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
+	RessourcesManager r = RessourcesManager();
 
 	while (window.isOpen()) {
 		sf::Event event;
@@ -18,6 +22,7 @@ int main(void)
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+
 		window.clear(sf::Color::Black);
 		window.display();
 	}
