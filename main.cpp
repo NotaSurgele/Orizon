@@ -15,6 +15,8 @@ int main(void)
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
 	RessourcesManager r = RessourcesManager();
 
+	r.addRessource<sf::Texture>("player", "../assets/B_witch_attack.png");
+	e.addComponent<Sprite>()->setTexture(r.getRessource<sf::Texture>("player"));
 	while (window.isOpen()) {
 		sf::Event event;
 
@@ -22,8 +24,8 @@ int main(void)
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-
 		window.clear(sf::Color::Black);
+		window.draw(e.getComponent<Sprite>()->getSprite());
 		window.display();
 	}
 	return 0;
