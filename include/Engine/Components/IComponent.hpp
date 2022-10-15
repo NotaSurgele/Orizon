@@ -1,5 +1,4 @@
 #pragma once
-
 #define SIGNATURE(type) \
     typeid(type).name()
 
