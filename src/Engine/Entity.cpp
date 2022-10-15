@@ -1,26 +1,24 @@
 #include "Engine/Entity.hpp"
 
-
 Entity& Entity::setPosition(sf::Vector2<float> const &position)
 {
-    _position = position;
+    dynamic_cast<Transform2D *>(_component_map[TRANSFORM_IDX])->position = position;
     return *this;
 }
 
 Entity& Entity::setSize(sf::Vector2<float> const& size)
 {
-    _size = size;
+    dynamic_cast<Transform2D *>(_component_map[TRANSFORM_IDX])->size = size;
     return *this;
 }
 
-Entity& Entity::setSprite(const sf::Sprite &sprite)
+Entity& Entity::setRotation(float rotation)
 {
-    _sprite = sprite;
+    dynamic_cast<Transform2D *>(_component_map[TRANSFORM_IDX])->rotation = rotation;
     return *this;
 }
 
-Entity& Entity::setTexture(const sf::Texture &texture)
+Transform2D* Entity::Transform()
 {
-    _texture = texture;
-    return *this;
+    return dynamic_cast<Transform2D *>(_component_map[TRANSFORM_IDX]);
 }

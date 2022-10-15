@@ -18,11 +18,15 @@ add_executable(${PROJECT_NAME} ${SRC})
 include_directories(
     include/
     include/Engine/
+    include/Engine/Components/
 )
+
 target_sources(${PROJECT_NAME} PUBLIC
     src/Engine/Entity.cpp
+    src/Engine/Components/Sprite.cpp
     main.cpp
 )
+
 target_link_libraries(
  	${PROJECT_NAME}
 	sfml-graphics
