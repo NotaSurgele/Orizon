@@ -4,19 +4,18 @@
 #include "Components/Sprite.hpp"
 #include "RessourcesManager.hpp"
 #include "Engine/Entity.hpp"
-
+#include "Engine/Core.hpp"
 #include "Engine/Entity.hpp"
 
 int main(void)
 {
-
 	Entity e = Entity();
 
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
-	RessourcesManager r = RessourcesManager();
+	Core c = Core();
 
-	r.addRessource<sf::Texture>("player", "../assets/B_witch_attack.png");
-	e.addComponent<Sprite>()->setTexture(r.getRessource<sf::Texture>("player"));
+	Core::RManager().addRessource<sf::Texture>("player", "../assets/B_witch_attack.png");
+	e.addComponent<Sprite>()->setTexture(Core::RManager().getRessource<sf::Texture>("player"));
 	while (window.isOpen()) {
 		sf::Event event;
 
