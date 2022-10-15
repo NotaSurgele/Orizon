@@ -5,10 +5,13 @@
 #include "RessourcesManager.hpp"
 #include "Engine/Entity.hpp"
 
+#include "Engine/Entity.hpp"
+
 int main(void)
 {
 
 	Entity e = Entity();
+
 	sf::RenderWindow window(sf::VideoMode(600, 300) , "window");
 	RessourcesManager r = RessourcesManager();
 
