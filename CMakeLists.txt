@@ -31,6 +31,7 @@ target_link_libraries(
  	${PROJECT_NAME}
 	sfml-graphics
 	sfml-window
+    -g
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

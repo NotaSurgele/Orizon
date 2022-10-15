@@ -1,7 +1,9 @@
 #include "Sprite.hpp"
+#include <iostream>
 
-Sprite::Sprite() : _sprite(),
-                   _texture()
+Sprite::Sprite(Entity *self) :  _sprite(),
+                                _texture(),
+                                _self(self)
 {
 }
 
