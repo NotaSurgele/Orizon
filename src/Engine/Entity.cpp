@@ -22,4 +22,3 @@ Transform2D* Entity::Transform()
 {
     return dynamic_cast<Transform2D *>(_component_map[TRANSFORM_IDX]);
 }
-
