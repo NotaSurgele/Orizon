@@ -24,6 +24,7 @@ include_directories(
 target_sources(${PROJECT_NAME} PUBLIC
     src/Engine/Entity.cpp
     src/Engine/Components/Sprite.cpp
+    src/Engine/Core.cpp
     main.cpp
 )
 
