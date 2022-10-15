@@ -6,7 +6,7 @@
 
 class Sprite : public IComponent {
     public:
-        Sprite();
+        Sprite(Entity *self);
         ~Sprite() = default;
 
         sf::Sprite& getSprite();
