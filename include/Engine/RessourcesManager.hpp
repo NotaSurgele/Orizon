@@ -10,7 +10,7 @@ class RessourcesManager {
         ~RessourcesManager() = default;
 
         template<typename T>
-        RessourcesManager addRessources(std::string const& ressourceName,
+        RessourcesManager addRessource(std::string const& ressourceName,
                                         std::string const& filePath)
         {
             T ressource = T();

@@ -24,12 +24,19 @@ Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 Sprite& Sprite::setTexture(sf::Texture const& texture)
 {
     _texture = texture;
+    _sprite.setTexture(_texture);
     return *this;
 }
 
 Sprite& Sprite::setTexture(std::string const &filePath)
 {
     _texture.loadFromFile(filePath);
+    return *this;
+}
+
+Sprite& Sprite::setTextureRect(sf::IntRect const &rect)
+{
+    _sprite.setTextureRect(rect);
     return *this;
 }
 

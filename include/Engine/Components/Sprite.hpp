@@ -15,6 +15,7 @@ class Sprite : public IComponent {
         Sprite& setSprite(sf::Sprite const& sprite);
         Sprite& setTexture(sf::Texture const& texture);
         Sprite& setTexture(std::string const &filePath);
+        Sprite& setTextureRect(sf::IntRect const& rect);
 
         void update() override final;
 
