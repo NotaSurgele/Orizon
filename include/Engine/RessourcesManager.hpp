@@ -26,6 +26,6 @@ class RessourcesManager {
             return static_cast<T &>(_map[ressourceName]);
         }
 
-    std::map<std::string, sf::Texture> _map;
     private:
+        std::map<std::string, sf::Texture> _map;
 };

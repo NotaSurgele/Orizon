@@ -1,8 +1,11 @@
 #pragma once
 #include "RessourcesManager.hpp"
+#include "Engine/Time.hpp"
 
 class Core {
     public:
+        static inline Time time = Time();
+
         Core();
         ~Core() = default;
 

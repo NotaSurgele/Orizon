@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <iostream>
 
-#define TRANSFORM_IDX typeid(Transform2D).name()
+#define TRANSFORM typeid(Transform2D).name()
 
 class Entity : public IEntity {
     public:
