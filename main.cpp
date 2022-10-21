@@ -14,20 +14,25 @@ int main(void)
 	Core c = Core();
 
 	RenderWindow window("hello world");
-	Core::RManager().addRessource<sf::Texture>("player", "../assets/B_witch_attack.png");
-	e.addComponent<Sprite>()->setTexture(Core::RManager().getRessource<sf::Texture>("player"));
+	R_ADD_RESSOURCE(sf::Texture, "player", "../assets/B_witch_attack.png");
+	e.addComponent<Sprite>()->setTexture(R_GET_RESSOURCE(sf::Texture, "player"));
 	while (window.isOpen()) {
-		c.time.update();
 		sf::Event event;
 
+		//Event call
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+		//Update call
+		c._time.update();
+		e.getComponent<Transform2D>()->position.x += 25 * Core::getDeltaTime();
+		e.getComponent<Sprite>()->update();
+
+		//Draw call
 		window.clear(sf::Color::Black);
 		window.draw(e.getComponent<Sprite>());
 		window.display();
-		std::cout << c.time.getDeltaTime() << std::endl;
 	}
 	return 0;
 }

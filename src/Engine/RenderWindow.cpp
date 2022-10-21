@@ -3,9 +3,9 @@
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
                             std::size_t height) :
-                                    _width(width),
-                                    _height(height),
-                                    _window(sf::VideoMode(width, height), windowName)
+                            _width(width),
+                            _height(height),
+                            _window(sf::VideoMode(width, height), windowName)
 {
 }
 

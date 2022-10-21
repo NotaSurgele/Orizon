@@ -46,7 +46,7 @@ void Sprite::update()
 {
     Transform2D *selfTransform = _self->Transform();
 
+    std::cout << selfTransform->position.x << std::endl;
     _sprite.setPosition(selfTransform->position);
-    _sprite.setScale(selfTransform->size);
     _sprite.setRotation(selfTransform->rotation);
 }
