@@ -11,28 +11,28 @@
 int main(void)
 {
 	Entity e = Entity();
-	Core c = Core();
+	Core c = Core("hello world");
 
-	RenderWindow window("hello world");
 	R_ADD_RESSOURCE(sf::Texture, "player", "../assets/B_witch_attack.png");
 	e.addComponent<Sprite>()->setTexture(R_GET_RESSOURCE(sf::Texture, "player"));
-	while (window.isOpen()) {
+	while (c.isOpen()) {
 		sf::Event event;
+		Core::getTime().update();
 
 		//Event call
-		while (window.pollEvent(event)) {
+		while (c.CoreEvent(event)) {
 			if (event.type == sf::Event::Closed)
-				window.close();
+				c.CoreClose();
 		}
+
 		//Update call
-		c._time.update();
 		e.getComponent<Transform2D>()->position.x += 25 * Core::getDeltaTime();
 		e.getComponent<Sprite>()->update();
 
 		//Draw call
-		window.clear(sf::Color::Black);
-		window.draw(e.getComponent<Sprite>());
-		window.display();
+		c.CoreClear(sf::Color::Black);
+		c.CoreDraw(e.getComponent<Sprite>());
+		c.CoreDisplay();
 	}
 	return 0;
 }
