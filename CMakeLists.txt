@@ -24,6 +24,9 @@ include_directories(
 target_sources(${PROJECT_NAME} PUBLIC
     src/Engine/Entity.cpp
     src/Engine/Components/Sprite.cpp
+    src/Engine/Core.cpp
+    src/Engine/RenderWindow.cpp
+    src/Engine/Time.cpp
     main.cpp
 )
 
@@ -31,6 +34,7 @@ target_link_libraries(
  	${PROJECT_NAME}
 	sfml-graphics
 	sfml-window
+    -g
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

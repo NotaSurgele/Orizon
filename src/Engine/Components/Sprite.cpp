@@ -1,7 +1,9 @@
 #include "Sprite.hpp"
+#include <iostream>
 
-Sprite::Sprite() : _sprite(),
-                   _texture()
+Sprite::Sprite(Entity *self) :  _sprite(),
+                                _texture(),
+                                _self(self)
 {
 }
 
@@ -24,6 +26,7 @@ Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 Sprite& Sprite::setTexture(sf::Texture const& texture)
 {
     _texture = texture;
+    _sprite.setTexture(_texture);
     return *this;
 }
 
@@ -33,11 +36,17 @@ Sprite& Sprite::setTexture(std::string const &filePath)
     return *this;
 }
 
+Sprite& Sprite::setTextureRect(sf::IntRect const &rect)
+{
+    _sprite.setTextureRect(rect);
+    return *this;
+}
+
 void Sprite::update()
 {
     Transform2D *selfTransform = _self->Transform();
 
+    std::cout << selfTransform->position.x << std::endl;
     _sprite.setPosition(selfTransform->position);
-    _sprite.setScale(selfTransform->size);
     _sprite.setRotation(selfTransform->rotation);
 }

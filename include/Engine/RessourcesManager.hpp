@@ -3,6 +3,7 @@
 #include <map>
 #include <any>
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class RessourcesManager {
     public:
@@ -10,20 +11,19 @@ class RessourcesManager {
         ~RessourcesManager() = default;
 
         template<typename T>
-        RessourcesManager addRessources(std::string const& ressourceName,
+        void addRessource(std::string const& ressourceName,
                                         std::string const& filePath)
         {
             T ressource = T();
 
             ressource.loadFromFile(filePath);
             _map.insert(std::pair<std::string, T>(ressourceName, ressource));
-            return *this;
         }
 
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
-            return static_cast<T&>(_map[ressourceName]);
+            return static_cast<T &>(_map[ressourceName]);
         }
 
     private:
