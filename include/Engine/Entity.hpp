@@ -7,8 +7,9 @@
 #include <vector>
 #include <unordered_map>
 #include <assert.h>
+#include <iostream>
 
-#define TRANSFORM_IDX typeid(Transform2D).name()
+#define TRANSFORM typeid(Transform2D).name()
 
 class Entity : public IEntity {
     public:
@@ -22,7 +23,7 @@ class Entity : public IEntity {
         template <typename T>
         T* addComponent(void)
         {
-            T *component = new T();
+            T *component = new T(this);
 
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
@@ -46,6 +47,6 @@ class Entity : public IEntity {
         sf::Texture _texture;
 
         std::unordered_map<const char *, IComponent *> _component_map = {
-            {typeid(Transform2D()).name(), new Transform2D}
+            { SIGNATURE(Transform2D) , new Transform2D}
         };
 };
