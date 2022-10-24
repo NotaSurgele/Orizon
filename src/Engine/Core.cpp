@@ -18,7 +18,7 @@ bool Core::CoreEvent(sf::Event& event)
     return _window.pollEvent(event);
 }
 
-void Core::CoreDraw(Sprite *component)
+void Core::CoreDraw(Drawable *component)
 {
     _window.draw(component);
 }

@@ -29,13 +29,13 @@ void RenderWindow::display()
     _window.display();
 }
 
-void RenderWindow::draw(Sprite *sprite)
+void RenderWindow::draw(Drawable *sprite)
 {
     if (sprite == nullptr) {
         std::cerr << DRAW_NULL_ERROR << std::endl;
         return;
     }
-    _window.draw(sprite->getSprite());
+    _window.draw(static_cast<sf::Drawable &>(*sprite));
 }
 
 void RenderWindow::close()
