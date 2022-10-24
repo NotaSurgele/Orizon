@@ -3,8 +3,9 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "Engine/Components/Sprite.hpp"
+#include "Engine/Components/Drawable.hpp"
 
-#define DRAW_NULL_ERROR "Error [Window] draw sprite method: pointer is null 0x0" \
+#define DRAW_NULL_ERROR "Error [RenderWindow] draw method: pointer is null 0x0" \
                         " cannot draw"
 
 class RenderWindow {
@@ -18,7 +19,7 @@ class RenderWindow {
         bool isOpen();
         bool pollEvent(sf::Event& event);
         void display();
-        void draw(Sprite *sprite);
+        void draw(Drawable *sprite);
         void close();
 
     private:

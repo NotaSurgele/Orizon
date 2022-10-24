@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <map>
-#include <any>
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -11,13 +10,14 @@ class RessourcesManager {
         ~RessourcesManager() = default;
 
         template<typename T>
-        void addRessource(std::string const& ressourceName,
-                                        std::string const& filePath)
+        RessourcesManager& addRessource(std::string const& ressourceName,
+                                std::string const& filePath)
         {
             T ressource = T();
 
             ressource.loadFromFile(filePath);
             _map.insert(std::pair<std::string, T>(ressourceName, ressource));
+            return *this;
         }
 
         template<typename T>
