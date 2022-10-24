@@ -12,9 +12,10 @@
 int main(void)
 {
 	Entity e = Entity();
-	Core c = Core("hello world");
+	Core c("hello world");
 	Input input = Input();
 
+	input.loadFromFile("../assets/input.ini");
 	R_ADD_RESSOURCE(sf::Texture, "player", "../assets/B_witch_attack.png");
 	e.addComponent<Sprite>()->setTexture(R_GET_RESSOURCE(sf::Texture, "player"));
 	while (c.isOpen()) {
@@ -23,7 +24,6 @@ int main(void)
 
 		//Event call
 		while (c.CoreEvent(event)) {
-			// input.___remove_key(sf::Keyboard::Up);
 			if (event.type == sf::Event::Closed)
 				c.CoreClose();
 			if (event.type == sf::Event::KeyPressed)
@@ -31,9 +31,15 @@ int main(void)
 			if (event.type == sf::Event::KeyReleased)
 				input.___remove_key(event.key.code);
 		}
-		std::cout << ": " << input.isKeyPressed(Input::Key::Down) << std::endl;
+		if (Input::isActionPressed("MoveDown"))
+			e.getComponent<Transform2D>()->position.y += 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveUp"))
+			e.getComponent<Transform2D>()->position.y -= 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveLeft"))
+			e.getComponent<Transform2D>()->position.x -= 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveRight"))
+			e.getComponent<Transform2D>()->position.x += 100.f * Core::getDeltaTime();
 		//Update call
-		e.getComponent<Transform2D>()->position.x += 25 * Core::getDeltaTime();
 		e.getComponent<Sprite>()->update();
 
 		//Draw call
