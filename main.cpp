@@ -7,6 +7,7 @@
 #include "Engine/Core.hpp"
 #include "Engine/RenderWindow.hpp"
 #include "Engine/Entity.hpp"
+#include "Engine/Input.hpp"
 
 int main(void)
 {
