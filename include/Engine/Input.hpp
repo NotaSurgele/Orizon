@@ -11,11 +11,12 @@ public:
     Input() = default;
     ~Input() = default;
 
-    static bool isKeyPressed(std::string key);
-    static bool isActionPressed(std::string action);
+    static bool isKeyPressed(std::string const& key);
+    static bool isActionPressed(std::string const& action);
+    void loadFromFile(std::string const& file);
     void ___push_key(sf::Keyboard::Key key);
     void ___remove_key(sf::Keyboard::Key key);
-    void __add_action(std::string action, std::string input);
+    void __add_action(std::string const& action, std::string const& input);
 
 
 private:
