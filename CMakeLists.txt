@@ -27,6 +27,7 @@ target_sources(${PROJECT_NAME} PUBLIC
     src/Engine/Core.cpp
     src/Engine/RenderWindow.cpp
     src/Engine/Time.cpp
+    src/Engine/Input.cpp
     main.cpp
 )
 
