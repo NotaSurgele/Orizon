@@ -31,8 +31,15 @@ int main(void)
 			if (event.type == sf::Event::KeyReleased)
 				input.___remove_key(event.key.code);
 		}
+		if (Input::isActionPressed("MoveDown"))
+			e.getComponent<Transform2D>()->position.y += 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveUp"))
+			e.getComponent<Transform2D>()->position.y -= 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveLeft"))
+			e.getComponent<Transform2D>()->position.x -= 100.f * Core::getDeltaTime();
+		if (Input::isActionPressed("MoveRight"))
+			e.getComponent<Transform2D>()->position.x += 100.f * Core::getDeltaTime();
 		//Update call
-		e.getComponent<Transform2D>()->position.x += 1.5f * Core::getDeltaTime();
 		e.getComponent<Sprite>()->update();
 
 		//Draw call
