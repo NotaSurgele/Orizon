@@ -4,12 +4,19 @@
 #include "Engine/RenderWindow.hpp"
 #include "Engine/Input.hpp"
 #include <SFML/System.hpp>
-#include <string>
 #include "Engine/Components/Drawable.hpp"
+#include <string>
 
-class Core {
+class ICore {
+public:
+    virtual void start() = 0;
+    virtual void render() = 0;
+    virtual void destroy() = 0;
+};
+
+class Core : public ICore {
     public:
-
+        Core() = delete;
         Core(std::string const& windowName, std::size_t width=800, std::size_t height=600);
         ~Core() = default;
 
@@ -35,9 +42,12 @@ class Core {
         void CoreDraw(Drawable *component);
         void CoreDisplay();
         void CoreClose();
-        // void start();
-        // void update();
-        // void render();
+
+        void run();
+        virtual void start() = 0;
+        virtual void render() = 0;
+        virtual void destroy() = 0;
+
 
     private:
         static inline Time _time;
