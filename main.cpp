@@ -13,6 +13,7 @@ int main(void)
 {
 	Entity e = Entity();
 	Core c = Core("hello world");
+	Input input = Input();
 
 	R_ADD_RESSOURCE(sf::Texture, "player", "../assets/B_witch_attack.png");
 	e.addComponent<Sprite>()->setTexture(R_GET_RESSOURCE(sf::Texture, "player"));
@@ -22,6 +23,8 @@ int main(void)
 
 		//Event call
 		while (c.CoreEvent(event)) {
+			input.___push_key(sf::Keyboard::Up);
+			input.___remove_key(sf::Keyboard::Up);
 			if (event.type == sf::Event::Closed)
 				c.CoreClose();
 		}
