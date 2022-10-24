@@ -5,6 +5,7 @@
 #include "Engine/Input.hpp"
 #include <SFML/System.hpp>
 #include <string>
+#include "Engine/Components/Drawable.hpp"
 
 class Core {
     public:
@@ -31,7 +32,7 @@ class Core {
         bool isOpen();
         void CoreClear(sf::Color color);
         bool CoreEvent(sf::Event& event);
-        void CoreDraw(Sprite *component);
+        void CoreDraw(Drawable *component);
         void CoreDisplay();
         void CoreClose();
         // void start();
