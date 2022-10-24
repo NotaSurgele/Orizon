@@ -30,7 +30,7 @@ public:
         F11, F12, F13, F14,
     };
     static inline std::vector<Key> ___keyArray;
-    static inline bool isKeyPressed(Key key);
+    static bool isKeyPressed(Key key);
     void ___push_key(sf::Keyboard::Key key);
     void ___remove_key(sf::Keyboard::Key key);
 
