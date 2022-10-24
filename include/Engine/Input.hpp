@@ -3,9 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 class Input {
 public:
+    Input() = default;
+    ~Input() = default;
+
     enum Key {
         A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R,
         S, T, U, V, W, X, Y, Z, Num0, Num1, Num2, Num3, Num4,
@@ -26,12 +30,10 @@ public:
         F11, F12, F13, F14,
     };
     static inline std::vector<Key> ___keyArray;
-
-    Input() = default;
-    ~Input() = default;
-
     static inline bool isKeyPressed(Key key);
     void ___push_key(sf::Keyboard::Key key);
+    void ___remove_key(sf::Keyboard::Key key);
+
 
 private:
     std::unordered_map<sf::Keyboard::Key, Key> _key_map = {
