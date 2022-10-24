@@ -39,8 +39,8 @@ bool Input::isActionPressed(std::string const& action)
 {
     std::string key_related = "";
 
-    if (!_action_map[action].size() <= 0) {
-        std::cout << "[Input] there is no action " << action << " dedfined !" << std::endl;
+    if (_action_map[action].size() <= 0) {
+        std::cout << "[Input] there is no action " << action << " defined !" << std::endl;
         return false;
     }
     key_related = _action_map[action];
