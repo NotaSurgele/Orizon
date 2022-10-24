@@ -12,6 +12,8 @@ void Input::___push_key(sf::Keyboard::Key key)
 {
     std::string key_pressed = _sfml_to_key[key];
 
+    if (std::find(___keyArray.begin(), ___keyArray.end(), key_pressed) != ___keyArray.end())
+        return;
     std::cout << "Push input nb : " << key_pressed << std::endl;
     Input::___keyArray.push_back(key_pressed);
 }
@@ -22,7 +24,7 @@ void Input::___remove_key(sf::Keyboard::Key key)
     std::vector<std::string>::iterator it = std::find(___keyArray.begin(), ___keyArray.end(), to_remove);
 
     if (it != ___keyArray.end()) {
-        std::cout << "find input n: " << ___keyArray.at(std::distance(___keyArray.begin(), it)) << std::endl;
+        std::cout << "remove input n: " << ___keyArray.at(std::distance(___keyArray.begin(), it)) << std::endl;
         ___keyArray.erase(it);
     }
 }
@@ -35,14 +37,18 @@ void Input::__add_action(std::string const& action, std::string const& input)
 
 bool Input::isActionPressed(std::string const& action)
 {
-    std::string key_related = _action_map[action];
+    std::string key_related = "";
 
+    if (!_action_map[action].size() <= 0) {
+        std::cout << "[Input] there is no action " << action << " dedfined !" << std::endl;
+        return false;
+    }
+    key_related = _action_map[action];
     return Input::isKeyPressed(key_related);
 }
 
 void Input::loadFromFile(std::string const& file)
 {
-    std::cout << "hello world" << std::endl;
     std::string content = "";
     std::ifstream f(file);
 
