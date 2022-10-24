@@ -23,7 +23,6 @@ int main(void)
 
 		//Event call
 		while (c.CoreEvent(event)) {
-			// input.___remove_key(sf::Keyboard::Up);
 			if (event.type == sf::Event::Closed)
 				c.CoreClose();
 			if (event.type == sf::Event::KeyPressed)
@@ -31,9 +30,9 @@ int main(void)
 			if (event.type == sf::Event::KeyReleased)
 				input.___remove_key(event.key.code);
 		}
-		std::cout << ": " << input.isKeyPressed(Input::Key::Down) << std::endl;
+		std::cout << ": " << input.isKeyPressed("Down") << std::endl;
 		//Update call
-		e.getComponent<Transform2D>()->position.x += 25 * Core::getDeltaTime();
+		e.getComponent<Transform2D>()->position.x += 1.5f * Core::getDeltaTime();
 		e.getComponent<Sprite>()->update();
 
 		//Draw call
