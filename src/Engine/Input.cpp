@@ -12,26 +12,33 @@ void Input::___push_key(sf::Keyboard::Key key)
 {
     std::string key_pressed = _sfml_to_key[key];
 
-    if (std::find(___keyArray.begin(), ___keyArray.end(), key_pressed) != ___keyArray.end())
+    if (std::find(___keyArray.begin(), ___keyArray.end(), key_pressed) !=
+                                                        ___keyArray.end())
         return;
     std::cout << "Push input nb : " << key_pressed << std::endl;
     Input::___keyArray.push_back(key_pressed);
+    Input::___key_down.push_back(key_pressed);
 }
 
 void Input::___remove_key(sf::Keyboard::Key key)
 {
     std::string to_remove = _sfml_to_key[key];
-    std::vector<std::string>::iterator it = std::find(___keyArray.begin(), ___keyArray.end(), to_remove);
+    std::vector<std::string>::iterator it = std::find(___keyArray.begin(),
+                                                ___keyArray.end(), to_remove);
 
+    if (___key_release.size() > 10)
+        ___key_release.clear();
     if (it != ___keyArray.end()) {
-        std::cout << "remove input n: " << ___keyArray.at(std::distance(___keyArray.begin(), it)) << std::endl;
+        ___key_release.push_back(to_remove);
+        std::cout << "remove input n: " << ___keyArray.at(std::distance(
+                                    ___keyArray.begin(), it)) << std::endl;
         ___keyArray.erase(it);
     }
 }
 
 void Input::__add_action(std::string const& action, std::string const& input)
 {
-    std::cout << "[Input] push action " << action << " with the input " << input << std::endl;
+    PUSHED_ACTION(action);
     _action_map.insert(std::pair<std::string, std::string>(action, input));
 }
 
@@ -40,11 +47,37 @@ bool Input::isActionPressed(std::string const& action)
     std::string key_related = "";
 
     if (_action_map[action].size() <= 0) {
-        std::cout << "[Input] there is no action " << action << " defined !" << std::endl;
+        NO_ACTION_DEFINED(action);
         return false;
     }
     key_related = _action_map[action];
     return Input::isKeyPressed(key_related);
+}
+
+bool Input::isActionKeyReleased(std::string const& action)
+{
+    std::string key = _action_map[action];
+    std::vector<std::string>::iterator it = std::find(___key_release.begin(),
+                                                    ___key_release.end(), key);
+
+    if (it != ___key_release.end()) {
+        ___key_release.erase(it);
+        return true;
+    }
+    return false;
+}
+
+bool Input::isActionKeyDown(std::string const& action)
+{
+    std::string key = _action_map[action];
+    std::vector<std::string>::iterator it = std::find(___key_down.begin(),
+                                                    ___key_down.end(), key);
+
+    if (it != ___key_down.end()) {
+        ___key_down.erase(it);
+        return true;
+    }
+    return false;
 }
 
 void Input::loadFromFile(std::string const& file)
@@ -52,8 +85,10 @@ void Input::loadFromFile(std::string const& file)
     std::string content = "";
     std::ifstream f(file);
 
+    if (_action_map.size() != 0)
+        _action_map.clear();
     if (!f.is_open()) {
-        std::cerr << "Could not read from file " << file << std::endl;
+        std::cerr << "[Input] Could not read from file " << file << std::endl;
         return;
     }
     while (std::getline(f, content)) {
@@ -63,4 +98,3 @@ void Input::loadFromFile(std::string const& file)
     }
     f.close();
 }
-

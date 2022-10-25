@@ -6,6 +6,12 @@
 #include <string>
 #include <iostream>
 
+#define NO_ACTION_DEFINED(action)\
+        std::cout << "[Input] there is no action " << action << " defined !" << std::endl;
+
+#define PUSHED_ACTION(action)\
+        std::cout << "[Input] push action " << action << " with the input " << input << std::endl;
+
 class Input {
 public:
     Input() = default;
@@ -13,6 +19,8 @@ public:
 
     static bool isKeyPressed(std::string const& key);
     static bool isActionPressed(std::string const& action);
+    static bool isActionKeyDown(std::string const& action);
+    static bool isActionKeyReleased(std::string const& action);
     void loadFromFile(std::string const& file);
     void ___push_key(sf::Keyboard::Key key);
     void ___remove_key(sf::Keyboard::Key key);
@@ -123,4 +131,6 @@ private:
     };
     static inline std::unordered_map<std::string, std::string> _action_map;
     static inline std::vector<std::string> ___keyArray;
+    static inline std::vector<std::string> ___key_down;
+    static inline std::vector<std::string> ___key_release;
 };

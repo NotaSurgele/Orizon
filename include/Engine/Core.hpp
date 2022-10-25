@@ -25,6 +25,8 @@ class Core : public ICore {
             return _r_manager;
         }
 
+        void loadInputFromFile(std::string const& path);
+
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
