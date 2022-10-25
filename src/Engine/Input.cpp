@@ -8,6 +8,29 @@ bool Input::isKeyPressed(std::string const& key)
     return std::find(___keyArray.begin(), ___keyArray.end(), key) != ___keyArray.end();
 }
 
+bool Input::isKeyReleased(std::string const& key)
+{
+    std::vector<std::string>::iterator it = std::find(___key_release.begin(),
+                                                    ___key_release.end(), key);
+    if (it != ___key_release.end()) {
+        ___key_release.erase(it);
+        return true;
+    }
+    return false;
+}
+
+bool Input::isKeyDown(std::string const& key)
+{
+    std::vector<std::string>::iterator it = std::find(___key_down.begin(),
+                                                    ___key_down.end(), key);
+
+    if (it != ___key_down.end()) {
+        ___key_down.erase(it);
+        return true;
+    }
+    return false;
+}
+
 void Input::___push_key(sf::Keyboard::Key key)
 {
     std::string key_pressed = _sfml_to_key[key];
