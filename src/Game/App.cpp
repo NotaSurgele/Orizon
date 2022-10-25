@@ -9,6 +9,7 @@ void App::start()
 
 void App::render()
 {
+    CoreClear(sf::Color::Black);
     if (Input::isActionPressed("MoveDown"))
         e.getComponent<Transform2D>()->position.y += 100.f * Time::deltaTime;
     if (Input::isActionPressed("MoveUp"))
@@ -17,10 +18,8 @@ void App::render()
         e.getComponent<Transform2D>()->position.x -= 100.f * Time::deltaTime;
     if (Input::isActionPressed("MoveRight"))
         e.getComponent<Transform2D>()->position.x += 100.f * Time::deltaTime;
-    if (Input::isKeyDown("R"))
-        loadInputFromFile("../assets/input.ini");
-    if (Input::isKeyReleased("Space"))
-        loadInputFromFile("../assets/input.ini");
+    if (Input::isActionPressed("Exit"))
+        CoreClose();
     e.getComponent<Sprite>()->update();
     CoreDraw(e.getComponent<Sprite>());
 }
