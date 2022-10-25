@@ -30,9 +30,7 @@ class Core : public ICore {
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
-        bool CoreEvent(sf::Event& event);
         void CoreDraw(Drawable *component);
-        void CoreDisplay();
         void CoreClose();
 
         void run();
@@ -40,6 +38,9 @@ class Core : public ICore {
         virtual void render() = 0;
         virtual void destroy() = 0;
 
+    private:
+        bool CoreEvent(sf::Event& event);
+        void CoreDisplay();
 
     private:
         static inline Time _time;

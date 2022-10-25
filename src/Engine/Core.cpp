@@ -60,7 +60,6 @@ void Core::run()
 		if (event.type == sf::Event::KeyReleased)
 			_input.___remove_key(event.key.code);
         }
-        CoreClear(sf::Color::Black);
         render();
         CoreDisplay();
     }
