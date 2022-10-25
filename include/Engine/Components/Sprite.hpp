@@ -26,6 +26,8 @@ class Sprite : public IComponent, public Drawable {
 
         void update() override final;
 
+        void destroy() override final;
+
     private:
         sf::Texture _texture;
         sf::Sprite _sprite;
