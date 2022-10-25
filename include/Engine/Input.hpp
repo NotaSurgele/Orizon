@@ -18,6 +18,8 @@ public:
     ~Input() = default;
 
     static bool isKeyPressed(std::string const& key);
+    static bool isKeyReleased(std::string const& key);
+    static bool isKeyDown(std::string const& key);
     static bool isActionPressed(std::string const& action);
     static bool isActionKeyDown(std::string const& action);
     static bool isActionKeyReleased(std::string const& action);
