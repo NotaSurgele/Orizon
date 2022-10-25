@@ -25,15 +25,7 @@ class Core : public ICore {
             return _r_manager;
         }
 
-        static float getDeltaTime()
-        {
-            return _time.getDeltaTime();
-        }
-
-        static Time& getTime()
-        {
-            return _time;
-        }
+        void loadInputFromFile(std::string const& path);
 
         //Window related function
         bool isOpen();

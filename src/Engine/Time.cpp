@@ -10,8 +10,3 @@ void Time::update()
 
     deltaTime = dt.asSeconds();
 }
-
-float Time::getDeltaTime()
-{
-    return deltaTime;
-}
