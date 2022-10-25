@@ -50,3 +50,9 @@ void Sprite::update()
     _sprite.setPosition(selfTransform->position);
     _sprite.setRotation(selfTransform->rotation);
 }
+
+void Sprite::destroy()
+{
+    _sprite.~Sprite();
+    _texture.~Texture();
+}

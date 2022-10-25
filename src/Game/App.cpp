@@ -27,4 +27,5 @@ void App::render()
 
 void App::destroy()
 {
+    e.destroy();
 }

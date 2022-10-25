@@ -18,6 +18,13 @@ Entity& Entity::setRotation(float rotation)
     return *this;
 }
 
+void Entity::destroy()
+{
+    for (auto &it : _component_map) {
+        it.second->destroy();
+    }
+}
+
 Transform2D* Entity::Transform()
 {
     return dynamic_cast<Transform2D *>(_component_map[TRANSFORM]);

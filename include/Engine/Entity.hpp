@@ -36,6 +36,8 @@ class Entity : public IEntity {
         }
 
         Transform2D *Transform();
+
+        void destroy();
         // void start();
         // void update();
         // void render();
