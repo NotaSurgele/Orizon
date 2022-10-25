@@ -25,16 +25,6 @@ class Core : public ICore {
             return _r_manager;
         }
 
-        static float getDeltaTime()
-        {
-            return _time.getDeltaTime();
-        }
-
-        static Time& getTime()
-        {
-            return _time;
-        }
-
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);

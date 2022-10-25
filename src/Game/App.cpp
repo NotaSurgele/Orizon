@@ -9,13 +9,13 @@ void App::start()
 void App::render()
 {
     if (Input::isActionPressed("MoveDown"))
-        e.getComponent<Transform2D>()->position.y += 100.f * Core::getDeltaTime();
+        e.getComponent<Transform2D>()->position.y += 100.f * Time::deltaTime;
     if (Input::isActionPressed("MoveUp"))
-        e.getComponent<Transform2D>()->position.y -= 100.f * Core::getDeltaTime();
+        e.getComponent<Transform2D>()->position.y -= 100.f * Time::deltaTime;
     if (Input::isActionPressed("MoveLeft"))
-        e.getComponent<Transform2D>()->position.x -= 100.f * Core::getDeltaTime();
+        e.getComponent<Transform2D>()->position.x -= 100.f * Time::deltaTime;
     if (Input::isActionPressed("MoveRight"))
-        e.getComponent<Transform2D>()->position.x += 100.f * Core::getDeltaTime();
+        e.getComponent<Transform2D>()->position.x += 100.f * Time::deltaTime;
     e.getComponent<Sprite>()->update();
     CoreDraw(e.getComponent<Sprite>());
 }
