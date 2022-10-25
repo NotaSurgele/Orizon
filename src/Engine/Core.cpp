@@ -8,6 +8,11 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     _time = Time();
 }
 
+void Core::loadInputFromFile(std::string const& file)
+{
+    _input.loadFromFile(file);
+}
+
 void Core::CoreClear(sf::Color color)
 {
     _window.clear(color);
@@ -42,7 +47,6 @@ void Core::run()
 {
     Input input = Input();
 
-	input.loadFromFile("../assets/input.ini");
     start();
     while (isOpen()) {
         _time.update();
