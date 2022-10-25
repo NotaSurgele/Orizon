@@ -11,6 +11,7 @@ class Transform2D : public IComponent {
         sf::Vector2<float> size = sf::Vector2<float>(0.0f, 0.0f);
 
         void update() override final {};
+        void destroy() override final { };
 
         Transform2D() = default;
         ~Transform2D() = default;
