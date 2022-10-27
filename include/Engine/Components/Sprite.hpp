@@ -8,7 +8,8 @@
 
 class Sprite : public IComponent, public Drawable {
     public:
-        Sprite(Entity *self);
+        Sprite(Entity *self, sf::Texture const& texture,
+            float const& width, float const& height);
         ~Sprite() = default;
 
         sf::Sprite& getSprite();
