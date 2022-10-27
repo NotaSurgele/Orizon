@@ -20,10 +20,10 @@ class Entity : public IEntity {
         Entity& setSize(sf::Vector2<float> const& size) override final;
         Entity& setRotation(float rotation) override final;
 
-        template <typename T>
-        T* addComponent(void)
+        template <typename T, class... Args>
+        T* addComponent(Args... args)
         {
-            T *component = new T(this);
+            T *component = new T(this, args ...);
 
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
