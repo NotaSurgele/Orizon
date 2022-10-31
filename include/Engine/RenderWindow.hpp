@@ -13,6 +13,7 @@ class RenderWindow {
         RenderWindow(std::string const& windowName,
                 std::size_t width = 800,
                 std::size_t height = 600);
+        RenderWindow() = default;
         ~RenderWindow() = default;
 
         void clear(sf::Color color);

@@ -1,7 +1,12 @@
 #pragma once
+
+class GameScene;
+
 #include "Engine/Core.hpp"
+#include "Game/Scenes/GameScene.hpp"
 
 #define INPUT_FILE "../assets/input.ini"
+
 
 class App : public Core {
 public:
@@ -13,6 +18,6 @@ public:
     void render() override final;
     void destroy() override final;
 
+    GameScene game_scene;
 private:
-    Entity e = Entity();
 };
