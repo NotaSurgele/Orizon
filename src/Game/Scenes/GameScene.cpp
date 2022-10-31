@@ -21,12 +21,12 @@ void GameScene::update()
     if (Input::isActionPressed("MoveRight"))
         e.getComponent<Transform2D>()->position.x += 100.f * Time::deltaTime;
     if (Input::isActionPressed("Exit"))
-        CORE->CoreClose();
+        CLOSE();
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
     e.getComponent<Animator>()->playAnimation(true);
     e.getComponent<Sprite>()->update();
-    CORE->CoreDraw(e.getComponent<Sprite>());
+    DRAW(e.getComponent<Sprite>());
 }
 
 void GameScene::destroy()
