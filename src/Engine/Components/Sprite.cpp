@@ -15,7 +15,9 @@ Sprite::Sprite( Entity *self,
 Sprite::Sprite( Entity *self,
                 std::string const& texturePath,
                 float const& width,
-                float const& height)
+                float const& height) : _sprite(),
+                                       _texture(),
+                                       _self(self)
 {
   setTexture(texturePath);
   _sprite.setScale(width, height);

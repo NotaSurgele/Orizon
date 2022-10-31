@@ -3,9 +3,11 @@
 #include "Engine/Time.hpp"
 #include "Engine/RenderWindow.hpp"
 #include "Engine/Input.hpp"
-#include <SFML/System.hpp>
 #include "Engine/Components/Drawable.hpp"
+#include "Engine/Entity.hpp"
+#include <SFML/System.hpp>
 #include <string>
+#include <unordered_map>
 
 class ICore {
 public:
@@ -13,6 +15,8 @@ public:
     virtual void render() = 0;
     virtual void destroy() = 0;
 };
+
+using Signature = const char *;
 
 class Core : public ICore {
     public:
@@ -26,6 +30,25 @@ class Core : public ICore {
         }
 
         void loadInputFromFile(std::string const& path);
+
+        template <typename T>
+        static void addEntity(T *entity)
+        {
+            _registry[SIGNATURE(T)] = entity;
+        }
+
+        template <typename T, class... Args>
+        static void addEntity(Args... args)
+        {
+            T* newEntity = new T(args ...);
+            _registry[SIGNATURE(T)] = newEntity;
+        }
+
+        template <typename T>
+        static T* getEntity(Signature const& signature)
+        {
+            return _registry[signature];
+        }
 
         //Window related function
         bool isOpen();
@@ -45,6 +68,7 @@ class Core : public ICore {
     private:
         static inline Time _time;
         static inline RessourcesManager _r_manager;
+        static inline std::unordered_map<Signature, Entity *> _registry;
 
         //Utils
         RenderWindow _window;
