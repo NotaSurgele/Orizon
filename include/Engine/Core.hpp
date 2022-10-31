@@ -45,9 +45,14 @@ class Core : public ICore {
         }
 
         template <typename T>
-        static T* getEntity(Signature const& signature)
+        static T* getEntity(Signature signature)
         {
             return _registry[signature];
+        }
+
+        static Core* getInstance()
+        {
+            return instance;
         }
 
         //Window related function
@@ -60,6 +65,9 @@ class Core : public ICore {
         virtual void start() = 0;
         virtual void render() = 0;
         virtual void destroy() = 0;
+
+public:
+    static inline Core *instance;
 
     private:
         bool CoreEvent(sf::Event& event);
@@ -88,3 +96,6 @@ class Core : public ICore {
  */
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
+
+#define CORE\
+        Core::getInstance()

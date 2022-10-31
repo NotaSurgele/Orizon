@@ -30,6 +30,7 @@ target_sources(${PROJECT_NAME} PUBLIC
     src/Engine/Time.cpp
     src/Engine/Input.cpp
     src/Game/App.cpp
+    src/Game/Scenes/GameScene.cpp
     main.cpp
 )
 
