@@ -97,5 +97,11 @@ public:
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
 
+#define CLOSE()\
+        Core::getInstance()->CoreClose();
+
+#define DRAW(to_draw)\
+        Core::getInstance()->CoreDraw(to_draw)
+
 #define CORE\
         Core::getInstance()
