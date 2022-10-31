@@ -12,6 +12,16 @@ Sprite::Sprite( Entity *self,
     _sprite.setScale(width, height);
 }
 
+Sprite::Sprite( Entity *self,
+                std::string const& texturePath,
+                float const& width,
+                float const& height)
+{
+  setTexture(texturePath);
+  _sprite.setScale(width, height);
+}
+
+
 sf::Sprite& Sprite::getSprite()
 {
     return _sprite;
@@ -38,6 +48,7 @@ Sprite& Sprite::setTexture(sf::Texture const& texture)
 Sprite& Sprite::setTexture(std::string const &filePath)
 {
     _texture.loadFromFile(filePath);
+    _sprite.setTexture(_texture);
     return *this;
 }
 
