@@ -1,11 +1,13 @@
 #include "Game/App.hpp"
 #include "Engine/Components/Animator.hpp"
+
 void App::start()
 {
     loadInputFromFile(INPUT_FILE);
     R_ADD_RESSOURCE(sf::Texture, "hobbit", "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png");
-    e.addComponent<Sprite>(R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
-    e.addComponent<Animator>(4, AnimatorRect{0, 0, 64, 64}, .2f);
+    e.addComponent<Sprite>(&e, R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
+    e.addComponent<Animator>(&e, 4, AnimatorRect{0, 0, 64, 64}, .2f);
+    e.addComponent<Transform2D>();
 }
 
 void App::render()

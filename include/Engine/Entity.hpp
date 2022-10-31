@@ -23,7 +23,7 @@ class Entity : public IEntity {
         template <typename T, class... Args>
         T* addComponent(Args... args)
         {
-            T *component = new T(this, args ...);
+            T *component = new T(args ...);
 
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
@@ -38,9 +38,6 @@ class Entity : public IEntity {
         Transform2D *Transform();
 
         void destroy();
-        // void start();
-        // void update();
-        // void render();
 
     private:
 
@@ -48,7 +45,5 @@ class Entity : public IEntity {
         sf::Sprite _sprite;
         sf::Texture _texture;
 
-        std::unordered_map<const char *, IComponent *> _component_map = {
-            { SIGNATURE(Transform2D) , new Transform2D}
-        };
+        std::unordered_map<const char *, IComponent *> _component_map;
 };
