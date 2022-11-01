@@ -7,7 +7,6 @@
 
 #define DRAW_NULL_ERROR "Error [RenderWindow] draw method: pointer is null 0x0" \
                         " cannot draw"
-
 class RenderWindow {
     public:
         RenderWindow(std::string const& windowName,
