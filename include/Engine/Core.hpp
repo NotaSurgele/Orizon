@@ -31,30 +31,6 @@ class Core : public ICore {
 
         void loadInputFromFile(std::string const& path);
 
-        template <typename T>
-        static void addEntity(T *entity)
-        {
-            _registry[SIGNATURE(T)] = entity;
-        }
-
-        template <typename T, class... Args>
-        static void addEntity(Args... args)
-        {
-            T* newEntity = new T(args ...);
-            _registry[SIGNATURE(T)] = newEntity;
-        }
-
-        template <typename T>
-        static T* getEntity(Signature signature)
-        {
-            return _registry[signature];
-        }
-
-        static Core* getInstance()
-        {
-            return instance;
-        }
-
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
@@ -76,7 +52,6 @@ public:
     private:
         static inline Time _time;
         static inline RessourcesManager _r_manager;
-        static inline std::unordered_map<Signature, Entity *> _registry;
 
         //Utils
         RenderWindow _window;
@@ -98,10 +73,10 @@ public:
         Core::RessourceManager().getRessource<type>(name)
 
 #define CLOSE()\
-        Core::getInstance()->CoreClose();
+        Core::instance->CoreClose();
 
 #define DRAW(to_draw)\
-        Core::getInstance()->CoreDraw(to_draw)
+        Core::instance->CoreDraw(to_draw)
 
 #define CORE\
-        Core::getInstance()
+        Core::instance

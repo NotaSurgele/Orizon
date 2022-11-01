@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Scene/IScene.hpp"
-#include "Engine/Core.hpp"
+#include "Engine/System.hpp"
 
 class Scene : public IScene {
 public:
@@ -15,19 +15,19 @@ public:
     template <typename T>
     static void addEntity(T *entity)
     {
-        Core::addEntity(entity);
+        System::addEntity(entity);
     }
 
     template <typename T, class... Args>
     static void addEntity(Args... args)
     {
-        Core::addEntity(args ...);
+        System::addEntity(args ...);
     }
 
     template <typename T>
     static T* getEntity(Signature signature)
     {
-        return Core::getEntity<T*>(signature);
+        return System::getEntity<T *>(signature);
     }
 
 };

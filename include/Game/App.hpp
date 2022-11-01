@@ -1,7 +1,6 @@
 #pragma once
 
 class GameScene;
-
 #include "Engine/Core.hpp"
 #include "Game/Scenes/GameScene.hpp"
 
