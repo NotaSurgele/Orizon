@@ -1,7 +1,11 @@
 #include "Engine/Components/Animator.hpp"
 #include "Engine/Time.hpp"
 
-Animator::Animator(Entity *e,
+Animator::Animator(Entity *e) : _e(e)
+{
+}
+
+Animator::Animation::Animation(Entity *e,
                     std::size_t const& nbFrame,
                     AnimatorRect const& anim_rect,
                     float const& animationSpeed) :
@@ -29,12 +33,19 @@ Animator::Animator(Entity *e,
     }
 }
 
-const std::vector<sf::IntRect>& Animator::get_animation_frames()
+const std::vector<sf::IntRect>& Animator::Animation::get_animation_frames()
 {
     return _frames;
 }
 
-void Animator::playAnimation(bool loop)
+const std::vector<sf::IntRect>& Animator::get_animation_frames(
+    std::string const& name
+)
+{
+    return _animation_map[name].get_animation_frames();
+}
+
+void Animator::Animation::playAnimation(const bool loop)
 {
     _currentTime += Time::deltaTime;
 
@@ -52,7 +63,31 @@ void Animator::playAnimation(bool loop)
     _currentTime = 0;
 }
 
-void Animator::reset(void)
+Animator::Animation& Animator::newAnimation(std::size_t const& nbFrame,
+                            AnimatorRect const& animRect,
+                            float const& speed,
+                            std::string const& name)
+{
+    Animator::Animation anim = Animator::Animation(_e,
+                                               nbFrame,
+                                               animRect,
+                                               speed);
+
+    _animation_map.insert(std::pair<std::string, Animation>(name, anim));
+    return _animation_map[name];
+}
+
+void Animator::Animation::reset()
 {
     _index = 0;
+}
+
+void Animator::playAnimation(std::string const& anim, const bool loop)
+{
+    _animation_map[anim].playAnimation(loop);
+}
+
+void Animator::reset(std::string const& anim)
+{
+    _animation_map[anim].reset();
 }
