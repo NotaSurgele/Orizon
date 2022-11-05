@@ -1,6 +1,6 @@
 #include "Engine/Scene/SceneManager.hpp"
 
-void SceneManager::addScene(IScene const& scene)
+void SceneManager::addScene(Scene const& scene)
 {
     _sceneQueue.push(scene);
 }
@@ -10,7 +10,7 @@ void SceneManager::popScene()
     return _sceneQueue.pop();
 }
 
-IScene const& SceneManager::getScene()
+Scene const& SceneManager::getScene()
 {
     return _sceneQueue.front();
 }

@@ -116,7 +116,9 @@ void Input::loadFromFile(std::string const& file)
     }
     while (std::getline(f, content)) {
         std::string action = content.substr(0, content.find("="));
-        std::string input = content.substr(action.size() + 1, content.find("="));
+        std::cout << "action = " << action.size() << std::endl;
+        std::string input = content.substr(action.size() + 1, action.find("="));
+        std::cout << "input = " << input << std::endl;
         __add_action(action, input);
     }
     f.close();

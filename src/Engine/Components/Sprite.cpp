@@ -1,11 +1,28 @@
 #include "Sprite.hpp"
 #include <iostream>
 
-Sprite::Sprite(Entity *self) :  _sprite(),
-                                _texture(),
-                                _self(self)
+Sprite::Sprite( Entity *self,
+                sf::Texture const& texture,
+                float const& width,
+                float const& height) :  _sprite(),
+                                        _texture(),
+                                        _self(self)
 {
+    setTexture(texture);
+    _sprite.setScale(width, height);
 }
+
+Sprite::Sprite( Entity *self,
+                std::string const& texturePath,
+                float const& width,
+                float const& height) : _sprite(),
+                                       _texture(),
+                                       _self(self)
+{
+  setTexture(texturePath);
+  _sprite.setScale(width, height);
+}
+
 
 sf::Sprite& Sprite::getSprite()
 {
@@ -33,6 +50,7 @@ Sprite& Sprite::setTexture(sf::Texture const& texture)
 Sprite& Sprite::setTexture(std::string const &filePath)
 {
     _texture.loadFromFile(filePath);
+    _sprite.setTexture(_texture);
     return *this;
 }
 
