@@ -6,6 +6,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
 {
     _r_manager = RessourcesManager();
     _time = Time();
+    instance = this;
 }
 
 void Core::loadInputFromFile(std::string const& file)
@@ -60,7 +61,6 @@ void Core::run()
 		if (event.type == sf::Event::KeyReleased)
 			_input.___remove_key(event.key.code);
         }
-        CoreClear(sf::Color::Black);
         render();
         CoreDisplay();
     }

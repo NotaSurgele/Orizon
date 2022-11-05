@@ -3,9 +3,11 @@
 #include "Engine/Time.hpp"
 #include "Engine/RenderWindow.hpp"
 #include "Engine/Input.hpp"
-#include <SFML/System.hpp>
 #include "Engine/Components/Drawable.hpp"
+#include "Engine/Entity.hpp"
+#include <SFML/System.hpp>
 #include <string>
+#include <unordered_map>
 
 class ICore {
 public:
@@ -13,6 +15,8 @@ public:
     virtual void render() = 0;
     virtual void destroy() = 0;
 };
+
+using Signature = const char *;
 
 class Core : public ICore {
     public:
@@ -30,9 +34,7 @@ class Core : public ICore {
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
-        bool CoreEvent(sf::Event& event);
         void CoreDraw(Drawable *component);
-        void CoreDisplay();
         void CoreClose();
 
         void run();
@@ -40,6 +42,12 @@ class Core : public ICore {
         virtual void render() = 0;
         virtual void destroy() = 0;
 
+public:
+    static inline Core *instance;
+
+    private:
+        bool CoreEvent(sf::Event& event);
+        void CoreDisplay();
 
     private:
         static inline Time _time;
@@ -63,3 +71,12 @@ class Core : public ICore {
  */
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
+
+#define CLOSE()\
+        Core::instance->CoreClose();
+
+#define DRAW(to_draw)\
+        Core::instance->CoreDraw(to_draw)
+
+#define CORE\
+        Core::instance

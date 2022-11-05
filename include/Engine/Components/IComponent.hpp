@@ -4,10 +4,10 @@
     typeid(type).name()
 
 class IComponent {
-    public:
-        IComponent() = default;
-        ~IComponent() = default;
+  public:
+    IComponent() = default;
+    ~IComponent() = default;
 
-        virtual void update() = 0;
-        virtual void destroy() = 0;
+    virtual void update() = 0;
+    virtual void destroy() = 0;
 };

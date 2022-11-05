@@ -7,12 +7,12 @@
 
 #define DRAW_NULL_ERROR "Error [RenderWindow] draw method: pointer is null 0x0" \
                         " cannot draw"
-
 class RenderWindow {
     public:
         RenderWindow(std::string const& windowName,
                 std::size_t width = 800,
                 std::size_t height = 600);
+        RenderWindow() = default;
         ~RenderWindow() = default;
 
         void clear(sf::Color color);

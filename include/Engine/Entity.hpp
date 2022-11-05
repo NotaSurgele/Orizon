@@ -20,10 +20,10 @@ class Entity : public IEntity {
         Entity& setSize(sf::Vector2<float> const& size) override final;
         Entity& setRotation(float rotation) override final;
 
-        template <typename T>
-        T* addComponent(void)
+        template <typename T, class... Args>
+        T* addComponent(Args... args)
         {
-            T *component = new T(this);
+            T *component = new T(args ...);
 
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
@@ -38,17 +38,12 @@ class Entity : public IEntity {
         Transform2D *Transform();
 
         void destroy();
-        // void start();
-        // void update();
-        // void render();
 
     private:
 
     protected:
         sf::Sprite _sprite;
         sf::Texture _texture;
-
-        std::unordered_map<const char *, IComponent *> _component_map = {
-            { SIGNATURE(Transform2D) , new Transform2D}
-        };
+        std::size_t _id;
+        std::unordered_map<const char *, IComponent *> _component_map;
 };
