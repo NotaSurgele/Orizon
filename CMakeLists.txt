@@ -3,42 +3,56 @@ project(Orizon)
 
 include(FetchContent)
 
-#set(BUILD_SHARED_LIBS OFF)
 message("Declaring SFML..")
 FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x)
 
 message("Downloading SFML...")
 FetchContent_MakeAvailable(SFML)
 
+set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-add_executable(${PROJECT_NAME} ${SRC})
+
+#include_directories(
+#    include/
+#    include/Engine/
+#    include/Engine/Components/
+#)
+
+file(GLOB_RECURSE SRC
+    ${PROJECT_SOURCE_DIR}/src/*.cpp
+)
 
 include_directories(
-    include/
-    include/Engine/
-    include/Engine/Components/
+    ${CMAKE_SOURCE_DIR}/include/
+    ${CMAKE_SOURCE_DIR}/include/Engine/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+    ${SFML_SOURCE_DIR}/include/
 )
 
-target_sources(${PROJECT_NAME} PUBLIC
-    src/Engine/Entity.cpp
-    src/Engine/Components/Sprite.cpp
-    src/Engine/Components/Animator.cpp
-    src/Engine/Core.cpp
-    src/Engine/RenderWindow.cpp
-    src/Engine/Time.cpp
-    src/Engine/Input.cpp
-    src/Game/App.cpp
-    src/Game/Scenes/GameScene.cpp
-    main.cpp
-)
+add_executable(${PROJECT_NAME} main.cpp ${SRC})
+#target_sources(${PROJECT_NAME} PUBLIC
+#    src/Engine/Entity.cpp
+#    src/Engine/Components/Sprite.cpp
+#    src/Engine/Components/Animator.cpp
+#    src/Engine/Core.cpp
+#    src/Engine/RenderWindow.cpp
+#    src/Engine/Time.cpp
+#    src/Engine/Input.cpp
+#    src/Game/App.cpp
+#    main.cpp
+#)
 
 target_link_libraries(
  	${PROJECT_NAME}
-	sfml-graphics
-	sfml-window
-    -g
+    sfml-graphics
+    sfml-window
+    sfml-audio
+    sfml-network
+    sfml-system
+	g
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

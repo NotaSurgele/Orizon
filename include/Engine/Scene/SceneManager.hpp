@@ -7,7 +7,7 @@ class SceneManager {
         SceneManager() = default;
         ~SceneManager() = default;
 
-        void addScene(IScene const& scene);
+        void addScene(Scene const& scene);
         void popScene();
         Scene const& getScene();
 
