@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
 #include "Entity.hpp"
-#include "Core.hpp"
+#include "Components/Velocity.hpp"
+#include "Time.hpp"
+#include "Components/Sprite.hpp"
 
 using SharedEntity = std::shared_ptr<Entity *>;
 
@@ -28,6 +30,12 @@ public:
         return _registry[id];
     }
 
+    // System that apply force such has velocity and all
+    void force_system();
+
+    void draw_system();
+
+    void systems();
 
 private:
     static inline std::size_t _id = 0;

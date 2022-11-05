@@ -2,6 +2,7 @@
 
 #include "Engine/Scene/IScene.hpp"
 #include "Engine/System.hpp"
+#include "Engine/Core.hpp"
 
 class Scene : public IScene {
 public:

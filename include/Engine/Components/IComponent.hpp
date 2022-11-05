@@ -8,6 +8,5 @@ class IComponent {
     IComponent() = default;
     ~IComponent() = default;
 
-    virtual void update() = 0;
     virtual void destroy() = 0;
 };

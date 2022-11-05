@@ -45,7 +45,6 @@ public:
                              float const& animationSpeed,
                              std::string const& name);
     void reset(std::string const& anim);
-    void update() override final {}
     void destroy() override final {}
 
 private:

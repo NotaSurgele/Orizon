@@ -32,7 +32,13 @@ class Entity : public IEntity {
         template <typename T>
         T* getComponent()
         {
-            return dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+            T* component = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+
+            if (component == nullptr) {
+                std::cerr << "Component type " << SIGNATURE(T) <<
+                    " does not exist in entity" << std::endl;
+            }
+            return component;
         }
 
         Transform2D *Transform();

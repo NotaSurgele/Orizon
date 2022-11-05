@@ -62,6 +62,7 @@ void Core::run()
 			_input.___remove_key(event.key.code);
         }
         render();
+        _system_handler.systems();
         CoreDisplay();
     }
     destroy();
