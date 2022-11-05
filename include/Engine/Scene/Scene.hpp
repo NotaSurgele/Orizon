@@ -8,9 +8,9 @@ public:
     Scene() = default;
     ~Scene() = default;
 
-    virtual void create() = 0;
-    virtual void update() = 0;
-    virtual void destroy() = 0;
+    void create() override {};
+    void update() override {};
+    void destroy() override {};
 
     template <typename T>
     static void addEntity(T *entity)
