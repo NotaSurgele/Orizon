@@ -60,15 +60,6 @@ Sprite& Sprite::setTextureRect(sf::IntRect const &rect)
     return *this;
 }
 
-void Sprite::update()
-{
-    Transform2D *selfTransform = _self->Transform();
-
-    // std::cout << selfTransform->position.x << std::endl;
-    _sprite.setPosition(selfTransform->position);
-    _sprite.setRotation(selfTransform->rotation);
-}
-
 void Sprite::destroy()
 {
     _sprite.~Sprite();

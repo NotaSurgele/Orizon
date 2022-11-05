@@ -27,8 +27,6 @@ class Sprite : public IComponent, public Drawable {
             target.draw(_sprite, states);
         }
 
-        void update() override final;
-
         void destroy() override final;
 
     private:
