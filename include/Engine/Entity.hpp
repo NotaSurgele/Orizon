@@ -44,6 +44,6 @@ class Entity : public IEntity {
     protected:
         sf::Sprite _sprite;
         sf::Texture _texture;
-
+        std::size_t _id;
         std::unordered_map<const char *, IComponent *> _component_map;
 };

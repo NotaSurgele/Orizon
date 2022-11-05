@@ -13,28 +13,23 @@ public:
     template <typename T>
     static void addEntity(T *entity)
     {
-        _registry[SIGNATURE(T)] = std::make_shared<T *>(entity);
+        _registry[_id] = std::make_shared<T *>(entity);
     }
 
     template <typename T, class... Args>
     static void addEntity(Args... args)
     {
-        _registry[SIGNATURE(T)] = std::make_shared<T *>(args ...);
+        _registry[_id++] = std::make_shared<T *>(args ...);
     }
 
     template <typename T>
-    static std::shared_ptr<T *> getEntity(Signature signature)
+    static std::shared_ptr<T *> getEntity(std::size_t const& id)
     {
-        return _registry[signature];
+        return _registry[id];
     }
 
-
-    template <typename T>
-    static std::shared_ptr<T *> getEntityByType()
-    {
-        return _registry[SIGNATURE(T)];
-    }
 
 private:
-    static inline std::unordered_map<Signature, SharedEntity> _registry;
+    static inline std::size_t _id = 0;
+    static inline std::unordered_map<std::size_t, SharedEntity> _registry;
 };
