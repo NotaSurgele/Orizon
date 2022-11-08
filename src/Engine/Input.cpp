@@ -19,6 +19,11 @@ bool Input::isKeyReleased(std::string const& key)
     return false;
 }
 
+bool Input::isKeyPressed()
+{
+    return ___key_down.size() > 0;
+}
+
 bool Input::isKeyDown(std::string const& key)
 {
     std::vector<std::string>::iterator it = std::find(___key_down.begin(),
