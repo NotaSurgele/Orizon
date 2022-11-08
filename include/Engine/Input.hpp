@@ -23,6 +23,7 @@ public:
     static bool isActionPressed(std::string const& action);
     static bool isActionKeyDown(std::string const& action);
     static bool isActionKeyReleased(std::string const& action);
+    static bool isKeyPressed(void);
     void loadFromFile(std::string const& file);
     void ___push_key(sf::Keyboard::Key key);
     void ___remove_key(sf::Keyboard::Key key);

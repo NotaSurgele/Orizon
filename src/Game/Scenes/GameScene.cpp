@@ -16,20 +16,23 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    auto velocity = e.getComponent<Velocity<float>>();
+    auto transform = e.getComponent<Transform2D>();
+    const float deltaTime = Time::deltaTime;
+
     if (Input::isActionPressed("MoveDown"))
-        velocity->setY(-20.0f);
+        transform->position.y += 100.0f * deltaTime;
     if (Input::isActionPressed("MoveUp"))
-        velocity->setY(20.0f);
+        transform->position.y += -100.0f * deltaTime;
     if (Input::isActionPressed("MoveLeft"))
-        velocity->setX(-20.0f);
+        transform->position.x += -100.0f * deltaTime;
     if (Input::isActionPressed("MoveRight"))
-        velocity->setX(20.0f);
+        transform->position.x += 100.0f * deltaTime;
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
-    e.getComponent<Animator>()->playAnimation("idle", true);
+    if (Input::isActionPressed("Animate"))
+        e.getComponent<Animator>()->playAnimation("idle", true);
 }
 
 void GameScene::destroy()
