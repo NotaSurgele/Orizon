@@ -9,7 +9,6 @@ void GameScene::create()
     e.addComponent<Sprite>(&e, R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
     e.addComponent<Animator>(&e)->newAnimation(4, AnimatorRect{0, 0, 64, 64}, .2f, "idle");
     e.addComponent<Transform2D>();
-    System::addEntity<Entity>(&e);
 }
 
 void GameScene::update()

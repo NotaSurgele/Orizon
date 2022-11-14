@@ -19,7 +19,7 @@ public:
     template <typename T, class... Args>
     static void addEntity(Args... args)
     {
-        _registry[_id++] = std::make_shared<T *>(args ...);
+        _registry[_id] = std::make_shared<T *>(args ...);
     }
 
     template <typename T>
@@ -28,6 +28,12 @@ public:
         return _registry[id];
     }
 
+    static std::size_t get_id()
+    {
+        std::size_t old = _id;
+        _id += 1;
+        return old;
+    }
 
 private:
     static inline std::size_t _id = 0;

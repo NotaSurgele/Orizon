@@ -1,21 +1,10 @@
-#include "Engine/Entity.hpp"
+#include "Engine/System.hpp"
+#include <iostream>
 
-Entity& Entity::setPosition(sf::Vector2<float> const &position)
+Entity::Entity() : _e(this),
+                   id(System::get_id())
 {
-    dynamic_cast<Transform2D *>(_component_map[TRANSFORM])->position = position;
-    return *this;
-}
-
-Entity& Entity::setSize(sf::Vector2<float> const& size)
-{
-    dynamic_cast<Transform2D *>(_component_map[TRANSFORM])->size = size;
-    return *this;
-}
-
-Entity& Entity::setRotation(float rotation)
-{
-    dynamic_cast<Transform2D *>(_component_map[TRANSFORM])->rotation = rotation;
-    return *this;
+    System::addEntity(this);
 }
 
 void Entity::destroy()
@@ -25,7 +14,3 @@ void Entity::destroy()
     }
 }
 
-Transform2D* Entity::Transform()
-{
-    return dynamic_cast<Transform2D *>(_component_map[TRANSFORM]);
-}

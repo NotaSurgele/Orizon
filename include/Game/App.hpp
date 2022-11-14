@@ -6,7 +6,6 @@ class GameScene;
 
 #define INPUT_FILE "../assets/input.ini"
 
-
 class App : public Core {
 public:
     App(std::string const& windowName, std::size_t width=800, std::size_t height=600) : Core(windowName, width, height) {}
