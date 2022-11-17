@@ -8,27 +8,25 @@
            auto velocity = e->getComponent<Velocity<float>>();
            auto transform = e->getComponent<Transform2D>();
 
-           if (velocity != nullptr && transform != nullptr) {
-               transform->position.x += velocity->getX() * Time::deltaTime;
-               transform->position.y += velocity->getY() * Time::deltaTime;
-           }
+           if (!velocity || !transform)
+               continue;
+           transform->position.x += velocity->getX() * Time::deltaTime;
+           transform->position.y += velocity->getY() * Time::deltaTime;
        }
     }
 
     void System::draw_system()
     {
         for (auto &it : _registry) {
-            Entity *e = *it.second.get();
-            auto transform = e->getComponent<Transform2D>();
-            auto sprite = e->getComponent<Sprite>();
+            auto transform = (*it.second.get())->getComponent<Transform2D>();
+            auto sprite = (*it.second.get())->getComponent<Sprite>();
 
-            if (sprite == nullptr)
+            if (!sprite)
                 continue;
-            if (transform != nullptr) {
-                sprite->getSprite().setPosition(transform->position);
-                sprite->getSprite().setRotation(transform->rotation);
+            if (!transform) {
+                sprite->setTransform(Transform2D::zero());
             } else
-                sprite->getSprite().setPosition(0, 0);
+                sprite->setTransform(transform);
             DRAW(sprite);
         }
     }
