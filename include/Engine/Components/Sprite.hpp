@@ -21,6 +21,7 @@ class Sprite : public IComponent, public Drawable {
         Sprite& setTexture(sf::Texture const& texture);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
+        Sprite& setTransform(Transform2D *transform);
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override
         {
