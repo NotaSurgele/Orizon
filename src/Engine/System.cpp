@@ -11,10 +11,10 @@
 
                 transform->position.x += velocity->getX() * Time::deltaTime;
                 transform->position.y += velocity->getY() * Time::deltaTime;
-           } catch (...) {
-               std::cout << "Missing force field component" << std::endl;
+           } catch(...) {
+                std::cerr << "Entity does not have force component" << std::endl;
            }
-       }
+        }
     }
 
     void System::draw_system()
@@ -25,19 +25,18 @@
                 auto sprite = (*it.second.get())->getComponent<Sprite>();
 
                 if (!transform)
-                    sprite->setTransform(Transform2D::zero());
-                else
-                    sprite->setTransform(transform);
+                    transform = Transform2D::zero();
+                sprite->setTransform(transform);
                 DRAW(sprite);
-            } catch(...) {
-                std::cout << "RIP !" << std::endl;
+            } catch (...) {
+                std::cerr << "Entity does not have component" << std::endl;
             }
         }
     }
 
     void System::systems()
     {
-        force_system();
+        //force_system();
         draw_system();
     }
 

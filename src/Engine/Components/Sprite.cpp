@@ -42,7 +42,7 @@ Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 
 Sprite& Sprite::setTransform(Transform2D *transform)
 {
-    if (transform == nullptr) {
+    if (transform != nullptr) {
         _sprite.setPosition(transform->position.x, transform->position.y);
         _sprite.setRotation(transform->rotation);
     }
