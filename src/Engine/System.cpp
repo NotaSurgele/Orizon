@@ -20,17 +20,13 @@
     void System::draw_system()
     {
         for (auto &it : _registry) {
-            try {
-                auto transform = (*it.second.get())->getComponent<Transform2D>();
-                auto sprite = (*it.second.get())->getComponent<Sprite>();
+            auto transform = (*it.second.get())->getComponent<Transform2D>();
+            auto sprite = (*it.second.get())->getComponent<Sprite>();
 
-                if (!transform)
-                    transform = Transform2D::zero();
-                sprite->setTransform(transform);
-                DRAW(sprite);
-            } catch (...) {
-                std::cerr << "Entity does not have component" << std::endl;
-            }
+            if (!transform)
+                transform = Transform2D::zero();
+            sprite->setTransform(transform);
+            DRAW(sprite);
         }
     }
 

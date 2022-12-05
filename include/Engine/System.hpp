@@ -15,7 +15,7 @@ public:
     template <typename T>
     static void addEntity(T *entity)
     {
-        _registry[_id] = std::make_shared<T *>(entity);
+        _registry[_id++] = std::make_shared<T *>(entity);
     }
 
     template <typename T, class... Args>

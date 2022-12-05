@@ -26,7 +26,6 @@ void GameScene::update()
         transform->position.x += -100.0f * deltaTime;
     if (Input::isActionPressed("MoveRight"))
         transform->position.x += 100.0f * deltaTime;
-
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
