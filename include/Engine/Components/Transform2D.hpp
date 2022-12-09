@@ -11,7 +11,24 @@ class Transform2D : public IComponent {
     public:
         float rotation = 0.0f;
         sf::Vector2<float> position = sf::Vector2<float>(0.0f, 0.0f);
-        sf::Vector2<float> size = sf::Vector2<float>(0.0f, 0.0f);
+        sf::Vector2<float> size = sf::Vector2<float>(1.0f, 1.0f);
+
+
+    public:
+        Transform2D(float x=0,
+                    float y=0,
+                    float width=1,
+                    float height=1,
+                    float rota=0)
+        {
+            position.x = x;
+            position.y = y;
+            size.x = width;
+            size.y = height;
+            rotation = rota;
+        }
+
+        void destroy() override final { };
 
         static inline Transform2D* zero()
         {
@@ -20,10 +37,6 @@ class Transform2D : public IComponent {
             return _zero;
         }
 
-    public:
-        void destroy() override final { };
-
-        Transform2D() = default;
         ~Transform2D() = default;
 };
 
