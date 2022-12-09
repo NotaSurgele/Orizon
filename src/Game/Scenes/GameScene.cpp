@@ -6,31 +6,46 @@
 
 void GameScene::create()
 {
-    R_ADD_RESSOURCE(sf::Texture, "hobbit", "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png");
-    e.addComponent<Sprite>(&e, R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
-    e.addComponent<Animator>(&e)->newAnimation(4, AnimatorRect{0, 0, 64, 64}, .2f, "idle");
-    e.addComponent<Transform2D>();
-    System::addEntity<Entity>(&e);
+    //R_ADD_RESSOURCE(sf::Texture, "hobbit", "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png");
+    //e.addComponent<Sprite>(&e, R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
+    //e.addComponent<Animator>(&e)->newAnimation(4, AnimatorRect{0, 0, 64, 64}, .2f, "idle");
+    //e.addComponent<Transform2D>();
+    //System::addEntity<Entity>(&e);
 }
 
 void GameScene::update()
 {
-    auto transform = e.getComponent<Transform2D>();
-    const float deltaTime = Time::deltaTime;
+   // auto transform = e.getComponent<Transform2D>();
+   // const float deltaTime = Time::deltaTime;
 
-    if (Input::isActionPressed("MoveDown"))
-        transform->position.y += 100.0f * deltaTime;
-    if (Input::isActionPressed("MoveUp"))
-        transform->position.y += -100.0f * deltaTime;
-    if (Input::isActionPressed("MoveLeft"))
-        transform->position.x += -100.0f * deltaTime;
-    if (Input::isActionPressed("MoveRight"))
-        transform->position.x += 100.0f * deltaTime;
+   // if (Input::isActionPressed("MoveDown"))
+   //     transform->position.y += 100.0f * deltaTime;
+   // if (Input::isActionPressed("MoveUp"))
+   //     transform->position.y += -100.0f * deltaTime;
+   // if (Input::isActionPressed("MoveLeft"))
+   //     transform->position.x += -100.0f * deltaTime;
+   // if (Input::isActionPressed("MoveRight"))
+   //     transform->position.x += 100.0f * deltaTime;
+    std::string cmd = "a = 42 + 42";
+
+    lua_State *L =  luaL_newstate();
+    int val = luaL_dostring(L, cmd.c_str());
+    if (val == LUA_OK)
+    {
+        lua_getglobal(L, "a");
+        if (lua_isnumber(L, -1)) {
+            float a = static_cast<float>(lua_tonumber(L, -1));
+            std::cout << a << std::endl;
+        }
+        lua_close(L);
+    } else {
+        std::string errormsg = lua_tostring(L, -1);
+    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
-    e.getComponent<Animator>()->playAnimation("idle", true);
+    //e.getComponent<Animator>()->playAnimation("idle", true);
 }
 
 void GameScene::destroy()

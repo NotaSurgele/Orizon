@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Scene/Scene.hpp"
+#include "Engine/Lua.hpp"
 
 class GameScene : public Scene {
 public:

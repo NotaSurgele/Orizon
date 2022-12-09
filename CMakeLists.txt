@@ -26,11 +26,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
     ##
 
-    # External libraries
-    ${CMAKE_SOURCE_DIR}/include/extern/lua
-    ##
-
-
     # Dependecies
     ${SFML_SOURCE_DIR}/include/
     ##
@@ -45,6 +40,7 @@ target_link_libraries(
     sfml-audio
     sfml-network
     sfml-system
+    lua
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
