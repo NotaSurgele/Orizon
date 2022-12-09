@@ -19,11 +19,21 @@ file(GLOB_RECURSE SRC
 )
 
 include_directories(
+    # Game Engine
     ${CMAKE_SOURCE_DIR}/include/
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+    ##
+
+    # External libraries
+    ${CMAKE_SOURCE_DIR}/include/extern/lua
+    ##
+
+
+    # Dependecies
     ${SFML_SOURCE_DIR}/include/
+    ##
 )
 
 add_executable(${PROJECT_NAME} main.cpp ${SRC})
