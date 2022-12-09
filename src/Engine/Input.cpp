@@ -43,7 +43,6 @@ void Input::___push_key(sf::Keyboard::Key key)
     if (std::find(___keyArray.begin(), ___keyArray.end(), key_pressed) !=
                                                         ___keyArray.end())
         return;
-    std::cout << "Push input nb : " << key_pressed << std::endl;
     Input::___keyArray.push_back(key_pressed);
     Input::___key_down.push_back(key_pressed);
 }
@@ -58,8 +57,6 @@ void Input::___remove_key(sf::Keyboard::Key key)
         ___key_release.clear();
     if (it != ___keyArray.end()) {
         ___key_release.push_back(to_remove);
-        std::cout << "remove input n: " << ___keyArray.at(std::distance(
-                                    ___keyArray.begin(), it)) << std::endl;
         ___keyArray.erase(it);
     }
 }
