@@ -55,6 +55,8 @@ void Animator::Animation::playAnimation(const bool loop)
 {
     _currentTime += Time::deltaTime;
 
+    if (!_sprite)
+        return;
     if ((!loop && _index >= _frames_nb) ||
         (_currentTime < _animation_speed && _index > 0))
         return;
