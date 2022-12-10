@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Scene/Scene.hpp"
+#include "Game/Player.hpp"
 
 class GameScene : public Scene {
 public:
@@ -9,5 +10,5 @@ public:
     void destroy() override final;
 
 private:
-    Entity e = Entity();
+    Player player = Player();
 };
