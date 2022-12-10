@@ -19,6 +19,11 @@ bool Input::isKeyReleased(std::string const& key)
     return false;
 }
 
+bool Input::isKeyPressed()
+{
+    return ___key_down.size() > 0;
+}
+
 bool Input::isKeyDown(std::string const& key)
 {
     std::vector<std::string>::iterator it = std::find(___key_down.begin(),
@@ -38,7 +43,6 @@ void Input::___push_key(sf::Keyboard::Key key)
     if (std::find(___keyArray.begin(), ___keyArray.end(), key_pressed) !=
                                                         ___keyArray.end())
         return;
-    std::cout << "Push input nb : " << key_pressed << std::endl;
     Input::___keyArray.push_back(key_pressed);
     Input::___key_down.push_back(key_pressed);
 }
@@ -53,8 +57,6 @@ void Input::___remove_key(sf::Keyboard::Key key)
         ___key_release.clear();
     if (it != ___keyArray.end()) {
         ___key_release.push_back(to_remove);
-        std::cout << "remove input n: " << ___keyArray.at(std::distance(
-                                    ___keyArray.begin(), it)) << std::endl;
         ___keyArray.erase(it);
     }
 }
@@ -116,9 +118,7 @@ void Input::loadFromFile(std::string const& file)
     }
     while (std::getline(f, content)) {
         std::string action = content.substr(0, content.find("="));
-        std::cout << "action = " << action.size() << std::endl;
         std::string input = content.substr(action.size() + 1, action.find("="));
-        std::cout << "input = " << input << std::endl;
         __add_action(action, input);
     }
     f.close();

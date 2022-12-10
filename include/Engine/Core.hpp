@@ -5,6 +5,7 @@
 #include "Engine/Input.hpp"
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
+#include "Engine/System.hpp"
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
@@ -56,6 +57,7 @@ public:
         //Utils
         RenderWindow _window;
         Input _input;
+        System _system_handler;
 };
 
 /**

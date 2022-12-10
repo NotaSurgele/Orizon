@@ -5,14 +5,38 @@
 #include <SFML/System.hpp>
 
 class Transform2D : public IComponent {
+    private:
+        static inline Transform2D *_zero;
+
     public:
         float rotation = 0.0f;
         sf::Vector2<float> position = sf::Vector2<float>(0.0f, 0.0f);
-        sf::Vector2<float> size = sf::Vector2<float>(0.0f, 0.0f);
+        sf::Vector2<float> size = sf::Vector2<float>(1.0f, 1.0f);
 
-        void update() override final {};
+
+    public:
+        Transform2D(float x=0,
+                    float y=0,
+                    float width=1,
+                    float height=1,
+                    float rota=0)
+        {
+            position.x = x;
+            position.y = y;
+            size.x = width;
+            size.y = height;
+            rotation = rota;
+        }
+
         void destroy() override final { };
 
-        Transform2D() = default;
+        static inline Transform2D* zero()
+        {
+            if (!_zero)
+                _zero = new Transform2D();
+            return _zero;
+        }
+
         ~Transform2D() = default;
 };
+

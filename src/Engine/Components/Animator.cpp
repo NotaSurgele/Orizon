@@ -8,13 +8,15 @@ Animator::Animator(Entity *e) : _e(e)
 Animator::Animation::Animation(Entity *e,
                     std::size_t const& nbFrame,
                     AnimatorRect const& anim_rect,
-                    float const& animationSpeed) :
+                    float const& animationSpeed,
+                    std::string const& name) :
                     _animation_speed(animationSpeed),
                     _frames_nb(nbFrame),
                     _offset_x(anim_rect[0]),
                     _offset_y(anim_rect[1]),
                     _sizeWidth(anim_rect[2]),
-                    _sizeHeight(anim_rect[3])
+                    _sizeHeight(anim_rect[3]),
+                    _name(name)
 {
     _sprite = e->getComponent<Sprite>();
     if (_sprite == nullptr) {
@@ -38,9 +40,13 @@ const std::vector<sf::IntRect>& Animator::Animation::get_animation_frames()
     return _frames;
 }
 
+const std::string& Animator::Animation::name()
+{
+    return _name;
+}
+
 const std::vector<sf::IntRect>& Animator::get_animation_frames(
-    std::string const& name
-)
+                                        std::string const& name)
 {
     return _animation_map[name].get_animation_frames();
 }
@@ -49,6 +55,8 @@ void Animator::Animation::playAnimation(const bool loop)
 {
     _currentTime += Time::deltaTime;
 
+    if (!_sprite)
+        return;
     if ((!loop && _index >= _frames_nb) ||
         (_currentTime < _animation_speed && _index > 0))
         return;
@@ -71,7 +79,8 @@ Animator::Animation& Animator::newAnimation(std::size_t const& nbFrame,
     Animator::Animation anim = Animator::Animation(_e,
                                                nbFrame,
                                                animRect,
-                                               speed);
+                                               speed,
+                                               name);
 
     _animation_map.insert(std::pair<std::string, Animation>(name, anim));
     return _animation_map[name];
@@ -84,10 +93,26 @@ void Animator::Animation::reset()
 
 void Animator::playAnimation(std::string const& anim, const bool loop)
 {
-    _animation_map[anim].playAnimation(loop);
+    try {
+        _animation_map[anim].playAnimation(loop);
+        _currentAnimation = anim;
+    } catch(...) {
+        std::cerr << "Cannot play animation: " << anim
+            << " does not exist !" << std::endl;
+    }
+}
+
+Animator::Animation& Animator::currentAnimation()
+{
+    return _animation_map[_currentAnimation];
 }
 
 void Animator::reset(std::string const& anim)
 {
-    _animation_map[anim].reset();
+    try {
+        _animation_map[anim].reset();
+    } catch (...) {
+        std::cerr << "Cannot reset animation: " << anim
+            << " does not exist !" << std::endl;
+    }
 }
