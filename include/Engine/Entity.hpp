@@ -1,6 +1,5 @@
 #pragma once
 
-#include "IEntity.hpp"
 #include "Components/Transform2D.hpp"
 #include "Components/IComponent.hpp"
 #include <string>
@@ -8,17 +7,16 @@
 #include <unordered_map>
 #include <assert.h>
 #include <iostream>
+#include <memory>
 
 #define TRANSFORM typeid(Transform2D).name()
 
-class Entity : public IEntity {
-    public:
-        Entity() = default;
-        ~Entity() = default;
+using Component = std::shared_ptr<IComponent *>;
 
-        Entity& setPosition(sf::Vector2<float> const& position) override final;
-        Entity& setSize(sf::Vector2<float> const& size) override final;
-        Entity& setRotation(float rotation) override final;
+class Entity {
+    public:
+        Entity();
+        ~Entity() = default;
 
         template <typename T, class... Args>
         T* addComponent(Args... args)
@@ -41,15 +39,15 @@ class Entity : public IEntity {
             return component;
         }
 
-        Transform2D *Transform();
+        const std::size_t& get_id()
+        {
+            return id;
+        }
 
         void destroy();
 
-    private:
-
     protected:
-        sf::Sprite _sprite;
-        sf::Texture _texture;
-        std::size_t _id;
+        std::size_t id = 0;
+        const Entity *_e = nullptr;
         std::unordered_map<const char *, IComponent *> _component_map;
 };
