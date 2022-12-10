@@ -25,10 +25,10 @@ public:
         System::addEntity(args ...);
     }
 
-    template <typename T>
-    static T* getEntity(Signature signature)
-    {
-        return System::getEntity<T *>(signature);
-    }
+    //template <typename T>
+    //static Entity* getEntity(Signature signature)
+    //{
+    //    return System::getEntity<T *>(signature);
+    //}
 
 };

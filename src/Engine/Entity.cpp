@@ -1,8 +1,8 @@
-#include "Engine/System.hpp"
 #include <iostream>
+#include "Engine/Entity.hpp"
+#include "Engine/System.hpp"
 
-Entity::Entity() : _e(this),
-                   id(System::get_id())
+Entity::Entity()
 {
     System::addEntity(this);
 }
@@ -13,4 +13,3 @@ void Entity::destroy()
         it.second->destroy();
     }
 }
-
