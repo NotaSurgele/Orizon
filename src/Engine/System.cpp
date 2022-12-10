@@ -20,10 +20,13 @@
     void System::draw_system()
     {
         for (auto &it : _registry) {
-            auto transform = (*it.second.get())->getComponent<Transform2D>();
-            auto sprite = (*it.second.get())->getComponent<Sprite>();
+            auto entity = (*it.second.get());
+            auto sprite = entity->getComponent<Sprite>();
+            auto transform = entity->getComponent<Transform2D>();
 
-            if (!transform)
+            if (!sprite)
+                continue;
+            if (!entity->getComponent<Transform2D>())
                 transform = Transform2D::zero();
             sprite->setTransform(transform);
             DRAW(sprite);
