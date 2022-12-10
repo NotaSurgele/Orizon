@@ -9,9 +9,9 @@
 class Sprite : public IComponent, public Drawable {
     public:
         Sprite(Entity *self, sf::Texture const& texture,
-            float const& width, float const& height);
+            float const& width=1, float const& height=1);
         Sprite(Entity *self, std::string const& texturePath,
-              float const& width, float const& height);
+              float const& width=1, float const& height=1);
         ~Sprite() = default;
 
         sf::Sprite& getSprite();
@@ -21,13 +21,12 @@ class Sprite : public IComponent, public Drawable {
         Sprite& setTexture(sf::Texture const& texture);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
+        Sprite& setTransform(Transform2D *transform);
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override
         {
             target.draw(_sprite, states);
         }
-
-        void update() override final;
 
         void destroy() override final;
 

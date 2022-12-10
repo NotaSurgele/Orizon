@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(Orizon)
 
+set(CMAKE_BUILD_TYPE Debug)
 include(FetchContent)
 
 message("Declaring SFML..")
@@ -12,13 +13,6 @@ FetchContent_MakeAvailable(SFML)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
-
-
-#include_directories(
-#    include/
-#    include/Engine/
-#    include/Engine/Components/
-#)
 
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -33,17 +27,6 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} main.cpp ${SRC})
-#target_sources(${PROJECT_NAME} PUBLIC
-#    src/Engine/Entity.cpp
-#    src/Engine/Components/Sprite.cpp
-#    src/Engine/Components/Animator.cpp
-#    src/Engine/Core.cpp
-#    src/Engine/RenderWindow.cpp
-#    src/Engine/Time.cpp
-#    src/Engine/Input.cpp
-#    src/Game/App.cpp
-#    main.cpp
-#)
 
 target_link_libraries(
  	${PROJECT_NAME}

@@ -2,6 +2,7 @@
 
 #include "Components/Transform2D.hpp"
 #include "Components/IComponent.hpp"
+#include "Components/Id.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -16,13 +17,19 @@ using Component = std::shared_ptr<IComponent *>;
 class Entity {
     public:
         Entity();
-        ~Entity() = default;
+
+        virtual ~Entity() = default;
 
         template <typename T, class... Args>
         T* addComponent(Args... args)
         {
             T *component = new T(args ...);
 
+            if (_component_map.contains(SIGNATURE(T))) {
+                T *c = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+                delete component;
+                return c;
+            }
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
         }
@@ -30,18 +37,23 @@ class Entity {
         template <typename T>
         T* getComponent()
         {
-            return dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+            T* component = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+
+            if (component == nullptr) {
+                std::cerr << "Component type " << SIGNATURE(T) <<
+                    " does not exist in entity" << std::endl;
+            }
+            return component;
         }
 
         const std::size_t& get_id()
         {
-            return id;
+            return getComponent<Id>()->get_id();
         }
 
         void destroy();
 
     protected:
-        std::size_t id = 0;
         const Entity *_e = nullptr;
         std::unordered_map<const char *, IComponent *> _component_map;
 };

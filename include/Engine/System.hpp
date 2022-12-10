@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
+#include "Components/Velocity.hpp"
+#include "Time.hpp"
+#include "Components/Sprite.hpp"
 #include "Entity.hpp"
-#include "Core.hpp"
 
 using SharedEntity = std::shared_ptr<Entity *>;
 
@@ -10,30 +12,23 @@ public:
     System() = default;
     ~System() = default;
 
-    template <typename T>
-    static void addEntity(T *entity)
+    static void addEntity(Entity *entity)
     {
-        _registry[_id] = std::make_shared<T *>(entity);
+        entity->addComponent<Id>(_id);
+        _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
-    template <typename T, class... Args>
-    static void addEntity(Args... args)
-    {
-        _registry[_id] = std::make_shared<T *>(args ...);
-    }
-
-    template <typename T>
-    static std::shared_ptr<T *> getEntity(std::size_t const& id)
+    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
 
-    static std::size_t get_id()
-    {
-        std::size_t old = _id;
-        _id += 1;
-        return old;
-    }
+    // System that apply force such has velocity and all
+    void force_system();
+
+    void draw_system();
+
+    void systems();
 
 private:
     static inline std::size_t _id = 0;

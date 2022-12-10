@@ -19,8 +19,8 @@ Sprite::Sprite( Entity *self,
                                        _texture(),
                                        _self(self)
 {
-  setTexture(texturePath);
-  _sprite.setScale(width, height);
+    setTexture(texturePath);
+    _sprite.setScale(width, height);
 }
 
 
@@ -37,6 +37,16 @@ sf::Texture& Sprite::getTexture()
 Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 {
     _sprite = sprite;
+    return *this;
+}
+
+Sprite& Sprite::setTransform(Transform2D *transform)
+{
+    if (transform != nullptr) {
+        _sprite.setPosition(transform->position.x, transform->position.y);
+        _sprite.setScale(transform->size.x, transform->size.y);
+        _sprite.setRotation(transform->rotation);
+    }
     return *this;
 }
 
@@ -58,17 +68,6 @@ Sprite& Sprite::setTextureRect(sf::IntRect const &rect)
 {
     _sprite.setTextureRect(rect);
     return *this;
-}
-
-void Sprite::update()
-{
-    Transform2D *selfTransform = _self->getComponent<Transform2D>();
-
-    if (selfTransform == nullptr)
-        return;
-    // std::cout << selfTransform->position.x << std::endl;
-    _sprite.setPosition(selfTransform->position);
-    _sprite.setRotation(selfTransform->rotation);
 }
 
 void Sprite::destroy()

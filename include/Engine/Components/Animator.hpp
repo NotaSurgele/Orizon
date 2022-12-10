@@ -16,13 +16,16 @@ public:
             Animation(Entity *e,
                       std::size_t const& nbFrame,
                       AnimatorRect const& anim_rect,
-                      float const& animationSpeed);
+                      float const& animationSpeed,
+                      std::string const& name);
             ~Animation() = default;
             Animation() = default;
             const std::vector<sf::IntRect>& get_animation_frames();
             void playAnimation(bool loop);
             void reset();
+            const std::string& name();
         private:
+            std::string _name = "";
             float _currentTime = 0.0f;
             AnimationIndex _index = 0;
             Sprite *_sprite = nullptr;
@@ -34,6 +37,7 @@ public:
             float _offset_y = 0.0f;
             std::size_t _frames_nb = 0;
     };
+
 public:
     Animator(Entity *e);
     ~Animator() = default;
@@ -45,10 +49,11 @@ public:
                              float const& animationSpeed,
                              std::string const& name);
     void reset(std::string const& anim);
-    void update() override final {}
     void destroy() override final {}
+    Animation& currentAnimation();
 
 private:
     Entity *_e;
+    std::string _currentAnimation;
     std::unordered_map<std::string, Animation> _animation_map;
 };
