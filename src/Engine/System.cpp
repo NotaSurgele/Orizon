@@ -46,10 +46,13 @@ void System::collider_system()
 
         if (!collider) continue;
         if (!transform) transform = Transform2D::zero();
+        float valx = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
+        float valy = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
         //todo check if component velocity exist
         sf::Vector2<float> predicted_pos = sf::Vector2<float>(transform->position.x
-                                           + velocity->getX(),
-                                           transform->position.y + velocity->getY());
+                                           + valx,
+                                           transform->position.y +
+                                           valy);
         collider->setPosition(predicted_pos);
         for (auto &it2 : _registry) {
             auto entity2 = (*it2.second.get());
@@ -59,14 +62,19 @@ void System::collider_system()
 
             if (!collider2) continue;
             if (!transform2) transform = Transform2D::zero();
+            valx = velocity2->getX() > 0 ? 1 : velocity2->getX() < 0 ? -1 : 0;
+            valy = velocity2->getY() > 0 ? 1 : velocity2->getY() < 0 ? -1 : 0;
             sf::Vector2<float> predicted_pos2 = sf::Vector2<float>(transform2->position.x
-                                           + velocity2->getX(),
-                                           transform2->position.y + velocity2->getY());
+                                           + valx,
+                                           transform2->position.y +
+                                           valy);
             collider2->setPosition(predicted_pos2);
             if (entity != entity2) {
                 if (collider->overlap(collider2)) {
                     velocity->setX(0.0f);
                     velocity->setY(0.0f);
+                    velocity2->setX(0.0f);
+                    velocity2->setY(0.0);
                 }
             }
         }
