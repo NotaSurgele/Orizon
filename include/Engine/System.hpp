@@ -18,13 +18,15 @@ public:
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
-    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
+    static std::shared_ptr<Entity*> getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
 
     // System that apply force such has velocity and all
-    void force_system();
+    void velocity_system();
+
+    void collider_system();
 
     void draw_system();
 

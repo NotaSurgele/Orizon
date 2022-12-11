@@ -1,25 +1,40 @@
 #pragma once
 
 #include "IComponent.hpp"
+#include "Drawable.hpp"
 #include "Entity.hpp"
 
-class BoxCollider : public IComponent {
+class BoxCollider : public IComponent, public Drawable {
 public:
-    BoxCollider(
-        Entity *e,
-        const float& x, const float& y,
-        const float& width, const float& height);
+    sf::Color color = sf::Color::Red;
+
+    BoxCollider(sf::Vector2<float> const& position,
+                sf::Vector2<float> const& size);
+
     ~BoxCollider() = default;
 
     void destroy() override final {}
 
-    Entity *getRelatedEntity();
+    bool overlap(BoxCollider *collider);
+
+    void setPosition(sf::Vector2<float> const& pos)
+    {
+        _shape.setPosition(pos);
+        _position = pos;
+    }
+
+    sf::Vector2<float> &getPosition();
+
+    sf::Vector2<float> &getSize();
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+    {
+        target.draw(_shape, states);
+    }
 
 private:
-    Entity *_related_entity = nullptr;
-    float _x = 0.0f;
-    float _y = 0.0f;
-    float _width = 0.0f;
-    float _height = 0.0f;
+    sf::Vector2<float> _position;
+    sf::Vector2<float> _size;
+    sf::RectangleShape _shape;
 };
 
