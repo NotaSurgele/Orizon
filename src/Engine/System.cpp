@@ -46,6 +46,7 @@ void System::collider_system()
 
         if (!collider) continue;
         if (!transform) transform = Transform2D::zero();
+        if (!velocity) velocity = Velocity<float>::zero();
         float valx = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
         float valy = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
         //todo check if component velocity exist
@@ -61,7 +62,8 @@ void System::collider_system()
             auto transform2 = entity2->getComponent<Transform2D>();
 
             if (!collider2) continue;
-            if (!transform2) transform = Transform2D::zero();
+            if (!transform2) transform2 = Transform2D::zero();
+            if (!velocity2) velocity2 = Velocity<float>::zero();
             valx = velocity2->getX() > 0 ? 1 : velocity2->getX() < 0 ? -1 : 0;
             valy = velocity2->getY() > 0 ? 1 : velocity2->getY() < 0 ? -1 : 0;
             sf::Vector2<float> predicted_pos2 = sf::Vector2<float>(transform2->position.x
