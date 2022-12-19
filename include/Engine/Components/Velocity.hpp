@@ -23,5 +23,5 @@ public:
     const T getY() { return _vel.y; }
 
 private:
-    static inline sf::Vector2<T> _vel = sf::Vector2<T>(0, 0);
+    sf::Vector2<T> _vel = sf::Vector2<T>(0, 0);
 };
