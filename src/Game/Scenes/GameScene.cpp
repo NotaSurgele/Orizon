@@ -18,17 +18,22 @@ void GameScene::create()
     player.addComponent<Transform2D>();
     player.addComponent<Velocity<float>>();
     player.addComponent<BoxCollider>(sf::Vector2<float>{0, 0}, sf::Vector2<float>(16, 16));
+    player2.addComponent<Sprite>(&player2, R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
+    player2.addComponent<Animator>(&player2)->newAnimation(4, AnimatorRect{0, 0, 18, 18}, .2f, "idle");
+    player2.addComponent<Transform2D>(500, 0);
+    player2.addComponent<Velocity<float>>();
+    player2.addComponent<BoxCollider>(sf::Vector2<float>{0, 0}, sf::Vector2<float>(16, 16));
 }
 
 void GameScene::update()
 {
     auto velocity = player.getComponent<Velocity<float>>();
+    auto velocity2 = player2.getComponent<Velocity<float>>();
     auto box1 = player.getComponent<BoxCollider>();
     auto box2 = dirt.getComponent<BoxCollider>();
     const float deltaTime = Time::deltaTime;
 
-    std::cout << "player " << &player << " dirt " << &dirt << std::endl;
-    std::cout << velocity << std::endl;
+    velocity2->setX(-10);
     if (Input::isActionPressed("MoveUp"))
         velocity->setY(-100);
     else if (Input::isActionPressed("MoveDown"))
