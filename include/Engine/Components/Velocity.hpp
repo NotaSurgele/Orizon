@@ -13,9 +13,7 @@ public:
 
     static inline Velocity* zero()
     {
-        if (!_self)
-            _self = new Velocity<T>();
-        return _self;
+        return new Velocity<T>();
     }
 
     void setX(T x) { _vel.x = x; }
@@ -25,6 +23,5 @@ public:
     const T getY() { return _vel.y; }
 
 private:
-    static inline Velocity* _self;
     static inline sf::Vector2<T> _vel = sf::Vector2<T>(0, 0);
 };

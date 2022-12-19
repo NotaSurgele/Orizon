@@ -5,18 +5,14 @@
 void System::velocity_system()
 {
     for (auto &it : _registry) {
-        try {
-            Entity *e = *it.second.get();
-            auto velocity = e->getComponent<Velocity<float>>();
-            auto transform = e->getComponent<Transform2D>();
+        Entity *e = *it.second.get();
+        auto velocity = e->getComponent<Velocity<float>>();
+        auto transform = e->getComponent<Transform2D>();
 
-            if (!velocity || !transform)
-                continue;
-            transform->position.x += velocity->getX() * Time::deltaTime;
-            transform->position.y += velocity->getY() * Time::deltaTime;
-        } catch(...) {
-            std::cerr << "Entity does not have force component" << std::endl;
-        }
+        if (!velocity || !transform)
+            continue;
+        transform->position.x += velocity->getX() * Time::deltaTime;
+        transform->position.y += velocity->getY() * Time::deltaTime;
     }
 }
 
@@ -46,7 +42,7 @@ void System::collider_system()
 
         if (!collider) continue;
         if (!transform) transform = Transform2D::zero();
-        if (!velocity) velocity = Velocity<float>::zero();
+        if (!velocity) continue;
         float valx = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
         float valy = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
         //todo check if component velocity exist
@@ -61,23 +57,16 @@ void System::collider_system()
             auto velocity2 = entity2->getComponent<Velocity<float>>();
             auto transform2 = entity2->getComponent<Transform2D>();
 
+            if (entity2 == entity) continue;
             if (!collider2) continue;
             if (!transform2) transform2 = Transform2D::zero();
-            if (!velocity2) velocity2 = Velocity<float>::zero();
-            valx = velocity2->getX() > 0 ? 1 : velocity2->getX() < 0 ? -1 : 0;
-            valy = velocity2->getY() > 0 ? 1 : velocity2->getY() < 0 ? -1 : 0;
-            sf::Vector2<float> predicted_pos2 = sf::Vector2<float>(transform2->position.x
-                                           + valx,
-                                           transform2->position.y +
-                                           valy);
-            collider2->setPosition(predicted_pos2);
-            if (entity != entity2) {
-                if (collider->overlap(collider2)) {
-                    velocity->setX(0.0f);
-                    velocity->setY(0.0f);
-                    velocity2->setX(0.0f);
-                    velocity2->setY(0.0);
-                }
+            if (!velocity2)  velocity2 = Velocity<float>::zero();
+            collider2->setPosition(transform2->position);
+            if (collider->overlap(collider2)) {
+                velocity->setX(0.0f);
+                velocity->setY(0.0f);
+                velocity2->setX(0.0f);
+                velocity2->setY(0.0);
             }
         }
     }

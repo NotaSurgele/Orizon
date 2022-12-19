@@ -27,6 +27,8 @@ void GameScene::update()
     auto box2 = dirt.getComponent<BoxCollider>();
     const float deltaTime = Time::deltaTime;
 
+    std::cout << "player " << &player << " dirt " << &dirt << std::endl;
+    std::cout << velocity << std::endl;
     if (Input::isActionPressed("MoveUp"))
         velocity->setY(-100);
     else if (Input::isActionPressed("MoveDown"))
