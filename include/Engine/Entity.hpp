@@ -39,11 +39,10 @@ class Entity {
         {
             T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
-            //if (component == nullptr) {
-            //    std::cerr << "Component type " << SIGNATURE(T) <<
-            //        " does not exist in entity" << std::endl;
-            //}
-            std::cout << component << " " << SIGNATURE(T) << std::endl;
+            if (component == nullptr) {
+                std::cerr << "Component type " << SIGNATURE(T) <<
+                    " does not exist in entity" << std::endl;
+            }
             return component;
         }
 

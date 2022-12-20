@@ -1,8 +1,9 @@
 #pragma once
 #include <memory>
 #include "Components/Velocity.hpp"
-#include "Time.hpp"
+#include "Components/BoxCollider.hpp"
 #include "Components/Sprite.hpp"
+#include "Time.hpp"
 #include "Entity.hpp"
 
 using SharedEntity = std::shared_ptr<Entity *>;
@@ -27,6 +28,8 @@ public:
     void velocity_system();
 
     void collider_system();
+
+    void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
     void draw_system();
 

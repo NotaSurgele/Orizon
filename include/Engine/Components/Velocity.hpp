@@ -9,7 +9,10 @@ public:
     Velocity() = default;
     ~Velocity() = default;
 
-    void destroy() override final {};
+    void destroy() override final
+    {
+        delete this; 
+    }
 
     static inline Velocity* zero()
     {
