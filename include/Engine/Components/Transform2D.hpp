@@ -24,7 +24,7 @@ class Transform2D : public IComponent {
             rotation = rota;
         }
 
-        void destroy() override final { };
+        void destroy() override final { delete this; };
 
         static inline Transform2D* zero()
         {
