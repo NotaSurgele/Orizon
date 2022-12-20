@@ -37,7 +37,7 @@ class Entity {
         template <typename T>
         T* getComponent()
         {
-            T* component = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+            T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
             if (component == nullptr) {
                 std::cerr << "Component type " << SIGNATURE(T) <<

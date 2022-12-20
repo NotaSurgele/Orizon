@@ -1,8 +1,9 @@
 #pragma once
 #include <memory>
 #include "Components/Velocity.hpp"
-#include "Time.hpp"
+#include "Components/BoxCollider.hpp"
 #include "Components/Sprite.hpp"
+#include "Time.hpp"
 #include "Entity.hpp"
 
 using SharedEntity = std::shared_ptr<Entity *>;
@@ -18,13 +19,17 @@ public:
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
-    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
+    static std::shared_ptr<Entity*> getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
 
     // System that apply force such has velocity and all
-    void force_system();
+    void velocity_system();
+
+    void collider_system();
+
+    void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
     void draw_system();
 
