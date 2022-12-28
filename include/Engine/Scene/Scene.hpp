@@ -25,6 +25,11 @@ public:
         System::addEntity(args ...);
     }
 
+    int loadSceneFromFile(const std::string& file)
+    {
+        return 0;
+    }
+
     //template <typename T>
     //static Entity* getEntity(Signature signature)
     //{
