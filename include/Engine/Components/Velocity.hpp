@@ -6,12 +6,13 @@
 template<typename T>
 class Velocity : public IComponent {
 public:
-    Velocity() = default;
+    Velocity(Entity *e) { }
     ~Velocity() = default;
+    Velocity() = default;
 
     void destroy() override final
     {
-        delete this; 
+        delete this;
     }
 
     static inline Velocity* zero()

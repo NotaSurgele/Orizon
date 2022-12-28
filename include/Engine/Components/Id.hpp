@@ -3,7 +3,7 @@
 
 class Id : public IComponent {
 public:
-    Id(std::size_t const& id) : __id(id)
+    Id(Entity *e, std::size_t const& id) : __id(id)
     {
     }
 
