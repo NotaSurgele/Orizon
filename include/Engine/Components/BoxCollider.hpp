@@ -2,13 +2,12 @@
 
 #include "IComponent.hpp"
 #include "Drawable.hpp"
-#include "Entity.hpp"
 
 class BoxCollider : public IComponent, public Drawable {
 public:
     sf::Color color = sf::Color::Red;
 
-    BoxCollider(sf::Vector2<float> const& position,
+    BoxCollider(Entity *e, sf::Vector2<float> const& position,
                 sf::Vector2<float> const& size);
 
     ~BoxCollider() = default;

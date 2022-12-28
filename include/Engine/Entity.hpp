@@ -23,7 +23,7 @@ class Entity {
         template <typename T, class... Args>
         T* addComponent(Args... args)
         {
-            T *component = new T(args ...);
+            T *component = new T(this, args ...);
 
             if (_component_map.contains(SIGNATURE(T))) {
                 T *c = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
