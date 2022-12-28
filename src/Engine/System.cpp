@@ -88,7 +88,7 @@ void System::collider_system()
 
 void System::systems()
 {
-   collider_system();
-   velocity_system();
-   draw_system();
+   //collider_system();
+   //velocity_system();
+   //draw_system();
 }
