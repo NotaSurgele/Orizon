@@ -12,3 +12,7 @@ class IComponent {
 
     virtual void destroy() = 0;
 };
+
+class ComponentFactory {
+    public:
+};

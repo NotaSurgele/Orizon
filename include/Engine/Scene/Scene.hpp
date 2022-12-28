@@ -28,11 +28,10 @@ public:
 
     int loadSceneFromFile(const std::string& filename)
     {
-        //std::string content = readConfigFile(filename);
-        //nlohmann::json json_content = nlohmann::json::parse(content);
-        IComponent *c = new Transform2D();
+        std::string content = readConfigFile(filename);
+        nlohmann::json json_content = nlohmann::json::parse(content);
 
-        std::cout << SIGNATURE(c) << std::endl;
+        std::cout << content << std::endl;
         return 0;
     }
 

@@ -1,0 +1,16 @@
+{
+    "entities": {
+        "player": {
+            "components": [
+                {
+                    "type": "Transform2D"
+                },
+                {
+                    "type": "Sprite",
+                    "texture_name": "hobbit",
+                    "size": [10, 10]
+                }
+            ]
+        }
+    }
+}
