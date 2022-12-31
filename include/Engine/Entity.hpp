@@ -4,6 +4,7 @@
 #include "Components/IComponent.hpp"
 #include "Components/Id.hpp"
 #include "Components/CustomComponents.hpp"
+#include "Components/Sprite.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -34,12 +35,10 @@ class Entity {
         }
 
         template <class... Args>
-        IComponent* addComponent(std::string const& name, Args... args)
+        void addComponentByString(std::string const& name, Args... args)
         {
-            std::pair<const char *, IComponent *> comp_info = ComponentFactory::create_component(name, this, args ...);
-
-            _component_map.insert(comp_info);
-            return comp_info.second;
+            if (name == "Transform2D")
+                this->addComponent<Transform2D>(args ...);
         }
 
         template <typename T = CustomComponents, class... Args>
@@ -83,4 +82,5 @@ class Entity {
     protected:
         std::unordered_map<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
+        
 };

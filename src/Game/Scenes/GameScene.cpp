@@ -10,13 +10,13 @@ void GameScene::create()
 {
    R_ADD_RESSOURCE(sf::Texture, "hobbit", "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png");
 
-   player.addComponent<Sprite>(R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
-   player.addComponent<Animator>()->newAnimation(4, AnimatorRect{0, 0, 18, 18}, .2f, "idle");
-   player.addComponent("Transform2D");
+   // player.addComponent<Sprite>(R_GET_RESSOURCE(sf::Texture, "hobbit"), 10, 10);
+   // player.addComponent<Animator>()->newAnimation(4, AnimatorRect{0, 0, 18, 18}, .2f, "idle");
+   player.addComponentByString("Transform2D");
    //player.addComponent<Transform2D>();
-   player.addComponent<Velocity<float>>();
-   player.addComponent<BoxCollider>(sf::Vector2<float>{0, 0}, sf::Vector2<float>(16, 16));
-   player.addCustomComponent<CharacterController>();
+   // player.addComponent<Velocity<float>>();
+   // player.addComponent<BoxCollider>(sf::Vector2<float>{0, 0}, sf::Vector2<float>(16, 16));
+   // player.addCustomComponent<CharacterController>();
    // loadSceneFromFile("../assets/game.json");
    // std::string toto = R"({ "toto": 11 })";
    // nlohmann::json parsed = nlohmann::json::parse(toto);
@@ -27,14 +27,14 @@ void GameScene::create()
 void GameScene::update()
 {
 
-   auto box1 = player.getComponent<BoxCollider>();
+   // auto box1 = player.getComponent<BoxCollider>();
 
-   if (Input::isActionPressed("Exit"))
-      CLOSE();
-   if (Input::isActionPressed("Refresh"))
-      CORE->loadInputFromFile(INPUT_FILE);
-   player.getComponent<Animator>()->playAnimation("idle", true);
-   DRAW(box1);
+   // if (Input::isActionPressed("Exit"))
+   //    CLOSE();
+   // if (Input::isActionPressed("Refresh"))
+   //    CORE->loadInputFromFile(INPUT_FILE);
+   // player.getComponent<Animator>()->playAnimation("idle", true);
+   // DRAW(box1);
 }
 
 void GameScene::destroy()
