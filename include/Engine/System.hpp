@@ -33,6 +33,8 @@ public:
 
     void draw_system();
 
+    void update_custom_component();
+
     void systems();
 
 private:
