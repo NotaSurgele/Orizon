@@ -3,6 +3,7 @@
 #include "Components/Transform2D.hpp"
 #include "Components/IComponent.hpp"
 #include "Components/Id.hpp"
+#include "Components/CustomComponents.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -11,8 +12,6 @@
 #include <memory>
 
 #define TRANSFORM typeid(Transform2D).name()
-
-using Component = std::shared_ptr<IComponent *>;
 
 class Entity {
     public:
@@ -26,12 +25,26 @@ class Entity {
             T *component = new T(this, args ...);
 
             if (_component_map.contains(SIGNATURE(T))) {
-                T *c = dynamic_cast<T*>(_component_map[SIGNATURE(T)]);
+                T *c = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
                 delete component;
                 return c;
             }
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
+        }
+
+        template <typename T = CustomComponents, class... Args>
+        T* addCustomComponent(Args... args)
+        {
+            T *custom_component = new T(this, args ...);
+
+            if (_custom_comp_map.contains(SIGNATURE(T))) {
+                T *c = dynamic_cast<T *>(_custom_comp_map[SIGNATURE(T)]);
+                delete custom_component;
+                return c;
+            }
+            _custom_comp_map.insert(std::pair<const char *, CustomComponents *>(SIGNATURE(T), custom_component));
+            return custom_component;
         }
 
         template <typename T>
@@ -46,6 +59,11 @@ class Entity {
             return component;
         }
 
+        std::unordered_map<const char*, CustomComponents *> getCustomComponents()
+        {
+            return _custom_comp_map;
+        }
+
         const std::size_t& get_id()
         {
             return getComponent<Id>()->get_id();
@@ -56,4 +74,5 @@ class Entity {
     protected:
         const Entity *_e = nullptr;
         std::unordered_map<const char *, IComponent *> _component_map;
+        std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
 };

@@ -14,5 +14,5 @@ class IComponent {
 };
 
 class ComponentFactory {
-    public:
+    
 };
