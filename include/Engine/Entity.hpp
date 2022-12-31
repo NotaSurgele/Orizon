@@ -33,6 +33,15 @@ class Entity {
             return component;
         }
 
+        template <class... Args>
+        IComponent* addComponent(std::string const& name, Args... args)
+        {
+            std::pair<const char *, IComponent *> comp_info = ComponentFactory::create_component(name, this, args ...);
+
+            _component_map.insert(comp_info);
+            return comp_info.second;
+        }
+
         template <typename T = CustomComponents, class... Args>
         T* addCustomComponent(Args... args)
         {
@@ -72,7 +81,6 @@ class Entity {
         void destroy();
 
     protected:
-        const Entity *_e = nullptr;
         std::unordered_map<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
 };
