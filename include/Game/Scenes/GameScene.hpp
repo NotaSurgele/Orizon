@@ -11,5 +11,4 @@ public:
 
 private:
     Entity player = Entity();
-    Entity dirt = Entity();
 };
