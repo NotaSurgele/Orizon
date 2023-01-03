@@ -3,6 +3,7 @@
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/Sprite.hpp"
+#include "Components/Gravity.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
 
@@ -32,6 +33,8 @@ public:
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
     void draw_system();
+
+    void gravity_system();
 
     void update_custom_component();
 
