@@ -1,6 +1,6 @@
 #include "BoxCollider.hpp"
 
-BoxCollider::BoxCollider (sf::Vector2<float> const& position,
+BoxCollider::BoxCollider (Entity *e, sf::Vector2<float> const& position,
                          sf::Vector2<float> const& size)
                          : _position(position),
                            _size(size)

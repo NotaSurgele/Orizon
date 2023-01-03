@@ -6,6 +6,7 @@
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
 #include "Engine/System.hpp"
+#include "external/json.hpp"
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
