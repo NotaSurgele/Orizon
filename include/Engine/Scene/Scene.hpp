@@ -64,6 +64,7 @@ public:
                     }
                 }
 
+            private:
                 static void create_sprite(Entity *e, nlohmann::json const& json)
                 {
                     sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
@@ -124,6 +125,7 @@ public:
                     e->addComponent<EntitySignature>(signature);
                 }
 
+            public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
                     _map[type] = constructor;
