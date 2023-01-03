@@ -1,5 +1,13 @@
 {
-    "entities": [{
+    "ressources": [
+        {
+            "type": "Texture",
+            "name": "hobbit",
+            "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+        }
+    ],
+    "entities": [
+        {
         "components": [
             {
                 "type": "Transform2D",

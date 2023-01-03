@@ -9,23 +9,11 @@
 
 void GameScene::create()
 {
-    R_ADD_RESSOURCE(sf::Texture, "hobbit", "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png");
-
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         e->addCustomComponent<CharacterController>();
     });
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    //player.addComponent<Sprite>(R_GET_RESSOURCE(sf::Texture, "hobbit"));
-    //player.addComponent<Animator>()->newAnimation(4, AnimatorRect{0, 0, 18, 18}, .2f, "idle");
-    //player.addComponent<Velocity<float>>();
-    //player.addComponent<BoxCollider>(sf::Vector2<float>{0, 0}, sf::Vector2<float>(16, 16));
-    //player.addComponent<Transform2D>();
-    //player.addCustomComponent<CharacterController>();
-    // std::string toto = R"({ "toto": 11 })";
-    // nlohmann::json parsed = nlohmann::json::parse(toto);
-    // auto &val = parsed["toto"];
-    // std::cout << val << std::endl;
 }
 
 void GameScene::update()
