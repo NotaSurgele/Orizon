@@ -96,10 +96,7 @@ void System::gravity_system()
 
         if (!velocity || !gravity)
             continue;
-        gravity->trailingSpeed += (gravity->force * .15f);
-        if (gravity->trailingSpeed >= MAXFLOAT - (gravity->trailingSpeed * .15f))
-            gravity->trailingSpeed = MAXFLOAT;
-        velocity->setY(gravity->trailingSpeed);
+        velocity->setY(gravity->force);
     }
 }
 
