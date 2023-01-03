@@ -32,6 +32,10 @@
                 ]
             },
             {
+                "type": "EntitySignature",
+                "signature": "player"
+            },
+            {
                 "type": "CharacterController"
             }
         ]

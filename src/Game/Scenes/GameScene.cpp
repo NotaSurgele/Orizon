@@ -15,6 +15,7 @@ void GameScene::create()
         e->addCustomComponent<CharacterController>();
     });
     loadSceneFromFile("../assets/game.json");
+    player = getEntity("player");
     //player.addComponent<Sprite>(R_GET_RESSOURCE(sf::Texture, "hobbit"));
     //player.addComponent<Animator>()->newAnimation(4, AnimatorRect{0, 0, 18, 18}, .2f, "idle");
     //player.addComponent<Velocity<float>>();
@@ -29,13 +30,13 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    auto box1 = player.getComponent<BoxCollider>();
+    auto box1 = player->getComponent<BoxCollider>();
 
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
-    //player.getComponent<Animator>()->playAnimation("idle", true);
+    player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);
 }
 

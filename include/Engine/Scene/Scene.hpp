@@ -4,6 +4,7 @@
 #include "Engine/System.hpp"
 #include "Engine/Core.hpp"
 #include "Components/Animator.hpp"
+#include "Components/EntitySignature.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -25,6 +26,11 @@ public:
     static void addEntity(Args... args)
     {
         System::addEntity(args ...);
+    }
+
+    static Entity *getEntity(std::string const& signature)
+    {
+        return System::getEntity(signature);
     }
 
     int loadSceneFromFile(const std::string& filename)
@@ -110,6 +116,13 @@ public:
                     }
                 }
 
+                static void create_signature(Entity *e, nlohmann::json const& json)
+                {
+                    const std::string signature = json["signature"];
+
+                    e->addComponent<EntitySignature>(signature);
+                }
+
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
                     _map[type] = constructor;
@@ -122,7 +135,8 @@ public:
                     { "BoxCollider", create_boxcollider },
                     { "Sprite" , create_sprite },
                     { "Velocity", create_velocity },
-                    { "Animator", create_animator }
+                    { "Animator", create_animator },
+                    { "EntitySignature", create_signature }
                 };
         };
 
