@@ -2,6 +2,7 @@
 #include <memory>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
+#include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
 #include "Time.hpp"
@@ -23,6 +24,21 @@ public:
     static std::shared_ptr<Entity*> getEntity(std::size_t const& id)
     {
         return _registry[id];
+    }
+
+    static Entity *getEntity(std::string const& signature)
+    {
+        for (auto& e : _registry) {
+            EntitySignature *esignature = (*e.second.get())->getComponent<EntitySignature>();
+            std::string ssignature = "";
+
+            if (!esignature)
+                continue;
+            ssignature = esignature->signature();
+            if (ssignature.find(signature) != std::string::npos)
+                return (*e.second.get());
+        }
+        return nullptr;
     }
 
     // System that apply force such has velocity and all

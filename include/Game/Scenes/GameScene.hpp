@@ -10,5 +10,5 @@ public:
     void destroy() override final;
 
 private:
-    Entity player = Entity();
+    Entity *player = nullptr;
 };
