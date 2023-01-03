@@ -1,5 +1,6 @@
 #include "Engine/System.hpp"
 #include "Core.hpp"
+#include <limits>
 
 void System::velocity_system()
 {
@@ -86,6 +87,22 @@ void System::collider_system()
     }
 }
 
+void System::gravity_system()
+{
+    for (auto& it : _registry) {
+        auto& entity = (*it.second.get());
+        auto velocity = entity->getComponent<Velocity<float>>();
+        auto gravity = entity->getComponent<Gravity>();
+
+        if (!velocity || !gravity)
+            continue;
+        gravity->trailingSpeed += (gravity->force * .15f);
+        if (gravity->trailingSpeed >= MAXFLOAT - (gravity->trailingSpeed * .15f))
+            gravity->trailingSpeed = MAXFLOAT;
+        velocity->setY(gravity->trailingSpeed);
+    }
+}
+
 void System::update_custom_component()
 {
     for (auto &it : _registry) {
@@ -101,6 +118,7 @@ void System::update_custom_component()
 
 void System::systems()
 {
+    gravity_system();
     collider_system();
     velocity_system();
     draw_system();

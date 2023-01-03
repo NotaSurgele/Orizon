@@ -4,7 +4,6 @@
 #include "Components/IComponent.hpp"
 #include "Components/Id.hpp"
 #include "Components/CustomComponents.hpp"
-#include "Components/Sprite.hpp"
 #include "config.hpp"
 #include <string>
 #include <vector>
@@ -14,6 +13,13 @@
 #include <memory>
 
 #define TRANSFORM typeid(Transform2D).name()
+
+class Sprite;
+class Animator;
+
+template <typename T>
+class Velocity;
+class BoxCollider;
 
 class Entity {
     public:
@@ -33,13 +39,6 @@ class Entity {
             }
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
             return component;
-        }
-
-        template <class... Args>
-        void addComponentByString(std::string const& name, Args... args)
-        {
-            if (name == "Transform2D")
-                addComponent<Transform2D>(args ...);
         }
 
         template <typename T = CustomComponents, class... Args>

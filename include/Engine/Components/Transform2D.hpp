@@ -11,6 +11,7 @@ class Transform2D : public IComponent {
         sf::Vector2<float> size = sf::Vector2<float>(1.0f, 1.0f);
 
     public:
+
         Transform2D(Entity *e,
                     float x=0,
                     float y=0,
