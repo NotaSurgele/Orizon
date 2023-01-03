@@ -101,8 +101,8 @@ void System::update_custom_component()
 
 void System::systems()
 {
-//    collider_system();
-   velocity_system();
-//    draw_system();
-//    update_custom_component();
+    collider_system();
+    velocity_system();
+    draw_system();
+    update_custom_component();
 }
