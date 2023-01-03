@@ -5,6 +5,7 @@
 #include "Components/Id.hpp"
 #include "Components/CustomComponents.hpp"
 #include "Components/Sprite.hpp"
+#include "config.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -38,7 +39,7 @@ class Entity {
         void addComponentByString(std::string const& name, Args... args)
         {
             if (name == "Transform2D")
-                this->addComponent<Transform2D>(args ...);
+                addComponent<Transform2D>(args ...);
         }
 
         template <typename T = CustomComponents, class... Args>
@@ -60,7 +61,7 @@ class Entity {
         {
             T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
-            if (component == nullptr) {
+            if (component == nullptr && DEBUG_MESSAGE) {
                 std::cerr << "Component type " << SIGNATURE(T) <<
                     " does not exist in entity" << std::endl;
             }
@@ -82,5 +83,8 @@ class Entity {
     protected:
         std::unordered_map<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
-        
+
+        // std::unordered_map<std::string, std::function<void(...)>> _test = {
+        //     {}
+        // }
 };
