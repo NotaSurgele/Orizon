@@ -1,16 +1,39 @@
 {
-    "entities": {
-        "player": {
-            "components": [
-                {
-                    "type": "Transform2D"
-                },
-                {
-                    "type": "Sprite",
-                    "texture_name": "hobbit",
-                    "size": [10, 10]
-                }
-            ]
-        }
-    }
+    "entities": [{
+        "components": [
+            {
+                "type": "Transform2D",
+                "position": [0, 0],
+                "rotation": 0,
+                "scale": [1, 1]
+            },
+            {
+                "type": "BoxCollider",
+                "position": [0, 0],
+                "size": [16, 16]
+            },
+            {
+                "type": "Sprite",
+                "texture_name": "hobbit"
+            },
+            {
+                "type": "Velocity",
+                "value_type": "float"
+            },
+            {
+                "type": "Animator",
+                "animations": [
+                    {
+                        "name": "idle",
+                        "frames_number": 4,
+                        "rect": [0, 0, 18, 18],
+                        "speed": 0.2
+                    }
+                ]
+            },
+            {
+                "type": "CharacterController"
+            }
+        ]
+    }]
 }
