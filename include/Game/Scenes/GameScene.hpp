@@ -10,7 +10,5 @@ public:
     void destroy() override final;
 
 private:
-    Player player = Player();
-    Entity player2 = Entity();
-    Entity dirt = Entity();
+    Entity *player = nullptr;
 };

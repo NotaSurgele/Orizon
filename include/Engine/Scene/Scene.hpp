@@ -3,6 +3,9 @@
 #include "Engine/Scene/IScene.hpp"
 #include "Engine/System.hpp"
 #include "Engine/Core.hpp"
+#include "Components/Animator.hpp"
+#include "Components/EntitySignature.hpp"
+#include <fstream>
 
 class Scene : public IScene {
 public:
@@ -25,10 +28,168 @@ public:
         System::addEntity(args ...);
     }
 
+    static Entity *getEntity(std::string const& signature)
+    {
+        return System::getEntity(signature);
+    }
+
+    int loadSceneFromFile(const std::string& filename)
+    {
+        std::string content = readConfigFile(filename);
+        nlohmann::json json_content = nlohmann::json::parse(content);
+
+        get_ressources(json_content["ressources"]);
+        parse_entities(json_content["entities"]);
+        return 0;
+    }
+
     //template <typename T>
     //static Entity* getEntity(Signature signature)
     //{
     //    return System::getEntity<T *>(signature);
     //}
+
+    private:
+        class ComponentFactory {
+            public:
+
+                static void link_component(Entity *e, nlohmann::json const& json)
+                {
+                    std::string type = json["type"];
+
+                    for (auto& it : _map) {
+                        if (it.first.find(type) != std::string::npos) {
+                            return it.second(e, json);
+                        }
+                    }
+                }
+
+            private:
+                static void create_sprite(Entity *e, nlohmann::json const& json)
+                {
+                    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+                    e->addComponent<Sprite>(texture);
+                }
+
+                static void create_transform(Entity *e, nlohmann::json const& json)
+                {
+                    sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
+                    float rotation = json["rotation"];
+                    sf::Vector2<float> scale = sf::Vector2<float>(json["scale"][0], json["scale"][1]);
+
+                    e->addComponent<Transform2D>(position.x, position.y, scale.x, scale.y, rotation);
+                }
+
+                static void create_boxcollider(Entity *e, nlohmann::json const& json)
+                {
+                    sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
+                    sf::Vector2<float> size = sf::Vector2<float>(json["size"][0], json["size"][1]);
+
+                    e->addComponent<BoxCollider>(position, size);
+                }
+
+                static void create_velocity(Entity *e, nlohmann::json const& json)
+                {
+                    std::string type = json["value_type"];
+
+                    if (type.find("float") != std::string::npos)
+                        e->addComponent<Velocity<float>>();
+                    if (type.find("int") != std::string::npos)
+                        e->addComponent<Velocity<int>>();
+                    if (type.find("double") != std::string::npos)
+                        e->addComponent<Velocity<double>>();
+                }
+
+                static void create_animator(Entity *e, nlohmann::json const& json)
+                {
+                    auto animator = e->addComponent<Animator>();
+
+                    for (auto& animation : json["animations"]) {
+                        std::string name = animation["name"];
+                        std::size_t frames_nb = animation["frames_number"];
+                        int x = animation["rect"][0];
+                        int y = animation["rect"][1];
+                        int w = animation["rect"][2];
+                        int h = animation["rect"][3];
+                        AnimatorRect arr = AnimatorRect{x, y, w, h};
+                        float speed = animation["speed"];
+
+                        animator->newAnimation(frames_nb, arr, speed, name);
+                    }
+                }
+
+                static void create_signature(Entity *e, nlohmann::json const& json)
+                {
+                    const std::string signature = json["signature"];
+
+                    e->addComponent<EntitySignature>(signature);
+                }
+
+            public:
+                static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
+                {
+                    _map[type] = constructor;
+                }
+
+            private:
+                static inline std::unordered_map<std::string,
+                std::function<void(Entity *e, nlohmann::json const&)>> _map = {
+                    { "Transform2D", create_transform },
+                    { "BoxCollider", create_boxcollider },
+                    { "Sprite" , create_sprite },
+                    { "Velocity", create_velocity },
+                    { "Animator", create_animator },
+                    { "EntitySignature", create_signature }
+                };
+        };
+
+    private:
+        std::string readConfigFile(std::string const& filename)
+        {
+            std::string file_content = "";
+            try {
+                std::fstream file(filename);
+                std::string buff = "";
+
+                if (file.is_open()) {
+                    while (std::getline(file, buff))
+                        file_content.append(buff);
+                    file.close();
+                };
+            } catch(std::exception &e) {
+                std::cerr << e.what() << std::endl;
+                throw e;
+            }
+            return file_content;
+        }
+
+        void get_ressources(nlohmann::json const& ressources)
+        {
+            for (auto& ressource : ressources) {
+                std::string type = ressource["type"];
+                std::string name = ressource["name"];
+                std::string path = ressource["path"];
+
+                if (type.find("Texture") != std::string::npos)
+                    R_ADD_RESSOURCE(sf::Texture, name, path);
+            }
+        }
+
+        void parse_entities(nlohmann::json const& entities)
+        {
+            for (auto& entity : entities) {
+                Entity *e = new Entity();
+
+                for (auto& component : entity["components"])
+                    ComponentFactory::link_component(e, component);
+            }
+        }
+
+    protected:
+        void addCustomComponentConstructor(std::string const& type, std::function<void(Entity *e,
+                                            nlohmann::json const&)> const& constructor)
+        {
+            ComponentFactory::addComponentConstruction(type, constructor);
+        }
 
 };

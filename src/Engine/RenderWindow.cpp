@@ -1,4 +1,5 @@
 #include "Engine/RenderWindow.hpp"
+#include "config.hpp"
 
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
@@ -31,8 +32,9 @@ void RenderWindow::display()
 
 void RenderWindow::draw(Drawable *sprite)
 {
-    if (sprite == nullptr) {
-        std::cerr << DRAW_NULL_ERROR << std::endl;
+    if (sprite == nullptr)  {
+        if (DEBUG_MESSAGE)
+            std::cerr << DRAW_NULL_ERROR << std::endl;
         return;
     }
     _window.draw(static_cast<sf::Drawable &>(*sprite));

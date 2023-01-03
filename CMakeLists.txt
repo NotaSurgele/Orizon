@@ -14,8 +14,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-add_definitions(-DTOTO=1)
-
+add_definitions(-DDEBUG_MESSAGE=0)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
 )
@@ -25,6 +24,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+    # ${CMAKE_SOURCE_DIR}/include/Game/CustomComponents
     ${SFML_SOURCE_DIR}/include/
 )
 

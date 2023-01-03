@@ -1,0 +1,51 @@
+{
+    "ressources": [
+        {
+            "type": "Texture",
+            "name": "hobbit",
+            "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+        }
+    ],
+    "entities": [
+        {
+        "components": [
+            {
+                "type": "Transform2D",
+                "position": [0, 0],
+                "rotation": 0,
+                "scale": [1, 1]
+            },
+            {
+                "type": "BoxCollider",
+                "position": [0, 0],
+                "size": [16, 16]
+            },
+            {
+                "type": "Sprite",
+                "texture_name": "hobbit"
+            },
+            {
+                "type": "Velocity",
+                "value_type": "float"
+            },
+            {
+                "type": "Animator",
+                "animations": [
+                    {
+                        "name": "idle",
+                        "frames_number": 4,
+                        "rect": [0, 0, 18, 18],
+                        "speed": 0.2
+                    }
+                ]
+            },
+            {
+                "type": "EntitySignature",
+                "signature": "player"
+            },
+            {
+                "type": "CharacterController"
+            }
+        ]
+    }]
+}

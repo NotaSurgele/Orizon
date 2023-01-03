@@ -2,7 +2,9 @@
 #include <memory>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
+#include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
+#include "Components/Gravity.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
 
@@ -24,6 +26,21 @@ public:
         return _registry[id];
     }
 
+    static Entity *getEntity(std::string const& signature)
+    {
+        for (auto& e : _registry) {
+            EntitySignature *esignature = (*e.second.get())->getComponent<EntitySignature>();
+            std::string ssignature = "";
+
+            if (!esignature)
+                continue;
+            ssignature = esignature->signature();
+            if (ssignature.find(signature) != std::string::npos)
+                return (*e.second.get());
+        }
+        return nullptr;
+    }
+
     // System that apply force such has velocity and all
     void velocity_system();
 
@@ -32,6 +49,10 @@ public:
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
     void draw_system();
+
+    void gravity_system();
+
+    void update_custom_component();
 
     void systems();
 

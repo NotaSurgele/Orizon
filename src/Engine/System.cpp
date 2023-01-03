@@ -1,5 +1,6 @@
 #include "Engine/System.hpp"
 #include "Core.hpp"
+#include <limits>
 
 void System::velocity_system()
 {
@@ -86,9 +87,37 @@ void System::collider_system()
     }
 }
 
+void System::gravity_system()
+{
+    for (auto& it : _registry) {
+        auto& entity = (*it.second.get());
+        auto velocity = entity->getComponent<Velocity<float>>();
+        auto gravity = entity->getComponent<Gravity>();
+
+        if (!velocity || !gravity)
+            continue;
+        velocity->setY(gravity->force);
+    }
+}
+
+void System::update_custom_component()
+{
+    for (auto &it : _registry) {
+        auto map = (*it.second.get())->getCustomComponents();
+
+        for (auto &it2 : map) {
+            auto &component = it2.second;
+
+            component->update();
+        }
+    }
+}
+
 void System::systems()
 {
+    gravity_system();
     collider_system();
     velocity_system();
     draw_system();
+    update_custom_component();
 }

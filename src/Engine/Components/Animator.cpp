@@ -81,7 +81,6 @@ Animator::Animation& Animator::newAnimation(std::size_t const& nbFrame,
                                                animRect,
                                                speed,
                                                name);
-
     _animation_map.insert(std::pair<std::string, Animation>(name, anim));
     return _animation_map[name];
 }
