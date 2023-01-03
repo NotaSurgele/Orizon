@@ -38,6 +38,7 @@ public:
         std::string content = readConfigFile(filename);
         nlohmann::json json_content = nlohmann::json::parse(content);
 
+        get_ressources(json_content["ressources"]);
         parse_entities(json_content["entities"]);
         return 0;
     }
@@ -158,6 +159,18 @@ public:
                 throw e;
             }
             return file_content;
+        }
+
+        void get_ressources(nlohmann::json const& ressources)
+        {
+            for (auto& ressource : ressources) {
+                std::string type = ressource["type"];
+                std::string name = ressource["name"];
+                std::string path = ressource["path"];
+
+                if (type.find("Texture") != std::string::npos)
+                    R_ADD_RESSOURCE(sf::Texture, name, path);
+            }
         }
 
         void parse_entities(nlohmann::json const& entities)
