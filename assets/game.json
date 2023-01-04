@@ -4,10 +4,14 @@
             "type": "Texture",
             "name": "hobbit",
             "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+        },
+        {
+            "type": "Texture",
+            "name": "block",
+            "path": "../assets/generic-rpg-tile02.png"
         }
     ],
-    "entities": [
-        {
+    "entities": [{
         "components": [
             {
                 "type": "Transform2D",
@@ -23,6 +27,10 @@
             {
                 "type": "Sprite",
                 "texture_name": "hobbit"
+            },
+            {
+                "type": "Gravity",
+                "force": 42
             },
             {
                 "type": "Velocity",
