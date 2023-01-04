@@ -43,6 +43,14 @@ public:
         return 0;
     }
 
+    Entity *loadEntityFromFile(const std::string& filename, std::string const& name)
+    {
+        std::string content = readConfigFile(filename);
+        nlohmann::json json_content = nlohmann::json::parse(content);
+
+        return get_entity(json_content["entities"], name);
+    }
+
     //template <typename T>
     //static Entity* getEntity(Signature signature)
     //{
@@ -125,6 +133,14 @@ public:
                     e->addComponent<EntitySignature>(signature);
                 }
 
+                static void create_gravity(Entity *e, nlohmann::json const& json)
+                {
+                    float force = json["force"];
+
+                    std::cout << force << std::endl;
+                    e->addComponent<Gravity>(force);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -139,7 +155,8 @@ public:
                     { "Sprite" , create_sprite },
                     { "Velocity", create_velocity },
                     { "Animator", create_animator },
-                    { "EntitySignature", create_signature }
+                    { "EntitySignature", create_signature },
+                    { "Gravity", create_gravity }
                 };
         };
 
@@ -183,6 +200,22 @@ public:
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
             }
+        }
+
+        Entity *get_entity(nlohmann::json const& entities, std::string const& name)
+        {
+            for (auto &entity : entities) {
+                std::string e_name = entity["name"];
+
+                if (e_name.find(name) == std::string::npos)
+                    continue;
+                Entity *e = new Entity();
+
+                for (auto& component : entity["components"])
+                    ComponentFactory::link_component(e, component);
+                return e;
+            }
+            return nullptr;
         }
 
     protected:
