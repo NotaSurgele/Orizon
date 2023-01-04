@@ -14,16 +14,16 @@ class CharacterController : public CustomComponents {
             auto velocity = _self->getComponent<Velocity<float>>();
 
             if (Input::isActionPressed("MoveUp"))
-                velocity->setY(-100);
+                velocity->setY(-300);
             else if (Input::isActionPressed("MoveDown"))
-                velocity->setY(100);
+                velocity->setY(300);
             else
                 velocity->setY(0);
 
             if (Input::isActionPressed("MoveLeft"))
-                velocity->setX(-100);
+                velocity->setX(-300);
             else if (Input::isActionPressed("MoveRight"))
-                velocity->setX(100);
+                velocity->setX(300);
             else
                 velocity->setX(0);
         }
