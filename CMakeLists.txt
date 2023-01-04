@@ -24,6 +24,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+    ${CMAKE_SOURCE_DIR}/include/external/
     # ${CMAKE_SOURCE_DIR}/include/Game/CustomComponents
     ${SFML_SOURCE_DIR}/include/
 )

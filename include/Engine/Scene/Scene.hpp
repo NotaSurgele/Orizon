@@ -43,6 +43,14 @@ public:
         return 0;
     }
 
+    Entity *loadEntityFromFile(const std::string& filename, std::string const& name)
+    {
+        std::string content = readConfigFile(filename);
+        nlohmann::json json_content = nlohmann::json::parse(content);
+
+        return get_entity(json_content["entities"], name);
+    }
+
     //template <typename T>
     //static Entity* getEntity(Signature signature)
     //{
@@ -183,6 +191,22 @@ public:
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
             }
+        }
+
+        Entity *get_entity(nlohmann::json const& entities, std::string const& name)
+        {
+            for (auto &entity : entities) {
+                std::string e_name = entity["name"];
+
+                if (e_name.find(name) == std::string::npos)
+                    continue;
+                Entity *e = new Entity();
+
+                for (auto& component : entity["components"])
+                    ComponentFactory::link_component(e, component);
+                return e;
+            }
+            return nullptr;
         }
 
     protected:

@@ -4,10 +4,14 @@
             "type": "Texture",
             "name": "hobbit",
             "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+        },
+        {
+            "type": "Texture",
+            "name": "block",
+            "path": "../assets/generic-rpg-tile02.png"
         }
     ],
-    "entities": [
-        {
+    "entities": [{
         "components": [
             {
                 "type": "Transform2D",
