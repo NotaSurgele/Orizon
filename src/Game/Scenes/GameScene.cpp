@@ -6,9 +6,12 @@
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/Gravity.hpp"
-#include "external/db_perlin.hpp"
+
+#define STB_PERLIN_IMPLEMENTATION
+#include "external/stb_perlin.hpp"
 
 #include <random>
+#include <math.h>
 
 void GameScene::create()
 {
@@ -17,19 +20,6 @@ void GameScene::create()
     });
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-
-    const siv::PerlinNoise::seed_type seed = 1234u;
-    const siv::PerlinNoise noise{ seed };
-
-    for (float y = 0; y <= 500; y += 16) {
-        std::vector<int> map;
-
-        for (float x = 0; x <= 600; x += 16) {
-            int pos = noise.octave2D_01((x * 50.0f), (y * 50.0), 4);
-            map.push_back(pos);
-        }
-        _heightMap.push_back(map);
-    }
 }
 
 void GameScene::update()
@@ -42,6 +32,8 @@ void GameScene::update()
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
 
+        float offset = 200;
+
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -50,16 +42,13 @@ void GameScene::update()
         }
         _blocks.clear();
 
-        const siv::PerlinNoise::seed_type seed = 1234u;
-        const siv::PerlinNoise noise{ seed };
-
-        for (float y = 0; y <= 500; y += 16) {
+        for (float y = 0; y <= 800; y += 16) {
             std::vector<int> map;
 
             for (float x = 0; x <= 600; x += 16) {
-                int pos = noise.octave2D_01((x * 50.0f), (y * 50.0), 4) * 2;
+                float pos = stb_perlin_noise3_seed(y / 100, x / 100, 0, 0, 0, 0, std::rand() % 4000);
                 std::cout << pos << std::endl;
-                map.push_back(pos);
+                map.push_back(pos * 5);
             }
             _heightMap.push_back(map);
         }
@@ -67,15 +56,15 @@ void GameScene::update()
         int i = 0;
         int j = 0;
 
-        for (float y = 0; y <= 500; y += 16) {
+        for (float y = 0; y <= 800; y += 16) {
             for (float x = 0; x <= 600; x += 16) {
 
-                if (_heightMap[i][j] == 1) {
+                if (_heightMap[i][j] != 0) {
                     Entity *e = loadEntityFromFile("../assets/entities.json", "block");
                     auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = x;
-                    transform->position.y = y;
+                    transform->position.x = x + offset;
+                    transform->position.y = y + offset;
                     _blocks.push_back(e);
                 }
                 j++;
