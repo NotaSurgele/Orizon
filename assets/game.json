@@ -29,6 +29,10 @@
                 "texture_name": "hobbit"
             },
             {
+                "type": "Gravity",
+                "force": 42
+            },
+            {
                 "type": "Velocity",
                 "value_type": "float"
             },

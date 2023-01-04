@@ -47,7 +47,6 @@ void GameScene::update()
 
             for (float x = 0; x <= 600; x += 16) {
                 float pos = stb_perlin_noise3_seed(y / 100, x / 100, 0, 0, 0, 0, std::rand() % 4000);
-                std::cout << pos << std::endl;
                 map.push_back(pos * 5);
             }
             _heightMap.push_back(map);
@@ -63,7 +62,7 @@ void GameScene::update()
                     Entity *e = loadEntityFromFile("../assets/entities.json", "block");
                     auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = x + offset;
+                    transform->position.x = x;
                     transform->position.y = y + offset;
                     _blocks.push_back(e);
                 }
