@@ -71,7 +71,6 @@ void GameScene::update()
             j = 0;
             i++;
         }
-
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);

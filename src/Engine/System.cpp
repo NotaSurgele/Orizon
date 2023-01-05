@@ -115,6 +115,7 @@ void System::update_custom_component()
 
 void System::systems()
 {
+    std::cout << _registry.size() << std::endl;
     gravity_system();
     collider_system();
     velocity_system();
