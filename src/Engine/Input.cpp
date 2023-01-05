@@ -1,4 +1,5 @@
 #include "Input.hpp"
+#include "config.hpp"
 #include <algorithm>
 #include <SFML/System.hpp>
 #include <fstream>
@@ -112,7 +113,7 @@ void Input::loadFromFile(std::string const& file)
 
     if (_action_map.size() != 0)
         _action_map.clear();
-    if (!f.is_open()) {
+    if (!f.is_open() && DEBUG_MESSAGE) {
         std::cerr << "[Input] Could not read from file " << file << std::endl;
         return;
     }

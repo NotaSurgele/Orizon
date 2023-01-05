@@ -16,7 +16,9 @@
 void GameScene::create()
 {
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
-        e->addCustomComponent<CharacterController>();
+        auto speed = json["speed"];
+
+        e->addCustomComponent<CharacterController>(speed);
     });
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
@@ -46,8 +48,9 @@ void GameScene::update()
             std::vector<int> map;
 
             for (float x = 0; x <= 600; x += 16) {
-                float pos = stb_perlin_noise3_seed(y / 100, x / 100, 0, 0, 0, 0, std::rand() % 4000);
-                map.push_back(pos * 5);
+                int pos = round(stb_perlin_noise3_seed(x / 100, y / 100 , 0, 0, 0, 0, std::rand() % 4000) * 2);
+
+                map.push_back(pos);
             }
             _heightMap.push_back(map);
         }
@@ -57,12 +60,11 @@ void GameScene::update()
 
         for (float y = 0; y <= 800; y += 16) {
             for (float x = 0; x <= 600; x += 16) {
-
-                if (_heightMap[i][j] != 0) {
+                if (_heightMap[i][j] == 0) {
                     Entity *e = loadEntityFromFile("../assets/entities.json", "block");
                     auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = x;
+                    transform->position.x = x + offset;
                     transform->position.y = y + offset;
                     _blocks.push_back(e);
                 }

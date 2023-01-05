@@ -48,7 +48,12 @@
                 "signature": "player"
             },
             {
-                "type": "CharacterController"
+                "type": "CharacterController",
+                "speed": 200
+            },
+            {
+                "type": "Gravity",
+                "force": 100
             }
         ]
     }]

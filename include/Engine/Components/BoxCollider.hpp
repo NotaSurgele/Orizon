@@ -5,6 +5,12 @@
 
 class BoxCollider : public IComponent, public Drawable {
 public:
+
+    enum Collide {
+        TRUE,
+        FALSE
+    };
+
     sf::Color color = sf::Color::Red;
 
     BoxCollider(Entity *e, sf::Vector2<float> const& position,
@@ -22,6 +28,16 @@ public:
         _position = pos;
     }
 
+    void setState(Collide const& state)
+    {
+        _collide = state;
+    }
+
+    Collide getState()
+    {
+        return _collide;
+    }
+
     sf::Vector2<float> &getPosition();
 
     sf::Vector2<float> &getSize();
@@ -32,6 +48,7 @@ public:
     }
 
 private:
+    Collide _collide = Collide::FALSE;
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
