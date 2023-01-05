@@ -41,6 +41,20 @@ public:
         return nullptr;
     }
 
+    static int RemoveEntity(Entity *e)
+    {
+        for (auto it = _registry.cbegin(); it != _registry.cend(); ) {
+            Entity *en = *it->second;
+
+            if (e == en) {
+                _registry.erase(it);
+                return 0;
+            }
+            it++;
+        }
+        return -1;
+    }
+
     // System that apply force such has velocity and all
     void velocity_system();
 
