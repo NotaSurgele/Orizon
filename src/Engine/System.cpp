@@ -101,8 +101,6 @@ void System::gravity_system()
         if (!velocity || !gravity)
             continue;
         if (collider) {
-            if (collider->getState() == BoxCollider::Collide::TRUE)
-                std::cout << "maniok" << std::endl;
             (collider->getState() == BoxCollider::Collide::TRUE) ?
                 velocity->setY(0) : velocity->setY(gravity->force);
             return;
