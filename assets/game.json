@@ -9,6 +9,12 @@
             "type": "Texture",
             "name": "block",
             "path": "../assets/generic-rpg-tile02.png"
+        },
+        {
+            "type": "Tile",
+            "name": "grass",
+            "tile_info": [16, 16, 16, 16],
+            "path": "../assets/tileset.png"
         }
     ],
     "entities": [{
@@ -27,10 +33,6 @@
             {
                 "type": "Sprite",
                 "texture_name": "hobbit"
-            },
-            {
-                "type": "Gravity",
-                "force": 42
             },
             {
                 "type": "Velocity",
@@ -52,7 +54,8 @@
                 "signature": "player"
             },
             {
-                "type": "CharacterController"
+                "type": "CharacterController",
+                "speed": 200
             }
         ]
     }]

@@ -20,6 +20,16 @@ class RessourcesManager {
             return *this;
         }
 
+        RessourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
+                std::string const& filepath, int x, int y, int w, int h)
+        {
+            sf::Texture tile = sf::Texture();
+
+            tile.loadFromFile(filepath, sf::IntRect{x, y, w, h});
+            _map.insert(std::pair<std::string, sf::Texture>(tilename, tile));
+            return *this;
+        }
+
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {

@@ -68,6 +68,9 @@ public:
 #define R_ADD_RESSOURCE(type, name, path) \
         Core::RessourceManager().addRessource<type>(name, path)
 
+#define R_ADD_TILE(name, path, x, y, w, h)\
+        Core::RessourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
+
 /**
  * @brief  macro to retrieve a ressouce from name
  * @retval the ressource asked

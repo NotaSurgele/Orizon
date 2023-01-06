@@ -14,4 +14,6 @@ void Entity::destroy()
             it.second->destroy();
     }
     _component_map.clear();
+    System::RemoveEntity(this);
+    delete this;
 }

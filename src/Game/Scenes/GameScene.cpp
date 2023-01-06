@@ -16,7 +16,9 @@
 void GameScene::create()
 {
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
-        e->addCustomComponent<CharacterController>();
+        auto speed = json["speed"];
+
+        e->addCustomComponent<CharacterController>(speed);
     });
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
@@ -42,12 +44,14 @@ void GameScene::update()
         }
         _blocks.clear();
 
-        for (float y = 0; y <= 800; y += 16) {
-            std::vector<int> map;
+        for (float y = 0; y <= 256; y += 1) {
+            std::vector<float> map;
 
-            for (float x = 0; x <= 600; x += 16) {
-                float pos = stb_perlin_noise3_seed(y / 100, x / 100, 0, 0, 0, 0, std::rand() % 4000);
-                map.push_back(pos * 5);
+            for (float x = 0; x <= 256; x += 1) {
+                float pos = stb_perlin_noise3_seed(x / 100.0f, y / 100.0f, 0
+                            ,0, 0, 0, std::rand() % 4000);
+                std::cout << pos << std::endl;
+                map.push_back(pos);
             }
             _heightMap.push_back(map);
         }
@@ -57,12 +61,20 @@ void GameScene::update()
 
         for (float y = 0; y <= 800; y += 16) {
             for (float x = 0; x <= 600; x += 16) {
+                float val = _heightMap[i][j];
 
-                if (_heightMap[i][j] != 0) {
+                if (val > .5f) {
+                    Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
+                    auto transform = e->getComponent<Transform2D>();
+
+                    transform->position.x = x + offset;
+                    transform->position.y = y + offset;
+                    _blocks.push_back(e);
+                } else if (val < .1f) {
                     Entity *e = loadEntityFromFile("../assets/entities.json", "block");
                     auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = x;
+                    transform->position.x = x + offset;
                     transform->position.y = y + offset;
                     _blocks.push_back(e);
                 }
@@ -71,7 +83,6 @@ void GameScene::update()
             j = 0;
             i++;
         }
-
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);

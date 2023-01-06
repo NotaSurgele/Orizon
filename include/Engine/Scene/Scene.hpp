@@ -189,6 +189,13 @@ public:
 
                 if (type.find("Texture") != std::string::npos)
                     R_ADD_RESSOURCE(sf::Texture, name, path);
+                if (type.find("Tile") != std::string::npos) {
+                    float x = ressource["tile_info"][0];
+                    float y = ressource["tile_info"][1];
+                    float w = ressource["tile_info"][2];
+                    float h = ressource["tile_info"][3];
+                    R_ADD_TILE(name, path, x, y, w, h);
+                }
             }
         }
 
