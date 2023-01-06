@@ -25,7 +25,7 @@ void System::draw_system()
 
         if (!sprite)
             continue;
-        if (!entity->getComponent<Transform2D>())
+        if (!transform)
             transform = Transform2D::zero();
         sprite->setTransform(transform);
         DRAW(sprite);
@@ -53,11 +53,14 @@ void System::collider_system_check_entity(Entity *entity, BoxCollider *collider,
                                     transform2->position.y + valy);
         collider2->setPosition(predicted_pos2);
         if (collider->overlap(collider2)) {
+            collider->setState(BoxCollider::Collide::TRUE);
             velocity->setX(0.0f);
             velocity->setY(0.0f);
             velocity2->setX(0.0f);
             velocity2->setY(0.0);
-        }
+            return;
+        } else
+            collider->setState(BoxCollider::Collide::FALSE);
         if (destroy_v) velocity2->destroy();
         if (destroy_t) transform2->destroy();
     }
@@ -93,9 +96,15 @@ void System::gravity_system()
         auto& entity = (*it.second.get());
         auto velocity = entity->getComponent<Velocity<float>>();
         auto gravity = entity->getComponent<Gravity>();
+        auto collider = entity->getComponent<BoxCollider>();
 
         if (!velocity || !gravity)
             continue;
+        if (collider) {
+            (collider->getState() == BoxCollider::Collide::TRUE) ?
+                velocity->setY(0) : velocity->setY(gravity->force);
+            return;
+        }
         velocity->setY(gravity->force);
     }
 }

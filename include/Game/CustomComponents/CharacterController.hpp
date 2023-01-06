@@ -6,7 +6,7 @@
 
 class CharacterController : public CustomComponents {
     public:
-        CharacterController(Entity *e) : _self(e) {}
+        CharacterController(Entity *e, float const& speed) : _self(e), _speed(speed) {}
         ~CharacterController() = default;
 
         void update() override
@@ -14,16 +14,16 @@ class CharacterController : public CustomComponents {
             auto velocity = _self->getComponent<Velocity<float>>();
 
             if (Input::isActionPressed("MoveUp"))
-                velocity->setY(-500);
+                velocity->setY(-_speed);
             else if (Input::isActionPressed("MoveDown"))
-                velocity->setY(500);
+                velocity->setY(_speed);
             else
                 velocity->setY(0);
 
             if (Input::isActionPressed("MoveLeft"))
-                velocity->setX(-500);
+                velocity->setX(-_speed);
             else if (Input::isActionPressed("MoveRight"))
-                velocity->setX(500);
+                velocity->setX(_speed);
             else
                 velocity->setX(0);
         }
@@ -31,5 +31,6 @@ class CharacterController : public CustomComponents {
         void destroy() override final {};
 
     private:
+        const float _speed = 0.0f;
         Entity *_self = nullptr;
 };
