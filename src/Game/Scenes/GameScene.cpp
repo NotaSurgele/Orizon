@@ -44,6 +44,8 @@ void GameScene::update()
         }
         _blocks.clear();
 
+        //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
+        
         for (int x = 0; x < 50; x++) {
             std::vector<int> map;
             for (int y = 0; y < 50; y++) {
