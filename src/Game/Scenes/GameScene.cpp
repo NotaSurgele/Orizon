@@ -34,7 +34,7 @@ void GameScene::update()
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
 
-        float offset = 200;
+        float offset = 500;
 
         _heightMap.clear();
 
@@ -44,44 +44,44 @@ void GameScene::update()
         }
         _blocks.clear();
 
-        for (float y = 0; y <= 256; y += 1) {
-            std::vector<float> map;
-
-            for (float x = 0; x <= 256; x += 1) {
-                float pos = stb_perlin_noise3_seed(x / 100.0f, y / 100.0f, 0
-                            ,0, 0, 0, std::rand() % 4000);
-                std::cout << pos << std::endl;
-                map.push_back(pos);
+        for (int x = 0; x < 50; x++) {
+            std::vector<int> map;
+            for (int y = 0; y < 50; y++) {
+                map.push_back(0);
             }
             _heightMap.push_back(map);
         }
 
-        int i = 0;
-        int j = 0;
+        int height = 0;
+        float smooth = 600;
+        float h = 40;
 
-        for (float y = 0; y <= 800; y += 16) {
-            for (float x = 0; x <= 600; x += 16) {
-                float val = _heightMap[i][j];
+        for (int x = 0; x < 50; x++) {
+            height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
+                        0, 0, std::rand() % 4000) * h / 2);
 
-                if (val > .5f) {
+            height += h / 2;
+            for (int y = 0; y < height; y++) {
+                _heightMap[x][y] = 1;
+            }
+        }
+        float i = 0;
+        float j = 0;
+
+        for (int x = 0; x < 50; x++) {
+            for (int y = 0; y < 50; y++) {
+                if (_heightMap[x][y] == 1) {
                     Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
                     auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = x + offset;
-                    transform->position.y = y + offset;
-                    _blocks.push_back(e);
-                } else if (val < .1f) {
-                    Entity *e = loadEntityFromFile("../assets/entities.json", "block");
-                    auto transform = e->getComponent<Transform2D>();
-
-                    transform->position.x = x + offset;
-                    transform->position.y = y + offset;
+                    transform->position.x = i;
+                    transform->position.y = -j + offset;
                     _blocks.push_back(e);
                 }
-                j++;
+                j += 16;
             }
             j = 0;
-            i++;
+            i += 16;
         }
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
