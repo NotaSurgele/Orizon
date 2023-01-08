@@ -2,6 +2,7 @@
 
 #include "Engine/Scene/Scene.hpp"
 #include "Game/Entity/Player.hpp"
+#include "external/OpenSimplexNoise.hpp"
 
 class GameScene : public Scene {
 public:
