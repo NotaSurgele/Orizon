@@ -10,6 +10,8 @@
 #define STB_PERLIN_IMPLEMENTATION
 #include "external/stb_perlin.hpp"
 
+#include "OpenSimplexNoise.hpp"
+
 #include <random>
 #include <math.h>
 
@@ -34,7 +36,7 @@ void GameScene::update()
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
 
-        float offset = 500;
+        float offset = 700;
 
         _heightMap.clear();
 
@@ -46,7 +48,8 @@ void GameScene::update()
 
         //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
         //OpenSimplex Noise generation https://github.com/deerel/OpenSimplexNoise
-        
+
+
         for (int x = 0; x < 50; x++) {
             std::vector<int> map;
             for (int y = 0; y < 50; y++) {
@@ -56,18 +59,29 @@ void GameScene::update()
         }
 
         int height = 0;
-        float smooth = 600;
-        float h = 40;
+        float smooth = 70;
+        float h = 50;
 
+        float modifier = .1f;
+
+        int64_t seed = std::rand() % 4000;
         for (int x = 0; x < 50; x++) {
-            height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
-                        0, 0, std::rand() % 4000) * h / 2);
+            OpenSimplexNoise::Noise _noise(seed);
+
+            // height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
+            //             0, 0, seed) * h / 2);
+
+            height = round(_noise.eval(x / smooth, 0) * h / 2);
 
             height += h / 2;
             for (int y = 0; y < height; y++) {
-                _heightMap[x][y] = 1;
+                // int cave = round(stb_perlin_noise3_seed((x * modifier) + seed, (y * modifier) + seed, 0, 0, 0, 0, seed));
+                int cave = round(_noise.eval((x * modifier), (y * modifier)));
+
+                _heightMap[x][y] = (cave >= 1) ? 0 : 1;
             }
         }
+
         float i = 0;
         float j = 0;
 
