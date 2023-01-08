@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics.hpp>
+#include "Components/View.hpp"
 #include "Engine/Components/Sprite.hpp"
 #include "Engine/Components/Drawable.hpp"
 
@@ -21,6 +22,8 @@ class RenderWindow {
         void display();
         void draw(Drawable *sprite);
         void close();
+        void setView(View *view);
+        // void setView(const &)
 
     private:
         sf::RenderWindow _window;

@@ -44,6 +44,11 @@ void Core::CoreClose()
     _window.close();
 }
 
+void Core::setView(View *view)
+{
+    _window.setView(view);
+}
+
 void Core::run()
 {
     Input input = Input();
