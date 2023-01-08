@@ -1,4 +1,5 @@
 #include "Engine/System.hpp"
+#include "Components/View.hpp"
 #include "Core.hpp"
 #include <limits>
 
@@ -122,8 +123,31 @@ void System::update_custom_component()
     }
 }
 
+void System::camera_system()
+{
+    for (auto& it : _registry) {
+        auto view = (*it.second)->getComponent<View>();
+        auto transform = (*it.second)->getComponent<Transform2D>();
+        bool destroy = false;
+
+        if (!view)
+            continue;
+        if (!view->isFollowing())
+            continue;
+        if (!transform) {
+            destroy = true;
+            transform = Transform2D::zero();
+        }
+        view->setCenter(transform->position);
+        SET_VIEW(view);
+        if (destroy)
+            transform->destroy();
+    }
+}
+
 void System::systems()
 {
+    camera_system();
     gravity_system();
     collider_system();
     velocity_system();

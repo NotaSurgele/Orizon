@@ -68,6 +68,8 @@ public:
 
     void update_custom_component();
 
+    void camera_system();
+
     void systems();
 
 private:
