@@ -45,6 +45,7 @@ void GameScene::update()
         _blocks.clear();
 
         //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
+        //OpenSimplex Noise generation https://github.com/deerel/OpenSimplexNoise
         
         for (int x = 0; x < 50; x++) {
             std::vector<int> map;
