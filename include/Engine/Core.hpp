@@ -18,6 +18,8 @@ public:
     virtual void destroy() = 0;
 };
 
+class View;
+
 using Signature = const char *;
 
 class Core : public ICore {
@@ -31,6 +33,7 @@ class Core : public ICore {
             return _r_manager;
         }
 
+        void setView(View *view);
         void loadInputFromFile(std::string const& path);
 
         //Window related function
@@ -77,6 +80,9 @@ public:
  */
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
+
+#define SET_VIEW(view) \
+        Core::instance->setView(view)
 
 #define CLOSE()\
         Core::instance->CoreClose();

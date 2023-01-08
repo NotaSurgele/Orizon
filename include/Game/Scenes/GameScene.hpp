@@ -2,6 +2,7 @@
 
 #include "Engine/Scene/Scene.hpp"
 #include "Game/Entity/Player.hpp"
+#include "external/OpenSimplexNoise.hpp"
 
 class GameScene : public Scene {
 public:
@@ -12,6 +13,6 @@ public:
 private:
     Entity *player = nullptr;
     std::vector<Entity *> _blocks;
-    std::vector<std::vector<float>> _heightMap;
+    std::vector<std::vector<int>> _heightMap;
     bool load = false;
 };

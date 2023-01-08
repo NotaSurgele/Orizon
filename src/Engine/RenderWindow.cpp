@@ -1,5 +1,6 @@
 #include "Engine/RenderWindow.hpp"
 #include "config.hpp"
+#include "Components/View.hpp"
 
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
@@ -28,6 +29,11 @@ bool RenderWindow::pollEvent(sf::Event& event)
 void RenderWindow::display()
 {
     _window.display();
+}
+
+void RenderWindow::setView(View *view)
+{
+    _window.setView(*view);
 }
 
 void RenderWindow::draw(Drawable *sprite)
