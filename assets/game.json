@@ -50,6 +50,11 @@
                 ]
             },
             {
+                "type": "View",
+                "viewport": [0, 0, 800, 600],
+                "follow": true
+            },
+            {
                 "type": "EntitySignature",
                 "signature": "player"
             },

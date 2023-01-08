@@ -137,8 +137,18 @@ public:
                 {
                     float force = json["force"];
 
-                    std::cout << force << std::endl;
                     e->addComponent<Gravity>(force);
+                }
+
+                static void create_view(Entity *e, nlohmann::json const& json)
+                {
+                    float x = json["viewport"][0];
+                    float y = json["viewport"][1];
+                    float w = json["viewport"][2];
+                    float h = json["viewport"][3];
+                    bool follow = json["follow"];
+
+                    e->addComponent<View>(x, y, w, h, follow);
                 }
 
             public:
@@ -156,7 +166,8 @@ public:
                     { "Velocity", create_velocity },
                     { "Animator", create_animator },
                     { "EntitySignature", create_signature },
-                    { "Gravity", create_gravity }
+                    { "Gravity", create_gravity },
+                    { "View", create_view }
                 };
         };
 
