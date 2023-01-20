@@ -5,6 +5,7 @@
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "QuadTree.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
 
@@ -58,6 +59,8 @@ public:
     // System that apply force such has velocity and all
     void velocity_system();
 
+    void quad_collision_system();
+
     void collider_system();
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
@@ -73,6 +76,7 @@ public:
     void systems();
 
 private:
+    QuadTree *_quad = new QuadTree((Rectangle) {1920, 1920, 1920, 1920}, 20, "all");
     static inline std::size_t _id = 0;
     static inline std::unordered_map<std::size_t, SharedEntity> _registry;
 };
