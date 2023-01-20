@@ -21,7 +21,7 @@ public:
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
-    static std::shared_ptr<Entity*> getEntity(std::size_t const& id)
+    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
