@@ -145,11 +145,23 @@ void System::camera_system()
     }
 }
 
+void System::quad_collision_system()
+{
+    for (auto& it : _registry) {
+        auto e = *(it.second);
+        if (e->getComponent<BoxCollider>())
+            _quad->insert(e);
+    }
+    _quad->collide();
+    _quad->destroy();
+}
+
 void System::systems()
 {
     camera_system();
     gravity_system();
     collider_system();
+    // quad_collision_system();
     velocity_system();
     draw_system();
     update_custom_component();

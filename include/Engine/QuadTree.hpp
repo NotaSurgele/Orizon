@@ -4,22 +4,13 @@
 #include <vector>
 #include <random>
 
-template <typename T>
-class Point {
-public:
-    Point<T>(const T& x2, const T& y2) : x(x2), y(y2)
-    {
-
-    }
-    ~Point<T>() = default;
-
-public:
-    const T x = 0;
-    const T y = 0;
-};
+#include "Components/BoxCollider.hpp"
+#include "Components/Velocity.hpp"
+#include "Entity.hpp"
 
 class Rectangle {
 public:
+
     Rectangle(float x, float y, float w, float h) : _x(x),
                                                     _y(y),
                                                     _w(w),
@@ -29,7 +20,7 @@ public:
 
     ~Rectangle() = default;
 
-    bool contain(const Point<float>& point)
+    bool contain(const sf::Vector2<float>& point)
     {
         return (
             point.x > _x - _w &&
@@ -56,27 +47,27 @@ public:
 
     ~QuadTree() = default;
 
-    template <typename T>
-    int insert(Point<T> const& point)
+    void insert(Entity *e)
     {
-        if (!_r.contain(point)) {
-            return -1;
-        }
+        auto& point = e->getComponent<Transform2D>()->position;
+
+        if (!_r.contain(point))
+            return;
         if (_size < _max) {
-            _points.push_back(point);
+            _points.push_back(e);
             _size++;
-            return 1;
+            return;
         } else {
             if (!_subdivide) {
                 subdivide();
                 _subdivide = true;
             }
         }
-        _topLeft->insert(point);
-        _topRight->insert(point);
-        _botLeft->insert(point);
-        _botRight->insert(point);
-        return 0;
+        _topLeft->insert(e);
+        _topRight->insert(e);
+        _botLeft->insert(e);
+        _botRight->insert(e);
+        return;
     }
 
     void subdivide()
@@ -85,22 +76,40 @@ public:
         const float y = _r._y;
         const float w = _r._w;
         const float h = _r._h;
-        const Rectangle tl = {x + w / 2, y - h / 2, w / 2, h / 2};
-        const Rectangle tr = {x - w / 2, y - h / 2, w / 2, h / 2};
-        const Rectangle bl = {x + w / 2, y + h / 2, w / 2, h / 2};
-        const Rectangle br = {x - w / 2, y + h / 2, w / 2, h / 2};
+        const Rectangle tl = { x + w / 2, y - h / 2, w / 2, h / 2 };
+        const Rectangle tr = { x - w / 2, y - h / 2, w / 2, h / 2 };
+        const Rectangle bl = { x + w / 2, y + h / 2, w / 2, h / 2 };
+        const Rectangle br = { x - w / 2, y + h / 2, w / 2, h / 2 };
         _topLeft = new QuadTree(tl, _max, "top left");
         _topRight = new QuadTree(tr, _max, "top right");
         _botLeft = new QuadTree(bl, _max, "bot left");
         _botRight = new QuadTree(br, _max, "bot right");
     }
 
+    void collide()
+    {
+        return;
+    }
+
+    void destroy()
+    {
+        _points.clear();
+        if (_topLeft)
+            _topLeft->destroy();
+        if (_topRight)
+            _topRight->destroy();
+        if (_botLeft)
+            _botLeft->destroy();
+        if (_botRight)
+            _botRight->destroy();
+    }
+
     void show()
     {
-        std::cout << "Type: " << _type << std::endl;
-        std::cout << "  Rectangle: " << _r._x << ", " << _r._y << " " << _r._w << ", " << _r._h << std::endl;
-        for (auto& p : _points)
-            std::cout << "      Point: " << p.x << " " << p.y << std::endl;
+        // std::cout << "Type: " << _type << std::endl;
+        // std::cout << "  Rectangle: " << _r._x << ", " << _r._y << " " << _r._w << ", " << _r._h << std::endl;
+        // for (auto& p : _points)
+        //     std::cout << "      Point: " << p.x << " " << p.y << std::endl;
         if (_topLeft)
             _topLeft->show();
         if (_topRight)
@@ -117,10 +126,9 @@ private:
     QuadTree *_botLeft = nullptr;
     QuadTree *_botRight = nullptr;
     bool _subdivide = false;
-    std::vector<Point<float>> _points;
+    std::vector<Entity *> _points;
     int _size = 0;
     const int _max = 0;
     const std::string _type = "";
     Rectangle _r = {0, 0, 0, 0};
 };
-
