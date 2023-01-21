@@ -56,10 +56,26 @@ public:
         return -1;
     }
 
+    static void refresh_quad()
+    {
+        _quad->destroy();
+        for (auto &it : _registry) {
+            auto e = *(it.second);
+            auto box = e->getComponent<Transform2D>();
+            auto transform = e->getComponent<Transform2D>();
+
+            if (box && transform)
+                _quad->insert(e);
+        }
+    }
+
     // System that apply force such has velocity and all
+
     void velocity_system();
 
     void quad_collision_system();
+
+    void box_system();
 
     void collider_system();
 
@@ -76,7 +92,8 @@ public:
     void systems();
 
 private:
-    QuadTree *_quad = new QuadTree((Rectangle) {1920, 1920, 1920, 1920}, 20, "all");
+    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 20, "all");
+
     static inline std::size_t _id = 0;
     static inline std::unordered_map<std::size_t, SharedEntity> _registry;
 };

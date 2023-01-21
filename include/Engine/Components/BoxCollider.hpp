@@ -28,6 +28,13 @@ public:
         _position = pos;
     }
 
+    void setPosition(const float& x, const float& y)
+    {
+        _shape.setPosition(x, y);
+        _position.x = x;
+        _position.y = y;
+    }
+
     void setState(Collide const& state)
     {
         _collide = state;

@@ -147,21 +147,41 @@ void System::camera_system()
 
 void System::quad_collision_system()
 {
+    // init();
+    // _quad->destroy();
+}
+
+void System::box_system()
+{
     for (auto& it : _registry) {
         auto e = *(it.second);
-        if (e->getComponent<BoxCollider>())
-            _quad->insert(e);
+        auto transform = e->getComponent<Transform2D>();
+        auto velocity = e->getComponent<Velocity<float>>();
+        auto box = e->getComponent<BoxCollider>();
+        bool d_v = false;
+
+        if (!box)
+            continue;
+        if (!velocity) {
+            velocity = Velocity<float>::zero(), 
+            d_v = true;
+        }
+        float x = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
+        float y = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
+        box->setPosition(transform->position.x + x, transform->position.y + y);
+        DRAW(box);
+        if (d_v)
+            delete velocity;
     }
-    _quad->collide();
-    _quad->destroy();
 }
 
 void System::systems()
 {
     camera_system();
     gravity_system();
-    collider_system();
-    // quad_collision_system();
+    box_system();
+    // collider_system();
+    quad_collision_system();
     velocity_system();
     draw_system();
     update_custom_component();
