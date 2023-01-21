@@ -67,27 +67,30 @@ public:
             if (box && transform)
                 _quad->insert(e);
         }
+        std::cout << _registry.size() << std::endl;
     }
 
     // System that apply force such has velocity and all
 
-    void velocity_system();
+    void merge();
+
+    void velocity_system(Entity *e);
 
     void quad_collision_system();
 
-    void box_system();
+    void box_system(Entity *e);
 
     void collider_system();
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
-    void draw_system();
+    void draw_system(Entity *e);
 
-    void gravity_system();
+    void gravity_system(Entity *e);
 
-    void update_custom_component();
+    void update_custom_component(Entity *e);
 
-    void camera_system();
+    void camera_system(Entity *e);
 
     void systems();
 

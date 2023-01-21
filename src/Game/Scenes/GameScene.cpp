@@ -37,8 +37,8 @@ void GameScene::update()
     if (Input::isKeyDown("Space")) {
 
         float offset = 700;
-        int chunks = 3;
-        float w = 40;
+        int chunks = 1;
+        float w = 150;
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -50,6 +50,7 @@ void GameScene::update()
         //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
         //OpenSimplex Noise generation https://github.com/deerel/OpenSimplexNoise
         //QuadTree https://www.youtube.com/watch?v=OJxEcs0w_kE
+
         for (int i = 0; i < chunks ; i++) {
             for (int x = 0; x < w; x++) {
                 std::vector<int> map;
@@ -89,7 +90,7 @@ void GameScene::update()
         float i = 0;
         float j = 0;
 
-        for (int t = 0; t < 3; t++) {
+        for (int t = 0; t < chunks; t++) {
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < w; y++) {
                     if (_heightMap[x][y] == 1) {
