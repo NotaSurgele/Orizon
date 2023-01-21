@@ -67,7 +67,6 @@ public:
             if (box && transform)
                 _quad->insert(e);
         }
-        std::cout << _registry.size() << std::endl;
     }
 
     // System that apply force such has velocity and all
