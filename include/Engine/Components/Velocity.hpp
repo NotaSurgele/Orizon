@@ -23,6 +23,12 @@ public:
     void setX(T x) { _vel.x = x; }
     void setY(T y) { _vel.y = y; }
 
+    void reset() 
+    {
+        _vel.x = 0;
+        _vel.y = 0;
+    }
+
     const T getX() { return _vel.x; }
     const T getY() { return _vel.y; }
 
