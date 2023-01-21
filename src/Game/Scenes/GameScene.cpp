@@ -37,7 +37,7 @@ void GameScene::update()
     if (Input::isKeyDown("Space")) {
 
         float offset = 700;
-
+        float w = 70;
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -49,9 +49,9 @@ void GameScene::update()
         //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
         //OpenSimplex Noise generation https://github.com/deerel/OpenSimplexNoise
         //QuadTree https://www.youtube.com/watch?v=OJxEcs0w_kE
-        for (int x = 0; x < 50; x++) {
+        for (int x = 0; x < w; x++) {
             std::vector<int> map;
-            for (int y = 0; y < 50; y++) {
+            for (int y = 0; y < w; y++) {
                 map.push_back(0);
             }
             _heightMap.push_back(map);
@@ -59,12 +59,12 @@ void GameScene::update()
 
         int height = 0;
         float smooth = 70;
-        float h = 50;
+        float h = w;
 
         float modifier = .1f;
 
         int64_t seed = std::rand() % 4000;
-        for (int x = 0; x < 50; x++) {
+        for (int x = 0; x < w; x++) {
             OpenSimplexNoise::Noise _noise(seed);
 
             // height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
@@ -84,8 +84,8 @@ void GameScene::update()
         float i = 0;
         float j = 0;
 
-        for (int x = 0; x < 50; x++) {
-            for (int y = 0; y < 50; y++) {
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < w; y++) {
                 if (_heightMap[x][y] == 1) {
                     Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
                     auto transform = e->getComponent<Transform2D>();

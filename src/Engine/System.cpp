@@ -147,8 +147,8 @@ void System::camera_system()
 
 void System::quad_collision_system()
 {
-    // init();
-    // _quad->destroy();
+    _quad->collide();
+    _quad->show();
 }
 
 void System::box_system()
@@ -169,7 +169,6 @@ void System::box_system()
         float x = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
         float y = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
         box->setPosition(transform->position.x + x, transform->position.y + y);
-        DRAW(box);
         if (d_v)
             delete velocity;
     }
