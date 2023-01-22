@@ -37,7 +37,8 @@ void GameScene::update()
     if (Input::isKeyDown("Space")) {
 
         float offset = 700;
-
+        int chunks = 1;
+        float w = 150;
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -48,57 +49,65 @@ void GameScene::update()
 
         //PerlinNoise generation https://www.youtube.com/watch?v=l5KVBDOsHfg, https://www.youtube.com/watch?v=MTNt32_NQlc, https://www.youtube.com/watch?v=lhWjEd8I4fM
         //OpenSimplex Noise generation https://github.com/deerel/OpenSimplexNoise
+        //QuadTree https://www.youtube.com/watch?v=OJxEcs0w_kE
 
-        for (int x = 0; x < 50; x++) {
-            std::vector<int> map;
-            for (int y = 0; y < 50; y++) {
-                map.push_back(0);
+        for (int i = 0; i < chunks ; i++) {
+            for (int x = 0; x < w; x++) {
+                std::vector<int> map;
+                for (int y = 0; y < w; y++) {
+                    map.push_back(0);
+                }
+                _heightMap.push_back(map);
             }
-            _heightMap.push_back(map);
         }
 
         int height = 0;
         float smooth = 70;
-        float h = 50;
+        float h = w;
 
         float modifier = .1f;
 
         int64_t seed = std::rand() % 4000;
-        for (int x = 0; x < 50; x++) {
-            OpenSimplexNoise::Noise _noise(seed);
+        for (int i = 0; i < chunks; i++) {
+            for (int x = 0; x < w; x++) {
+                OpenSimplexNoise::Noise _noise(seed);
 
-            // height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
-            //             0, 0, seed) * h / 2);
+                // height = round(stb_perlin_noise3_seed(x / smooth, 0, 0, 0,
+                //             0, 0, seed) * h / 2);
 
-            height = round(_noise.eval(x / smooth, 0) * h / 2);
+                height = round(_noise.eval(x / smooth, 0) * h / 2);
 
-            height += h / 2;
-            for (int y = 0; y < height; y++) {
-                // int cave = round(stb_perlin_noise3_seed((x * modifier) + seed, (y * modifier) + seed, 0, 0, 0, 0, seed));
-                int cave = round(_noise.eval((x * modifier), (y * modifier)));
+                height += h / 2;
+                for (int y = 0; y < height; y++) {
+                    // int cave = round(stb_perlin_noise3_seed((x * modifier) + seed, (y * modifier) + seed, 0, 0, 0, 0, seed));
+                    int cave = round(_noise.eval((x * modifier), (y * modifier)));
 
-                _heightMap[x][y] = (cave >= 1) ? 0 : 1;
+                    _heightMap[x][y] = (cave >= 1) ? 0 : 1;
+                }
             }
         }
 
         float i = 0;
         float j = 0;
 
-        for (int x = 0; x < 50; x++) {
-            for (int y = 0; y < 50; y++) {
-                if (_heightMap[x][y] == 1) {
-                    Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
-                    auto transform = e->getComponent<Transform2D>();
+        for (int t = 0; t < chunks; t++) {
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < w; y++) {
+                    if (_heightMap[x][y] == 1) {
+                        Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
+                        auto transform = e->getComponent<Transform2D>();
 
-                    transform->position.x = i;
-                    transform->position.y = -j + offset;
-                    _blocks.push_back(e);
+                        transform->position.x = i;
+                        transform->position.y = -j + offset;
+                        _blocks.push_back(e);
+                    }
+                    j += 16;
                 }
-                j += 16;
+                j = 0;
+                i += 16;
             }
-            j = 0;
-            i += 16;
         }
+        System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);

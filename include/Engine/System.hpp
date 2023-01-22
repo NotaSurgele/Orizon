@@ -5,6 +5,7 @@
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "QuadTree.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
 
@@ -21,7 +22,7 @@ public:
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
-    static std::shared_ptr<Entity*> getEntity(std::size_t const& id)
+    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
@@ -55,24 +56,47 @@ public:
         return -1;
     }
 
+    static void refresh_quad()
+    {
+        _quad->destroy();
+        for (auto &it : _registry) {
+            auto e = *(it.second);
+            auto box = e->getComponent<Transform2D>();
+            auto transform = e->getComponent<Transform2D>();
+
+            if (box && transform)
+                _quad->insert(e);
+        }
+        std::cout << _registry.size() << std::endl;
+    }
+
     // System that apply force such has velocity and all
-    void velocity_system();
+
+    void merge();
+
+    void velocity_system(Entity *e);
+
+    void quad_collision_system();
+
+    void box_system(Entity *e);
 
     void collider_system();
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
-    void draw_system();
+    void draw_system(Entity *e);
 
-    void gravity_system();
+    void gravity_system(Entity *e);
 
-    void update_custom_component();
+    void update_custom_component(Entity *e);
 
-    void camera_system();
+    void camera_system(Entity *e);
 
     void systems();
 
 private:
+    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
+
     static inline std::size_t _id = 0;
     static inline std::unordered_map<std::size_t, SharedEntity> _registry;
 };
