@@ -28,7 +28,7 @@ class CharacterController : public CustomComponents {
                 velocity->setX(0);
         }
 
-        void destroy() override final {};
+        void destroy() override final {}
 
     private:
         const float _speed = 0.0f;

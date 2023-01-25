@@ -84,7 +84,7 @@ public:
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
-    void draw_system(Entity *e);
+    void draw_system();
 
     void gravity_system(Entity *e);
 

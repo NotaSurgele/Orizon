@@ -33,7 +33,13 @@ void RenderWindow::display()
 
 void RenderWindow::setView(View *view)
 {
+    _view = view;
     _window.setView(*view);
+}
+
+View *RenderWindow::getView()
+{
+    return _view;
 }
 
 void RenderWindow::draw(Drawable *sprite)

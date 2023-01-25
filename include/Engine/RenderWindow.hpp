@@ -23,9 +23,11 @@ class RenderWindow {
         void draw(Drawable *sprite);
         void close();
         void setView(View *view);
+        View *getView();
         // void setView(const &)
 
     private:
+        View *_view = nullptr;
         sf::RenderWindow _window;
         std::size_t _width;
         std::size_t _height;
