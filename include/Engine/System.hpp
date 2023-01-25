@@ -70,6 +70,8 @@ public:
         std::cout << _registry.size() << std::endl;
     }
 
+    bool isInView(Entity *e);
+
     // System that apply force such has velocity and all
 
     void merge();

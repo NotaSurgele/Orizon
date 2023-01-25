@@ -175,6 +175,8 @@ void System::merge()
     for (auto& it : _registry) {
         auto& e = *(it.second);
 
+        if (!isInView(e))
+            continue;
         camera_system(e);
         gravity_system(e);
         box_system(e);
@@ -183,6 +185,22 @@ void System::merge()
         velocity_system(e);
         update_custom_component(e);
     }
+}
+
+bool System::isInView(Entity *e)
+{
+    auto transform = e->getComponent<Transform2D>();
+    auto currentView = Window.getView();
+
+    if (!transform)
+        transform = Transform2D::zero();
+    if (currentView != nullptr) {
+        sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
+        sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
+
+        return bounds.contains(transform->position);
+    }
+    return true;
 }
 
 void System::systems()
