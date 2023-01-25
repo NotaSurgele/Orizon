@@ -14,17 +14,28 @@ void System::velocity_system(Entity *e)
     transform->position.y += velocity->getY() * Time::deltaTime;
 }
 
-void System::draw_system(Entity *e)
+void System::draw_system()
 {
-    auto sprite = e->getComponent<Sprite>();
-    auto transform = e->getComponent<Transform2D>();
+    for (auto it : _registry) {
+        auto e = *(it.second);
+        auto sprite = e->getComponent<Sprite>();
+        auto transform = e->getComponent<Transform2D>();
+        auto currentView = Window.getView();
 
-    if (!sprite)
-        return;
-    if (!transform)
-        transform = Transform2D::zero();
-    sprite->setTransform(transform);
-    DRAW(sprite);
+        if (!sprite)
+            return;
+        if (!transform)
+            transform = Transform2D::zero();
+        sprite->setTransform(transform);
+        if (currentView != nullptr) {
+            sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
+            sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
+
+            if (bounds.contains(transform->position))
+                DRAW(sprite);
+        } else
+            DRAW(sprite);
+    }
 }
 
 void System::collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity)
@@ -160,9 +171,10 @@ void System::box_system(Entity *e)
 
 void System::merge()
 {
+    draw_system();
     for (auto& it : _registry) {
         auto& e = *(it.second);
-        draw_system(e);
+
         camera_system(e);
         gravity_system(e);
         box_system(e);
@@ -176,12 +188,4 @@ void System::merge()
 void System::systems()
 {
     merge();
-    // camera_system();
-    // gravity_system();
-    // box_system();
-    // // collider_system();
-    // quad_collision_system();
-    // velocity_system();
-    // draw_system();
-    // update_custom_component();
 }

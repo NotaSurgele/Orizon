@@ -39,6 +39,11 @@ bool Core::isOpen()
     return _window.isOpen();
 }
 
+RenderWindow& Core::getWindow()
+{
+    return _window;
+}
+
 void Core::CoreClose()
 {
     _window.close();
