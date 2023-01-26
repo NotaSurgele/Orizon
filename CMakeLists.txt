@@ -38,6 +38,7 @@ target_link_libraries(
     sfml-audio
     sfml-network
     sfml-system
+    pthread
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

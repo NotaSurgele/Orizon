@@ -52,6 +52,11 @@ void RenderWindow::draw(Drawable *sprite)
     _window.draw(static_cast<sf::Drawable &>(*sprite));
 }
 
+void RenderWindow::draw(sf::Drawable const& draw)
+{
+    _window.draw(draw);
+}
+
 void RenderWindow::close()
 {
     _window.close();

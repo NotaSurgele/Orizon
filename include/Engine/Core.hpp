@@ -41,8 +41,8 @@ class Core : public ICore {
         RenderWindow& getWindow();
         void CoreClear(sf::Color color);
         void CoreDraw(Drawable *component);
+        void CoreDraw(sf::Drawable const& drawable);
         void CoreClose();
-
 
         void run();
         virtual void start() = 0;

@@ -21,6 +21,7 @@ class RenderWindow {
         bool pollEvent(sf::Event& event);
         void display();
         void draw(Drawable *sprite);
+        void draw(sf::Drawable const& draw);
         void close();
         void setView(View *view);
         View *getView();
