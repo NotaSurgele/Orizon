@@ -29,6 +29,11 @@ void Core::CoreDraw(Drawable *component)
     _window.draw(component);
 }
 
+void Core::CoreDraw(sf::Drawable const& draw)
+{
+    _window.draw(draw);
+}
+
 void Core::CoreDisplay()
 {
     _window.display();

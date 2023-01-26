@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <thread>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/EntitySignature.hpp"
@@ -98,7 +99,6 @@ public:
 
 private:
     static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
-
     static inline std::size_t _id = 0;
     static inline std::unordered_map<std::size_t, SharedEntity> _registry;
 };

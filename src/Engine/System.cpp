@@ -1,7 +1,6 @@
 #include "Engine/System.hpp"
 #include "Components/View.hpp"
 #include "Core.hpp"
-#include <limits>
 
 void System::velocity_system(Entity *e)
 {
@@ -16,8 +15,10 @@ void System::velocity_system(Entity *e)
 
 void System::draw_system()
 {
-    for (auto it : _registry) {
-        auto e = *(it.second);
+    for (auto& it : _registry) {
+        auto& e = *(it.second);
+        if (!isInView(e))
+            continue;
         auto sprite = e->getComponent<Sprite>();
         auto transform = e->getComponent<Transform2D>();
         auto currentView = Window.getView();
@@ -27,14 +28,7 @@ void System::draw_system()
         if (!transform)
             transform = Transform2D::zero();
         sprite->setTransform(transform);
-        if (currentView != nullptr) {
-            sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
-            sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
-
-            if (bounds.contains(transform->position))
-                DRAW(sprite);
-        } else
-            DRAW(sprite);
+        DRAW(sprite);
     }
 }
 
@@ -147,7 +141,7 @@ void System::quad_collision_system()
 {
     _quad->collide();
     _quad->show();
-}
+}   
 
 void System::box_system(Entity *e)
 {
@@ -175,8 +169,6 @@ void System::merge()
     for (auto& it : _registry) {
         auto& e = *(it.second);
 
-        if (!isInView(e))
-            continue;
         camera_system(e);
         gravity_system(e);
         box_system(e);
@@ -195,9 +187,10 @@ bool System::isInView(Entity *e)
     if (!transform)
         transform = Transform2D::zero();
     if (currentView != nullptr) {
+        sf::Vector2f size = currentView->getSize();
+
         sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
         sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
-
         return bounds.contains(transform->position);
     }
     return true;
