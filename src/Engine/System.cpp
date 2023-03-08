@@ -111,6 +111,20 @@ void System::box_system(Entity *e)
         delete velocity;
 }
 
+void System::sort()
+{
+    std::sort(_registry.begin(), _registry.end(),
+        [](const SharedEntity& se1, const SharedEntity& se2) {
+            auto e1 = *se1;
+            auto e2 = *se2;
+            auto l1 = e1->getComponent<Layer>();
+            auto l2 = e2->getComponent<Layer>();
+
+            return l1->value() < l2->value();
+        }
+    );
+}
+
 void System::merge()
 {
     // std::cout << _registry.size() << std::endl;
