@@ -33,7 +33,13 @@ void RenderWindow::display()
 
 void RenderWindow::setView(View *view)
 {
+    _view = view;
     _window.setView(*view);
+}
+
+View *RenderWindow::getView()
+{
+    return _view;
 }
 
 void RenderWindow::draw(Drawable *sprite)
@@ -44,6 +50,11 @@ void RenderWindow::draw(Drawable *sprite)
         return;
     }
     _window.draw(static_cast<sf::Drawable &>(*sprite));
+}
+
+void RenderWindow::draw(sf::Drawable const& draw)
+{
+    _window.draw(draw);
 }
 
 void RenderWindow::close()

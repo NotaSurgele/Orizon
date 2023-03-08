@@ -38,8 +38,10 @@ class Core : public ICore {
 
         //Window related function
         bool isOpen();
+        RenderWindow& getWindow();
         void CoreClear(sf::Color color);
         void CoreDraw(Drawable *component);
+        void CoreDraw(sf::Drawable const& drawable);
         void CoreClose();
 
         void run();
@@ -73,7 +75,6 @@ public:
 
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::RessourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
-
 /**
  * @brief  macro to retrieve a ressouce from name
  * @retval the ressource asked
@@ -83,6 +84,9 @@ public:
 
 #define SET_VIEW(view) \
         Core::instance->setView(view)
+
+#define Window \
+        Core::instance->getWindow()
 
 #define CLOSE()\
         Core::instance->CoreClose();

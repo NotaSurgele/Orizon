@@ -8,6 +8,8 @@
 #include "Components/Velocity.hpp"
 #include "Entity.hpp"
 
+class System;
+
 class Rectangle {
 public:
 
@@ -28,7 +30,7 @@ public:
             point.y > _y - _h &&
             point.y < _y + _h
         );
-    } 
+    }
 
 public:
     const float _x = 0;
@@ -85,15 +87,20 @@ public:
         _quads[3] = new QuadTree(br, _max, "bot right");
     }
 
-    void collide();
+    void collide(System& system);
 
     void destroy()
     {
         if (_points.size() > 0)
             _points.clear();
         for (auto& it : _quads) {
-            if (it != nullptr) {
+            if (it != nullptr)
                 it->destroy();
+        }
+        for (auto &quad : _quads) {
+            if (quad) {
+                delete quad;
+                quad = nullptr;
             }
         }
     }

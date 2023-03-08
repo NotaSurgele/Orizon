@@ -61,6 +61,10 @@
             {
                 "type": "CharacterController",
                 "speed": 200
+            },
+            {
+                "type": "Layer",
+                "value": 0
             }
         ]
     }]
