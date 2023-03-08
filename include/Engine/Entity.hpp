@@ -12,8 +12,6 @@
 #include <iostream>
 #include <memory>
 
-#define TRANSFORM typeid(Transform2D).name()
-
 class Sprite;
 class Animator;
 

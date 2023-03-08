@@ -29,6 +29,11 @@ void Core::CoreDraw(Drawable *component)
     _window.draw(component);
 }
 
+void Core::CoreDraw(sf::Drawable const& draw)
+{
+    _window.draw(draw);
+}
+
 void Core::CoreDisplay()
 {
     _window.display();
@@ -37,6 +42,11 @@ void Core::CoreDisplay()
 bool Core::isOpen()
 {
     return _window.isOpen();
+}
+
+RenderWindow& Core::getWindow()
+{
+    return _window;
 }
 
 void Core::CoreClose()

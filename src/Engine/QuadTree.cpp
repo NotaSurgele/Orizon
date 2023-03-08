@@ -1,9 +1,11 @@
 #include "QuadTree.hpp"
 #include "Core.hpp"
 
-void QuadTree::collide()
+void QuadTree::collide(System& system)
 {
     for (auto &e : _points) {
+        if (system.isInView(e))
+            continue;
         auto box = e->getComponent<BoxCollider>();
         auto v = e->getComponent<Velocity<float>>();
         bool d_v = false;
@@ -30,7 +32,7 @@ void QuadTree::collide()
     }
     for (auto& it : _quads) {
         if (it != nullptr)
-            it->collide();
+            it->collide(system);
     }
 }
 

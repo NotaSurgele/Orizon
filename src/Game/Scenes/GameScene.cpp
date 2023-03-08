@@ -65,7 +65,7 @@ void GameScene::update()
         float smooth = 70;
         float h = w;
 
-        float modifier = .1f;
+        float modifier = .05f;
 
         int64_t seed = std::rand() % 4000;
         for (int i = 0; i < chunks; i++) {
@@ -107,7 +107,7 @@ void GameScene::update()
                 i += 16;
             }
         }
-        System::refresh_quad();
+        // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);

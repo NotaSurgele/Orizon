@@ -1,10 +1,12 @@
 #pragma once
 #include <memory>
+#include <thread>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Layer.hpp"
 #include "QuadTree.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
@@ -19,6 +21,7 @@ public:
     static void addEntity(Entity *entity)
     {
         entity->addComponent<Id>(_id);
+        entity->addComponent<Layer>(0);
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
@@ -30,14 +33,14 @@ public:
     static Entity *getEntity(std::string const& signature)
     {
         for (auto& e : _registry) {
-            EntitySignature *esignature = (*e.second.get())->getComponent<EntitySignature>();
+            EntitySignature *esignature = (*e)->getComponent<EntitySignature>();
             std::string ssignature = "";
 
             if (!esignature)
                 continue;
             ssignature = esignature->signature();
             if (ssignature.find(signature) != std::string::npos)
-                return (*e.second.get());
+                return (*e);
         }
         return nullptr;
     }
@@ -45,7 +48,7 @@ public:
     static int RemoveEntity(Entity *e)
     {
         for (auto it = _registry.cbegin(); it != _registry.cend(); ) {
-            Entity *en = *it->second;
+            Entity *en = (*it->get());
 
             if (e == en) {
                 _registry.erase(it);
@@ -60,7 +63,7 @@ public:
     {
         _quad->destroy();
         for (auto &it : _registry) {
-            auto e = *(it.second);
+            auto e = *(it);
             auto box = e->getComponent<Transform2D>();
             auto transform = e->getComponent<Transform2D>();
 
@@ -70,7 +73,11 @@ public:
         std::cout << _registry.size() << std::endl;
     }
 
+    bool isInView(Entity *e);
+
     // System that apply force such has velocity and all
+
+    void init();
 
     void merge();
 
@@ -84,7 +91,7 @@ public:
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
-    void draw_system(Entity *e);
+    void draw_system();
 
     void gravity_system(Entity *e);
 
@@ -96,7 +103,8 @@ public:
 
 private:
     static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
-
     static inline std::size_t _id = 0;
-    static inline std::unordered_map<std::size_t, SharedEntity> _registry;
+    static inline std::vector<SharedEntity> _registry;
+    static inline int _start_index = 0;
+    static inline int _end_index = 0;
 };
