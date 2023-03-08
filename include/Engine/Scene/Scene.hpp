@@ -96,6 +96,18 @@ public:
                     e->addComponent<BoxCollider>(position, size);
                 }
 
+                static void create_layer(Entity *e, nlohmann::json const& json)
+                {
+                    std::size_t value = json["value"];
+                    auto layer = e->getComponent<Layer>();
+
+                    if (layer) {
+                        layer->set(value);
+                        return;
+                    }
+                    e->addComponent<Layer>(value);
+                }
+
                 static void create_velocity(Entity *e, nlohmann::json const& json)
                 {
                     std::string type = json["value_type"];
@@ -167,7 +179,8 @@ public:
                     { "Animator", create_animator },
                     { "EntitySignature", create_signature },
                     { "Gravity", create_gravity },
-                    { "View", create_view }
+                    { "View", create_view },
+                    { "Layer", create_layer }
                 };
         };
 

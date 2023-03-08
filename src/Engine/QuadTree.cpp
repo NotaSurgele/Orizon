@@ -4,6 +4,8 @@
 void QuadTree::collide(System& system)
 {
     for (auto &e : _points) {
+        if (system.isInView(e))
+            continue;
         auto box = e->getComponent<BoxCollider>();
         auto v = e->getComponent<Velocity<float>>();
         bool d_v = false;

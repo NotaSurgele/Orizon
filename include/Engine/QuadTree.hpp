@@ -30,7 +30,7 @@ public:
             point.y > _y - _h &&
             point.y < _y + _h
         );
-    } 
+    }
 
 public:
     const float _x = 0;
@@ -94,8 +94,13 @@ public:
         if (_points.size() > 0)
             _points.clear();
         for (auto& it : _quads) {
-            if (it != nullptr) {
+            if (it != nullptr)
                 it->destroy();
+        }
+        for (auto &quad : _quads) {
+            if (quad) {
+                delete quad;
+                quad = nullptr;
             }
         }
     }
