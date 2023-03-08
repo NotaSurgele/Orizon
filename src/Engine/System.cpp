@@ -16,7 +16,7 @@ void System::velocity_system(Entity *e)
 void System::draw_system()
 {
     for (auto& it : _registry) {
-        auto& e = *(it.second);
+        auto& e = (*it);
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();
