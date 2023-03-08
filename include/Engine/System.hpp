@@ -23,6 +23,7 @@ public:
         entity->addComponent<Id>(_id);
         entity->addComponent<Layer>(0);
         _registry[_id++] = std::make_shared<Entity *>(entity);
+        sort();
     }
 
     static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
@@ -100,6 +101,9 @@ public:
     void camera_system(Entity *e);
 
     void systems();
+
+private:
+    static void sort();
 
 private:
     static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
