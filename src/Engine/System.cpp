@@ -29,6 +29,12 @@ void System::draw_system()
             transform = Transform2D::zero();
         sprite->setTransform(transform);
         DRAW(sprite);
+        camera_system(e);
+        gravity_system(e);
+        box_system(e);
+        velocity_system(e);
+        update_custom_component(e);
+        _quad->insert(e);
     }
 }
 
@@ -139,8 +145,9 @@ void System::camera_system(Entity *e)
 
 void System::quad_collision_system()
 {
-    _quad->collide();
+    _quad->collide(*this);
     _quad->show();
+    _quad->destroy();
 }   
 
 void System::box_system(Entity *e)
@@ -166,17 +173,8 @@ void System::box_system(Entity *e)
 void System::merge()
 {
     draw_system();
-    for (auto& it : _registry) {
-        auto& e = *(it.second);
-
-        camera_system(e);
-        gravity_system(e);
-        box_system(e);
-        // collider_system();
-        // quad_collision_system();
-        velocity_system(e);
-        update_custom_component(e);
-    }
+    // collider_system();
+    quad_collision_system();
 }
 
 bool System::isInView(Entity *e)

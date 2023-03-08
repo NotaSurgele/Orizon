@@ -8,6 +8,8 @@
 #include "Components/Velocity.hpp"
 #include "Entity.hpp"
 
+class System;
+
 class Rectangle {
 public:
 
@@ -85,7 +87,7 @@ public:
         _quads[3] = new QuadTree(br, _max, "bot right");
     }
 
-    void collide();
+    void collide(System& system);
 
     void destroy()
     {
