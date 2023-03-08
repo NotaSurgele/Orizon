@@ -6,6 +6,7 @@
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Layer.hpp"
 #include "QuadTree.hpp"
 #include "Time.hpp"
 #include "Entity.hpp"
@@ -20,6 +21,7 @@ public:
     static void addEntity(Entity *entity)
     {
         entity->addComponent<Id>(_id);
+        entity->addComponent<Layer>(0);
         _registry[_id++] = std::make_shared<Entity *>(entity);
     }
 
@@ -75,6 +77,8 @@ public:
 
     // System that apply force such has velocity and all
 
+    void init();
+
     void merge();
 
     void velocity_system(Entity *e);
@@ -101,4 +105,6 @@ private:
     static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
     static inline std::size_t _id = 0;
     static inline std::unordered_map<std::size_t, SharedEntity> _registry;
+    static inline int _start_index = 0;
+    static inline int _end_index = 0;
 };
