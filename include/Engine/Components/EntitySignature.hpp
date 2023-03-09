@@ -8,7 +8,7 @@ public:
     EntitySignature(Entity *e, std::string const& value) : _signature(value) {};
     ~EntitySignature() = default;
 
-    std::string const& signature() { return _signature; }
+    std::string const& signature() const { return _signature; }
 
     void destroy() override final {};
 

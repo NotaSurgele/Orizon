@@ -97,6 +97,7 @@ void GameScene::update()
                         Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
                         auto transform = e->getComponent<Transform2D>();
 
+                        std::cout << e->getComponent<Layer>()->value() << std::endl;
                         transform->position.x = i;
                         transform->position.y = -j + offset;
                         _blocks.push_back(e);
