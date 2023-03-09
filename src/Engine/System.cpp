@@ -13,10 +13,21 @@ void System::velocity_system(Entity *e)
     transform->position.y += velocity->getY() * Time::deltaTime;
 }
 
+void System::sort()
+{
+    std::sort(_registry.begin(), _registry.end(),
+        [](Entity *e1, Entity *e2) {
+            auto v1 = e1->getComponent<Layer>()->value();
+            auto v2 = e2->getComponent<Layer>()->value();
+
+            return v1 > v2;
+        }
+    );
+}
+
 void System::draw_system()
 {
-    for (auto& it : _registry) {
-        auto& e = (*it);
+    for (auto& e : _registry) {
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();

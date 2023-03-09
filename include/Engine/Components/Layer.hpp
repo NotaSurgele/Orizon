@@ -8,7 +8,7 @@ public:
     Layer(Entity *self, std::size_t const& layer) : _layer(layer) {}
     ~Layer() = default;
 
-    int value() {
+    int value() const {
         return _layer;
     }
 
