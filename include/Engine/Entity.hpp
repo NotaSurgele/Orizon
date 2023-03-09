@@ -4,6 +4,7 @@
 #include "Components/IComponent.hpp"
 #include "Components/Id.hpp"
 #include "Components/CustomComponents.hpp"
+#include "Components/Layer.hpp"
 #include "config.hpp"
 #include <string>
 #include <vector>
@@ -85,3 +86,14 @@ class Entity {
         //     {}
         // }
 };
+
+struct SortEntity
+{
+    bool operator()(Entity *e1, Entity* e2) const {
+        auto v1 = e1->getComponent<Layer>()->value();
+        auto v2 = e2->getComponent<Layer>()->value();
+
+        return v1 < v2;
+    }
+};
+
