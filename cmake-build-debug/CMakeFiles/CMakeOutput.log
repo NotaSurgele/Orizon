@@ -393,3 +393,51 @@ Parsed CXX implicit link information from above output:
   implicit fwks: []
 
 
+Determining if the function XOpenDisplay exists in the /usr/lib64/libX11.so;/usr/lib64/libXext.so passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_cf588 && [1/2] Building C object CMakeFiles/cmTC_cf588.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_cf588
+
+
+
+Determining if the function gethostbyname exists passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_71fa2 && [1/2] Building C object CMakeFiles/cmTC_71fa2.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_71fa2
+
+
+
+Determining if the function connect exists passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_51529 && [1/2] Building C object CMakeFiles/cmTC_51529.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_51529
+
+
+
+Determining if the function remove exists passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_b11ed && [1/2] Building C object CMakeFiles/cmTC_b11ed.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_b11ed
+
+
+
+Determining if the function shmat exists passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_d028f && [1/2] Building C object CMakeFiles/cmTC_d028f.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_d028f
+
+
+
+Determining if the function IceConnectionNumber exists in the ICE passed with the following output:
+Change Dir: /home/alexis/Desktop/project/Orizon/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/alexis/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/223.8836.42/bin/ninja/linux/x64/ninja cmTC_390cd && [1/2] Building C object CMakeFiles/cmTC_390cd.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_390cd
+
+
+

@@ -17,7 +17,7 @@
 
 void GameScene::create()
 {
-    _particles = Particles(1);
+    _particles = Particles(10);
 
     _particles.setShape(ParticleShape::SQUARE, 10);
     // addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
@@ -31,7 +31,7 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    _particles.play(true);
+    _particles.play(false);
     // auto box1 = player->getComponent<BoxCollider>();
 
     // if (Input::isActionPressed("Exit"))
