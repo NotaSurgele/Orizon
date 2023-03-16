@@ -45,7 +45,6 @@ void Particles::play(bool restart=false)
         sf::Texture texture = sf::Texture();
         texture.loadFromImage(particle.first);
         particle.second.setTexture(texture);
-        std::cout << "Should draw" << std::endl;
         DRAW(particle.second);
     }
 }
