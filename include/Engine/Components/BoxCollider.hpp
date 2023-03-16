@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IComponent.hpp"
+#include "Velocity.hpp"
 #include "Drawable.hpp"
 
 class BoxCollider : public IComponent, public Drawable {
@@ -21,6 +22,7 @@ public:
     void destroy() override final {}
 
     bool overlap(BoxCollider *collider);
+    bool overlap(BoxCollider *collider, Velocity<float> *velocity);
 
     void setPosition(sf::Vector2<float> const& pos)
     {

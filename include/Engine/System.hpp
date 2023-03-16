@@ -101,7 +101,7 @@ public:
 
     void quad_collision_system();
 
-    void box_system(Entity *e);
+    void BoxSystem(Entity *e);
 
     void collider_system();
 
@@ -121,7 +121,7 @@ private:
     static void sort();
 
 private:
-    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
+    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 800, 600}, 50, "all");
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;

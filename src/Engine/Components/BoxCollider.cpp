@@ -1,4 +1,5 @@
 #include "BoxCollider.hpp"
+#include "Velocity.hpp"
 
 BoxCollider::BoxCollider (Entity *e, sf::Vector2<float> const& position,
                          sf::Vector2<float> const& size)
@@ -35,4 +36,26 @@ bool BoxCollider::overlap(BoxCollider *collider)
            _position.x + _size.x > pos.x &&
            _position.y < pos.y + size.y &&
            _position.y + _size.y > pos.y;
- }
+}
+
+bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
+{
+    auto box = collider;
+    auto pos = box->getPosition();
+    auto size = box->getSize();
+
+    float valx = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
+    float valy = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
+    sf::Vector2<float> predicted_pos = sf::Vector2<float>(
+        pos.x + valx,
+        pos.y + valy
+    );
+    auto max_x = _position.x + _size.x;
+    auto max_y = _position.y + _size.y;
+    if (!box) return false;
+
+    return _position.x < predicted_pos.x + size.x &&
+           _position.x + _size.x > predicted_pos.x &&
+           _position.y < predicted_pos.y + size.y &&
+           _position.y + _size.y > predicted_pos.y;
+}
