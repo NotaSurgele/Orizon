@@ -28,6 +28,7 @@ void System::sort()
 void System::draw_system()
 {
     for (auto& e : _registry) {
+        std::cout << "Hello world" << std::endl;
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();
@@ -42,7 +43,7 @@ void System::draw_system()
         camera_system(e);
         DRAW(sprite);
         gravity_system(e);
-        box_system(e);
+        BoxSystem(e);
         velocity_system(e);
         update_custom_component(e);
         _quad->insert(e);
@@ -99,10 +100,16 @@ void System::camera_system(Entity *e)
 void System::quad_collision_system()
 {
     _quad->collide(*this);
+    // _quad->show();
+    sf::Vector2f pos = Window.getView()->getCenter();
+    sf::Vector2f size = Window.getView()->getSize();
+
     _quad->destroy();
+    _quad->setNewPos((Rectangle) {pos.x, pos.y, size.x, size.y});
+    // std::cout << pos.x << " " << pos.y << " " << size.x << " " << size.y << std::endl;
 }
 
-void System::box_system(Entity *e)
+void System::BoxSystem(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
     auto velocity = e->getComponent<Velocity<float>>();
@@ -115,19 +122,16 @@ void System::box_system(Entity *e)
         velocity = Velocity<float>::zero(),
         d_v = true;
     }
-    float x = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
-    float y = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
-    box->setPosition(transform->position.x + x, transform->position.y + y);
+    box->setPosition(transform->position.x, transform->position.y);
+    // DRAW(box);
     if (d_v)
         delete velocity;
 }
 
 void System::merge()
 {
-    // std::cout << _registry.size() << std::endl;
     draw_system();
-    // collider_system();
-    quad_collision_system();
+    //quad_collision_system();
 }
 
 bool System::isInView(Entity *e)
