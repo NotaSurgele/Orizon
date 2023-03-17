@@ -73,5 +73,6 @@
         "cfenv": "cpp",
         "typeindex": "cpp",
         "filesystem": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

@@ -9,7 +9,7 @@ public:
 
     ~Id() = default;
 
-    const std::size_t& get_id()
+    const std::size_t& get_id() const
     {
         return __id;
     }

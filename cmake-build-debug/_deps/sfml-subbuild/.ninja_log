@@ -1,0 +1,21 @@
+# ninja log v5
+0	5	1678963677902599659	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir	5ecdcc2b86a21f9d
+0	5	1678963677902599659	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-mkdir	5ecdcc2b86a21f9d
+5	207305	1678963885202138650	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download	9b318dd01faa92fb
+5	207305	1678963885202138650	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-download	9b318dd01faa92fb
+207305	209107	0	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update	322df35d0063d16a
+207305	209107	0	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-update	322df35d0063d16a
+209107	209110	1678963887007143324	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch	171dbe49c2b9c5fa
+209107	209110	1678963887007143324	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-patch	171dbe49c2b9c5fa
+209110	209114	1678963887011143334	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure	fe09028065d30bdf
+209110	209114	1678963887011143334	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-configure	fe09028065d30bdf
+209114	209117	1678963887014143342	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build	93b64103205b8bb2
+209114	209117	1678963887014143342	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-build	93b64103205b8bb2
+209117	209120	1678963887017143350	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install	73d3296cef3e2349
+209117	209120	1678963887017143350	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-install	73d3296cef3e2349
+209120	209124	1678963887021143360	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test	f798dab87ef98432
+209120	209124	1678963887021143360	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-test	f798dab87ef98432
+209124	209128	1678963887025143371	CMakeFiles/sfml-populate-complete	d94bbd7c74c56ede
+209124	209128	1678963887025143371	sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-done	d94bbd7c74c56ede
+209124	209128	1678963887025143371	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/CMakeFiles/sfml-populate-complete	d94bbd7c74c56ede
+209124	209128	1678963887025143371	/home/alexis/Desktop/project/Orizon/cmake-build-debug/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/sfml-populate-done	d94bbd7c74c56ede

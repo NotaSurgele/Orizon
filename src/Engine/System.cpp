@@ -13,10 +13,22 @@ void System::velocity_system(Entity *e)
     transform->position.y += velocity->getY() * Time::deltaTime;
 }
 
+void System::sort()
+{
+    std::sort(_registry.begin(), _registry.end(),
+        [](Entity *e1, Entity *e2) {
+            auto v1 = e1->getComponent<Layer>()->value();
+            auto v2 = e2->getComponent<Layer>()->value();
+
+            return v1 > v2;
+        }
+    );
+}
+
 void System::draw_system()
 {
-    for (auto& it : _registry) {
-        auto& e = *(it.second);
+    for (auto& e : _registry) {
+        std::cout << "Hello world" << std::endl;
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();
@@ -28,65 +40,13 @@ void System::draw_system()
         if (!transform)
             transform = Transform2D::zero();
         sprite->setTransform(transform);
+        camera_system(e);
         DRAW(sprite);
-    }
-}
-
-void System::collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity)
-{
-    for (auto &it2 : _registry) {
-        bool destroy_v = false;
-        bool destroy_t = false;
-        auto entity2 = (*it2.second.get());
-        auto collider2 = entity2->getComponent<BoxCollider>();
-        auto velocity2 = entity2->getComponent<Velocity<float>>();
-        auto transform2 = entity2->getComponent<Transform2D>();
-
-        if (entity2 == entity) return;
-        if (!collider2) return;
-        if (!transform2) transform2 = Transform2D::zero(), destroy_t = true;
-        if (!velocity2)  velocity2 = Velocity<float>::zero(), destroy_v = true;
-        float valx = velocity2->getX() > 0 ? 1 : velocity2->getX() < 0 ? -1 : 0;
-        float valy = velocity2->getY() > 0 ? 1 : velocity2->getY() < 0 ? -1 : 0;
-        sf::Vector2<float> predicted_pos2 = sf::Vector2<float>(
-                                    transform2->position.x + valx,
-                                    transform2->position.y + valy);
-        collider2->setPosition(predicted_pos2);
-        if (collider->overlap(collider2)) {
-            collider->setState(BoxCollider::Collide::TRUE);
-            velocity->setX(0.0f);
-            velocity->setY(0.0f);
-            velocity2->setX(0.0f);
-            velocity2->setY(0.0);
-            return;
-        } else
-            collider->setState(BoxCollider::Collide::FALSE);
-        if (destroy_v) velocity2->destroy();
-        if (destroy_t) transform2->destroy();
-    }
-}
-
-void System::collider_system()
-{
-    for (auto &it : _registry) {
-        auto entity = (*it.second.get());
-        auto collider = entity->getComponent<BoxCollider>();
-        bool destroy_t = false;
-        auto velocity = entity->getComponent<Velocity<float>>();
-        auto transform = entity->getComponent<Transform2D>();
-
-        if (!collider) return;
-        if (!transform) transform = Transform2D::zero(), destroy_t = true;
-        if (!velocity) return;
-        float valx = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
-        float valy = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
-        sf::Vector2<float> predicted_pos = sf::Vector2<float>(transform->position.x
-                                            + valx,
-                                            transform->position.y +
-                                            valy);
-        collider->setPosition(predicted_pos);
-        collider_system_check_entity(entity, collider, velocity);
-        if (destroy_t) transform->destroy();
+        gravity_system(e);
+        BoxSystem(e);
+        velocity_system(e);
+        update_custom_component(e);
+        _quad->insert(e);
     }
 }
 
@@ -139,11 +99,17 @@ void System::camera_system(Entity *e)
 
 void System::quad_collision_system()
 {
-    _quad->collide();
-    _quad->show();
-}   
+    _quad->collide(*this);
+    // _quad->show();
+    sf::Vector2f pos = Window.getView()->getCenter();
+    sf::Vector2f size = Window.getView()->getSize();
 
-void System::box_system(Entity *e)
+    _quad->destroy();
+    _quad->setNewPos((Rectangle) {pos.x, pos.y, size.x, size.y});
+    // std::cout << pos.x << " " << pos.y << " " << size.x << " " << size.y << std::endl;
+}
+
+void System::BoxSystem(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
     auto velocity = e->getComponent<Velocity<float>>();
@@ -153,12 +119,11 @@ void System::box_system(Entity *e)
     if (!box)
         return;
     if (!velocity) {
-        velocity = Velocity<float>::zero(), 
+        velocity = Velocity<float>::zero(),
         d_v = true;
     }
-    float x = velocity->getX() > 0 ? 1 : velocity->getX() < 0 ? -1 : 0;
-    float y = velocity->getY() > 0 ? 1 : velocity->getY() < 0 ? -1 : 0;
-    box->setPosition(transform->position.x + x, transform->position.y + y);
+    box->setPosition(transform->position.x, transform->position.y);
+    // DRAW(box);
     if (d_v)
         delete velocity;
 }
@@ -166,17 +131,7 @@ void System::box_system(Entity *e)
 void System::merge()
 {
     draw_system();
-    for (auto& it : _registry) {
-        auto& e = *(it.second);
-
-        camera_system(e);
-        gravity_system(e);
-        box_system(e);
-        // collider_system();
-        // quad_collision_system();
-        velocity_system(e);
-        update_custom_component(e);
-    }
+    //quad_collision_system();
 }
 
 bool System::isInView(Entity *e)
@@ -188,9 +143,9 @@ bool System::isInView(Entity *e)
         transform = Transform2D::zero();
     if (currentView != nullptr) {
         sf::Vector2f size = currentView->getSize();
-
         sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
         sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
+
         return bounds.contains(transform->position);
     }
     return true;

@@ -8,9 +8,10 @@
 #include "Components/Gravity.hpp"
 #include "QuadTree.hpp"
 #include "Time.hpp"
+#include "Layer.hpp"
 #include "Entity.hpp"
 
-using SharedEntity = std::shared_ptr<Entity *>;
+using SharedEntity = std::shared_ptr<Entity>;
 
 class System {
 public:
@@ -19,11 +20,28 @@ public:
 
     static void addEntity(Entity *entity)
     {
-        entity->addComponent<Id>(_id);
-        _registry[_id++] = std::make_shared<Entity *>(entity);
+        entity->addComponent<Id>(_id++);
+        entity->addComponent<Layer>(0);
+        if (_registry_size >= 2) {
+            auto it = _registry.begin();
+
+            for (auto e : _registry) {
+                auto v = e->getComponent<Layer>()->value();
+                auto v2 = entity->getComponent<Layer>()->value();
+
+                if (v > v2) {
+                    _registry.insert(it, entity);
+                    _registry_size++;
+                    return;
+                }
+                it++;
+            }
+        }
+        _registry.push_back(entity);
+        _registry_size++;
     }
 
-    static std::shared_ptr<Entity *> getEntity(std::size_t const& id)
+    static Entity *getEntity(std::size_t const& id)
     {
         return _registry[id];
     }
@@ -31,14 +49,14 @@ public:
     static Entity *getEntity(std::string const& signature)
     {
         for (auto& e : _registry) {
-            EntitySignature *esignature = (*e.second.get())->getComponent<EntitySignature>();
+            EntitySignature *esignature = e->getComponent<EntitySignature>();
             std::string ssignature = "";
 
             if (!esignature)
                 continue;
             ssignature = esignature->signature();
             if (ssignature.find(signature) != std::string::npos)
-                return (*e.second.get());
+                return e;
         }
         return nullptr;
     }
@@ -46,10 +64,11 @@ public:
     static int RemoveEntity(Entity *e)
     {
         for (auto it = _registry.cbegin(); it != _registry.cend(); ) {
-            Entity *en = *it->second;
+            Entity *en = *it;
 
             if (e == en) {
                 _registry.erase(it);
+                _registry_size--;
                 return 0;
             }
             it++;
@@ -60,8 +79,7 @@ public:
     static void refresh_quad()
     {
         _quad->destroy();
-        for (auto &it : _registry) {
-            auto e = *(it.second);
+        for (auto &e : _registry) {
             auto box = e->getComponent<Transform2D>();
             auto transform = e->getComponent<Transform2D>();
 
@@ -75,13 +93,15 @@ public:
 
     // System that apply force such has velocity and all
 
+    void init();
+
     void merge();
 
     void velocity_system(Entity *e);
 
     void quad_collision_system();
 
-    void box_system(Entity *e);
+    void BoxSystem(Entity *e);
 
     void collider_system();
 
@@ -98,7 +118,11 @@ public:
     void systems();
 
 private:
-    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
+    static void sort();
+
+private:
+    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 800, 600}, 50, "all");
     static inline std::size_t _id = 0;
-    static inline std::unordered_map<std::size_t, SharedEntity> _registry;
+    static inline std::vector<Entity *> _registry;
+    static inline int _registry_size = 0;
 };
