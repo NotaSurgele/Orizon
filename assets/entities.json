@@ -17,6 +17,10 @@
                 {
                     "type": "Sprite",
                     "texture_name": "block"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
                 }
             ]
         },
@@ -37,6 +41,10 @@
                 {
                     "type": "Sprite",
                     "texture_name": "grass"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
                 }
             ]
         }
