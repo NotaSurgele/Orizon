@@ -9,8 +9,10 @@ void System::velocity_system(Entity *e)
 
     if (!velocity || !transform)
         return;
+    _quad->remove(e);
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
+    _quad->insert(e);
 }
 
 void System::sort()
@@ -28,7 +30,6 @@ void System::sort()
 void System::draw_system()
 {
     for (auto& e : _registry) {
-        std::cout << "Hello world" << std::endl;
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();
@@ -47,6 +48,34 @@ void System::draw_system()
         velocity_system(e);
         update_custom_component(e);
         _quad->insert(e);
+    }
+    // Collision checking
+    for (auto &e : _registry) {
+        auto box = e->getComponent<BoxCollider>();
+        auto v = e->getComponent<Velocity<float>>();
+        bool d_v = false;
+
+        if (!v) d_v = true, v = Velocity<float>::zero();
+        std::vector<Entity *> array = _quad->retrieve(e);
+        std::cout << "ARRAY: " << array.size() << std::endl;
+        for (auto &e2 : array) {
+            if (e2 == e)
+                continue;
+            auto box2 = e->getComponent<BoxCollider>();
+            auto v2 = e->getComponent<Velocity<float>>();
+            bool d_v2 = false;
+
+            if (!v2) d_v2 = true, v2 = Velocity<float>::zero();
+            if (box->overlap(box2)) {
+                v->reset();
+                v2->reset();
+                box->setState(BoxCollider::Collide::TRUE);
+                return;
+            } else
+                box->setState(BoxCollider::Collide::FALSE);
+            if (d_v2) delete v2;
+        }
+        if (d_v) delete v;
     }
 }
 
@@ -99,13 +128,10 @@ void System::camera_system(Entity *e)
 
 void System::quad_collision_system()
 {
-    _quad->collide(*this);
     // _quad->show();
     sf::Vector2f pos = Window.getView()->getCenter();
     sf::Vector2f size = Window.getView()->getSize();
 
-    _quad->destroy();
-    _quad->setNewPos((Rectangle) {pos.x, pos.y, size.x, size.y});
     // std::cout << pos.x << " " << pos.y << " " << size.x << " " << size.y << std::endl;
 }
 
