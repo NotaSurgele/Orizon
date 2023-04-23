@@ -1,129 +1,145 @@
 #include "QuadTree.hpp"
-#include "Engine/Components/BoxCollider.hpp"
+#include "Engine/Core.hpp"
 
-QuadTree::QuadTree(int level, float x, float y, float width, float height, int capacity)
-: m_level(level), m_bounds({x, y, width, height}), m_capacity(capacity) {
+QuadtreeNode::QuadtreeNode(const sf::FloatRect& boundingBox) : boundingBox(boundingBox), isLeaf(true)
+{
     for (int i = 0; i < 4; i++) {
-        m_nodes[i] = nullptr;
+        childNodes[i] = nullptr;
     }
 }
 
-QuadTree::~QuadTree() {
-    clear();
-}
-
-void QuadTree::clear() {
-    m_entities.clear();
-
+QuadtreeNode::~QuadtreeNode()
+{
     for (int i = 0; i < 4; i++) {
-        if (m_nodes[i] != nullptr) {
-            delete m_nodes[i];
-            m_nodes[i] = nullptr;
-        }
+        delete childNodes[i];
     }
 }
 
-void QuadTree::insert(Entity* entity) {
-    if (!m_bounds.contains(entity->getComponent<Transform2D>()->position)) {
+void QuadtreeNode::insert(Entity* entity)
+{
+    rect.setSize(sf::Vector2(boundingBox.width, boundingBox.height));
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setOutlineColor(sf::Color::Magenta);
+    rect.setOutlineThickness(1.0);
+    DRAW(rect);
+    if (!boundingBox.contains(entity->getComponent<Transform2D>()->position)) {
         return;
     }
 
-    if (m_entities.size() < m_capacity || m_level == MAX_LEVELS) {
-        m_entities.push_back(entity);
+    auto it = std::find(entities.begin(), entities.end(), entity);
+    if (it != entities.end())
+        return;
+    if (isLeaf && entities.size() < 4) {
+        entities.push_back(entity);
     } else {
-        if (m_nodes[0] == nullptr) {
+        if (isLeaf) {
             split();
         }
 
-        int quadrant = getQuadrant(entity->getComponent<Transform2D>()->position.x, entity->getComponent<Transform2D>()->position.y);
-        m_nodes[quadrant]->insert(entity);
+        for (int i = 0; i < 4; i++) {
+            childNodes[i]->insert(entity);
+        }
     }
 }
 
-void QuadTree::remove(Entity* entity) {
-    auto it = std::find(m_entities.begin(), m_entities.end(), entity);
-    if (it != m_entities.end()) {
-        m_entities.erase(it);
+void QuadtreeNode::retrieve(Entity* entity, std::vector<Entity*>& foundEntities)
+{
+    if (!boundingBox.intersects(sf::FloatRect(entity->getComponent<Transform2D>()->position, sf::Vector2f(1.f, 1.f)))) {
         return;
     }
 
-    if (m_nodes[0] != nullptr) {
-        int quadrant = getQuadrant(entity->getComponent<Transform2D>()->position.x, entity->getComponent<Transform2D>()->position.y);
-        m_nodes[quadrant]->remove(entity);
+    if (!isLeaf) {
+        for (int i = 0; i < 4; i++) {
+            childNodes[i]->retrieve(entity, foundEntities);
+        }
+    }
+
+    foundEntities.insert(foundEntities.end(), entities.begin(), entities.end());
+}
+
+void Quadtree::remove(Entity* entity)
+{
+    // Remove the entity from this node if it is present
+    auto it = std::find(root.entities.begin(), root.entities.end(), entity);
+    if (it != root.entities.end()) {
+        root.entities.erase(it);
+        return;
+    }
+
+    // Recursively remove the entity from child nodes if it is present
+    if (!root.isLeaf) {
+        for (int i = 0; i < 4; i++) {
+            auto& childNode = *(root.childNodes[i]);
+            auto it = std::find(childNode.entities.begin(), childNode.entities.end(), entity);
+            if (it != childNode.entities.end()) {
+                childNode.entities.erase(it);
+                // If the child node is now empty, merge its child nodes into this node
+                if (childNode.isLeaf && childNode.entities.empty()) {
+                    for (int j = 0; j < 4; j++) {
+                        delete childNode.childNodes[j];
+                        childNode.childNodes[j] = nullptr;
+                    }
+                    childNode.isLeaf = true;
+                }
+                return;
+            }
+        }
     }
 }
 
-int QuadTree::getQuadrant(float x, float y) {
-    int index = -1;
-    float verticalMidpoint = m_bounds.left + (m_bounds.width / 2.f);
-    float horizontalMidpoint = m_bounds.top + (m_bounds.height / 2.f);
-
-    // Check if point is in the left or right quadrants
-    bool isLeft = x < verticalMidpoint;
-    bool isTop = y < horizontalMidpoint;
-
-    if (isLeft) {
-        if (isTop) {
-            index = 1; // Top left quadrant
-        }
-        else {
-            index = 2; // Bottom left quadrant
+void QuadtreeNode::clear()
+{
+    entities.clear();
+    for (int i = 0; i < 4; i++) {
+        if (childNodes[i] != nullptr) {
+            childNodes[i]->clear();
+            delete childNodes[i];
+            childNodes[i] = nullptr;
         }
     }
-    else {
-        if (isTop) {
-            index = 0; // Top right quadrant
-        }
-        else {
-            index = 3; // Bottom right quadrant
-        }
-    }
-
-    return index;
+    isLeaf = true;
 }
 
-std::vector<Entity*> QuadTree::retrieve(Entity* entity) {
-    std::vector<Entity*> result;
-    BoxCollider *collider = entity->getComponent<BoxCollider>();
-    sf::Vector2<float> position = collider->getPosition();
-    sf::Vector2<float> size = collider->getSize();
+void QuadtreeNode::split()
+{
+    float halfWidth = boundingBox.width / 2.f;
+    float halfHeight = boundingBox.height / 2.f;
 
-    sf::FloatRect bounds = sf::FloatRect(position.x, position.y, size.x, size.y);
-    if (!m_bounds.intersects(bounds)) {
-        return result;
-    }
+    childNodes[0] = new QuadtreeNode(sf::FloatRect(boundingBox.left, boundingBox.top, halfWidth, halfHeight));
+    childNodes[1] = new QuadtreeNode(sf::FloatRect(boundingBox.left + halfWidth, boundingBox.top, halfWidth, halfHeight));
+    childNodes[2] = new QuadtreeNode(sf::FloatRect(boundingBox.left, boundingBox.top + halfHeight, halfWidth, halfHeight));
+    childNodes[3] = new QuadtreeNode(sf::FloatRect(boundingBox.left + halfWidth, boundingBox.top + halfHeight, halfWidth, halfHeight));
+    isLeaf = false;
 
-    for (auto e : m_entities) {
-        if (e != entity) {
-            result.push_back(e);
+    for (auto entity : entities) {
+        for (int i = 0; i < 4; i++) {
+            childNodes[i]->insert(entity);
         }
     }
 
-    if (m_nodes[0] != nullptr) {
-        int quadrant = getQuadrant(bounds.left, bounds.top);
-        std::vector<Entity*> subresult = m_nodes[quadrant]->retrieve(entity);
-        result.insert(result.end(), subresult.begin(), subresult.end());
-    }
-
-    return result;
+    entities.clear();
 }
 
-void QuadTree::split() {
-    float subWidth = m_bounds.width / 2.f;
-    float subHeight = m_bounds.height / 2.f;
-    float x = m_bounds.left;
-    float y = m_bounds.top;
+Quadtree::Quadtree(const sf::FloatRect& boundingBox) : root(boundingBox) {}
 
-    m_nodes[0] = new QuadTree(m_level + 1, x + subWidth, y, subWidth, subHeight, m_capacity);
-    m_nodes[1] = new QuadTree(m_level + 1, x, y, subWidth, subHeight, m_capacity);
-    m_nodes[2] = new QuadTree(m_level + 1, x, y + subHeight, subWidth, subHeight, m_capacity);
-    m_nodes[3] = new QuadTree(m_level + 1, x + subWidth, y + subHeight, subWidth, subHeight, m_capacity);
+void Quadtree::insert(Entity* entity)
+{
+    root.insert(entity);
+}
 
-    for (auto e : m_entities) {
-        Transform2D *transform = e->getComponent<Transform2D>();
-        int quadrant = getQuadrant(transform->position.x, transform->position.y);
-        m_nodes[quadrant]->insert(e);
-    }
+void Quadtree::clear()
+{
+    root.clear();
+}
 
-    m_entities.clear();
+void Quadtree::setBoundingBox(const sf::FloatRect& newBoundingBox)
+{
+    root = QuadtreeNode(newBoundingBox);
+}
+
+std::vector<Entity*> Quadtree::retrieve(Entity* entity)
+{
+    std::vector<Entity*> foundEntities;
+    root.retrieve(entity, foundEntities);
+    return foundEntities;
 }

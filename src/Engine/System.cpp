@@ -9,10 +9,8 @@ void System::velocity_system(Entity *e)
 
     if (!velocity || !transform)
         return;
-    _quad->remove(e);
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
-    _quad->insert(e);
 }
 
 void System::sort()
@@ -49,7 +47,9 @@ void System::draw_system()
         update_custom_component(e);
         _quad->insert(e);
     }
+
     // Collision checking
+
     for (auto &e : _registry) {
         auto box = e->getComponent<BoxCollider>();
         auto v = e->getComponent<Velocity<float>>();
@@ -57,13 +57,14 @@ void System::draw_system()
 
         if (!v) d_v = true, v = Velocity<float>::zero();
         std::vector<Entity *> array = _quad->retrieve(e);
-        std::cout << "ARRAY: " << array.size() << std::endl;
+        // std::cout << array.size() << std::endl;
         for (auto &e2 : array) {
             if (e2 == e)
                 continue;
-            auto box2 = e->getComponent<BoxCollider>();
-            auto v2 = e->getComponent<Velocity<float>>();
+            auto box2 = e2->getComponent<BoxCollider>();
+            auto v2 = e2->getComponent<Velocity<float>>();
             bool d_v2 = false;
+            DRAW(box2);
 
             if (!v2) d_v2 = true, v2 = Velocity<float>::zero();
             if (box->overlap(box2)) {
@@ -71,12 +72,13 @@ void System::draw_system()
                 v2->reset();
                 box->setState(BoxCollider::Collide::TRUE);
                 return;
-            } else
-                box->setState(BoxCollider::Collide::FALSE);
+            }
+            box->setState(BoxCollider::Collide::FALSE);
             if (d_v2) delete v2;
         }
         if (d_v) delete v;
     }
+    _quad->clear();
 }
 
 void System::gravity_system(Entity *e)
@@ -149,7 +151,6 @@ void System::BoxSystem(Entity *e)
         d_v = true;
     }
     box->setPosition(transform->position.x, transform->position.y);
-    // DRAW(box);
     if (d_v)
         delete velocity;
 }
