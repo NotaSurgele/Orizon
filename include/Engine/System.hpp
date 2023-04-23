@@ -78,7 +78,7 @@ public:
 
     static void refresh_quad()
     {
-        _quad->clear();
+        // _quad->clear();
         for (auto &e : _registry) {
             auto box = e->getComponent<Transform2D>();
             auto transform = e->getComponent<Transform2D>();
@@ -121,7 +121,7 @@ private:
     static void sort();
 
 private:
-    static inline QuadTree *_quad = new QuadTree(0, 0, 0, 800, 600, 50);
+    static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
