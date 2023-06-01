@@ -12,7 +12,8 @@
                 {
                     "type": "BoxCollider",
                     "position": [0, 0],
-                    "size": [16, 16]
+                    "size": [16, 16],
+                    "range": 1
                 },
                 {
                     "type": "Sprite",
@@ -36,7 +37,8 @@
                 {
                     "type": "BoxCollider",
                     "position": [0, 0],
-                    "size": [16, 16]
+                    "size": [16, 16],
+                    "range": 0
                 },
                 {
                     "type": "Sprite",

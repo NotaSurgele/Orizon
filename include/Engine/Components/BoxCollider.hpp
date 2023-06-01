@@ -17,6 +17,9 @@ public:
     BoxCollider(Entity *e, sf::Vector2<float> const& position,
                 sf::Vector2<float> const& size);
 
+    BoxCollider(Entity *e, sf::Vector2<float> const& position,
+                sf::Vector2<float> const& size, const int& range);
+
     ~BoxCollider() = default;
 
     void destroy() override final {}
@@ -42,6 +45,8 @@ public:
         _collide = state;
     }
 
+    sf::RectangleShape shape(const sf::Color& color);
+
     Collide getState()
     {
         return _collide;
@@ -51,15 +56,19 @@ public:
 
     sf::Vector2<float> &getSize();
 
+    int& getRange();
+
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override
     {
         target.draw(_shape, states);
     }
+
 
 private:
     Collide _collide = Collide::FALSE;
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
+    int _range = 0;
 };
 

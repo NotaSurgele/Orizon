@@ -1,4 +1,4 @@
-#include "QuadTree.hpp"
+#include "Collision/QuadTree.hpp"
 #include "Engine/Core.hpp"
 
 QuadtreeNode::QuadtreeNode(const sf::FloatRect& boundingBox) : boundingBox(boundingBox), isLeaf(true)

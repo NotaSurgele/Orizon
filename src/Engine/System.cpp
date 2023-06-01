@@ -25,60 +25,36 @@ void System::sort()
     );
 }
 
-void System::draw_system()
+void System::systems()
 {
+    std::vector<IComponent *> componentCache;
+
     for (auto& e : _registry) {
         if (!isInView(e))
             continue;
         auto sprite = e->getComponent<Sprite>();
         auto transform = e->getComponent<Transform2D>();
-        auto currentView = Window.getView();
 
         if (!sprite)
             return;
-        if (!transform)
+        if (!transform) {
             transform = Transform2D::zero();
+            componentCache.push_back(transform);
+        }
         sprite->setTransform(transform);
         camera_system(e);
         DRAW(sprite);
         gravity_system(e);
         BoxSystem(e);
         velocity_system(e);
+        collider_system(e);
         update_custom_component(e);
-        _quad->insert(e);
     }
-
-    // Collision checking
-
-    for (auto &e : _registry) {
-        auto box = e->getComponent<BoxCollider>();
-        auto v = e->getComponent<Velocity<float>>();
-        bool d_v = false;
-
-        if (!v) d_v = true, v = Velocity<float>::zero();
-        std::vector<Entity *> array = _quad->retrieve(e);
-        // std::cout << array.size() << std::endl;
-        for (auto &e2 : array) {
-            if (e2 == e)
-                continue;
-            auto box2 = e2->getComponent<BoxCollider>();
-            auto v2 = e2->getComponent<Velocity<float>>();
-            bool d_v2 = false;
-            DRAW(box2);
-
-            if (!v2) d_v2 = true, v2 = Velocity<float>::zero();
-            if (box->overlap(box2)) {
-                v->reset();
-                v2->reset();
-                box->setState(BoxCollider::Collide::TRUE);
-                return;
-            }
-            box->setState(BoxCollider::Collide::FALSE);
-            if (d_v2) delete v2;
-        }
-        if (d_v) delete v;
+    for (auto &it : componentCache) {
+        delete it;
+        it = nullptr;
     }
-    _quad->clear();
+    componentCache.clear();
 }
 
 void System::gravity_system(Entity *e)
@@ -105,6 +81,30 @@ void System::update_custom_component(Entity *e)
         auto &component = it2.second;
 
         component->update();
+    }
+}
+
+void System::collider_system(Entity *e)
+{
+    auto box = e->getComponent<BoxCollider>();
+    int range = 0;
+
+    if (box == nullptr)
+        return;
+    range = box->getRange();
+    if (range == 0)
+        return;
+    for (CollidingLayer *layer : _layers) {
+        float x = box->getPosition().x;
+        float y = box->getPosition().y;
+
+        if (!layer->contain(x, y))
+            continue;
+        std::vector<Entity *> arr = layer->checkAround(e, range);
+        for (auto *e : arr) {
+            auto rect = e->getComponent<BoxCollider>()->shape(sf::Color::Red);
+            DRAW(rect);
+        }
     }
 }
 
@@ -157,7 +157,7 @@ void System::BoxSystem(Entity *e)
 
 void System::merge()
 {
-    draw_system();
+    systems();
     //quad_collision_system();
 }
 
@@ -176,9 +176,4 @@ bool System::isInView(Entity *e)
         return bounds.contains(transform->position);
     }
     return true;
-}
-
-void System::systems()
-{
-    merge();
 }
