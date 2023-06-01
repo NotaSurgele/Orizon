@@ -26,6 +26,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
     ${CMAKE_SOURCE_DIR}/include/external/
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle
+    ${CMAKE_SOURCE_DIR}/include/Engine/Collision/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Collision/Layer
     # ${CMAKE_SOURCE_DIR}/include/Game/CustomComponents
     ${SFML_SOURCE_DIR}/include/
 )

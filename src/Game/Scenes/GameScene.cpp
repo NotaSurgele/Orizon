@@ -18,7 +18,6 @@
 void GameScene::create()
 {
     // _particles = Particles(10);
-
     // _particles.setShape(ParticleShape::SQUARE, 10);
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         auto speed = json["speed"];
@@ -39,7 +38,7 @@ void GameScene::update()
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
-
+        layer = new CollidingLayer(10, 10, 1920, 1080, 16, 16);
         float offset = 700;
         int chunks = 1;
         float w = 150;
@@ -104,6 +103,7 @@ void GameScene::update()
                         transform->position.x = i;
                         transform->position.y = -j + offset;
                         _blocks.push_back(e);
+                        layer->emplaceEntity(e);
                     }
                     j += 16;
                 }
