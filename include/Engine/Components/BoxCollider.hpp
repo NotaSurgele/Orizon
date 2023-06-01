@@ -40,17 +40,7 @@ public:
         _position.y = y;
     }
 
-    void setState(Collide const& state)
-    {
-        _collide = state;
-    }
-
     sf::RectangleShape shape(const sf::Color& color);
-
-    Collide getState()
-    {
-        return _collide;
-    }
 
     sf::Vector2<float> &getPosition();
 
@@ -63,9 +53,10 @@ public:
         target.draw(_shape, states);
     }
 
+public:
+    Collide state = Collide::FALSE;
 
 private:
-    Collide _collide = Collide::FALSE;
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;

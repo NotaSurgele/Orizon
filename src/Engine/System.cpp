@@ -6,9 +6,14 @@ void System::velocity_system(Entity *e)
 {
     auto velocity = e->getComponent<Velocity<float>>();
     auto transform = e->getComponent<Transform2D>();
+    auto box = e->getComponent<BoxCollider>();
 
     if (!velocity || !transform)
         return;
+    if (box != nullptr) {
+        if (box->state == BoxCollider::Collide::TRUE)
+            return;
+    }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
 }
@@ -45,8 +50,8 @@ void System::systems()
         camera_system(e);
         DRAW(sprite);
         gravity_system(e);
-        BoxSystem(e);
         velocity_system(e);
+        BoxSystem(e);
         collider_system(e);
         update_custom_component(e);
     }
@@ -66,7 +71,7 @@ void System::gravity_system(Entity *e)
     if (!velocity || !gravity)
         return;
     if (collider) {
-        (collider->getState() == BoxCollider::Collide::TRUE) ?
+        (collider->state == BoxCollider::Collide::TRUE) ?
             velocity->setY(0) : velocity->setY(gravity->force);
         return;
     }
@@ -102,8 +107,10 @@ void System::collider_system(Entity *e)
             continue;
         std::vector<Entity *> arr = layer->checkAround(e, range);
         for (auto *e : arr) {
-            auto rect = e->getComponent<BoxCollider>()->shape(sf::Color::Red);
+            auto collider = e->getComponent<BoxCollider>();
+            auto rect = collider->shape(sf::Color::Red);
             DRAW(rect);
+            box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
         }
     }
 }
@@ -150,7 +157,10 @@ void System::BoxSystem(Entity *e)
         velocity = Velocity<float>::zero(),
         d_v = true;
     }
-    box->setPosition(transform->position.x, transform->position.y);
+    float x = (velocity->getX() > 0) ? 1 : (velocity->getX() < 0) ? -1 : 0;
+    float y = (velocity->getY() > 0) ? 1 : (velocity->getY() < 0) ? -1 : 0;
+    box->setPosition(transform->position.x + x,
+                    transform->position.y + y);
     if (d_v)
         delete velocity;
 }
