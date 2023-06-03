@@ -12,6 +12,14 @@ public:
         FALSE
     };
 
+    enum Side {
+        LEFT,
+        RIGHT,
+        TOP,
+        DOWN,
+        NONE
+    };
+
     sf::Color color = sf::Color::Red;
 
     BoxCollider(Entity *e, sf::Vector2<float> const& position,
@@ -55,6 +63,7 @@ public:
 
 public:
     Collide state = Collide::FALSE;
+    Side side = Side::NONE;
 
 private:
     sf::Vector2<float> _position;

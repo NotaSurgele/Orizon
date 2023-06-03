@@ -35,10 +35,11 @@ void System::systems()
     std::vector<IComponent *> componentCache;
 
     for (auto& e : _registry) {
+        camera_system(e);
         if (!isInView(e))
             continue;
-        auto sprite = e->getComponent<Sprite>();
         auto transform = e->getComponent<Transform2D>();
+        auto sprite = e->getComponent<Sprite>();
 
         if (!sprite)
             return;
@@ -47,10 +48,9 @@ void System::systems()
             componentCache.push_back(transform);
         }
         sprite->setTransform(transform);
-        camera_system(e);
         DRAW(sprite);
-        gravity_system(e);
         velocity_system(e);
+        gravity_system(e);
         BoxSystem(e);
         collider_system(e);
         update_custom_component(e);
@@ -70,9 +70,8 @@ void System::gravity_system(Entity *e)
 
     if (!velocity || !gravity)
         return;
-    if (collider) {
-        (collider->state == BoxCollider::Collide::TRUE) ?
-            velocity->setY(0) : velocity->setY(gravity->force);
+    if (collider->state == BoxCollider::Collide::TRUE) {
+        velocity->setY(0.0f);
         return;
     }
     velocity->setY(gravity->force);
@@ -111,6 +110,16 @@ void System::collider_system(Entity *e)
             auto rect = collider->shape(sf::Color::Red);
             DRAW(rect);
             box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+
+            // determine colliding position
+            if (box->state == BoxCollider::Collide::TRUE) {
+                auto pos1 = box->getPosition();
+                auto pos2 = collider->getPosition();
+
+                box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::LEFT: box->side = BoxCollider::Side::RIGHT;
+                box->side = (pos1.y <= pos2.y) ? BoxCollider::Side::DOWN: BoxCollider::Side::TOP;
+                return;
+            } else box->side = BoxCollider::Side::NONE;
         }
     }
 }

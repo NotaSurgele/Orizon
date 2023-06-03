@@ -115,6 +115,7 @@ void GameScene::update()
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     DRAW(box1);
+
 }
 
 void GameScene::destroy()
