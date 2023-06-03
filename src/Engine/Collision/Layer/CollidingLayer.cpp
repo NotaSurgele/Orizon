@@ -35,6 +35,19 @@ CollidingLayer::~CollidingLayer()
     _layer.clear();
 }
 
+sf::Vector2f CollidingLayer::emptySpot(int range)
+{
+    std::size_t counter = 0;
+
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            if (_layer[x][y] == nullptr)
+                return sf::Vector2f(((x - (range / 2)) * tileWidth) + 50, (y - (range / 2)) * tileHeight);
+        }
+    }
+    return sf::Vector2f(0, 0);
+}
+
 bool CollidingLayer::emplaceEntity(Entity *e)
 {
     auto position = e->getComponent<Transform2D>()->position;

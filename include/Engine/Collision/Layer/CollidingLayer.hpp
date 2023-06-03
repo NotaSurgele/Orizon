@@ -11,6 +11,8 @@ public:
     bool contain(Entity *e);
     bool contain(const float& x, const float& y);
     bool removeEntity(const int& x, const int& y);
+    sf::Vector2f emptySpot(int range);
+
     std::vector<Entity *> checkAround(Entity *e, int range);
     void display();
 
