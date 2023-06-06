@@ -11,8 +11,25 @@ void System::velocity_system(Entity *e)
     if (!velocity || !transform)
         return;
     if (box != nullptr) {
-        if (box->state == BoxCollider::Collide::TRUE)
-            return;
+        if (box->state == BoxCollider::Collide::TRUE) {
+            std::cout << box->side << std::endl;
+            switch (box->side) {
+                case BoxCollider::Side::DOWN:
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::TOP:
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::LEFT:
+                    velocity->setX(0.0f);
+                    break;
+                case BoxCollider::Side::RIGHT:
+                    velocity->setX(0.0f);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
@@ -105,8 +122,8 @@ void System::collider_system(Entity *e)
         if (!layer->contain(x, y))
             continue;
         std::vector<Entity *> arr = layer->checkAround(e, range);
-        for (auto *e : arr) {
-            auto collider = e->getComponent<BoxCollider>();
+        for (auto *entity : arr) {
+            auto collider = entity->getComponent<BoxCollider>();
             auto rect = collider->shape(sf::Color::Red);
             DRAW(rect);
             box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
@@ -116,10 +133,22 @@ void System::collider_system(Entity *e)
                 auto pos1 = box->getPosition();
                 auto pos2 = collider->getPosition();
 
-                box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::LEFT: box->side = BoxCollider::Side::RIGHT;
+                box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::LEFT: BoxCollider::Side::RIGHT;
                 box->side = (pos1.y <= pos2.y) ? BoxCollider::Side::DOWN: BoxCollider::Side::TOP;
+                if (box->side == BoxCollider::Side::DOWN) {
+                    // std::cout << "POS1 " << pos1.x << " " << pos1.y << std::endl;
+                    // std::cout << "POS2 " << pos2.x << " " << pos2.y << std::endl << std::endl;
+                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::DOWNLEFT: BoxCollider::Side::DOWNRIGHT;
+                    return;
+                }
+                if (box->side == BoxCollider::Side::TOP) {
+                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::TOPLEFT: BoxCollider::Side::TOPRIGHT;
+                    return;
+                }
                 return;
-            } else box->side = BoxCollider::Side::NONE;
+            }
+            box->side = BoxCollider::Side::NONE;
+            box->state = BoxCollider::Collide::FALSE;
         }
     }
 }
@@ -166,8 +195,11 @@ void System::BoxSystem(Entity *e)
         velocity = Velocity<float>::zero(),
         d_v = true;
     }
-    float x = (velocity->getX() > 0) ? 1 : (velocity->getX() < 0) ? -1 : 0;
-    float y = (velocity->getY() > 0) ? 1 : (velocity->getY() < 0) ? -1 : 0;
+    float velX = velocity->getX();
+    float velY = velocity->getY();
+    float x = (velX > 0) ? 1 : (velX < 0) ? -1 : 0;
+    float y = (velY > 0) ? 1 : (velY < 0) ? -1 : 0;
+
     box->setPosition(transform->position.x + x,
                     transform->position.y + y);
     if (d_v)
