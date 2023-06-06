@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <thread>
+#include <functional>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/EntitySignature.hpp"

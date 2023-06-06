@@ -44,9 +44,8 @@ int& BoxCollider::getRange()
     return _range;
 }
 
-bool BoxCollider::overlap(BoxCollider *collider)
+bool BoxCollider::overlap(BoxCollider *box)
 {
-    auto box = collider;
     auto pos = box->getPosition();
     auto size = box->getSize();
 
@@ -69,6 +68,19 @@ sf::RectangleShape BoxCollider::shape(const sf::Color& color)
     rect.setOutlineColor(color);
     rect.setOutlineThickness(1.0f);
     return rect;
+}
+
+bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
+{
+    sf::Rect<float> box1 = sf::Rect<float>(this->_position, this->_size);
+    sf::Rect<float> box2 = sf::Rect<float>(collider->getPosition(), collider->getSize());
+    bool res = box1.intersects(box2, box1);
+    sf::Vector2f pos = sf::Vector2f(box1.left, box1.top);
+    sf::Vector2f size = sf::Vector2f(box1.width, box1.height);
+
+    intersection._position = pos;
+    intersection._size = size;
+    return res;
 }
 
 bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)

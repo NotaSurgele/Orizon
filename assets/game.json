@@ -29,7 +29,7 @@
                 "type": "BoxCollider",
                 "position": [0, 0],
                 "size": [16, 16],
-                "range": 1
+                "range": 4
             },
             {
                 "type": "Sprite",

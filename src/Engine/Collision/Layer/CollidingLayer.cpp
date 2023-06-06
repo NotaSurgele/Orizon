@@ -93,6 +93,7 @@ std::vector<Entity *> CollidingLayer::checkAround(Entity *e, int range)
     int x = position.x / tileWidth;
     int y = position.y / tileHeight;
 
+    std::cout << "X " << x << " Y " << y << std::endl;
     for (std::size_t x2 = x - range; x2 <= (x + range); x2++) {
         for (std::size_t y2 = y - range; y2 <= (y + range); y2++) {
             if (_layer[x2][y2] != nullptr)

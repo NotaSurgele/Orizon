@@ -3,6 +3,7 @@
 #include "IComponent.hpp"
 #include "Velocity.hpp"
 #include "Drawable.hpp"
+#include "Entity.hpp"
 
 class BoxCollider : public IComponent, public Drawable {
 public:
@@ -13,10 +14,14 @@ public:
     };
 
     enum Side {
-        LEFT,
-        RIGHT,
+        TOPLEFT,
         TOP,
+        TOPRIGHT,
+        RIGHT,
+        DOWNRIGHT,
         DOWN,
+        DOWNLEFT,
+        LEFT,
         NONE
     };
 
@@ -34,6 +39,7 @@ public:
 
     bool overlap(BoxCollider *collider);
     bool overlap(BoxCollider *collider, Velocity<float> *velocity);
+    bool intersect(BoxCollider *collider, BoxCollider& intersections);
 
     void setPosition(sf::Vector2<float> const& pos)
     {
@@ -71,4 +77,3 @@ private:
     sf::RectangleShape _shape;
     int _range = 0;
 };
-
