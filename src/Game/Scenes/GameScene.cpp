@@ -24,8 +24,13 @@ void GameScene::create()
 
         e->addCustomComponent<CharacterController>(speed);
     });
+    // test.create(200, 200);
+    // test.clear(sf::Color(0, 0, 0, 200));
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
+    wall.setFillColor(sf::Color::Blue);
+    wall.setPosition(50, -10);
+    wall.setSize(sf::Vector2f(10, 50));
 }
 
 void GameScene::update()
@@ -114,8 +119,16 @@ void GameScene::update()
         // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
-    DRAW(box1);
-
+    ray.show(5);
+    if (ray.hit(wall, sf::Mouse::getPosition(Window.getSFMLRenderWindow()))) {
+        std::cout << "HIT" << std::endl;
+    } else {
+        std::cout << "NO" << std::endl;
+    }
+    // ray.hit()
+    // player->getComponent<Sprite>()->setTexture(test.getTexture());
+    // DRAW(box1);
+    DRAW(wall);
 }
 
 void GameScene::destroy()

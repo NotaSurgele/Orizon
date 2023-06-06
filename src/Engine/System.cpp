@@ -1,6 +1,7 @@
 #include "Engine/System.hpp"
 #include "Components/View.hpp"
 #include "Core.hpp"
+#include "Raytracer.hpp"
 
 void System::velocity_system(Entity *e)
 {
