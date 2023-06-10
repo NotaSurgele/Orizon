@@ -14,6 +14,7 @@ public:
 private:
     sf::Vector2f _position = sf::Vector2f(0, 0);
     sf::Vector2f _direction = sf::Vector2f(0, 0);
-    sf::RectangleShape _shape;
     sf::Vertex _line[2];
+    bool _hit = false;
+    sf::Vector2f _collisionPoint = sf::Vector2f(0, 0);
 };
