@@ -120,11 +120,7 @@ void GameScene::update()
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
     ray.show(5);
-    if (ray.hit(wall, sf::Mouse::getPosition(Window.getSFMLRenderWindow()))) {
-        std::cout << "HIT" << std::endl;
-    } else {
-        std::cout << "NO" << std::endl;
-    }
+    ray.hit(wall, sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
     // ray.hit()
     // player->getComponent<Sprite>()->setTexture(test.getTexture());
     // DRAW(box1);
