@@ -21,6 +21,6 @@ private:
     bool load = false;
     Particles _particles;
     sf::RenderTexture test;
-    RayTracer ray = RayTracer(sf::Vector2f(0, 30), sf::Vector2f(3, 0));
+    RayTracer ray = RayTracer(sf::Vector2f(40, 30), sf::Vector2f(1, 1));
     sf::RectangleShape wall = sf::RectangleShape();
 };
