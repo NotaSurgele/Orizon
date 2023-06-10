@@ -9,10 +9,11 @@ public:
                 const sf::Vector2f& direction);
 
     void show(const float& thickness);
-    bool hit(const sf::RectangleShape& wall, sf::Vector2i rotate);
+    bool hit(sf::RectangleShape wall, sf::Vector2i rotate);
 
 private:
     sf::Vector2f _position = sf::Vector2f(0, 0);
     sf::Vector2f _direction = sf::Vector2f(0, 0);
     sf::RectangleShape _shape;
+    sf::Vertex _line[2];
 };
