@@ -92,8 +92,9 @@ public:
                 {
                     sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
                     sf::Vector2<float> size = sf::Vector2<float>(json["size"][0], json["size"][1]);
+                    int range = json["range"];
 
-                    e->addComponent<BoxCollider>(position, size);
+                    e->addComponent<BoxCollider>(position, size, range);
                 }
 
                 static void create_layer(Entity *e, nlohmann::json const& json)

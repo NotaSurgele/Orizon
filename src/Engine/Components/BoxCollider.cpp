@@ -1,10 +1,26 @@
 #include "BoxCollider.hpp"
 #include "Velocity.hpp"
 
-BoxCollider::BoxCollider (Entity *e, sf::Vector2<float> const& position,
-                         sf::Vector2<float> const& size)
-                         : _position(position),
-                           _size(size)
+BoxCollider::BoxCollider(   Entity *e,
+                            sf::Vector2<float> const& position,
+                            sf::Vector2<float> const& size,
+                            const int& checkRange)
+                            : _position(position),
+                            _size(size),
+                            _range(checkRange)
+{
+    _shape = sf::RectangleShape();
+    _shape.setSize(size);
+    _shape.setFillColor(sf::Color::Transparent);
+    _shape.setOutlineColor(color);
+    _shape.setOutlineThickness(1.0f);
+}
+
+BoxCollider::BoxCollider(   Entity *e,
+                            sf::Vector2<float> const& position,
+                            sf::Vector2<float> const& size)
+                            : _position(position),
+                            _size(size)
 {
     _shape = sf::RectangleShape();
     _shape.setSize(size);
@@ -23,9 +39,13 @@ sf::Vector2<float> &BoxCollider::getSize()
     return _size;
 }
 
-bool BoxCollider::overlap(BoxCollider *collider)
+int& BoxCollider::getRange()
 {
-    auto box = collider;
+    return _range;
+}
+
+bool BoxCollider::overlap(BoxCollider *box)
+{
     auto pos = box->getPosition();
     auto size = box->getSize();
 
@@ -36,6 +56,31 @@ bool BoxCollider::overlap(BoxCollider *collider)
            _position.x + _size.x > pos.x &&
            _position.y < pos.y + size.y &&
            _position.y + _size.y > pos.y;
+}
+
+sf::RectangleShape BoxCollider::shape(const sf::Color& color)
+{
+    sf::RectangleShape rect = sf::RectangleShape();
+
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setSize(this->_size);
+    rect.setPosition(this->_position);
+    rect.setOutlineColor(color);
+    rect.setOutlineThickness(1.0f);
+    return rect;
+}
+
+bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
+{
+    sf::Rect<float> box1 = sf::Rect<float>(this->_position, this->_size);
+    sf::Rect<float> box2 = sf::Rect<float>(collider->getPosition(), collider->getSize());
+    bool res = box1.intersects(box2, box1);
+    sf::Vector2f pos = sf::Vector2f(box1.left, box1.top);
+    sf::Vector2f size = sf::Vector2f(box1.width, box1.height);
+
+    intersection._position = pos;
+    intersection._size = size;
+    return res;
 }
 
 bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)

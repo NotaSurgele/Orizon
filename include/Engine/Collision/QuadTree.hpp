@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
-#include "Engine/Entity.hpp"
+#include "../Engine/Entity.hpp"
 
 class QuadtreeNode {
 public:
@@ -17,7 +17,7 @@ public:
     void insert(Entity* entity);
     void retrieve(Entity* entity, std::vector<Entity*>& foundEntities);
     void clear();
-    
+
 private:
     void split();
 };

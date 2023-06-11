@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
 #include <thread>
+#include <functional>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
-#include "QuadTree.hpp"
+#include "Collision/QuadTree.hpp"
+#include "Collision/Layer/CollidingLayer.hpp"
 #include "Time.hpp"
 #include "Layer.hpp"
 #include "Entity.hpp"
@@ -89,6 +91,11 @@ public:
         std::cout << _registry.size() << std::endl;
     }
 
+    static void addCollidingLayer(CollidingLayer *layer)
+    {
+        _layers.push_back(layer);
+    }
+
     bool isInView(Entity *e);
 
     // System that apply force such has velocity and all
@@ -103,7 +110,7 @@ public:
 
     void BoxSystem(Entity *e);
 
-    void collider_system();
+    void collider_system(Entity *e);
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
@@ -115,14 +122,18 @@ public:
 
     void camera_system(Entity *e);
 
+    void light_system(Entity *e);
+
     void systems();
 
 private:
     static void sort();
 
 private:
+    std::vector<Entity *> _inView;
     static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
+    static inline std::vector<CollidingLayer *> _layers;
 };
