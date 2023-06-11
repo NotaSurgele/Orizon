@@ -48,6 +48,11 @@ sf::Vector2f CollidingLayer::emptySpot(int range)
     return sf::Vector2f(0, 0);
 }
 
+std::vector<Entity *> CollidingLayer::getAllEntities()
+{
+    return _entities;
+}
+
 bool CollidingLayer::emplaceEntity(Entity *e)
 {
     auto position = e->getComponent<Transform2D>()->position;
@@ -57,11 +62,21 @@ bool CollidingLayer::emplaceEntity(Entity *e)
     if (x < 0 || x > w || y < 0 || y > h)
         return false;
     _layer[x][y] = e;
+    _entities.push_back(e);
     return true;
 }
 
 bool CollidingLayer::removeEntity(const int& x, const int& y)
 {
+    auto e = _layer[x][y];
+    std::size_t size = _entities.size();
+
+    for (std::size_t i = 0; i < size; i++) {
+        if (e == _entities[i]) {
+            _entities.erase(_entities.begin() + i);
+            break;
+        }
+    }
     _layer[x][y] = nullptr;
     return true;
 }
@@ -93,7 +108,6 @@ std::vector<Entity *> CollidingLayer::checkAround(Entity *e, int range)
     int x = position.x / tileWidth;
     int y = position.y / tileHeight;
 
-    std::cout << "X " << x << " Y " << y << std::endl;
     for (std::size_t x2 = x - range; x2 <= (x + range); x2++) {
         for (std::size_t y2 = y - range; y2 <= (y + range); y2++) {
             if (_layer[x2][y2] != nullptr)

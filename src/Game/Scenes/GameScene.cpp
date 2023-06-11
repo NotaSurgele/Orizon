@@ -6,6 +6,7 @@
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Light.hpp"
 
 #define STB_PERLIN_IMPLEMENTATION
 #include "external/stb_perlin.hpp"
@@ -28,9 +29,18 @@ void GameScene::create()
     // test.clear(sf::Color(0, 0, 0, 200));
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    wall.setFillColor(sf::Color::Blue);
-    wall.setPosition(50, -10);
-    wall.setSize(sf::Vector2f(10, 50));
+    player->addComponent<Light>();
+    // wall.setFillColor(sf::Color::Blue);
+    // wall.setPosition(-10, -10);
+    // wall.setSize(sf::Vector2f(10, 50));
+    // wall2.setFillColor(sf::Color::Blue);
+    // wall2.setPosition(50, -10);
+    // wall2.setSize(sf::Vector2f(10, 50));
+    // for (double angle = 0; angle < 360; angle++) {
+    //     RayTracer ray(sf::Vector2f(0, 0), sf::Vector2f(1, 0));
+    //     ray.rotate(angle);
+    //     _rayCaster.push_back(ray);
+    // }
 }
 
 void GameScene::update()
@@ -46,7 +56,7 @@ void GameScene::update()
         layer = new CollidingLayer(10, 10, 1920, 1080, 16, 16);
         float offset = 700;
         int chunks = 1;
-        float w = 150;
+        float w = 100;
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -119,12 +129,19 @@ void GameScene::update()
         // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
-    ray.show(5);
-    ray.hit(wall, sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
+    // for (auto ray : _rayCaster) {
+    //     ray.setPosition(sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
+    //     if (ray.hit(wall2))
+    //         std::cout << "oui" << std::endl;
+    //     else
+    //         ray.hit(wall);
+    //     ray.show(2);
+    // }
     // ray.hit()
     // player->getComponent<Sprite>()->setTexture(test.getTexture());
     // DRAW(box1);
-    DRAW(wall);
+    // DRAW(wall);
+    // DRAW(wall2);
 }
 
 void GameScene::destroy()
