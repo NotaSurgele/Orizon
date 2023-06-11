@@ -122,12 +122,15 @@ public:
 
     void camera_system(Entity *e);
 
+    void light_system(Entity *e);
+
     void systems();
 
 private:
     static void sort();
 
 private:
+    std::vector<Entity *> _inView;
     static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;

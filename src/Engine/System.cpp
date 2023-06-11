@@ -1,5 +1,6 @@
 #include "Engine/System.hpp"
 #include "Components/View.hpp"
+#include "Components/Light.hpp"
 #include "Core.hpp"
 #include "Raytracer.hpp"
 
@@ -13,7 +14,7 @@ void System::velocity_system(Entity *e)
         return;
     if (box != nullptr) {
         if (box->state == BoxCollider::Collide::TRUE) {
-            std::cout << box->side << std::endl;
+            // std::cout << box->side << std::endl;
             switch (box->side) {
                 case BoxCollider::Side::DOWN:
                     velocity->setY(0.0f);
@@ -56,6 +57,7 @@ void System::systems()
         camera_system(e);
         if (!isInView(e))
             continue;
+        _inView.push_back(e);
         auto transform = e->getComponent<Transform2D>();
         auto sprite = e->getComponent<Sprite>();
 
@@ -71,6 +73,7 @@ void System::systems()
         gravity_system(e);
         BoxSystem(e);
         collider_system(e);
+        light_system(e);
         update_custom_component(e);
     }
     for (auto &it : componentCache) {
@@ -78,6 +81,24 @@ void System::systems()
         it = nullptr;
     }
     componentCache.clear();
+}
+
+void System::light_system(Entity *e)
+{
+    auto light = e->getComponent<Light>();
+
+    if (!light)
+        return;
+    for (auto layer : _layers) {
+        if (!layer->contain(e))
+            continue;
+        if (!isInView(e))
+            continue;
+        std::vector<Entity *> entities = layer->checkAround(e, 30);
+
+        light->emit(entities);
+        // DRAW(shape);
+    }
 }
 
 void System::gravity_system(Entity *e)
@@ -125,8 +146,9 @@ void System::collider_system(Entity *e)
         std::vector<Entity *> arr = layer->checkAround(e, range);
         for (auto *entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-            auto rect = collider->shape(sf::Color::Red);
-            DRAW(rect);
+            // auto rect = collider->shape(sf::Color::Red);
+            // DRAW(collider);
+            // DRAW(rect);
             box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
 
             // determine colliding position

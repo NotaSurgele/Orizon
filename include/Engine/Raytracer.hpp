@@ -8,8 +8,12 @@ public:
     RayTracer(  const sf::Vector2f& position,
                 const sf::Vector2f& direction);
 
+    void setPosition(const sf::Vector2i& position);
+    void setPosition(const sf::Vector2f& position);
     void show(const float& thickness);
-    bool hit(sf::RectangleShape wall, sf::Vector2i rotate);
+    bool hit(BoxCollider *collider);
+    void setDirection(const sf::Vector2f& direction);
+    void rotate(const float& angle);
 
 private:
     sf::Vector2f _position = sf::Vector2f(0, 0);

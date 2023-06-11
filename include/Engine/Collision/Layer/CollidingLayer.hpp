@@ -12,6 +12,7 @@ public:
     bool contain(const float& x, const float& y);
     bool removeEntity(const int& x, const int& y);
     sf::Vector2f emptySpot(int range);
+    std::vector<Entity *> getAllEntities();
 
     std::vector<Entity *> checkAround(Entity *e, int range);
     void display();
@@ -25,5 +26,6 @@ public:
     float _y = 0;
 
 private:
+    std::vector<Entity *> _entities;
     std::vector<std::vector<Entity *>> _layer;
 };
