@@ -20,28 +20,7 @@ public:
     System() = default;
     ~System() = default;
 
-    static void addEntity(Entity *entity)
-    {
-        entity->addComponent<Id>(_id++);
-        entity->addComponent<Layer>(0);
-        if (_registry_size >= 2) {
-            auto it = _registry.begin();
-
-            for (auto e : _registry) {
-                auto v = e->getComponent<Layer>()->value();
-                auto v2 = entity->getComponent<Layer>()->value();
-
-                if (v > v2) {
-                    _registry.insert(it, entity);
-                    _registry_size++;
-                    return;
-                }
-                it++;
-            }
-        }
-        _registry.push_back(entity);
-        _registry_size++;
-    }
+    static void addEntity(Entity *entity);
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -124,7 +103,12 @@ public:
 
     void light_system(Entity *e);
 
+    void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
+
     void systems();
+
+public:
+    static inline int lightSources = 0;
 
 private:
     static void sort();
