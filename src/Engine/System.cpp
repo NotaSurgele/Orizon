@@ -4,6 +4,30 @@
 #include "Core.hpp"
 #include "Raytracer.hpp"
 
+void System::addEntity(Entity *entity)
+{
+    entity->addComponent<Id>(_id++);
+    entity->addComponent<Layer>(0);
+    Light::set = false;
+    if (_registry_size >= 2) {
+        auto it = _registry.begin();
+
+        for (auto e : _registry) {
+            auto v = e->getComponent<Layer>()->value();
+            auto v2 = entity->getComponent<Layer>()->value();
+
+            if (v > v2) {
+                _registry.insert(it, entity);
+                _registry_size++;
+                return;
+            }
+            it++;
+        }
+    }
+    _registry.push_back(entity);
+    _registry_size++;
+}
+
 void System::velocity_system(Entity *e)
 {
     auto velocity = e->getComponent<Velocity<float>>();
@@ -49,31 +73,41 @@ void System::sort()
     );
 }
 
+void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
+{
+    auto sprite = e->getComponent<Sprite>();
+    auto transform = e->getComponent<Transform2D>();
+
+    if (!transform) {
+        // TODO: instead of destroying it keep it
+        transform = Transform2D::zero();
+        componentCache.push_back(transform);
+    }
+    if (!sprite)
+        return;
+    sprite->setTransform(transform);
+    DRAW(sprite);
+}
+
 void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
     for (auto& e : _registry) {
         camera_system(e);
+        auto sprite = e->getComponent<Sprite>();
+
+        if (System::lightSources > 0 && !Light::set && sprite)
+            sprite->setColor(Light::darkColor);
         if (!isInView(e))
             continue;
         _inView.push_back(e);
-        auto transform = e->getComponent<Transform2D>();
-        auto sprite = e->getComponent<Sprite>();
-
-        if (!sprite)
-            return;
-        if (!transform) {
-            transform = Transform2D::zero();
-            componentCache.push_back(transform);
-        }
-        sprite->setTransform(transform);
-        DRAW(sprite);
+        light_system(e);
+        sprite_system(e, componentCache);
         velocity_system(e);
         gravity_system(e);
         BoxSystem(e);
         collider_system(e);
-        light_system(e);
         update_custom_component(e);
     }
     for (auto &it : componentCache) {
@@ -81,6 +115,7 @@ void System::systems()
         it = nullptr;
     }
     componentCache.clear();
+    Light::set = true;
 }
 
 void System::light_system(Entity *e)
@@ -90,11 +125,11 @@ void System::light_system(Entity *e)
     if (!light)
         return;
     for (auto layer : _layers) {
-        if (!layer->contain(e))
-            continue;
         if (!isInView(e))
             continue;
-        std::vector<Entity *> entities = layer->checkEdges(e, 10);
+        if (!layer->contain(e))
+            continue;
+        std::vector<Entity *> entities = layer->checkAround(e, 5);
 
         light->emit(entities);
         // DRAW(shape);

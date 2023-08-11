@@ -40,6 +40,13 @@ Sprite& Sprite::setSprite(sf::Sprite const& sprite)
     return *this;
 }
 
+Sprite& Sprite::setColor(const sf::Color& color)
+{
+    _sprite.setColor(color);
+    return *this;
+}
+
+
 Sprite& Sprite::setTransform(Transform2D *transform)
 {
     if (transform != nullptr) {
@@ -48,6 +55,11 @@ Sprite& Sprite::setTransform(Transform2D *transform)
         _sprite.setRotation(transform->rotation);
     }
     return *this;
+}
+
+const sf::Color& Sprite::getColor()
+{
+    return _sprite.getColor();
 }
 
 Sprite& Sprite::setTexture(sf::Texture const& texture)

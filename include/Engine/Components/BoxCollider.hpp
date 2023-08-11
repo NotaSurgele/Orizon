@@ -67,6 +67,11 @@ public:
         target.draw(_shape, states);
     }
 
+    void setColor(const sf::Color& color)
+    {
+        _shape.setOutlineColor(color);
+    }
+
 public:
     Collide state = Collide::FALSE;
     Side side = Side::NONE;

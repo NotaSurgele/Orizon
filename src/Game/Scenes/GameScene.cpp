@@ -53,7 +53,7 @@ void GameScene::update()
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
-        layer = new CollidingLayer(10, 10, 1920, 1080, 16, 16);
+        layer = new CollidingLayer(0, 0, 3000, 3000, 16, 16);
         float offset = 700;
         int chunks = 1;
         float w = 100;

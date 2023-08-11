@@ -15,6 +15,8 @@ public:
     bool hit(BoxCollider *collider);
     void setDirection(const sf::Vector2f& direction);
     void rotate(const float& angle);
+    sf::Vector2f getCollisionPoint();
+    sf::Vector2f getPosition();
 
 private:
     sf::Vector2f _position = sf::Vector2f(0, 0);
@@ -22,4 +24,5 @@ private:
     sf::Vertex _line[2];
     bool _hit = false;
     sf::Vector2f _collisionPoint = sf::Vector2f(0, 0);
+    float _length = 1.0f;
 };

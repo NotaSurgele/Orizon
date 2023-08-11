@@ -125,6 +125,7 @@ std::vector<Entity *> CollidingLayer::checkEdges(Entity *e, int range)
     if (!collider)
         return arr;
     auto position = collider->getPosition();
+    auto size = collider->getSize();
     int baseX = position.x / tileWidth;
     int baseY = position.y / tileHeight;
     int x = baseX - range;
@@ -145,11 +146,11 @@ std::vector<Entity *> CollidingLayer::checkEdges(Entity *e, int range)
             // Check around the block if there is an avalaible place depending on the entity position
             if (position.x < blockPosition.x)
                 directionX = -1;
-            else if (position.x > blockPosition.x)
+            else
                 directionX = 1;
             if (position.y < blockPosition.y)
                 directionY = -1;
-            else if (position.y > blockPosition.y)
+            else
                 directionY = 1;
             if (_layer[x2 + directionX][y2 + directionY] == nullptr) {
                 arr.push_back(_layer[x2][y2]);

@@ -3,7 +3,8 @@
 RayTracer::RayTracer(const sf::Vector2f& position,
                     const sf::Vector2f& direction,
                     const float& length)
-                    :   _position(position)
+                    :   _position(position),
+                        _length(length)
 {
     _direction.x = direction.x;
     _direction.y = direction.y;
@@ -16,11 +17,19 @@ RayTracer::RayTracer(const sf::Vector2f& position,
 
 void RayTracer::rotate(const float& angle)
 {
-    float x = _line[1].position.x;
-    float y = _line[1].position.y;
+    sf::Vector2f startPoint = _line[0].position;
+    sf::Vector2f endPoint = _line[1].position;
 
-    _line[1].position.x = x * cos(angle) - y * sin(angle);
-    _line[1].position.y = x * sin(angle)+ y * cos(angle);
+    float centerX = startPoint.x;
+    float centerY = startPoint.y;
+
+    float diffX = endPoint.x - centerX;
+    float diffY = endPoint.y - centerY;
+
+    float rotatedX = centerX + diffX * cos(angle) - diffY * sin(angle);
+    float rotatedY = centerY + diffX * sin(angle) + diffY * cos(angle);
+
+    _line[1].position = sf::Vector2f(rotatedX, rotatedY);
 }
 
 bool RayTracer::hit(BoxCollider *wall)
@@ -69,7 +78,7 @@ void RayTracer::setPosition(const sf::Vector2i& position)
 {
     _position.x = position.x;
     _position.y = position.y;
-    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * 300), _position.y + (_direction.y * 300));
+    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * _length), _position.y + (_direction.y * _length));
     _line[1].position = pos2;
     _line[0].position.x = position.x;
     _line[0].position.y = position.y;
@@ -79,7 +88,7 @@ void RayTracer::setPosition(const sf::Vector2f& position)
 {
     _position.x = position.x;
     _position.y = position.y;
-    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * 300), _position.y + (_direction.y * 300));
+    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * _length), _position.y + (_direction.y * _length));
     _line[1].position = pos2;
     _line[0].position.x = position.x;
     _line[0].position.y = position.y;
@@ -89,6 +98,16 @@ void RayTracer::setDirection(const sf::Vector2f& direction)
 {
     _direction.x = direction.x;
     _direction.y = direction.y;
+}
+
+sf::Vector2f RayTracer::getCollisionPoint()
+{
+    return _collisionPoint;
+}
+
+sf::Vector2f RayTracer::getPosition()
+{
+    return _position;
 }
 
 void RayTracer::show(const float& thickness)
