@@ -1,12 +1,13 @@
 #include "Raytracer.hpp"
 
-RayTracer::RayTracer(const sf::Vector2f& position, 
-                    const sf::Vector2f& direction) 
+RayTracer::RayTracer(const sf::Vector2f& position,
+                    const sf::Vector2f& direction,
+                    const float& length)
                     :   _position(position)
 {
     _direction.x = direction.x;
     _direction.y = direction.y;
-    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * 300), _position.y + (_direction.y * 300));
+    sf::Vector2f pos2 = sf::Vector2f(_position.x + (_direction.x * length), _position.y + (_direction.y * length));
     _line[0].position = _position;
     _line[0].color = sf::Color::Red;
     _line[1].position = pos2;

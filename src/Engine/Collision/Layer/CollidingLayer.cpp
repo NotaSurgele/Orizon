@@ -142,13 +142,14 @@ std::vector<Entity *> CollidingLayer::checkEdges(Entity *e, int range)
             }
 
             auto blockPosition = block->getComponent<Transform2D>()->position;
+            // Check around the block if there is an avalaible place depending on the entity position
             if (position.x < blockPosition.x)
                 directionX = -1;
-            if (position.x > blockPosition.x)
+            else if (position.x > blockPosition.x)
                 directionX = 1;
             if (position.y < blockPosition.y)
                 directionY = -1;
-            if (position.y > blockPosition.y)
+            else if (position.y > blockPosition.y)
                 directionY = 1;
             if (_layer[x2 + directionX][y2 + directionY] == nullptr) {
                 arr.push_back(_layer[x2][y2]);
