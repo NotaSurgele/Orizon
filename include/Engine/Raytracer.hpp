@@ -6,7 +6,8 @@ class RayTracer {
 public:
     RayTracer() = delete;
     RayTracer(  const sf::Vector2f& position,
-                const sf::Vector2f& direction);
+                const sf::Vector2f& direction,
+                const float& length);
 
     void setPosition(const sf::Vector2i& position);
     void setPosition(const sf::Vector2f& position);
