@@ -94,7 +94,7 @@ void System::light_system(Entity *e)
             continue;
         if (!isInView(e))
             continue;
-        std::vector<Entity *> entities = layer->checkAround(e, 30);
+        std::vector<Entity *> entities = layer->checkEdges(e, 10);
 
         light->emit(entities);
         // DRAW(shape);

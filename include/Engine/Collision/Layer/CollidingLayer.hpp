@@ -15,6 +15,7 @@ public:
     std::vector<Entity *> getAllEntities();
 
     std::vector<Entity *> checkAround(Entity *e, int range);
+    std::vector<Entity *> checkEdges(Entity *e, int range);
     void display();
 
 public:

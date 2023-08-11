@@ -117,6 +117,47 @@ std::vector<Entity *> CollidingLayer::checkAround(Entity *e, int range)
     return arr;
 }
 
+std::vector<Entity *> CollidingLayer::checkEdges(Entity *e, int range)
+{
+    std::vector<Entity *> arr;
+    auto collider = e->getComponent<BoxCollider>();
+
+    if (!collider)
+        return arr;
+    auto position = collider->getPosition();
+    int baseX = position.x / tileWidth;
+    int baseY = position.y / tileHeight;
+    int x = baseX - range;
+    int y = baseY - range;
+
+    for (std::size_t x2 = x; x2 <= (baseX + range); x2++) {
+        for (std::size_t y2 = y; y2 <= (baseY + range); y2++) {
+            auto block = _layer[x2][y2];
+            int directionX = 0;
+            int directionY = 0;
+
+            if (block == nullptr) {
+                y2++;
+                continue;
+            }
+
+            auto blockPosition = block->getComponent<Transform2D>()->position;
+            if (position.x < blockPosition.x)
+                directionX = -1;
+            if (position.x > blockPosition.x)
+                directionX = 1;
+            if (position.y < blockPosition.y)
+                directionY = -1;
+            if (position.y > blockPosition.y)
+                directionY = 1;
+            if (_layer[x2 + directionX][y2 + directionY] == nullptr) {
+                arr.push_back(_layer[x2][y2]);
+            }
+        }
+    }
+    return arr;
+}
+
 void CollidingLayer::display()
 {
     for (std::size_t x = 0; x < w; x++) {
