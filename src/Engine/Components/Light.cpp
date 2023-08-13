@@ -53,10 +53,10 @@ void Light::emit(const std::vector<Entity *>& entities)
                 float deltaY = point.y - position.y;
                 float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
                 float attenuation = (1.0f / (1.0f + 0.1f * distance + 0.01f * distance * distance)) * _intensity;
-                boxSprite->setColor(this->applyLightEffect(attenuation * 100));
+                boxSprite->setColor(this->applyLightEffect(attenuation * 300));
                 // DRAW(box);
                 // ray.show(1);
-                // break;
+                break;
             }
         }
         angle++;

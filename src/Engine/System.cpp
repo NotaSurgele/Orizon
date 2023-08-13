@@ -124,16 +124,20 @@ void System::light_system(Entity *e)
 
     if (!light)
         return;
-    for (auto layer : _layers) {
-        if (!isInView(e))
-            continue;
-        if (!layer->contain(e))
-            continue;
-        std::vector<Entity *> entities = layer->checkAround(e, 5);
+    if (!isInView(e))
+        return;
+    if (_layers.size() > 0) {
+        for (auto layer : _layers) {
+            if (!layer->contain(e))
+                continue;
+            std::vector<Entity *> entities = layer->checkEdges(e, 5);
 
-        light->emit(entities);
-        // DRAW(shape);
+            light->emit(entities);
+            // DRAW(shape);
+        }
+        return;
     }
+    light->emit(_registry);
 }
 
 void System::gravity_system(Entity *e)
