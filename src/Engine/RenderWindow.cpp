@@ -42,6 +42,11 @@ View *RenderWindow::getView()
     return _view;
 }
 
+sf::RenderWindow& RenderWindow::getSFMLRenderWindow()
+{
+    return _window;
+}
+
 void RenderWindow::draw(Drawable *sprite)
 {
     if (sprite == nullptr)  {
@@ -49,7 +54,7 @@ void RenderWindow::draw(Drawable *sprite)
             std::cerr << DRAW_NULL_ERROR << std::endl;
         return;
     }
-    _window.draw(static_cast<sf::Drawable &>(*sprite));
+    _window.draw(static_cast<sf::Drawable &>(*sprite), sf::BlendAlpha);
 }
 
 void RenderWindow::draw(sf::Drawable const& draw)

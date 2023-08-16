@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
 #include <thread>
+#include <functional>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/EntitySignature.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
-#include "QuadTree.hpp"
+#include "Collision/QuadTree.hpp"
+#include "Collision/Layer/CollidingLayer.hpp"
 #include "Time.hpp"
 #include "Layer.hpp"
 #include "Entity.hpp"
@@ -18,28 +20,7 @@ public:
     System() = default;
     ~System() = default;
 
-    static void addEntity(Entity *entity)
-    {
-        entity->addComponent<Id>(_id++);
-        entity->addComponent<Layer>(0);
-        if (_registry_size >= 2) {
-            auto it = _registry.begin();
-
-            for (auto e : _registry) {
-                auto v = e->getComponent<Layer>()->value();
-                auto v2 = entity->getComponent<Layer>()->value();
-
-                if (v > v2) {
-                    _registry.insert(it, entity);
-                    _registry_size++;
-                    return;
-                }
-                it++;
-            }
-        }
-        _registry.push_back(entity);
-        _registry_size++;
-    }
+    static void addEntity(Entity *entity);
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -78,7 +59,7 @@ public:
 
     static void refresh_quad()
     {
-        _quad->destroy();
+        // _quad->clear();
         for (auto &e : _registry) {
             auto box = e->getComponent<Transform2D>();
             auto transform = e->getComponent<Transform2D>();
@@ -87,6 +68,11 @@ public:
                 _quad->insert(e);
         }
         std::cout << _registry.size() << std::endl;
+    }
+
+    static void addCollidingLayer(CollidingLayer *layer)
+    {
+        _layers.push_back(layer);
     }
 
     bool isInView(Entity *e);
@@ -101,9 +87,9 @@ public:
 
     void quad_collision_system();
 
-    void box_system(Entity *e);
+    void BoxSystem(Entity *e);
 
-    void collider_system();
+    void collider_system(Entity *e);
 
     void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
 
@@ -115,14 +101,23 @@ public:
 
     void camera_system(Entity *e);
 
+    void light_system(Entity *e);
+
+    void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
+
     void systems();
+
+public:
+    static inline int lightSources = 0;
 
 private:
     static void sort();
 
 private:
-    static inline QuadTree *_quad = new QuadTree((Rectangle) {0, 0, 1920, 1080}, 50, "all");
+    std::vector<Entity *> _inView;
+    static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
+    static inline std::vector<CollidingLayer *> _layers;
 };

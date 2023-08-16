@@ -9,4 +9,6 @@ void Time::update()
     sf::Time dt = _clock.restart();
 
     deltaTime = dt.asSeconds();
+    if (deltaTime > 2.0f)
+        deltaTime = 0.1f;
 }
