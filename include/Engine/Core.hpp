@@ -96,3 +96,9 @@ public:
 
 #define CORE\
         Core::instance
+
+#define RANDOM(min, max) \
+        std::rand() % (int)(max - min + 1) + min;
+
+#define RANDOMF(min, max) \
+        static_cast<float>(std::rand() % (int)(max - min + 1) + min)

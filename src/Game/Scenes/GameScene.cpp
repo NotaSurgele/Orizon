@@ -6,6 +6,7 @@
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Light.hpp"
 
 #define STB_PERLIN_IMPLEMENTATION
 #include "external/stb_perlin.hpp"
@@ -17,17 +18,34 @@
 
 void GameScene::create()
 {
+    // _particles = Particles(10);
+    // _particles.setShape(ParticleShape::SQUARE, 10);
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         auto speed = json["speed"];
 
         e->addCustomComponent<CharacterController>(speed);
     });
+    // test.create(200, 200);
+    // test.clear(sf::Color(0, 0, 0, 200));
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
+    player->addComponent<Light>();
+    // wall.setFillColor(sf::Color::Blue);
+    // wall.setPosition(-10, -10);
+    // wall.setSize(sf::Vector2f(10, 50));
+    // wall2.setFillColor(sf::Color::Blue);
+    // wall2.setPosition(50, -10);
+    // wall2.setSize(sf::Vector2f(10, 50));
+    // for (double angle = 0; angle < 360; angle++) {
+    //     RayTracer ray(sf::Vector2f(0, 0), sf::Vector2f(1, 0));
+    //     ray.rotate(angle);
+    //     _rayCaster.push_back(ray);
+    // }
 }
 
 void GameScene::update()
 {
+    // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
 
     if (Input::isActionPressed("Exit"))
@@ -35,10 +53,10 @@ void GameScene::update()
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
     if (Input::isKeyDown("Space")) {
-
+        layer = new CollidingLayer(0, 0, 3000, 3000, 16, 16);
         float offset = 700;
         int chunks = 1;
-        float w = 150;
+        float w = 100;
         _heightMap.clear();
 
         for (auto block : _blocks) {
@@ -65,7 +83,7 @@ void GameScene::update()
         float smooth = 70;
         float h = w;
 
-        float modifier = .05f;
+        float modifier = .09f;
 
         int64_t seed = std::rand() % 4000;
         for (int i = 0; i < chunks; i++) {
@@ -97,10 +115,10 @@ void GameScene::update()
                         Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
                         auto transform = e->getComponent<Transform2D>();
 
-                        std::cout << e->getComponent<Layer>()->value() << std::endl;
                         transform->position.x = i;
                         transform->position.y = -j + offset;
                         _blocks.push_back(e);
+                        layer->emplaceEntity(e);
                     }
                     j += 16;
                 }
@@ -111,7 +129,19 @@ void GameScene::update()
         // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
-    DRAW(box1);
+    // for (auto ray : _rayCaster) {
+    //     ray.setPosition(sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
+    //     if (ray.hit(wall2))
+    //         std::cout << "oui" << std::endl;
+    //     else
+    //         ray.hit(wall);
+    //     ray.show(2);
+    // }
+    // ray.hit()
+    // player->getComponent<Sprite>()->setTexture(test.getTexture());
+    // DRAW(box1);
+    // DRAW(wall);
+    // DRAW(wall2);
 }
 
 void GameScene::destroy()
