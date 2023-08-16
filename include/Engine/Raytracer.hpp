@@ -19,8 +19,12 @@ public:
     sf::Vector2f getPosition();
 
 private:
+    bool skip(BoxCollider *collider);
+
+private:
     sf::Vector2f _position = sf::Vector2f(0, 0);
-    sf::Vector2f _direction = sf::Vector2f(0, 0);
+    sf::Vector2i _direction = sf::Vector2i(0, 0);
+    sf::Vector2f _preciseDirection = sf::Vector2f(0, 0);
     sf::Vertex _line[2];
     bool _hit = false;
     sf::Vector2f _collisionPoint = sf::Vector2f(0, 0);

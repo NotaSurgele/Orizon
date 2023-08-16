@@ -130,10 +130,9 @@ void System::light_system(Entity *e)
         for (auto layer : _layers) {
             if (!layer->contain(e))
                 continue;
-            std::vector<Entity *> entities = layer->checkEdges(e, 5);
+            std::vector<Entity *> entities = layer->checkEdges(e, 10);
 
             light->emit(entities);
-            // DRAW(shape);
         }
         return;
     }

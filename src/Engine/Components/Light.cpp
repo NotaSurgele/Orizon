@@ -32,34 +32,50 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     return sf::Color(newRed, newGreen, newBlue, Light::darkColor.a);
 }
 
-void Light::emit(const std::vector<Entity *>& entities)
+void Light::processRays(const std::vector<RayTracer>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
-    double angle = 0.0f;
-
-    for (auto ray : _rayCaster) {
+    int angle = 0;
+    while (angle < 360) {
+        RayTracer ray = rays[angle];
         ray.setPosition(_e->getComponent<Transform2D>()->position);
-        // ray.setDirection(sf::Vector2f(1, 0));
-        ray.rotate(angle);
+        ray.rotate(static_cast<double>(angle));
+
         for (auto e : entities) {
             auto box = e->getComponent<BoxCollider>();
             auto boxSprite = e->getComponent<Sprite>();
-            // box->setColor(sf::Color::White);
-            // sf::Color emission = sf
+
             if (ray.hit(box)) {
                 auto point = ray.getCollisionPoint();
                 auto position = ray.getPosition();
 
                 float deltaX = point.x - position.x;
                 float deltaY = point.y - position.y;
-                float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-                float attenuation = (1.0f / (1.0f + 0.1f * distance + 0.01f * distance * distance)) * _intensity;
+                float squaredDistance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+                float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
+
+                // Apply the light effect using a lock to avoid race conditions
+                std::unique_lock<std::mutex> lock(std::mutex);
                 boxSprite->setColor(this->applyLightEffect(attenuation * 300));
-                // DRAW(box);
-                // ray.show(1);
                 break;
             }
         }
-        angle++;
+        angle = angleCounter.fetch_add(1, std::memory_order_relaxed);
+    }
+}
+
+void Light::emit(const std::vector<Entity *>& entities)
+{
+    std::atomic<int> angleCounter(0);
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < 100; ++i) {
+        threads.emplace_back([this, &entities, &angleCounter]() {
+            processRays(_rayCaster, entities, angleCounter);
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
     }
 }
 

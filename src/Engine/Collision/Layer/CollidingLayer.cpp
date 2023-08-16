@@ -102,14 +102,19 @@ bool CollidingLayer::contain(const float& x, const float& y)
 
 std::vector<Entity *> CollidingLayer::checkAround(Entity *e, int range)
 {
-    std::vector<Entity *> arr;
+    std::vector<Entity*> arr;
     auto position = e->getComponent<BoxCollider>()->getPosition();
 
     int x = position.x / tileWidth;
     int y = position.y / tileHeight;
 
-    for (std::size_t x2 = x - range; x2 <= (x + range); x2++) {
-        for (std::size_t y2 = y - range; y2 <= (y + range); y2++) {
+    int minX = std::max(0, x - range);
+    int maxX = std::min(static_cast<int>(_layer.size()) - 1, x + range);
+    int minY = std::max(0, y - range);
+    int maxY = std::min(static_cast<int>(_layer[0].size()) - 1, y + range);
+
+    for (int x2 = minX; x2 <= maxX; x2++) {
+        for (int y2 = minY; y2 <= maxY; y2++) {
             if (_layer[x2][y2] != nullptr)
                 arr.push_back(_layer[x2][y2]);
         }
