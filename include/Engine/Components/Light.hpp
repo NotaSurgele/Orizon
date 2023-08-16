@@ -2,6 +2,9 @@
 
 #include "Engine/Entity.hpp"
 #include "Raytracer.hpp"
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 class Light : public IComponent {
 public:
@@ -16,7 +19,7 @@ public:
 
 private:
     sf::Color applyLightEffect(const float& attenuation);
-
+    void processRays(const std::vector<RayTracer>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter);
 private:
     std::vector<RayTracer> _rayCaster;
     Entity *_e = nullptr;
