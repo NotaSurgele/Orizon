@@ -8,7 +8,7 @@
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
 #include "Collision/QuadTree.hpp"
-#include "Collision/Layer/CollidingLayer.hpp"
+#include "Collision/Layer/TileMap.hpp"
 #include "Time.hpp"
 #include "Layer.hpp"
 #include "Entity.hpp"
@@ -70,7 +70,7 @@ public:
         std::cout << _registry.size() << std::endl;
     }
 
-    static void addCollidingLayer(CollidingLayer *layer)
+    static void addTileMap(TileMap *layer)
     {
         _layers.push_back(layer);
     }
@@ -119,5 +119,5 @@ private:
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
-    static inline std::vector<CollidingLayer *> _layers;
+    static inline std::vector<TileMap *> _layers;
 };

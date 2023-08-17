@@ -4,7 +4,7 @@
 #include "Game/Entity/Player.hpp"
 #include "external/OpenSimplexNoise.hpp"
 #include "Engine/Particle/Particles.hpp"
-#include "Engine/Collision/Layer/CollidingLayer.hpp"
+#include "Engine/Collision/Layer/TileMap.hpp"
 #include "Engine/RayCaster.hpp"
 
 class GameScene : public Scene {
@@ -15,7 +15,7 @@ public:
 
 private:
     Entity *player = nullptr;
-    CollidingLayer *layer = nullptr;
+    TileMap *layer = nullptr;
     std::vector<Entity *> _blocks;
     std::vector<std::vector<int>> _heightMap;
     bool load = false;

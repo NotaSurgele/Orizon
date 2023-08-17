@@ -32,19 +32,22 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     return sf::Color(newRed, newGreen, newBlue, Light::darkColor.a);
 }
 
-void Light::processRays(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
+void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
+    // FIXME: Not all light disapear
     int angle = 0;
-    while (angle < 360) {
+
+    std::unique_lock<std::mutex> lock(std::mutex);
+    while (angle < rays.size()) {
         RayCaster ray = rays[angle];
         ray.setPosition(_e->getComponent<Transform2D>()->position);
         ray.rotate(static_cast<double>(angle));
 
         for (auto e : entities) {
-            auto box = e->getComponent<BoxCollider>();
             auto boxSprite = e->getComponent<Sprite>();
+            auto transform = e->getComponent<Transform2D>();
 
-            if (ray.hit(box)) {
+            if (ray.hit(transform)) {
                 auto point = ray.getCollisionPoint();
                 auto position = ray.getPosition();
 
@@ -54,9 +57,7 @@ void Light::processRays(const std::vector<RayCaster>& rays, const std::vector<En
                 float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
 
                 // Apply the light effect using a lock to avoid race conditions
-                std::unique_lock<std::mutex> lock(std::mutex);
                 boxSprite->setColor(this->applyLightEffect(attenuation * 100));
-                break;
             }
         }
         angle = angleCounter.fetch_add(1, std::memory_order_relaxed);
@@ -68,15 +69,24 @@ void Light::emit(const std::vector<Entity *>& entities)
     std::atomic<int> angleCounter(0);
     std::vector<std::thread> threads;
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 20; ++i) {
         threads.emplace_back([this, &entities, &angleCounter]() {
-            processRays(_rayCaster, entities, angleCounter);
+            processLight(_rayCaster, entities, angleCounter);
         });
     }
 
     for (auto& thread : threads) {
         thread.join();
     }
+    // std::size_t counter = 0;
+    // convex.setPointCount(points.size());
+
+    // for (auto point : points) {
+    //     convex.setPoint(counter, point);
+    //     counter++;
+    // }
+    // convex.setFillColor(sf::Color::Red);
+    // DRAW(convex);
 }
 
 void Light::destroy()

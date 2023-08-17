@@ -33,26 +33,26 @@ void RayCaster::rotate(const float& angle)
     _line[1].position = sf::Vector2f(rotatedX, rotatedY);
 }
 
-bool RayCaster::skip(BoxCollider *other)
+bool RayCaster::skip(Transform2D *other)
 {
-    auto colliderPosition = other->getPosition();
+    auto colliderPosition = other->position;
     auto startPosition = _line[0].position;
     auto colliderDirection = Math::direction2i(startPosition, colliderPosition);
 
     return colliderDirection.x != _direction.x || colliderDirection.y != _direction.y;
 }
 
-bool RayCaster::hit(BoxCollider *wall)
+bool RayCaster::hit(Transform2D *reflector)
 {
-    float wx_min = wall->getPosition().x;
-    float wy_min = wall->getPosition().y;
-    float sizex = wall->getSize().x;
-    float sizey = wall->getSize().y;
+    float wx_min = reflector->position.x;
+    float wy_min = reflector->position.y;
+    float sizex = reflector->size.x;
+    float sizey = reflector->size.y;
 
     _preciseDirection = Math::direction<float>(_line[0].position, _line[1].position);
     _direction = Math::direction2i(_line[0].position, _line[1].position);
 
-    if (this->skip(wall)) {
+    if (this->skip(reflector)) {
         return false;
     }
 
