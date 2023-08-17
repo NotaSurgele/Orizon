@@ -2,10 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include "Core.hpp"
 
-class RayTracer {
+class RayCaster {
 public:
-    RayTracer() = delete;
-    RayTracer(  const sf::Vector2f& position,
+    RayCaster() = delete;
+    RayCaster(  const sf::Vector2f& position,
                 const sf::Vector2f& direction,
                 const float& length);
 
