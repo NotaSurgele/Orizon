@@ -82,10 +82,11 @@ public:
                 static void create_transform(Entity *e, nlohmann::json const& json)
                 {
                     sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
-                    float rotation = json["rotation"];
                     sf::Vector2<float> scale = sf::Vector2<float>(json["scale"][0], json["scale"][1]);
+                    sf::Vector2<float> size = sf::Vector2<float>(json["size"][0], json["size"][1]);
+                    float rotation = json["rotation"];
 
-                    e->addComponent<Transform2D>(position.x, position.y, scale.x, scale.y, rotation);
+                    e->addComponent<Transform2D>(position.x, position.y, size.x, size.y, scale.x, scale.y, rotation);
                 }
 
                 static void create_boxcollider(Entity *e, nlohmann::json const& json)

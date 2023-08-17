@@ -12,14 +12,14 @@ public:
     void setPosition(const sf::Vector2i& position);
     void setPosition(const sf::Vector2f& position);
     void show(const float& thickness);
-    bool hit(BoxCollider *collider);
+    bool hit(Transform2D *other);
     void setDirection(const sf::Vector2f& direction);
     void rotate(const float& angle);
     sf::Vector2f getCollisionPoint();
     sf::Vector2f getPosition();
 
 private:
-    bool skip(BoxCollider *collider);
+    bool skip(Transform2D *collider);
 
 private:
     sf::Vector2f _position = sf::Vector2f(0, 0);

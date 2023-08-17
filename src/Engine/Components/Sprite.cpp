@@ -3,24 +3,24 @@
 
 Sprite::Sprite( Entity *self,
                 sf::Texture const& texture,
-                float const& width,
-                float const& height) :  _sprite(),
+                float const& scaleX,
+                float const& scaleY) :  _sprite(),
                                         _texture(),
                                         _self(self)
 {
     setTexture(texture);
-    _sprite.setScale(width, height);
+    _sprite.setScale(scaleX, scaleY);
 }
 
 Sprite::Sprite( Entity *self,
                 std::string const& texturePath,
-                float const& width,
-                float const& height) : _sprite(),
+                float const& scaleX,
+                float const& scaleY) : _sprite(),
                                        _texture(),
                                        _self(self)
 {
     setTexture(texturePath);
-    _sprite.setScale(width, height);
+    _sprite.setScale(scaleX, scaleY);
 }
 
 
@@ -51,7 +51,7 @@ Sprite& Sprite::setTransform(Transform2D *transform)
 {
     if (transform != nullptr) {
         _sprite.setPosition(transform->position.x, transform->position.y);
-        _sprite.setScale(transform->size.x, transform->size.y);
+        _sprite.setScale(transform->scale.x, transform->scale.y);
         _sprite.setRotation(transform->rotation);
     }
     return *this;
