@@ -5,7 +5,7 @@
 #include "external/OpenSimplexNoise.hpp"
 #include "Engine/Particle/Particles.hpp"
 #include "Engine/Collision/Layer/CollidingLayer.hpp"
-#include "Engine/Raytracer.hpp"
+#include "Engine/RayCaster.hpp"
 
 class GameScene : public Scene {
 public:
@@ -23,5 +23,5 @@ private:
     sf::RenderTexture test;
     sf::RectangleShape wall = sf::RectangleShape();
     sf::RectangleShape wall2 = sf::RectangleShape();
-    std::vector<RayTracer> _rayCaster;
+    std::vector<RayCaster> _rayCaster;
 };

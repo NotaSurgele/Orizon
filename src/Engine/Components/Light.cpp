@@ -4,7 +4,7 @@
 Light::Light(Entity *e) : _e(e)
 {
     for (double angle = 0; angle < 360; angle += 1) {
-        RayTracer ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), 300);
+        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), 300);
         ray.rotate(angle);
         _rayCaster.push_back(ray);
     }
@@ -32,11 +32,11 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     return sf::Color(newRed, newGreen, newBlue, Light::darkColor.a);
 }
 
-void Light::processRays(const std::vector<RayTracer>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
+void Light::processRays(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
     int angle = 0;
     while (angle < 360) {
-        RayTracer ray = rays[angle];
+        RayCaster ray = rays[angle];
         ray.setPosition(_e->getComponent<Transform2D>()->position);
         ray.rotate(static_cast<double>(angle));
 
@@ -55,7 +55,7 @@ void Light::processRays(const std::vector<RayTracer>& rays, const std::vector<En
 
                 // Apply the light effect using a lock to avoid race conditions
                 std::unique_lock<std::mutex> lock(std::mutex);
-                boxSprite->setColor(this->applyLightEffect(attenuation * 300));
+                boxSprite->setColor(this->applyLightEffect(attenuation * 100));
                 break;
             }
         }

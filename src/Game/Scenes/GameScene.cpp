@@ -37,7 +37,7 @@ void GameScene::create()
     // wall2.setPosition(50, -10);
     // wall2.setSize(sf::Vector2f(10, 50));
     // for (double angle = 0; angle < 360; angle++) {
-    //     RayTracer ray(sf::Vector2f(0, 0), sf::Vector2f(1, 0));
+    //     RayCaster ray(sf::Vector2f(0, 0), sf::Vector2f(1, 0));
     //     ray.rotate(angle);
     //     _rayCaster.push_back(ray);
     // }

@@ -1,7 +1,7 @@
-#include "Raytracer.hpp"
+#include "RayCaster.hpp"
 #include "Math.hpp"
 
-RayTracer::RayTracer(const sf::Vector2f& position,
+RayCaster::RayCaster(const sf::Vector2f& position,
                     const sf::Vector2f& direction,
                     const float& length)
                     :   _position(position),
@@ -16,7 +16,7 @@ RayTracer::RayTracer(const sf::Vector2f& position,
     _line[1].color = sf::Color::Red;
 }
 
-void RayTracer::rotate(const float& angle)
+void RayCaster::rotate(const float& angle)
 {
     sf::Vector2f startPoint = _line[0].position;
     sf::Vector2f endPoint = _line[1].position;
@@ -33,7 +33,7 @@ void RayTracer::rotate(const float& angle)
     _line[1].position = sf::Vector2f(rotatedX, rotatedY);
 }
 
-bool RayTracer::skip(BoxCollider *other)
+bool RayCaster::skip(BoxCollider *other)
 {
     auto colliderPosition = other->getPosition();
     auto startPosition = _line[0].position;
@@ -42,7 +42,7 @@ bool RayTracer::skip(BoxCollider *other)
     return colliderDirection.x != _direction.x || colliderDirection.y != _direction.y;
 }
 
-bool RayTracer::hit(BoxCollider *wall)
+bool RayCaster::hit(BoxCollider *wall)
 {
     float wx_min = wall->getPosition().x;
     float wy_min = wall->getPosition().y;
@@ -65,16 +65,17 @@ bool RayTracer::hit(BoxCollider *wall)
     double tmax = std::min(std::max(tx1, tx2), std::max(ty1, ty2));
 
     if (tmax < 0.0 || tmin > tmax) {
+        _hit = false;
         return false;
     }
-
+    _hit = true;
     _position = _line[0].position;
     _collisionPoint.x = _line[0].position.x + _preciseDirection.x * tmin;
     _collisionPoint.y = _line[0].position.y + _preciseDirection.y * tmin;
     return true;
 }
 
-void RayTracer::setPosition(const sf::Vector2i& position)
+void RayCaster::setPosition(const sf::Vector2i& position)
 {
     _position.x = position.x;
     _position.y = position.y;
@@ -84,7 +85,7 @@ void RayTracer::setPosition(const sf::Vector2i& position)
     _line[0].position.y = position.y;
 }
 
-void RayTracer::setPosition(const sf::Vector2f& position)
+void RayCaster::setPosition(const sf::Vector2f& position)
 {
     _position.x = position.x;
     _position.y = position.y;
@@ -94,23 +95,23 @@ void RayTracer::setPosition(const sf::Vector2f& position)
     _line[0].position.y = position.y;
 }
 
-void RayTracer::setDirection(const sf::Vector2f& direction)
+void RayCaster::setDirection(const sf::Vector2f& direction)
 {
     _direction.x = direction.x;
     _direction.y = direction.y;
 }
 
-sf::Vector2f RayTracer::getCollisionPoint()
+sf::Vector2f RayCaster::getCollisionPoint()
 {
     return _collisionPoint;
 }
 
-sf::Vector2f RayTracer::getPosition()
+sf::Vector2f RayCaster::getPosition()
 {
     return _position;
 }
 
-void RayTracer::show(const float& thickness)
+void RayCaster::show(const float& thickness)
 {
     if (_hit) {
         _line[1].position.x = _collisionPoint.x;

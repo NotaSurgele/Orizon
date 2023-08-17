@@ -2,7 +2,7 @@
 #include "Components/View.hpp"
 #include "Components/Light.hpp"
 #include "Core.hpp"
-#include "Raytracer.hpp"
+#include "RayCaster.hpp"
 
 void System::addEntity(Entity *entity)
 {

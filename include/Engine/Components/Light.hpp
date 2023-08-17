@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Entity.hpp"
-#include "Raytracer.hpp"
+#include "RayCaster.hpp"
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -19,9 +19,10 @@ public:
 
 private:
     sf::Color applyLightEffect(const float& attenuation);
-    void processRays(const std::vector<RayTracer>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter);
+    void processRays(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter);
+
 private:
-    std::vector<RayTracer> _rayCaster;
+    std::vector<RayCaster> _rayCaster;
     Entity *_e = nullptr;
     float _intensity = .5f;
 };
