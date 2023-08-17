@@ -2,7 +2,7 @@
 #include "Components/View.hpp"
 #include "Components/Light.hpp"
 #include "Core.hpp"
-#include "Raytracer.hpp"
+#include "RayCaster.hpp"
 
 void System::addEntity(Entity *entity)
 {
@@ -130,7 +130,8 @@ void System::light_system(Entity *e)
         for (auto layer : _layers) {
             if (!layer->contain(e))
                 continue;
-            std::vector<Entity *> entities = layer->checkEdges(e, 10);
+            std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, 5);
+
 
             light->emit(entities);
         }
@@ -175,13 +176,13 @@ void System::collider_system(Entity *e)
     range = box->getRange();
     if (range == 0)
         return;
-    for (CollidingLayer *layer : _layers) {
+    for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
 
         if (!layer->contain(x, y))
             continue;
-        std::vector<Entity *> arr = layer->checkAround(e, range);
+        std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto *entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
             // auto rect = collider->shape(sf::Color::Red);

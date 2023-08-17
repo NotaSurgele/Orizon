@@ -9,6 +9,7 @@ class Transform2D : public IComponent {
         float rotation = 0.0f;
         sf::Vector2<float> position = sf::Vector2<float>(0.0f, 0.0f);
         sf::Vector2<float> size = sf::Vector2<float>(1.0f, 1.0f);
+        sf::Vector2<float> scale = sf::Vector2<float>(1.0f, 1.0f);
 
     public:
 
@@ -17,15 +18,18 @@ class Transform2D : public IComponent {
                     float y=0,
                     float width=1,
                     float height=1,
+                    float scaleX=1,
+                    float scaleY=1,
                     float rota=0)
         {
             position.x = x;
             position.y = y;
             size.x = width;
             size.y = height;
+            scale.x = scaleX;
+            scale.y = scaleY;
             rotation = rota;
         }
-
 
         Transform2D(
                     float x=0,
