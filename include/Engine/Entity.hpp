@@ -66,6 +66,19 @@ class Entity {
             return component;
         }
 
+        template <typename First, typename... Others>
+        typename std::enable_if<sizeof...(Others) != 0, bool>::type
+        hasComponents()
+        {
+            return this->getComponent<First>() != nullptr && hasComponents<Others ...>();
+        }
+
+        template <typename Last>
+        bool hasComponents()
+        {
+            return this->getComponent<Last>() != nullptr;
+        }
+
         std::unordered_map<const char*, CustomComponents *> getCustomComponents()
         {
             return _custom_comp_map;

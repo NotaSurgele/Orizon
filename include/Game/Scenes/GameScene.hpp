@@ -4,8 +4,8 @@
 #include "Game/Entity/Player.hpp"
 #include "external/OpenSimplexNoise.hpp"
 #include "Engine/Particle/Particles.hpp"
-#include "Engine/Collision/Layer/CollidingLayer.hpp"
-#include "Engine/Raytracer.hpp"
+#include "Engine/Collision/Layer/TileMap.hpp"
+#include "Engine/RayCaster.hpp"
 
 class GameScene : public Scene {
 public:
@@ -15,7 +15,7 @@ public:
 
 private:
     Entity *player = nullptr;
-    CollidingLayer *layer = nullptr;
+    TileMap *layer = nullptr;
     std::vector<Entity *> _blocks;
     std::vector<std::vector<int>> _heightMap;
     bool load = false;
@@ -23,5 +23,5 @@ private:
     sf::RenderTexture test;
     sf::RectangleShape wall = sf::RectangleShape();
     sf::RectangleShape wall2 = sf::RectangleShape();
-    std::vector<RayTracer> _rayCaster;
+    std::vector<RayCaster> _rayCaster;
 };
