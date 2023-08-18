@@ -94,10 +94,6 @@ class Entity {
     protected:
         std::unordered_map<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
-
-        // std::unordered_map<std::string, std::function<void(...)>> _test = {
-        //     {}
-        // }
 };
 
 struct SortEntity
