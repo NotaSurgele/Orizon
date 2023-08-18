@@ -30,6 +30,7 @@ void GameScene::create()
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
     player->addComponent<Light>();
+    player->addComponent<Sound>();
     // wall.setFillColor(sf::Color::Blue);
     // wall.setPosition(-10, -10);
     // wall.setSize(sf::Vector2f(10, 50));
@@ -47,6 +48,10 @@ void GameScene::update()
 {
     // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
+
+    if (Input::isActionPressed("Play")) {
+        player->getComponent<Sound>()->play();
+    }
 
     if (Input::isActionPressed("Exit"))
         CLOSE();
