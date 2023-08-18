@@ -165,6 +165,15 @@ public:
                     e->addComponent<View>(x, y, w, h, follow);
                 }
 
+                static void create_sound(Entity *e, nlohmann::json const& json)
+                {
+                    sf::SoundBuffer buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
+                    bool loop = json["loop"];
+
+                    e->addComponent<Sound>()->setBuffer(buffer)
+                                            ->setLoop(loop);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -182,7 +191,8 @@ public:
                     { "EntitySignature", create_signature },
                     { "Gravity", create_gravity },
                     { "View", create_view },
-                    { "Layer", create_layer }
+                    { "Layer", create_layer },
+                    { "Sound", create_sound }
                 };
         };
 
@@ -221,7 +231,8 @@ public:
                     float w = ressource["tile_info"][2];
                     float h = ressource["tile_info"][3];
                     R_ADD_TILE(name, path, x, y, w, h);
-                }
+                } if (type.find("Sound") != std::string::npos)
+                    R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
             }
         }
 
