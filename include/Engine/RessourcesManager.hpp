@@ -2,7 +2,10 @@
 #include <string>
 #include <map>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <memory>
+#include <type_traits>
+#include "Sound.hpp"
 
 class RessourcesManager {
     public:
@@ -16,7 +19,11 @@ class RessourcesManager {
             T ressource = T();
 
             ressource.loadFromFile(filePath);
-            _map.insert(std::pair<std::string, T>(ressourceName, ressource));
+            if constexpr (std::is_same_v<T, sf::SoundBuffer>) {
+                _soundMap.insert(std::pair<std::string, sf::SoundBuffer>(ressourceName, ressource));
+                return *this;
+            } else
+                _map.insert(std::pair<std::string, T>(ressourceName, ressource));
             return *this;
         }
 
@@ -33,9 +40,13 @@ class RessourcesManager {
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
-            return static_cast<T &>(_map[ressourceName]);
+            if constexpr (std::is_same_v<T, sf::SoundBuffer>) {
+                return static_cast<sf::SoundBuffer &>(_soundMap[ressourceName]);
+            } else
+                return static_cast<T &>(_map[ressourceName]);
         }
 
     private:
         std::map<std::string, sf::Texture> _map;
+        std::map<std::string, sf::SoundBuffer> _soundMap;
 };

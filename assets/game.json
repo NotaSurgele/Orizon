@@ -15,6 +15,11 @@
             "name": "grass",
             "tile_info": [16, 16, 16, 16],
             "path": "../assets/tileset.png"
+        },
+        {
+            "type": "Sound",
+            "name": "toto",
+            "path": "../assets/slash.mp3"
         }
     ],
     "entities": [{
@@ -67,6 +72,11 @@
             {
                 "type": "Layer",
                 "value": 1
+            },
+            {
+                "type": "Sound",
+                "sound_name": "toto",
+                "loop": false
             }
         ]
     }]
