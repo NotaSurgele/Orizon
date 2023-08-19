@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <memory>
-#include <type_traits>
 #include "Sound.hpp"
+#include"OrizonMusic.hpp"
 
 class RessourcesManager {
     public:
@@ -27,6 +27,16 @@ class RessourcesManager {
             return *this;
         }
 
+        RessourcesManager& loadMusic(const std::string& ressourceName,
+                                    const std::string& filePath)
+        {
+            OrizonMusic *music = new OrizonMusic();
+
+            music->load(filePath);
+            _musicMap.insert(std::pair<std::string, OrizonMusic *>(ressourceName, music));
+            return *this;
+        }
+
         RessourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
                 std::string const& filepath, int x, int y, int w, int h)
         {
@@ -40,13 +50,19 @@ class RessourcesManager {
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
-            if constexpr (std::is_same_v<T, sf::SoundBuffer>) {
+            if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return static_cast<sf::SoundBuffer &>(_soundMap[ressourceName]);
-            } else
+            else
                 return static_cast<T &>(_map[ressourceName]);
+        }
+
+        OrizonMusic *getMusic(std::string const& ressourceName)
+        {
+            return _musicMap[ressourceName];
         }
 
     private:
         std::map<std::string, sf::Texture> _map;
         std::map<std::string, sf::SoundBuffer> _soundMap;
+        std::map<std::string, OrizonMusic *> _musicMap;
 };
