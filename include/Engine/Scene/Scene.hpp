@@ -231,8 +231,12 @@ public:
                     float w = ressource["tile_info"][2];
                     float h = ressource["tile_info"][3];
                     R_ADD_TILE(name, path, x, y, w, h);
-                } if (type.find("Sound") != std::string::npos)
+                }
+                if (type.find("Sound") != std::string::npos)
                     R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
+                if (type.find("Music") != std::string::npos) {
+                    R_ADD_MUSIC(name, path);
+                }
             }
         }
 

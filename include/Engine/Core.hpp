@@ -73,6 +73,12 @@ public:
 #define R_ADD_RESSOURCE(type, name, path) \
         Core::RessourceManager().addRessource<type>(name, path)
 
+/**
+ * @brief macro to push a music inside the ressource manager
+*/
+#define R_ADD_MUSIC(name, path) \
+        Core::RessourceManager().loadMusic(name, path)
+
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::RessourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
 /**
@@ -81,6 +87,9 @@ public:
  */
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
+
+#define R_GET_MUSIC(name) \
+        Core::RessourceManager().getMusic(name);
 
 #define SET_VIEW(view) \
         Core::instance->setView(view)
