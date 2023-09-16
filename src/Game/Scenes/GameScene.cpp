@@ -30,17 +30,12 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Light>();
     player->addComponent<Sound>();
-    _music = R_GET_MUSIC("tata");
-    _music->play();
 }
 
 void GameScene::update()
 {
     // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
-
-    if (Input::isActionPressed("Play")) {
-    }
 
     if (Input::isActionPressed("Exit"))
         CLOSE();

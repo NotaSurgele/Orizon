@@ -173,6 +173,8 @@ void System::collider_system(Entity *e)
 
     if (box == nullptr)
         return;
+    if (box->getType() == BoxCollider::Type::STATIC)
+        return;
     range = box->getRange();
     if (range == 0)
         return;
@@ -188,8 +190,9 @@ void System::collider_system(Entity *e)
             // auto rect = collider->shape(sf::Color::Red);
             // DRAW(collider);
             // DRAW(rect);
-            box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+            box->state = (collider->overlap(box)) ? DRAW(box), BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
 
+            // std::cout << "BOX STATE " << box->state << std::endl;
             // determine colliding position
             if (box->state == BoxCollider::Collide::TRUE) {
                 auto pos1 = box->getPosition();
@@ -201,13 +204,10 @@ void System::collider_system(Entity *e)
                     // std::cout << "POS1 " << pos1.x << " " << pos1.y << std::endl;
                     // std::cout << "POS2 " << pos2.x << " " << pos2.y << std::endl << std::endl;
                     box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::DOWNLEFT: BoxCollider::Side::DOWNRIGHT;
-                    return;
                 }
                 if (box->side == BoxCollider::Side::TOP) {
                     box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::TOPLEFT: BoxCollider::Side::TOPRIGHT;
-                    return;
                 }
-                return;
             }
             box->side = BoxCollider::Side::NONE;
             box->state = BoxCollider::Collide::FALSE;

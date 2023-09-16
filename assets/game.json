@@ -40,7 +40,8 @@
                 "type": "BoxCollider",
                 "position": [0, 0],
                 "size": [16, 16],
-                "range": 4
+                "range": 10,
+                "collision_type": "Dynamic"
             },
             {
                 "type": "Sprite",

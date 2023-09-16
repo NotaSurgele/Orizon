@@ -1,15 +1,16 @@
 #pragma once
+#include "System.hpp"
 #include "RessourcesManager.hpp"
 #include "Engine/Time.hpp"
 #include "Engine/RenderWindow.hpp"
 #include "Engine/Input.hpp"
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
-#include "Engine/System.hpp"
 #include "external/json.hpp"
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
+
 
 class ICore {
 public:
@@ -35,10 +36,10 @@ class Core : public ICore {
 
         void setView(View *view);
         void loadInputFromFile(std::string const& path);
+        RenderWindow& getWindow();
 
         //Window related function
         bool isOpen();
-        RenderWindow& getWindow();
         void CoreClear(sf::Color color);
         void CoreDraw(Drawable *component);
         void CoreDraw(sf::Drawable const& drawable);

@@ -14,7 +14,8 @@
                     "type": "BoxCollider",
                     "position": [0, 0],
                     "size": [16, 16],
-                    "range": 1
+                    "range": 1,
+                    "collision_type": "Static"
                 },
                 {
                     "type": "Sprite",
@@ -40,7 +41,8 @@
                     "type": "BoxCollider",
                     "position": [0, 0],
                     "size": [16, 16],
-                    "range": 0
+                    "range": 0,
+                    "collision_type": "Static"
                 },
                 {
                     "type": "Sprite",
