@@ -2,10 +2,12 @@
 
 #include <string>
 #include <SFML/Audio.hpp>
+#include "IComponent.hpp"
+#include "Entity.hpp"
 
-class OrizonMusic {
+class OrizonMusic : public IComponent {
 public:
-   OrizonMusic() = default;
+   OrizonMusic(Entity *e) : _e(e) {};
     ~OrizonMusic() = default;
 
 
@@ -16,13 +18,16 @@ public:
 
     void setVolume(const float& volume);
     void setLoop(bool loop);
-
+    OrizonMusic *setMusic(sf::Music *music);
     bool getLoop();
     float getVolume();
     float getDuration();
     sf::Sound::SoundSource::Status getStatus();
 
+    void destroy() override {}
+
 private:
     std::string _path;
-    sf::Music _music;
+    sf::Music *_music = nullptr;
+    Entity *_e = nullptr;
 };

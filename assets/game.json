@@ -85,8 +85,9 @@
                 "loop": true
             },
             {
-                "type": "Gravity",
-                "force": 200
+                "type": "Music",
+                "music_name": "tata",
+                "loop": true
             }
         ]
     }]

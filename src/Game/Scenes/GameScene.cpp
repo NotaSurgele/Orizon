@@ -30,6 +30,7 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Light>();
     player->addComponent<Sound>();
+    player->getComponent<OrizonMusic>();
 }
 
 void GameScene::update()
