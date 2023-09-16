@@ -20,13 +20,18 @@
             "type": "Sound",
             "name": "toto",
             "path": "../assets/slash.mp3"
+        },
+        {
+            "type": "Music",
+            "name": "tata",
+            "path": "../assets/Freedom.wav"
         }
     ],
     "entities": [{
         "components": [
             {
                 "type": "Transform2D",
-                "position": [0, 0],
+                "position": [500, 0],
                 "rotation": 0,
                 "scale": [1, 1],
                 "size": [16, 16]
@@ -35,7 +40,8 @@
                 "type": "BoxCollider",
                 "position": [0, 0],
                 "size": [16, 16],
-                "range": 4
+                "range": 10,
+                "collision_type": "Dynamic"
             },
             {
                 "type": "Sprite",
@@ -76,7 +82,12 @@
             {
                 "type": "Sound",
                 "sound_name": "toto",
-                "loop": false
+                "loop": true
+            },
+            {
+                "type": "Music",
+                "music_name": "tata",
+                "loop": true
             }
         ]
     }]

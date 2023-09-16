@@ -6,6 +6,7 @@
 #include "Engine/Particle/Particles.hpp"
 #include "Engine/Collision/Layer/TileMap.hpp"
 #include "Engine/RayCaster.hpp"
+#include"OrizonMusic.hpp"
 
 class GameScene : public Scene {
 public:
@@ -24,4 +25,5 @@ private:
     sf::RectangleShape wall = sf::RectangleShape();
     sf::RectangleShape wall2 = sf::RectangleShape();
     std::vector<RayCaster> _rayCaster;
+    OrizonMusic *_music = nullptr;
 };

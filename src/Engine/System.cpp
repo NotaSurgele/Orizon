@@ -37,23 +37,28 @@ void System::velocity_system(Entity *e)
     if (!velocity || !transform)
         return;
     if (box != nullptr) {
-        if (box->state == BoxCollider::Collide::TRUE) {
-            // std::cout << box->side << std::endl;
-            switch (box->side) {
-                case BoxCollider::Side::DOWN:
-                    velocity->setY(0.0f);
-                    break;
-                case BoxCollider::Side::TOP:
-                    velocity->setY(0.0f);
-                    break;
-                case BoxCollider::Side::LEFT:
-                    velocity->setX(0.0f);
-                    break;
-                case BoxCollider::Side::RIGHT:
-                    velocity->setX(0.0f);
-                    break;
-                default:
-                    break;
+        if (box->collide) {
+            for (auto side : box->getSides()) {
+                switch (side) {
+                    case BoxCollider::Side::DOWN:
+                        // std::cout << "DOWN" << std::endl;
+                        velocity->setY(0.0f);
+                        break;
+                    case BoxCollider::Side::TOP:
+                        // std::cout << "TOP" << std::endl;
+                        velocity->setY(0.0f);
+                        break;
+                    case BoxCollider::Side::LEFT:
+                        // std::cout << "LEFT" << std::endl;
+                        velocity->setX(0.0f);
+                        break;
+                    case BoxCollider::Side::RIGHT:
+                        // std::cout << "RIGHT" << std::endl;
+                        velocity->setX(0.0f);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -104,10 +109,10 @@ void System::systems()
         _inView.push_back(e);
         light_system(e);
         sprite_system(e, componentCache);
-        velocity_system(e);
         gravity_system(e);
         BoxSystem(e);
         collider_system(e);
+        velocity_system(e);
         update_custom_component(e);
     }
     for (auto &it : componentCache) {
@@ -148,9 +153,13 @@ void System::gravity_system(Entity *e)
 
     if (!velocity || !gravity)
         return;
-    if (collider->state == BoxCollider::Collide::TRUE) {
-        velocity->setY(0.0f);
-        return;
+    if (collider->collide) {
+        if (collider->hasSide(BoxCollider::Side::DOWN) ||
+            collider->hasSide(BoxCollider::Side::DOWNLEFT) ||
+            collider->hasSide(BoxCollider::Side::DOWNRIGHT)) {
+            velocity->setY(0.0f);
+            return;
+        }
     }
     velocity->setY(gravity->force);
 }
@@ -173,9 +182,15 @@ void System::collider_system(Entity *e)
 
     if (box == nullptr)
         return;
+    if (box->getType() == BoxCollider::Type::STATIC)
+        return;
     range = box->getRange();
     if (range == 0)
         return;
+    box->setColor(sf::Color::Green);
+    box->sides.clear();
+    box->side = BoxCollider::Side::NONE;
+    box->collide = BoxCollider::Collide::FALSE;
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
@@ -185,33 +200,43 @@ void System::collider_system(Entity *e)
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto *entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-            // auto rect = collider->shape(sf::Color::Red);
-            // DRAW(collider);
-            // DRAW(rect);
-            box->state = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
 
-            // determine colliding position
-            if (box->state == BoxCollider::Collide::TRUE) {
+            box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+            // determine colliding side
+            if (box->collide) {
                 auto pos1 = box->getPosition();
                 auto pos2 = collider->getPosition();
+                auto size1 = box->getSize();
+                auto size2 = collider->getSize();
 
-                box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::LEFT: BoxCollider::Side::RIGHT;
-                box->side = (pos1.y <= pos2.y) ? BoxCollider::Side::DOWN: BoxCollider::Side::TOP;
-                if (box->side == BoxCollider::Side::DOWN) {
-                    // std::cout << "POS1 " << pos1.x << " " << pos1.y << std::endl;
-                    // std::cout << "POS2 " << pos2.x << " " << pos2.y << std::endl << std::endl;
-                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::DOWNLEFT: BoxCollider::Side::DOWNRIGHT;
-                    return;
+                auto fixedSize1X = size1.x / 2;
+                auto fixedSize1Y = size1.y / 2;
+                auto fixedSize2X = size2.x / 2;
+                auto fixedSize2Y = size2.y / 2;
+
+                auto fixedPos1X = pos1.x + fixedSize1X;
+                auto fixedPos1Y = pos1.y + fixedSize1Y;
+                auto fixedPos2X = pos2.x + fixedSize2X;
+                auto fixedPos2Y = pos2.y + fixedSize2Y;
+
+                float dx = std::abs(fixedPos1X - fixedPos2X);
+                float dy = std::abs(fixedPos1Y - fixedPos2Y);
+
+                float overlapX = fixedPos1X + fixedPos2X - dx;
+                float overlapY = fixedPos1Y + fixedPos2Y - dy;
+
+                // Determine the direction of overlap
+                if (overlapX < 0 || overlapY < 0) {
+                    continue;
                 }
-                if (box->side == BoxCollider::Side::TOP) {
-                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::TOPLEFT: BoxCollider::Side::TOPRIGHT;
-                    return;
-                }
-                return;
+                (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
+                (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
+                // (pos1.x <= pos2.x) ? box->registerSide(BoxCollider::Side::LEFT): (pos1.x >= pos2.x) ? box->registerSide(BoxCollider::Side::RIGHT): (void)0;
+                // (pos1.y <= pos2.y) ? box->registerSide(BoxCollider::Side::DOWN): (pos1.y >= pos2.y) ? box->registerSide(BoxCollider::Side::TOP): (void)0;
+
             }
-            box->side = BoxCollider::Side::NONE;
-            box->state = BoxCollider::Collide::FALSE;
         }
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
@@ -259,9 +284,10 @@ void System::BoxSystem(Entity *e)
     }
     float velX = velocity->getX();
     float velY = velocity->getY();
-    float x = (velX > 0) ? 1 : (velX < 0) ? -1 : 0;
-    float y = (velY > 0) ? 1 : (velY < 0) ? -1 : 0;
+    float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
+    float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
 
+    // std::cout << velocity->getY() << std::endl;
     box->setPosition(transform->position.x + x,
                     transform->position.y + y);
     if (d_v)

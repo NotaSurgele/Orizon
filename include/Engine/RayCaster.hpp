@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Core.hpp"
+#include "Transform2D.hpp"
 
 class RayCaster {
 public:

@@ -25,33 +25,18 @@ void GameScene::create()
 
         e->addCustomComponent<CharacterController>(speed);
     });
-    // test.create(200, 200);
-    // test.clear(sf::Color(0, 0, 0, 200));
+
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
     player->addComponent<Light>();
     player->addComponent<Sound>();
-    // wall.setFillColor(sf::Color::Blue);
-    // wall.setPosition(-10, -10);
-    // wall.setSize(sf::Vector2f(10, 50));
-    // wall2.setFillColor(sf::Color::Blue);
-    // wall2.setPosition(50, -10);
-    // wall2.setSize(sf::Vector2f(10, 50));
-    // for (double angle = 0; angle < 360; angle++) {
-    //     RayCaster ray(sf::Vector2f(0, 0), sf::Vector2f(1, 0));
-    //     ray.rotate(angle);
-    //     _rayCaster.push_back(ray);
-    // }
+    player->getComponent<OrizonMusic>();
 }
 
 void GameScene::update()
 {
     // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
-
-    if (Input::isActionPressed("Play")) {
-        player->getComponent<Sound>()->play();
-    }
 
     if (Input::isActionPressed("Exit"))
         CLOSE();
