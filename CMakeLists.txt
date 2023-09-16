@@ -2,7 +2,15 @@ cmake_minimum_required(VERSION 3.15)
 project(Orizon)
 
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_USE_PTHREADS_INIT true)
+
+
 include(FetchContent)
+
+if (MSVC)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+endif()
 
 message("Declaring SFML..")
 FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x)
@@ -34,6 +42,17 @@ include_directories(
 
 add_executable(${PROJECT_NAME} main.cpp ${SRC})
 
+if (MSVC)
+target_link_libraries(
+ 	${PROJECT_NAME}
+    sfml-graphics
+    sfml-window
+    sfml-audio
+    sfml-network
+    sfml-system
+    Threads::Threads
+)
+else()
 target_link_libraries(
  	${PROJECT_NAME}
     sfml-graphics
@@ -43,5 +62,5 @@ target_link_libraries(
     sfml-system
     pthread
 )
-
+endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
