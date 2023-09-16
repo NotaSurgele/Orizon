@@ -30,10 +30,11 @@ class RessourcesManager {
         RessourcesManager& loadMusic(const std::string& ressourceName,
                                     const std::string& filePath)
         {
-            OrizonMusic *music = new OrizonMusic();
+            sf::Music *music = new sf::Music();
 
-            music->load(filePath);
-            _musicMap.insert(std::pair<std::string, OrizonMusic *>(ressourceName, music));
+            music->openFromFile(filePath);
+            // music->load(filePath);
+            _musicMap.insert(std::pair<std::string, sf::Music *>(ressourceName, music));
             return *this;
         }
 
@@ -56,7 +57,7 @@ class RessourcesManager {
                 return static_cast<T &>(_map[ressourceName]);
         }
 
-        OrizonMusic *getMusic(std::string const& ressourceName)
+        sf::Music *getMusic(std::string const& ressourceName)
         {
             return _musicMap[ressourceName];
         }
@@ -64,5 +65,5 @@ class RessourcesManager {
     private:
         std::map<std::string, sf::Texture> _map;
         std::map<std::string, sf::SoundBuffer> _soundMap;
-        std::map<std::string, OrizonMusic *> _musicMap;
+        std::map<std::string, sf::Music *> _musicMap;
 };

@@ -180,6 +180,15 @@ public:
                                             ->setLoop(loop);
                 }
 
+                static void create_music(Entity *e, nlohmann::json const& json)
+                {
+                    sf::Music *buffer = R_GET_MUSIC(json["music_name"]);
+                    bool loop = json["loop"];
+
+                    e->addComponent<OrizonMusic>()->setMusic(buffer)
+                                            ->setLoop(loop);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -198,7 +207,8 @@ public:
                     { "Gravity", create_gravity },
                     { "View", create_view },
                     { "Layer", create_layer },
-                    { "Sound", create_sound }
+                    { "Sound", create_sound },
+                    { "Music", create_music },
                 };
         };
 
