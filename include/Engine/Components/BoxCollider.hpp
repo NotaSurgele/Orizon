@@ -11,13 +11,13 @@ class BoxCollider : public IComponent, public Drawable {
 public:
 
     enum Collide {
-        TRUE,
-        FALSE
+        FALSE=0,
+        TRUE=1
     };
 
     enum Type {
-        DYNAMIC = 0,
-        STATIC = 1
+        DYNAMIC=0,
+        STATIC=1
     };
 
     enum Side {
@@ -94,9 +94,31 @@ public:
         _shape.setOutlineColor(color);
     }
 
+    void registerSide(const Side& side)
+    {
+        auto containType = hasSide(side);
+
+        if (containType)
+            return;
+        sides.push_back(side);
+    }
+
+    std::vector<Side> getSides()
+    {
+        return sides;
+    }
+
+    bool hasSide(const Side& side)
+    {
+        auto it = std::find(sides.begin(), sides.end(), side);
+
+        return it != sides.end();
+    }
+
 public:
-    Collide state = Collide::FALSE;
+    Collide collide = Collide::FALSE;
     Side side = Side::NONE;
+    std::vector<Side> sides;
 
 private:
     sf::Vector2<float> _position;
