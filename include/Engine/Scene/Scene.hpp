@@ -94,8 +94,14 @@ public:
                     sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
                     sf::Vector2<float> size = sf::Vector2<float>(json["size"][0], json["size"][1]);
                     int range = json["range"];
+                    std::string type_string = json["collision_type"];
 
-                    e->addComponent<BoxCollider>(position, size, range);
+                    const std::unordered_map<std::string, BoxCollider::Type> types = {
+                        { "Dynamic", BoxCollider::Type::DYNAMIC },
+                        { "Static", BoxCollider::Type::STATIC },
+                    };
+                    BoxCollider::Type type = types.at(type_string);
+                    e->addComponent<BoxCollider>(position, size, range)->setType(type);
                 }
 
                 static void create_layer(Entity *e, nlohmann::json const& json)

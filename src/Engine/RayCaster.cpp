@@ -1,5 +1,7 @@
 #include "RayCaster.hpp"
 #include "Math.hpp"
+#include "Core.hpp"
+#include "System.hpp"
 
 RayCaster::RayCaster(const sf::Vector2f& position,
                     const sf::Vector2f& direction,
