@@ -37,24 +37,26 @@ void System::velocity_system(Entity *e)
     if (!velocity || !transform)
         return;
     if (box != nullptr) {
-        if (box->state == BoxCollider::Collide::TRUE) {
-            // std::cout << box->side << std::endl;
-            switch (box->side) {
-                case BoxCollider::Side::DOWN:
-                    velocity->setY(0.0f);
-                    break;
-                case BoxCollider::Side::TOP:
-                    velocity->setY(0.0f);
-                    break;
-                case BoxCollider::Side::LEFT:
-                    velocity->setX(0.0f);
-                    break;
-                case BoxCollider::Side::RIGHT:
-                    velocity->setX(0.0f);
-                    break;
-                default:
-                    break;
+        if (box->collide) {
+            for (auto side : box->getSides()) {
+                switch (side) {
+                    case BoxCollider::Side::DOWN:
+                        velocity->setY(0.0f);
+                        break;
+                    case BoxCollider::Side::TOP:
+                        velocity->setY(0.0f);
+                        break;
+                    case BoxCollider::Side::LEFT:
+                        velocity->setX(0.0f);
+                        break;
+                    case BoxCollider::Side::RIGHT:
+                        velocity->setX(0.0f);
+                        break;
+                    default:
+                        break;
+                }
             }
+            return;
         }
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
@@ -148,9 +150,13 @@ void System::gravity_system(Entity *e)
 
     if (!velocity || !gravity)
         return;
-    if (collider->state == BoxCollider::Collide::TRUE) {
-        velocity->setY(0.0f);
-        return;
+    if (collider->collide) {
+        if (collider->hasSide(BoxCollider::Side::DOWN) ||
+            collider->hasSide(BoxCollider::Side::DOWNLEFT) ||
+            collider->hasSide(BoxCollider::Side::DOWNRIGHT)) {
+            velocity->setY(0.0f);
+            return;
+        }
     }
     velocity->setY(gravity->force);
 }
@@ -178,6 +184,10 @@ void System::collider_system(Entity *e)
     range = box->getRange();
     if (range == 0)
         return;
+
+    box->setColor(sf::Color::Green);
+    box->getSides().clear();
+    box->side = BoxCollider::Side::NONE;
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
@@ -190,28 +200,25 @@ void System::collider_system(Entity *e)
             // auto rect = collider->shape(sf::Color::Red);
             // DRAW(collider);
             // DRAW(rect);
-            box->state = (collider->overlap(box)) ? DRAW(box), BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+            box->collide = (collider->overlap(box)) ? DRAW(box), DRAW(collider), BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
 
-            // std::cout << "BOX STATE " << box->state << std::endl;
-            // determine colliding position
-            if (box->state == BoxCollider::Collide::TRUE) {
+            // determine colliding side
+            if (box->collide) {
                 auto pos1 = box->getPosition();
                 auto pos2 = collider->getPosition();
 
-                box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::LEFT: BoxCollider::Side::RIGHT;
-                box->side = (pos1.y <= pos2.y) ? BoxCollider::Side::DOWN: BoxCollider::Side::TOP;
-                if (box->side == BoxCollider::Side::DOWN) {
-                    // std::cout << "POS1 " << pos1.x << " " << pos1.y << std::endl;
-                    // std::cout << "POS2 " << pos2.x << " " << pos2.y << std::endl << std::endl;
-                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::DOWNLEFT: BoxCollider::Side::DOWNRIGHT;
-                }
-                if (box->side == BoxCollider::Side::TOP) {
-                    box->side = (pos1.x <= pos2.x) ? BoxCollider::Side::TOPLEFT: BoxCollider::Side::TOPRIGHT;
-                }
+                (pos1.x <= pos2.x) ? box->registerSide(BoxCollider::Side::LEFT): (pos1.x >= pos2.x) ? box->registerSide(BoxCollider::Side::RIGHT): (void)0;
+                (pos1.y <= pos2.y) ? box->registerSide(BoxCollider::Side::DOWN): (pos1.y >= pos2.y) ? box->registerSide(BoxCollider::Side::TOP): (void)0;
+                // auto sides = box->getSides();
+                // for (auto side : sides) {
+                //     if (side == BoxCollider::Side::DOWN)
+                //         (pos1.x <= pos2.x) ? box->registerSide(BoxCollider::Side::DOWNLEFT): box->registerSide(BoxCollider::Side::DOWNRIGHT);
+                //     if (side == BoxCollider::Side::TOP)
+                //         (pos1.x <= pos2.x) ? box->registerSide(BoxCollider::Side::TOPLEFT): box->registerSide(BoxCollider::Side::TOPRIGHT);
+                // }
             }
-            box->side = BoxCollider::Side::NONE;
-            box->state = BoxCollider::Collide::FALSE;
         }
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
