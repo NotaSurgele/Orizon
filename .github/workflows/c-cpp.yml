@@ -17,5 +17,7 @@ jobs:
       run: cmake -G "Visual Studio 17 2022"
     - name: Compiling Programm
       run: |
-        cd out
-        MSBuild.exe CMakeHelloWorld.sln
+        cd ./out/install/x64-Debug/bin
+        cp * ../../../build/x64-Debug
+        cd ../../../build/x64-Debug
+        MSBuild.exe Orizon.exe
