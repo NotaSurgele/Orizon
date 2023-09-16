@@ -13,11 +13,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Running cmake
       run: cmake -G "Visual Studio 17 2022"
-    - name: Setup MSBuild and add to PATH
-      uses: microsoft/setup-msbuild@v1.0.0
-      id: setup_msbuild
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
     - name: Compiling Programm
       run: |
         ls _deps
