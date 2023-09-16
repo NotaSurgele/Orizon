@@ -14,6 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Running cmake
-      run: cmake -G "Visual Studio 22"
+      run: cmake -G "Visual Studio 17 2022"
     - name: Compiling Programm
       run: make -j
