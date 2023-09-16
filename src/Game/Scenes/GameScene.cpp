@@ -75,6 +75,7 @@ void GameScene::update()
 
         float modifier = .09f;
 
+        std::srand(std::time(NULL));
         int64_t seed = std::rand() % 4000;
         for (int i = 0; i < chunks; i++) {
             for (int x = 0; x < w; x++) {
