@@ -191,7 +191,6 @@ void System::collider_system(Entity *e)
     box->sides.clear();
     box->side = BoxCollider::Side::NONE;
     box->collide = BoxCollider::Collide::FALSE;
-    DRAW(box);
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;

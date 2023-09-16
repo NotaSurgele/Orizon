@@ -86,7 +86,7 @@
             },
             {
                 "type": "Gravity",
-                "force": 100
+                "force": 200
             }
         ]
     }]
