@@ -103,7 +103,7 @@ public:
         sides.push_back(side);
     }
 
-    std::vector<Side> getSides()
+    std::vector<Side>& getSides()
     {
         return sides;
     }
