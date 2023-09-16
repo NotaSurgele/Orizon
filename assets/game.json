@@ -31,7 +31,7 @@
         "components": [
             {
                 "type": "Transform2D",
-                "position": [0, 0],
+                "position": [500, 0],
                 "rotation": 0,
                 "scale": [1, 1],
                 "size": [16, 16]
@@ -83,6 +83,10 @@
                 "type": "Sound",
                 "sound_name": "toto",
                 "loop": true
+            },
+            {
+                "type": "Gravity",
+                "force": 100
             }
         ]
     }]
