@@ -4,13 +4,20 @@
 #include "Velocity.hpp"
 #include "Drawable.hpp"
 #include "Entity.hpp"
+#include "RayCaster.hpp"
+#include <vector>
 
 class BoxCollider : public IComponent, public Drawable {
 public:
 
     enum Collide {
-        TRUE,
-        FALSE
+        FALSE=0,
+        TRUE=1
+    };
+
+    enum Type {
+        DYNAMIC=0,
+        STATIC=1
     };
 
     enum Side {
@@ -47,8 +54,21 @@ public:
         _position = pos;
     }
 
+    void setType(const Type& type)
+    {
+        _type = type;
+    }
+
     void setPosition(const float& x, const float& y)
     {
+        float angle = 0;
+        sf::Vector2f position = sf::Vector2f(x, y);
+
+        for (std::size_t i = 0; i < _rays.size(); i++) {
+            _rays[i].setPosition(position);
+            _rays[i].rotate(angle += 45);
+            // _rays[i].show(2.0f);
+        }
         _shape.setPosition(x, y);
         _position.x = x;
         _position.y = y;
@@ -59,6 +79,8 @@ public:
     sf::Vector2<float> &getPosition();
 
     sf::Vector2<float> &getSize();
+
+    Type getType();
 
     int& getRange();
 
@@ -72,13 +94,37 @@ public:
         _shape.setOutlineColor(color);
     }
 
+    void registerSide(const Side& side)
+    {
+        auto containType = hasSide(side);
+
+        if (containType)
+            return;
+        sides.push_back(side);
+    }
+
+    std::vector<Side>& getSides()
+    {
+        return sides;
+    }
+
+    bool hasSide(const Side& side)
+    {
+        auto it = std::find(sides.begin(), sides.end(), side);
+
+        return it != sides.end();
+    }
+
 public:
-    Collide state = Collide::FALSE;
+    Collide collide = Collide::FALSE;
     Side side = Side::NONE;
+    std::vector<Side> sides;
 
 private:
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
+    std::vector<RayCaster> _rays;
+    Type _type = Type::DYNAMIC;
     int _range = 0;
 };

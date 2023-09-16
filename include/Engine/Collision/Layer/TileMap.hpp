@@ -84,6 +84,8 @@ public:
             for (int y2 = minY; y2 <= maxY; y2++) {
                 auto entity = _layer[x2][y2];
 
+                if (entity == e)
+                    continue;
                 if (entity != nullptr) {
                     if (!entity->hasComponents<Others ...>())
                         continue;

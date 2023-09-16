@@ -9,6 +9,14 @@ BoxCollider::BoxCollider(   Entity *e,
                             _size(size),
                             _range(checkRange)
 {
+    float angle = 0;
+
+    for (std::size_t i = 0; i < 4; i++) {
+        RayCaster ray = RayCaster(e->getComponent<Transform2D>()->position,
+                                    sf::Vector2f(1, 0), 100.0f);
+        ray.rotate(angle += 45);
+        _rays.push_back(ray);
+    }
     _shape = sf::RectangleShape();
     _shape.setSize(size);
     _shape.setFillColor(sf::Color::Transparent);
@@ -42,6 +50,11 @@ sf::Vector2<float> &BoxCollider::getSize()
 int& BoxCollider::getRange()
 {
     return _range;
+}
+
+BoxCollider::Type BoxCollider::getType()
+{
+    return _type;
 }
 
 bool BoxCollider::overlap(BoxCollider *box)

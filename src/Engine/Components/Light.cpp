@@ -1,4 +1,5 @@
 #include "Light.hpp"
+#include "System.hpp"
 #include <math.h>
 
 Light::Light(Entity *e) : _e(e)
@@ -22,7 +23,6 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     int newGreen = static_cast<int>(Light::darkColor.g * attenuation);
     int newBlue = static_cast<int>(Light::darkColor.b * attenuation);
 
-    // Ensure the new values stay within the valid range
     if (newRed > 255) newRed = 255;
     if (newGreen > 255) newGreen = 255;
     if (newBlue > 255) newBlue = 255;
@@ -37,7 +37,6 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
     // FIXME: Not all light disapear
     int angle = 0;
 
-    std::unique_lock<std::mutex> lock(std::mutex);
     while (angle < rays.size()) {
         RayCaster ray = rays[angle];
         ray.setPosition(_e->getComponent<Transform2D>()->position);
@@ -56,7 +55,7 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
                 float squaredDistance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
                 float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
 
-                // Apply the light effect using a lock to avoid race conditions
+                std::unique_lock<std::mutex> lock(std::mutex);
                 boxSprite->setColor(this->applyLightEffect(attenuation * 100));
             }
         }

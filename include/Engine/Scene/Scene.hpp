@@ -94,8 +94,14 @@ public:
                     sf::Vector2<float> position = sf::Vector2<float>(json["position"][0], json["position"][1]);
                     sf::Vector2<float> size = sf::Vector2<float>(json["size"][0], json["size"][1]);
                     int range = json["range"];
+                    std::string type_string = json["collision_type"];
 
-                    e->addComponent<BoxCollider>(position, size, range);
+                    const std::unordered_map<std::string, BoxCollider::Type> types = {
+                        { "Dynamic", BoxCollider::Type::DYNAMIC },
+                        { "Static", BoxCollider::Type::STATIC },
+                    };
+                    BoxCollider::Type type = types.at(type_string);
+                    e->addComponent<BoxCollider>(position, size, range)->setType(type);
                 }
 
                 static void create_layer(Entity *e, nlohmann::json const& json)
@@ -174,6 +180,15 @@ public:
                                             ->setLoop(loop);
                 }
 
+                static void create_music(Entity *e, nlohmann::json const& json)
+                {
+                    sf::Music *buffer = R_GET_MUSIC(json["music_name"]);
+                    bool loop = json["loop"];
+
+                    e->addComponent<OrizonMusic>()->setMusic(buffer)
+                                            ->setLoop(loop);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -192,7 +207,8 @@ public:
                     { "Gravity", create_gravity },
                     { "View", create_view },
                     { "Layer", create_layer },
-                    { "Sound", create_sound }
+                    { "Sound", create_sound },
+                    { "Music", create_music },
                 };
         };
 
@@ -231,8 +247,12 @@ public:
                     float w = ressource["tile_info"][2];
                     float h = ressource["tile_info"][3];
                     R_ADD_TILE(name, path, x, y, w, h);
-                } if (type.find("Sound") != std::string::npos)
+                }
+                if (type.find("Sound") != std::string::npos)
                     R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
+                if (type.find("Music") != std::string::npos) {
+                    R_ADD_MUSIC(name, path);
+                }
             }
         }
 
