@@ -13,7 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Running cmake
-      run: cmake -G "Unix Makefiles" ./
+      run: cmake -G "Visual Studio 17 2022"
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
     - name: Compiling Programm
-      run: make -j
+      run: |
+        ls _deps
+        msbuild .\Orizon.sln
