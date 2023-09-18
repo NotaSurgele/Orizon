@@ -34,6 +34,11 @@ sf::Texture& Sprite::getTexture()
     return _texture;
 }
 
+const sf::Vector2f& Sprite::getPosition()
+{
+    return this->_sprite.getPosition();
+}
+
 Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 {
     _sprite = sprite;
@@ -46,6 +51,11 @@ Sprite& Sprite::setColor(const sf::Color& color)
     return *this;
 }
 
+Sprite& Sprite::setLightApply(bool apply)
+{
+    _light = apply;
+    return *this;
+}
 
 Sprite& Sprite::setTransform(Transform2D *transform)
 {
@@ -60,6 +70,11 @@ Sprite& Sprite::setTransform(Transform2D *transform)
 const sf::Color& Sprite::getColor()
 {
     return _sprite.getColor();
+}
+
+bool Sprite::isLightApply()
+{
+    return _light;
 }
 
 Sprite& Sprite::setTexture(sf::Texture const& texture)

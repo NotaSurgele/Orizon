@@ -32,9 +32,15 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     return sf::Color(newRed, newGreen, newBlue, Light::darkColor.a);
 }
 
+void Light::reset(Sprite *sprite, RayCaster &ray)
+{
+
+}
+
 void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
-    // FIXME: Not all light disapear
+    // FIXME: Not all light dissapear
+    std::lock_guard<std::mutex> lock(std::mutex);
     int angle = 0;
 
     while (angle < rays.size()) {
@@ -55,8 +61,8 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
                 float squaredDistance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
                 float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
 
-                std::unique_lock<std::mutex> lock(std::mutex);
-                boxSprite->setColor(this->applyLightEffect(attenuation * 100));
+                boxSprite->setColor(this->applyLightEffect(attenuation * 300));
+                boxSprite->setLightApply(true);
             }
         }
         angle = angleCounter.fetch_add(1, std::memory_order_relaxed);
@@ -65,15 +71,14 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
 
 void Light::emit(const std::vector<Entity *>& entities)
 {
-    std::atomic<int> angleCounter(0);
     std::vector<std::thread> threads;
+    std::atomic<int> angleCounter(0);
 
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 50; ++i) {
         threads.emplace_back([this, &entities, &angleCounter]() {
             processLight(_rayCaster, entities, angleCounter);
         });
     }
-
     for (auto& thread : threads) {
         thread.join();
     }

@@ -11,7 +11,6 @@ public:
     Light(Entity *e);
     void destroy() override final;
     void emit(const std::vector<Entity *>& entities);
-    sf::Color getDarkColor();
 
 public:
     static inline sf::Color darkColor = sf::Color();
@@ -20,6 +19,7 @@ public:
 private:
     sf::Color applyLightEffect(const float& attenuation);
     void processLight(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter);
+    void reset(Sprite *sprite, RayCaster &ray);
 
 private:
     std::vector<RayCaster> _rayCaster;

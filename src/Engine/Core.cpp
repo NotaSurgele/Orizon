@@ -52,6 +52,7 @@ RenderWindow& Core::getWindow()
 void Core::CoreClose()
 {
     _window.close();
+    _r_manager.destroy();
 }
 
 void Core::setView(View *view)
