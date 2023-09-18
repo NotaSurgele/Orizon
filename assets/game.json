@@ -41,7 +41,7 @@
                 "position": [0, 0],
                 "size": [16, 16],
                 "range": 10,
-                "collision_type": "Dynamic"
+                "collision_type": "Static"
             },
             {
                 "type": "Sprite",

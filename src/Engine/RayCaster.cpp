@@ -44,6 +44,11 @@ bool RayCaster::skip(Transform2D *other)
     return colliderDirection.x != _direction.x || colliderDirection.y != _direction.y;
 }
 
+float RayCaster::getLength()
+{
+    return _length;
+}
+
 bool RayCaster::hit(Transform2D *reflector)
 {
     float wx_min = reflector->position.x;

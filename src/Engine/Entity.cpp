@@ -10,8 +10,9 @@ Entity::Entity()
 void Entity::destroy()
 {
     for (auto &it : _component_map) {
-        if (it.second)
+        if (it.second) {
             it.second->destroy();
+        }
     }
     _component_map.clear();
     System::RemoveEntity(this);

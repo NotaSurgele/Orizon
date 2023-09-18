@@ -16,13 +16,17 @@ class Sprite : public IComponent, public Drawable {
 
         sf::Sprite& getSprite();
         sf::Texture& getTexture();
-
         Sprite& setSprite(sf::Sprite const& sprite);
         Sprite& setTexture(sf::Texture const& texture);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
         Sprite& setTransform(Transform2D *transform);
         Sprite& setColor(const sf::Color& color);
+        Sprite& setLightApply(bool apply);
+
+        bool isLightApply();
+
+        const sf::Vector2f& getPosition();
 
         const sf::Color& getColor();
 
@@ -36,5 +40,6 @@ class Sprite : public IComponent, public Drawable {
     private:
         sf::Texture _texture;
         sf::Sprite _sprite;
+        bool _light = false;
         Entity *_self;
 };

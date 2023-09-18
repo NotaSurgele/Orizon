@@ -17,6 +17,7 @@ public:
     void rotate(const float& angle);
     sf::Vector2f getCollisionPoint();
     sf::Vector2f getPosition();
+    float getLength();
 
 private:
     bool skip(Transform2D *collider);

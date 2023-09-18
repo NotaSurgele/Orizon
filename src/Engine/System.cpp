@@ -91,6 +91,7 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     if (!sprite)
         return;
     sprite->setTransform(transform);
+    sprite->setLightApply(false);
     DRAW(sprite);
 }
 
@@ -107,6 +108,7 @@ void System::systems()
         if (!isInView(e))
             continue;
         _inView.push_back(e);
+        // Test
         light_system(e);
         sprite_system(e, componentCache);
         gravity_system(e);
@@ -126,7 +128,12 @@ void System::systems()
 void System::light_system(Entity *e)
 {
     auto light = e->getComponent<Light>();
+    auto sprite = e->getComponent<Sprite>();
 
+    if (sprite && !sprite->isLightApply()) {
+
+        sprite->setColor(Light::darkColor);
+    }
     if (!light)
         return;
     if (!isInView(e))
@@ -136,7 +143,6 @@ void System::light_system(Entity *e)
             if (!layer->contain(e))
                 continue;
             std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, 5);
-
 
             light->emit(entities);
         }

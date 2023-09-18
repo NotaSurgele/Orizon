@@ -62,6 +62,15 @@ class RessourcesManager {
             return _musicMap[ressourceName];
         }
 
+        void destroy()
+        {
+
+            for (auto &music : _musicMap) {
+                music.second->stop();
+                delete music.second;
+            }
+        }
+
     private:
         std::map<std::string, sf::Texture> _map;
         std::map<std::string, sf::SoundBuffer> _soundMap;
