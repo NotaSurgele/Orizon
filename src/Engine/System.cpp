@@ -142,7 +142,7 @@ void System::light_system(Entity *e)
         for (auto layer : _layers) {
             if (!layer->contain(e))
                 continue;
-            std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, 5);
+            std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, light->getEmission() / layer->tileWidth);
 
             light->emit(entities);
         }

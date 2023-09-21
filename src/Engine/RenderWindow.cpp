@@ -37,6 +37,11 @@ void RenderWindow::setView(View *view)
     _window.setView(*view);
 }
 
+void RenderWindow::setActive(bool active)
+{
+    _window.setActive(active);
+}
+
 View *RenderWindow::getView()
 {
     return _view;
