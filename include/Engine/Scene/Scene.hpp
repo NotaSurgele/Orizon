@@ -77,6 +77,7 @@ public:
                 static void create_sprite(Entity *e, nlohmann::json const& json)
                 {
                     sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+
                     e->addComponent<Sprite>(texture);
                 }
 
@@ -194,6 +195,13 @@ public:
                 {
                     float emission = json["emission"];
 
+                    if (json.contains("texture_name")) {
+                        sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+                        Sprite *sprite = new Sprite(lightTexture);
+
+                        e->addComponent<Light>(emission, sprite);
+                        return;
+                    }
                     e->addComponent<Light>(emission);
                 }
 
