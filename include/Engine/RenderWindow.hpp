@@ -21,9 +21,13 @@ class RenderWindow {
         bool pollEvent(sf::Event& event);
         void display();
         void draw(Drawable *sprite);
+        void draw(Drawable *sprite, const sf::BlendMode& blendMode);
         void draw(sf::Drawable const& draw);
+        void draw(sf::Drawable const& draw, const sf::BlendMode& blendMode);
         void close();
         void setView(View *view);
+        void setActive(bool active);
+        
         View *getView();
         sf::RenderWindow& getSFMLRenderWindow();
         // void setView(const &)

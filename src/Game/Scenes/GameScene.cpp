@@ -28,9 +28,9 @@ void GameScene::create()
 
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    player->addComponent<Light>();
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
+    player->getComponent<Light>()->setColor(sf::Color(255, 255, 255, 50));
 }
 
 void GameScene::update()

@@ -75,6 +75,11 @@ public:
         _layers.push_back(layer);
     }
 
+    static void addInDrawQueue(Sprite *sprite)
+    {
+        _drawQueue.push_back(sprite);
+    }
+
     bool isInView(Entity *e);
 
     // System that apply force such has velocity and all
@@ -90,10 +95,6 @@ public:
     void BoxSystem(Entity *e);
 
     void collider_system(Entity *e);
-
-    void collider_system_check_entity(Entity *entity, BoxCollider *collider, Velocity<float> *velocity);
-
-    void draw_system();
 
     void gravity_system(Entity *e);
 
@@ -115,6 +116,7 @@ private:
 
 private:
     std::vector<Entity *> _inView;
+    static inline std::vector<Sprite *> _drawQueue;
     static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;

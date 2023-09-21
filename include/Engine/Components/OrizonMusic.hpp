@@ -1,14 +1,14 @@
 #pragma once
 
 #include <string>
-#include <SFML/Audio.hpp>
+#include "SFML/Audio.hpp"
 #include "IComponent.hpp"
 #include "Entity.hpp"
 
 class OrizonMusic : public IComponent {
 public:
    OrizonMusic(Entity *e) : _e(e) {};
-    ~OrizonMusic() = default;
+    ~OrizonMusic() { delete _music; };
 
 
     bool load(const std::string& path);
@@ -24,7 +24,7 @@ public:
     float getDuration();
     sf::Sound::SoundSource::Status getStatus();
 
-    void destroy() override {}
+    void destroy() override;
 
 private:
     std::string _path;

@@ -5,6 +5,7 @@
 #include "Engine/Core.hpp"
 #include "Components/Animator.hpp"
 #include "Components/EntitySignature.hpp"
+#include "Components/Light.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -76,6 +77,7 @@ public:
                 static void create_sprite(Entity *e, nlohmann::json const& json)
                 {
                     sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+
                     e->addComponent<Sprite>(texture);
                 }
 
@@ -189,6 +191,20 @@ public:
                                             ->setLoop(loop);
                 }
 
+                static void create_light(Entity *e, nlohmann::json const& json)
+                {
+                    float emission = json["emission"];
+
+                    if (json.contains("texture_name")) {
+                        sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+                        Sprite *sprite = new Sprite(lightTexture);
+
+                        e->addComponent<Light>(emission, sprite);
+                        return;
+                    }
+                    e->addComponent<Light>(emission);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -209,6 +225,7 @@ public:
                     { "Layer", create_layer },
                     { "Sound", create_sound },
                     { "Music", create_music },
+                    { "Light", create_light },
                 };
         };
 
