@@ -55,3 +55,9 @@ void OrizonMusic::pause()
 {
     _music->pause();
 }
+
+void OrizonMusic::destroy()
+{
+    _music->stop();
+    delete _music;
+}

@@ -91,6 +91,7 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     if (!sprite)
         return;
     sprite->setTransform(transform);
+    sprite->setLightApply(false);
     DRAW(sprite);
 }
 
@@ -107,8 +108,9 @@ void System::systems()
         if (!isInView(e))
             continue;
         _inView.push_back(e);
-        light_system(e);
+        // Test
         sprite_system(e, componentCache);
+        light_system(e);
         gravity_system(e);
         BoxSystem(e);
         collider_system(e);
@@ -126,7 +128,12 @@ void System::systems()
 void System::light_system(Entity *e)
 {
     auto light = e->getComponent<Light>();
+    auto sprite = e->getComponent<Sprite>();
 
+    if (sprite && !sprite->isLightApply()) {
+
+        sprite->setColor(Light::darkColor);
+    }
     if (!light)
         return;
     if (!isInView(e))
@@ -135,14 +142,21 @@ void System::light_system(Entity *e)
         for (auto layer : _layers) {
             if (!layer->contain(e))
                 continue;
-            std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, 5);
+            if (!light->isSpriteLoaded()) {
+                std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, light->getEmission() / layer->tileWidth);
 
-
-            light->emit(entities);
+                light->emit(entities);
+                continue;
+            }
+            light->emit();
         }
         return;
     }
-    light->emit(_registry);
+    if (!light->isSpriteLoaded()) {
+        light->emit(_registry);
+        return;
+    }
+    light->emit();
 }
 
 void System::gravity_system(Entity *e)
@@ -202,7 +216,8 @@ void System::collider_system(Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
 
             box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-            // determine colliding side
+
+            // Resolve collision
             if (box->collide) {
                 auto pos1 = box->getPosition();
                 auto pos2 = collider->getPosition();
@@ -231,9 +246,6 @@ void System::collider_system(Entity *e)
                 }
                 (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
                 (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
-                // (pos1.x <= pos2.x) ? box->registerSide(BoxCollider::Side::LEFT): (pos1.x >= pos2.x) ? box->registerSide(BoxCollider::Side::RIGHT): (void)0;
-                // (pos1.y <= pos2.y) ? box->registerSide(BoxCollider::Side::DOWN): (pos1.y >= pos2.y) ? box->registerSide(BoxCollider::Side::TOP): (void)0;
-
             }
         }
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;

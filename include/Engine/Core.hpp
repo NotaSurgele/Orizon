@@ -42,7 +42,9 @@ class Core : public ICore {
         bool isOpen();
         void CoreClear(sf::Color color);
         void CoreDraw(Drawable *component);
+        void CoreDraw(Drawable *component, const sf::BlendMode& blendMode);
         void CoreDraw(sf::Drawable const& drawable);
+        void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
         void CoreClose();
 
         void run();
@@ -65,6 +67,7 @@ public:
         RenderWindow _window;
         Input _input;
         System _system_handler;
+        sf::RenderTexture _texture;
 };
 
 /**
@@ -103,6 +106,12 @@ public:
 
 #define DRAW(to_draw)\
         Core::instance->CoreDraw(to_draw)
+
+#define DRAW_BLEND(to_draw, blendMode) \
+        Core::instance->CoreDraw(to_draw, blendMode)
+
+#define DRAW_QUEUE(to_draw) \
+        System::addInDrawQueue(to_draw)
 
 #define CORE\
         Core::instance

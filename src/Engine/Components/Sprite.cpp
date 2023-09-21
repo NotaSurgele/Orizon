@@ -21,8 +21,13 @@ Sprite::Sprite( Entity *self,
 {
     setTexture(texturePath);
     _sprite.setScale(scaleX, scaleY);
+
 }
 
+Sprite::Sprite(const sf::Texture &texture) : _self(nullptr)
+{
+    setTexture(texture);
+}
 
 sf::Sprite& Sprite::getSprite()
 {
@@ -32,6 +37,11 @@ sf::Sprite& Sprite::getSprite()
 sf::Texture& Sprite::getTexture()
 {
     return _texture;
+}
+
+const sf::Vector2f& Sprite::getPosition()
+{
+    return this->_sprite.getPosition();
 }
 
 Sprite& Sprite::setSprite(sf::Sprite const& sprite)
@@ -46,6 +56,11 @@ Sprite& Sprite::setColor(const sf::Color& color)
     return *this;
 }
 
+Sprite& Sprite::setLightApply(bool apply)
+{
+    _light = apply;
+    return *this;
+}
 
 Sprite& Sprite::setTransform(Transform2D *transform)
 {
@@ -57,9 +72,24 @@ Sprite& Sprite::setTransform(Transform2D *transform)
     return *this;
 }
 
+void Sprite::setPosition(const sf::Vector2f &position)
+{
+    _sprite.setPosition(position);
+}
+
+void Sprite::setPosition(const float& x, const float& y)
+{
+    _sprite.setPosition(x, y);
+}
+
 const sf::Color& Sprite::getColor()
 {
     return _sprite.getColor();
+}
+
+bool Sprite::isLightApply()
+{
+    return _light;
 }
 
 Sprite& Sprite::setTexture(sf::Texture const& texture)

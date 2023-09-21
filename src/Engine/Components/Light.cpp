@@ -1,14 +1,27 @@
 #include "Light.hpp"
 #include "System.hpp"
+#include "Core.hpp"
 #include <math.h>
 
-Light::Light(Entity *e) : _e(e)
+Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
 {
     for (double angle = 0; angle < 360; angle += 1) {
-        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), 300);
+        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), emission);
         ray.rotate(angle);
         _rayCaster.push_back(ray);
     }
+    auto color = sf::Color::White;
+    int newRed = static_cast<int>(color.r * _intensity);
+    int newGreen = static_cast<int>(color.g * _intensity);
+    int newBlue = static_cast<int>(color.b * _intensity);
+    Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
+    System::lightSources += 1;
+}
+
+Light::Light(Entity *e, const float& emission, Sprite *sprite) : _sprite(sprite), _emission(emission), _e(e)
+{
+    _isSpriteLoaded = true;
+    _transform = e->getComponent<Transform2D>();
     auto color = sf::Color::White;
     int newRed = static_cast<int>(color.r * _intensity);
     int newGreen = static_cast<int>(color.g * _intensity);
@@ -32,9 +45,14 @@ sf::Color Light::applyLightEffect(const float& attenuation)
     return sf::Color(newRed, newGreen, newBlue, Light::darkColor.a);
 }
 
+void Light::reset(Sprite *sprite, RayCaster &ray)
+{
+
+}
+
 void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
-    // FIXME: Not all light disapear
+    std::lock_guard<std::mutex> lock(std::mutex);
     int angle = 0;
 
     while (angle < rays.size()) {
@@ -54,29 +72,60 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
                 float deltaY = point.y - position.y;
                 float squaredDistance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
                 float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
-
-                std::unique_lock<std::mutex> lock(std::mutex);
-                boxSprite->setColor(this->applyLightEffect(attenuation * 100));
+                boxSprite->setColor(this->applyLightEffect(attenuation * ray.getLength()));
+                boxSprite->setLightApply(true);
             }
         }
         angle = angleCounter.fetch_add(1, std::memory_order_relaxed);
     }
 }
 
+void Light::setEmission(const float &emission)
+{
+    _emission = emission;
+}
+
+void Light::setColor(const sf::Color &color)
+{
+    _sprite->setColor(color);
+}
+
+float Light::getEmission()
+{
+    return _emission;
+}
+
+bool Light::isSpriteLoaded()
+{
+    return _isSpriteLoaded;
+}
+
+void Light::emit()
+{
+    auto textureSize = _sprite->getTexture().getSize();
+    auto fixedPositionX = _transform->position.x - (textureSize.x / 2);
+    auto fixedPositionY = _transform->position.y  - (textureSize.y / 2);
+
+    _sprite->setPosition(fixedPositionX, fixedPositionY);
+    _sprite->getTexture().setSmooth(true);
+    DRAW_BLEND(_sprite, sf::BlendAdd);
+}
+
 void Light::emit(const std::vector<Entity *>& entities)
 {
-    std::atomic<int> angleCounter(0);
+    // Handle threads if no sprite is loaded
     std::vector<std::thread> threads;
+    std::atomic<int> angleCounter(0);
 
     for (int i = 0; i < 20; ++i) {
         threads.emplace_back([this, &entities, &angleCounter]() {
             processLight(_rayCaster, entities, angleCounter);
         });
     }
-
     for (auto& thread : threads) {
         thread.join();
     }
+
     // std::size_t counter = 0;
     // convex.setPointCount(points.size());
 
