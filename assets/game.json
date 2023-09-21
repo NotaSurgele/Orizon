@@ -88,6 +88,10 @@
                 "type": "Music",
                 "music_name": "tata",
                 "loop": true
+            },
+            {
+                "type": "Light",
+                "emission": 300
             }
         ]
     }]

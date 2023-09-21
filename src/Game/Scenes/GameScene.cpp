@@ -28,7 +28,6 @@ void GameScene::create()
 
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    player->addComponent<Light>();
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
 }

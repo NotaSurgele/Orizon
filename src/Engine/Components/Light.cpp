@@ -1,11 +1,12 @@
 #include "Light.hpp"
 #include "System.hpp"
+#include "Core.hpp"
 #include <math.h>
 
-Light::Light(Entity *e) : _e(e)
+Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
 {
     for (double angle = 0; angle < 360; angle += 1) {
-        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), 300);
+        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), emission);
         ray.rotate(angle);
         _rayCaster.push_back(ray);
     }
@@ -39,7 +40,6 @@ void Light::reset(Sprite *sprite, RayCaster &ray)
 
 void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<Entity*>& entities, std::atomic<int>& angleCounter)
 {
-    // FIXME: Not all light dissapear
     std::lock_guard<std::mutex> lock(std::mutex);
     int angle = 0;
 
@@ -60,8 +60,7 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
                 float deltaY = point.y - position.y;
                 float squaredDistance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
                 float attenuation = (1.0f / (1.0f + 0.1f * squaredDistance + 0.01f * squaredDistance * squaredDistance)) * _intensity;
-
-                boxSprite->setColor(this->applyLightEffect(attenuation * 300));
+                boxSprite->setColor(this->applyLightEffect(attenuation * ray.getLength()));
                 boxSprite->setLightApply(true);
             }
         }
@@ -69,12 +68,22 @@ void Light::processLight(const std::vector<RayCaster>& rays, const std::vector<E
     }
 }
 
+void Light::setEmission(const float &emission)
+{
+    _emission = emission;
+}
+
+float Light::getEmission()
+{
+    return _emission;
+}
+
 void Light::emit(const std::vector<Entity *>& entities)
 {
     std::vector<std::thread> threads;
     std::atomic<int> angleCounter(0);
 
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < 20; ++i) {
         threads.emplace_back([this, &entities, &angleCounter]() {
             processLight(_rayCaster, entities, angleCounter);
         });
