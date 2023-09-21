@@ -9,11 +9,18 @@
 class Light : public IComponent {
 public:
     Light(Entity *e, const float& emission);
+    Light(Entity *e, const float& emission, Sprite *sprite);
+
     void destroy() override final;
     void emit(const std::vector<Entity *>& entities);
+    void emit(void);
     void setEmission(const float& emission);
 
+    void setColor(const sf::Color& color);
+
     float getEmission();
+
+    bool isSpriteLoaded();
 
 public:
     static inline sf::Color darkColor = sf::Color();
@@ -29,5 +36,8 @@ private:
     std::vector<RayCaster> _rayCaster;
     sf::ConvexShape convex;
     Entity *_e = nullptr;
-    float _intensity = .5f;
+    Transform2D *_transform = nullptr;
+    float _intensity = .4f;
+    Sprite *_sprite = nullptr;
+    bool _isSpriteLoaded = false;
 };

@@ -25,6 +25,11 @@
             "type": "Music",
             "name": "tata",
             "path": "../assets/Freedom.wav"
+        },
+        {
+            "type": "Texture",
+            "name": "light_texture",
+            "path": "../assets/light.png"
         }
     ],
     "entities": [{
@@ -42,6 +47,11 @@
                 "size": [16, 16],
                 "range": 10,
                 "collision_type": "Static"
+            },
+            {
+                "type": "Light",
+                "texture_name": "light_texture",
+                "emission": 300
             },
             {
                 "type": "Sprite",
@@ -88,10 +98,6 @@
                 "type": "Music",
                 "music_name": "tata",
                 "loop": true
-            },
-            {
-                "type": "Light",
-                "emission": 300
             }
         ]
     }]

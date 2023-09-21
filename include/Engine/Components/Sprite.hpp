@@ -10,6 +10,7 @@ class Sprite : public IComponent, public Drawable {
     public:
         Sprite(Entity *self, sf::Texture const& texture,
             float const& width=1, float const& height=1);
+        Sprite(sf::Texture const& texture);
         Sprite(Entity *self, std::string const& texturePath,
               float const& width=1, float const& height=1);
         ~Sprite() = default;
@@ -23,6 +24,9 @@ class Sprite : public IComponent, public Drawable {
         Sprite& setTransform(Transform2D *transform);
         Sprite& setColor(const sf::Color& color);
         Sprite& setLightApply(bool apply);
+
+        void setPosition(const sf::Vector2f& position);
+        void setPosition(const float& x, const float& y);
 
         bool isLightApply();
 

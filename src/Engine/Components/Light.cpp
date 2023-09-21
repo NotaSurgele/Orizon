@@ -18,6 +18,18 @@ Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
     System::lightSources += 1;
 }
 
+Light::Light(Entity *e, const float& emission, Sprite *sprite) : _sprite(sprite), _emission(emission), _e(e)
+{
+    _isSpriteLoaded = true;
+    _transform = e->getComponent<Transform2D>();
+    auto color = sf::Color::White;
+    int newRed = static_cast<int>(color.r * _intensity);
+    int newGreen = static_cast<int>(color.g * _intensity);
+    int newBlue = static_cast<int>(color.b * _intensity);
+    Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
+    System::lightSources += 1;
+}
+
 sf::Color Light::applyLightEffect(const float& attenuation)
 {
     int newRed = static_cast<int>(Light::darkColor.r * attenuation);
@@ -73,13 +85,35 @@ void Light::setEmission(const float &emission)
     _emission = emission;
 }
 
+void Light::setColor(const sf::Color &color)
+{
+    _sprite->setColor(color);
+}
+
 float Light::getEmission()
 {
     return _emission;
 }
 
+bool Light::isSpriteLoaded()
+{
+    return _isSpriteLoaded;
+}
+
+void Light::emit()
+{
+    auto textureSize = _sprite->getTexture().getSize();
+    auto fixedPositionX = _transform->position.x - (textureSize.x / 2);
+    auto fixedPositionY = _transform->position.y  - (textureSize.y / 2);
+
+    _sprite->setPosition(fixedPositionX, fixedPositionY);
+    _sprite->getTexture().setSmooth(true);
+    DRAW_BLEND(_sprite, sf::BlendAdd);
+}
+
 void Light::emit(const std::vector<Entity *>& entities)
 {
+    // Handle threads if no sprite is loaded
     std::vector<std::thread> threads;
     std::atomic<int> angleCounter(0);
 
@@ -91,6 +125,7 @@ void Light::emit(const std::vector<Entity *>& entities)
     for (auto& thread : threads) {
         thread.join();
     }
+
     // std::size_t counter = 0;
     // convex.setPointCount(points.size());
 

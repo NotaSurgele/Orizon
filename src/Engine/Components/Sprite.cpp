@@ -21,8 +21,13 @@ Sprite::Sprite( Entity *self,
 {
     setTexture(texturePath);
     _sprite.setScale(scaleX, scaleY);
+
 }
 
+Sprite::Sprite(const sf::Texture &texture) : _self(nullptr)
+{
+    setTexture(texture);
+}
 
 sf::Sprite& Sprite::getSprite()
 {
@@ -65,6 +70,16 @@ Sprite& Sprite::setTransform(Transform2D *transform)
         _sprite.setRotation(transform->rotation);
     }
     return *this;
+}
+
+void Sprite::setPosition(const sf::Vector2f &position)
+{
+    _sprite.setPosition(position);
+}
+
+void Sprite::setPosition(const float& x, const float& y)
+{
+    _sprite.setPosition(x, y);
 }
 
 const sf::Color& Sprite::getColor()

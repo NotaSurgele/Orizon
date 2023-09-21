@@ -30,6 +30,7 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
+    player->getComponent<Light>()->setColor(sf::Color(255, 255, 255, 50));
 }
 
 void GameScene::update()

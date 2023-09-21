@@ -7,6 +7,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     _r_manager = RessourcesManager();
     _time = Time();
     instance = this;
+    _texture.create(800, 600);
 }
 
 void Core::loadInputFromFile(std::string const& file)
@@ -29,9 +30,19 @@ void Core::CoreDraw(Drawable *component)
     _window.draw(component);
 }
 
+void Core::CoreDraw(Drawable *component, const sf::BlendMode& blendMode)
+{
+    _window.draw(component, blendMode);
+}
+
 void Core::CoreDraw(sf::Drawable const& draw)
 {
     _window.draw(draw);
+}
+
+void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
+{
+    _window.draw(draw, blendMode);
 }
 
 void Core::CoreDisplay()
