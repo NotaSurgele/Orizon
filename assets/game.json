@@ -29,7 +29,7 @@
         {
             "type": "Texture",
             "name": "light_texture",
-            "path": "../assets/light.png"
+            "path": "../assets/light_2.png"
         }
     ],
     "entities": [{
@@ -51,8 +51,8 @@
             {
                 "type": "Light",
                 "texture_name": "light_texture",
-                "emission": 300,
-                "intensity": 0.1
+                "emission": 800,
+                "intensity": 0.7
             },
             {
                 "type": "Sprite",

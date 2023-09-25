@@ -30,7 +30,9 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
-    player->getComponent<Light>()->setColor(sf::Color(255, 255, 255, 50));
+    auto c = sf::Color::Yellow;
+    c.a = 40;
+    player->getComponent<Light>()->setColor(c);
     player->getComponent<Sprite>()->setShadowIntensity(1);
 }
 

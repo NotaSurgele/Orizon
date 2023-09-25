@@ -30,6 +30,7 @@ Light::Light(Entity *e, const float& emission, Sprite *sprite, const float& inte
     int newGreen = static_cast<int>(color.g * _intensity);
     int newBlue = static_cast<int>(color.b * _intensity);
     Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
+    _sprite->setScale(2, 2);
     System::lightSources += 1;
 }
 
@@ -112,11 +113,16 @@ void Light::emit()
 {
     auto texture = _sprite->getTexture();
     auto textureSize = texture.getSize();
-    auto fixedPositionX = _transform->position.x - (textureSize.x / 2);
-    auto fixedPositionY = _transform->position.y  - (textureSize.y / 2);
+    auto scale = _sprite->getScale();
+
+    auto fixedPositionX = _transform->position.x - ((textureSize.x * scale.x) / 2);
+    auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
 
     _sprite->setPosition(fixedPositionX, fixedPositionY);
     texture.setSmooth(true);
+/*
+    DRAW(_shape);
+*/
     DRAW_BLEND(_sprite, sf::BlendAdd);
 }
 
