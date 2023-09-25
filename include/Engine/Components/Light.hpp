@@ -8,8 +8,8 @@
 
 class Light : public IComponent {
 public:
-    Light(Entity *e, const float& emission);
-    Light(Entity *e, const float& emission, Sprite *sprite);
+    Light(Entity *e, const float& emission, const float& intensity=.4f);
+    Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity=.4f);
 
     void destroy() override final;
     void emit(const std::vector<Entity *>& entities);
@@ -17,10 +17,17 @@ public:
     void setEmission(const float& emission);
 
     void setColor(const sf::Color& color);
-
     float getEmission();
-
+    float getIntensity();
     bool isSpriteLoaded();
+
+    static inline sf::Color loadColorFromIntensity(const float& intensity, const sf::Color& color=sf::Color::White)
+    {
+        unsigned char newRed = static_cast<unsigned char>(color.r * intensity);
+        unsigned char newGreen = static_cast<unsigned char>(color.g * intensity);
+        unsigned char newBlue = static_cast<unsigned char>(color.b * intensity);
+        return {newRed, newGreen, newBlue, color.a};
+    }
 
 public:
     static inline sf::Color darkColor = sf::Color();

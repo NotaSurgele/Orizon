@@ -31,6 +31,7 @@ void GameScene::create()
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
     player->getComponent<Light>()->setColor(sf::Color(255, 255, 255, 50));
+    player->getComponent<Sprite>()->setShadowIntensity(1);
 }
 
 void GameScene::update()
@@ -120,19 +121,6 @@ void GameScene::update()
         // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
-    // for (auto ray : _rayCaster) {
-    //     ray.setPosition(sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
-    //     if (ray.hit(wall2))
-    //         std::cout << "oui" << std::endl;
-    //     else
-    //         ray.hit(wall);
-    //     ray.show(2);
-    // }
-    // ray.hit()
-    // player->getComponent<Sprite>()->setTexture(test.getTexture());
-    // DRAW(box1);
-    // DRAW(wall);
-    // DRAW(wall2);
 }
 
 void GameScene::destroy()

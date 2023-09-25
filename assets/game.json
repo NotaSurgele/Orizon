@@ -51,7 +51,8 @@
             {
                 "type": "Light",
                 "texture_name": "light_texture",
-                "emission": 300
+                "emission": 300,
+                "intensity": 0.1
             },
             {
                 "type": "Sprite",

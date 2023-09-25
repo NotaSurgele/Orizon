@@ -3,7 +3,7 @@
 #include "Core.hpp"
 #include <math.h>
 
-Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
+Light::Light(Entity *e, const float& emission, const float& intensity) : _e(e), _emission(emission), _intensity(intensity)
 {
     for (double angle = 0; angle < 360; angle += 1) {
         RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), emission);
@@ -18,7 +18,10 @@ Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
     System::lightSources += 1;
 }
 
-Light::Light(Entity *e, const float& emission, Sprite *sprite) : _sprite(sprite), _emission(emission), _e(e)
+Light::Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity) : _sprite(sprite),
+                                                                                        _emission(emission),
+                                                                                        _e(e),
+                                                                                        _intensity(intensity)
 {
     _isSpriteLoaded = true;
     _transform = e->getComponent<Transform2D>();
@@ -95,6 +98,11 @@ float Light::getEmission()
     return _emission;
 }
 
+float Light::getIntensity()
+{
+    return _intensity;
+}
+
 bool Light::isSpriteLoaded()
 {
     return _isSpriteLoaded;
@@ -102,12 +110,13 @@ bool Light::isSpriteLoaded()
 
 void Light::emit()
 {
-    auto textureSize = _sprite->getTexture().getSize();
+    auto texture = _sprite->getTexture();
+    auto textureSize = texture.getSize();
     auto fixedPositionX = _transform->position.x - (textureSize.x / 2);
     auto fixedPositionY = _transform->position.y  - (textureSize.y / 2);
 
     _sprite->setPosition(fixedPositionX, fixedPositionY);
-    _sprite->getTexture().setSmooth(true);
+    texture.setSmooth(true);
     DRAW_BLEND(_sprite, sf::BlendAdd);
 }
 

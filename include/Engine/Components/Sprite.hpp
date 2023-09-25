@@ -23,6 +23,7 @@ class Sprite : public IComponent, public Drawable {
         Sprite& setTextureRect(sf::IntRect const& rect);
         Sprite& setTransform(Transform2D *transform);
         Sprite& setColor(const sf::Color& color);
+        Sprite& setShadowIntensity(const float& intensity=.4f);
         Sprite& setLightApply(bool apply);
 
         void setPosition(const sf::Vector2f& position);
@@ -31,8 +32,8 @@ class Sprite : public IComponent, public Drawable {
         bool isLightApply();
 
         const sf::Vector2f& getPosition();
-
         const sf::Color& getColor();
+        const float& getShadowIntensity();
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override
         {
@@ -42,6 +43,7 @@ class Sprite : public IComponent, public Drawable {
         void destroy() override final;
 
     private:
+        float _intensity = .4f;
         sf::Texture _texture;
         sf::Sprite _sprite;
         bool _light = false;

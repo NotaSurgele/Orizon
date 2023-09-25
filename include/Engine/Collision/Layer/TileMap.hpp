@@ -18,6 +18,28 @@ public:
 
     std::vector<Entity *> checkAround(Entity *e, int range);
 
+    template<typename T>
+    std::vector<std::vector<T>> getLayerInfo()
+    {
+        std::vector<T> arr;
+
+        for (std::size_t i = 0; i < _layer.size(); i++) {
+            std::vector<T> lines;
+
+            for (std::size_t j = 0; j < _layer[i].size(); j++) {
+                lines.push_back(_layer[i][j] != nullptr);
+            }
+            arr.push_back(lines);
+            lines.clear();
+        }
+        return arr;
+    }
+
+    std::vector<std::vector<Entity *>> getLayerInfo()
+    {
+        return _layer;
+    }
+
     template <typename... Others>
     std::vector<Entity *> checkEdges(Entity *e, int range)
     {

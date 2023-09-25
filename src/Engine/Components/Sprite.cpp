@@ -44,6 +44,11 @@ const sf::Vector2f& Sprite::getPosition()
     return this->_sprite.getPosition();
 }
 
+const float& Sprite::getShadowIntensity()
+{
+    return _intensity;
+}
+
 Sprite& Sprite::setSprite(sf::Sprite const& sprite)
 {
     _sprite = sprite;
@@ -59,6 +64,12 @@ Sprite& Sprite::setColor(const sf::Color& color)
 Sprite& Sprite::setLightApply(bool apply)
 {
     _light = apply;
+    return *this;
+}
+
+Sprite& Sprite::setShadowIntensity(const float &intensity)
+{
+    _intensity = intensity;
     return *this;
 }
 

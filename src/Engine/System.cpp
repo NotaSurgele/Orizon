@@ -41,19 +41,15 @@ void System::velocity_system(Entity *e)
             for (auto side : box->getSides()) {
                 switch (side) {
                     case BoxCollider::Side::DOWN:
-                        // std::cout << "DOWN" << std::endl;
                         velocity->setY(0.0f);
                         break;
                     case BoxCollider::Side::TOP:
-                        // std::cout << "TOP" << std::endl;
                         velocity->setY(0.0f);
                         break;
                     case BoxCollider::Side::LEFT:
-                        // std::cout << "LEFT" << std::endl;
                         velocity->setX(0.0f);
                         break;
                     case BoxCollider::Side::RIGHT:
-                        // std::cout << "RIGHT" << std::endl;
                         velocity->setX(0.0f);
                         break;
                     default:
@@ -84,7 +80,6 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     auto transform = e->getComponent<Transform2D>();
 
     if (!transform) {
-        // TODO: instead of destroying it keep it
         transform = Transform2D::zero();
         componentCache.push_back(transform);
     }
@@ -103,8 +98,9 @@ void System::systems()
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 
-        if (System::lightSources > 0 && !Light::set && sprite)
+        if (System::lightSources > 0 && !Light::set && sprite) {
             sprite->setColor(Light::darkColor);
+        }
         if (!isInView(e))
             continue;
         _inView.push_back(e);
@@ -131,8 +127,14 @@ void System::light_system(Entity *e)
     auto sprite = e->getComponent<Sprite>();
 
     if (sprite && !sprite->isLightApply()) {
+        auto color = Light::darkColor;
+        auto spriteIntensity = sprite->getShadowIntensity();
 
-        sprite->setColor(Light::darkColor);
+        if (spriteIntensity != .4f) {
+            color = Light::loadColorFromIntensity(spriteIntensity);
+            sprite->setColor(color);
+        } else
+            sprite->setColor(color);
     }
     if (!light)
         return;
@@ -268,8 +270,10 @@ void System::camera_system(Entity *e)
     }
     view->setCenter(transform->position);
     SET_VIEW(view);
-    if (destroy)
+    if (destroy) {
         transform->destroy();
+        destroy = false;
+    }
 }
 
 void System::quad_collision_system()
@@ -299,7 +303,6 @@ void System::BoxSystem(Entity *e)
     float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
     float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
 
-    // std::cout << velocity->getY() << std::endl;
     box->setPosition(transform->position.x + x,
                     transform->position.y + y);
     if (d_v)
@@ -320,9 +323,15 @@ bool System::isInView(Entity *e)
     if (!transform)
         transform = Transform2D::zero();
     if (currentView != nullptr) {
-        sf::Vector2f size = currentView->getSize();
-        sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
-        sf::FloatRect bounds = sf::FloatRect(fix_pos, currentView->getSize());
+        sf::Vector2f padding(0, 0);
+
+        if (_layers.size() > 0) {
+            padding.x = _layers[0]->tileWidth;
+        }
+
+        // FIX display when moving
+        sf::Vector2f fix_pos = currentView->getCenter() - ((currentView->getSize() + padding) / 2.0f);
+        sf::FloatRect bounds = sf::FloatRect(fix_pos - padding, currentView->getSize());
 
         return bounds.contains(transform->position);
     }
