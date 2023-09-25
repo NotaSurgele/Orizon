@@ -91,6 +91,9 @@ void Core::run()
         render();
         _system_handler.systems();
         CoreDisplay();
+        float currentTime = _time.getClock().getElapsedTime().asSeconds();
+        Core::fps = 1.f / (currentTime - _lastTime);
+        _lastTime = currentTime;
     }
     destroy();
     _window.close();

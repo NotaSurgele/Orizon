@@ -4,6 +4,11 @@ Time::Time() : _clock()
 {
 }
 
+sf::Clock& Time::getClock()
+{
+    return _clock;
+}
+
 void Time::update()
 {
     sf::Time dt = _clock.restart();
