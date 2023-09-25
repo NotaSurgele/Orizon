@@ -3,7 +3,7 @@
 #include "Core.hpp"
 #include <math.h>
 
-Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
+Light::Light(Entity *e, const float& emission, const float& intensity) : _e(e), _emission(emission), _intensity(intensity)
 {
     for (double angle = 0; angle < 360; angle += 1) {
         RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), emission);
@@ -18,7 +18,10 @@ Light::Light(Entity *e, const float& emission) : _e(e), _emission(emission)
     System::lightSources += 1;
 }
 
-Light::Light(Entity *e, const float& emission, Sprite *sprite) : _sprite(sprite), _emission(emission), _e(e)
+Light::Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity) : _sprite(sprite),
+                                                                                        _emission(emission),
+                                                                                        _e(e),
+                                                                                        _intensity(intensity)
 {
     _isSpriteLoaded = true;
     _transform = e->getComponent<Transform2D>();
@@ -27,6 +30,7 @@ Light::Light(Entity *e, const float& emission, Sprite *sprite) : _sprite(sprite)
     int newGreen = static_cast<int>(color.g * _intensity);
     int newBlue = static_cast<int>(color.b * _intensity);
     Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
+    _sprite->setScale(2, 2);
     System::lightSources += 1;
 }
 
@@ -95,6 +99,11 @@ float Light::getEmission()
     return _emission;
 }
 
+float Light::getIntensity()
+{
+    return _intensity;
+}
+
 bool Light::isSpriteLoaded()
 {
     return _isSpriteLoaded;
@@ -102,12 +111,18 @@ bool Light::isSpriteLoaded()
 
 void Light::emit()
 {
-    auto textureSize = _sprite->getTexture().getSize();
-    auto fixedPositionX = _transform->position.x - (textureSize.x / 2);
-    auto fixedPositionY = _transform->position.y  - (textureSize.y / 2);
+    auto texture = _sprite->getTexture();
+    auto textureSize = texture.getSize();
+    auto scale = _sprite->getScale();
+
+    auto fixedPositionX = _transform->position.x - ((textureSize.x * scale.x) / 2);
+    auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
 
     _sprite->setPosition(fixedPositionX, fixedPositionY);
-    _sprite->getTexture().setSmooth(true);
+    texture.setSmooth(true);
+/*
+    DRAW(_shape);
+*/
     DRAW_BLEND(_sprite, sf::BlendAdd);
 }
 

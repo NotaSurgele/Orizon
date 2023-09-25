@@ -8,6 +8,7 @@ class Time {
         Time();
         ~Time() = default;
 
+        sf::Clock& getClock();
         void update();
 
     private:

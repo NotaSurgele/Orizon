@@ -54,6 +54,7 @@ class Core : public ICore {
 
 public:
     static inline Core *instance;
+    static inline float fps = 0.0f;
 
     private:
         bool CoreEvent(sf::Event& event);
@@ -62,6 +63,8 @@ public:
     private:
         static inline Time _time;
         static inline RessourcesManager _r_manager;
+
+        float _lastTime = 0.0f;
 
         //Utils
         RenderWindow _window;

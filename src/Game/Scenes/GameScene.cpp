@@ -30,7 +30,10 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
-    player->getComponent<Light>()->setColor(sf::Color(255, 255, 255, 50));
+    auto c = sf::Color::Yellow;
+    c.a = 40;
+    player->getComponent<Light>()->setColor(c);
+    player->getComponent<Sprite>()->setShadowIntensity(1);
 }
 
 void GameScene::update()
@@ -38,6 +41,8 @@ void GameScene::update()
     // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
 
+    if (Input::isActionKeyDown("Play")) {
+    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
@@ -103,7 +108,7 @@ void GameScene::update()
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < w; y++) {
                     if (_heightMap[x][y] == 1) {
-                        Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
+                        Entity *e = loadEntityFromFilepath("../assets/entities.json", "grass");
                         auto transform = e->getComponent<Transform2D>();
 
                         transform->position.x = i;
@@ -120,19 +125,6 @@ void GameScene::update()
         // System::refresh_quad();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
-    // for (auto ray : _rayCaster) {
-    //     ray.setPosition(sf::Mouse::getPosition(Window.getSFMLRenderWindow()));
-    //     if (ray.hit(wall2))
-    //         std::cout << "oui" << std::endl;
-    //     else
-    //         ray.hit(wall);
-    //     ray.show(2);
-    // }
-    // ray.hit()
-    // player->getComponent<Sprite>()->setTexture(test.getTexture());
-    // DRAW(box1);
-    // DRAW(wall);
-    // DRAW(wall2);
 }
 
 void GameScene::destroy()
