@@ -7,8 +7,22 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
+    - name: building directory
+      run: mkdir build |
+        cd build
+
+    - name: Compiling program
+      run: cmake ..
+
+    - name: Display
+      run: ls
+    
+  windows-build:
     runs-on: windows-latest
 
     steps:
