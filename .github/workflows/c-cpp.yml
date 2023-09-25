@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Building directory
-      run: mkdir build
+      run: mkdir build | ls
       
     - name: Changing working directory
       run: cd build
