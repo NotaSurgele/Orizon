@@ -327,11 +327,17 @@ bool System::isInView(Entity *e)
 
         if (_layers.size() > 0) {
             padding.x = _layers[0]->tileWidth;
+            padding.y = _layers[0]->tileHeight;
         }
 
         // FIX display when moving
-        sf::Vector2f fix_pos = currentView->getCenter() - ((currentView->getSize() + padding) / 2.0f);
-        sf::FloatRect bounds = sf::FloatRect(fix_pos - padding, currentView->getSize());
+        auto fixSize = currentView->getSize();
+        fixSize.x += padding.x;
+        fixSize.y += padding.y;
+        sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
+        fix_pos.x -= padding.x;
+        fix_pos.y -= padding.y;
+        sf::FloatRect bounds = sf::FloatRect(fix_pos, fixSize);
 
         return bounds.contains(transform->position);
     }

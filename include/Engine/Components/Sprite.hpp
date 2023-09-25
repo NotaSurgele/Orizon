@@ -25,6 +25,7 @@ class Sprite : public IComponent, public Drawable {
         Sprite& setColor(const sf::Color& color);
         Sprite& setShadowIntensity(const float& intensity=.4f);
         Sprite& setLightApply(bool apply);
+        Sprite& setScale(const float& x, const float& y);
 
         void setPosition(const sf::Vector2f& position);
         void setPosition(const float& x, const float& y);
@@ -32,6 +33,7 @@ class Sprite : public IComponent, public Drawable {
         bool isLightApply();
 
         const sf::Vector2f& getPosition();
+        const sf::Vector2f& getScale();
         const sf::Color& getColor();
         const float& getShadowIntensity();
 

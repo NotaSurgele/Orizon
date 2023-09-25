@@ -12,6 +12,7 @@ public:
     Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity=.4f);
 
     void destroy() override final;
+
     void emit(const std::vector<Entity *>& entities);
     void emit(void);
     void setEmission(const float& emission);
