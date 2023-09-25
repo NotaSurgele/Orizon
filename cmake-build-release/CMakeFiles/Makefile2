@@ -216,8 +216,8 @@ _deps/sfml-build/src/SFML/Window/clean: _deps/sfml-build/src/SFML/Window/CMakeFi
 # All Build rule for target.
 CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/System/CMakeFiles/sfml-system.dir/all
 CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/Window/CMakeFiles/sfml-window.dir/all
-CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/Network/CMakeFiles/sfml-network.dir/all
 CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/Graphics/CMakeFiles/sfml-graphics.dir/all
+CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/Network/CMakeFiles/sfml-network.dir/all
 CMakeFiles/Orizon.dir/all: _deps/sfml-build/src/SFML/Audio/CMakeFiles/sfml-audio.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/build

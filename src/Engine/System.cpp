@@ -332,13 +332,13 @@ bool System::isInView(Entity *e)
 
         // FIX display when moving
         auto fixSize = currentView->getSize();
+        sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
+
         fixSize.x += padding.x;
         fixSize.y += padding.y;
-        sf::Vector2f fix_pos = currentView->getCenter() - (currentView->getSize() / 2.0f);
         fix_pos.x -= padding.x;
         fix_pos.y -= padding.y;
         sf::FloatRect bounds = sf::FloatRect(fix_pos, fixSize);
-
         return bounds.contains(transform->position);
     }
     return true;

@@ -340,7 +340,7 @@ CMakeFiles/Orizon.dir/src/Engine/Collision/Layer/TileMap.cpp.obj: \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/include/SFML/Audio/SoundFileReader.hpp \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/include/SFML/Audio/SoundFileWriter.hpp \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/Components/Sound.hpp \
- C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/OrizonMusic.hpp \
+ C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/Components/OrizonMusic.hpp \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/RenderWindow.hpp \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/Components/View.hpp \
  C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/include/Engine/Input.hpp \

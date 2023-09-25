@@ -1,5 +1,5 @@
 {
-    "ressources": [
+    "resources": [
         {
             "type": "Texture",
             "name": "hobbit",
@@ -30,76 +30,11 @@
             "type": "Texture",
             "name": "light_texture",
             "path": "../assets/light_2.png"
+        },
+        {
+            "type": "Entities",
+            "path": "../assets/entities.json"
         }
     ],
-    "entities": [{
-        "components": [
-            {
-                "type": "Transform2D",
-                "position": [500, 0],
-                "rotation": 0,
-                "scale": [1, 1],
-                "size": [16, 16]
-            },
-            {
-                "type": "BoxCollider",
-                "position": [0, 0],
-                "size": [16, 16],
-                "range": 10,
-                "collision_type": "Static"
-            },
-            {
-                "type": "Light",
-                "texture_name": "light_texture",
-                "emission": 800,
-                "intensity": 0.7
-            },
-            {
-                "type": "Sprite",
-                "texture_name": "hobbit"
-            },
-            {
-                "type": "Velocity",
-                "value_type": "float"
-            },
-            {
-                "type": "Animator",
-                "animations": [
-                    {
-                        "name": "idle",
-                        "frames_number": 4,
-                        "rect": [0, 0, 18, 18],
-                        "speed": 0.2
-                    }
-                ]
-            },
-            {
-                "type": "View",
-                "viewport": [0, 0, 800, 600],
-                "follow": true
-            },
-            {
-                "type": "EntitySignature",
-                "signature": "player"
-            },
-            {
-                "type": "CharacterController",
-                "speed": 200
-            },
-            {
-                "type": "Layer",
-                "value": 1
-            },
-            {
-                "type": "Sound",
-                "sound_name": "toto",
-                "loop": true
-            },
-            {
-                "type": "Music",
-                "music_name": "tata",
-                "loop": true
-            }
-        ]
-    }]
+    "entities": ["player"]
 }

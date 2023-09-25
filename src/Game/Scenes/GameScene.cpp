@@ -41,6 +41,8 @@ void GameScene::update()
     // _particles.play(false);
     auto box1 = player->getComponent<BoxCollider>();
 
+    if (Input::isActionKeyDown("Play")) {
+    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
@@ -106,7 +108,7 @@ void GameScene::update()
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < w; y++) {
                     if (_heightMap[x][y] == 1) {
-                        Entity *e = loadEntityFromFile("../assets/entities.json", "grass");
+                        Entity *e = loadEntityFromFilepath("../assets/entities.json", "grass");
                         auto transform = e->getComponent<Transform2D>();
 
                         transform->position.x = i;
