@@ -12,14 +12,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Building directory
-      run: mkdir build | ls
-      
-    - name: Changing working directory
-      run: cd build
-
     - name: Compiling program
-      run: cmake ..
+      run: cmake -G "Unix Makefiles"
 
     - name: Display
       run: ls
