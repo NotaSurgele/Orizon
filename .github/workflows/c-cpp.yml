@@ -12,9 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: building directory
-      run: mkdir build |
-        cd build
+    - name: Building directory
+      run: mkdir build
+      
+    - name: Changing working directory
+      run: cd build
 
     - name: Compiling program
       run: cmake ..
