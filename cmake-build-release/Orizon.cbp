@@ -1244,6 +1244,9 @@
 		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/Light.cpp">
 			<Option target="Orizon"/>
 		</Unit>
+		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/OrizonMusic.cpp">
+			<Option target="Orizon"/>
+		</Unit>
 		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/Sound.cpp">
 			<Option target="Orizon"/>
 		</Unit>
@@ -1257,9 +1260,6 @@
 			<Option target="Orizon"/>
 		</Unit>
 		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Input.cpp">
-			<Option target="Orizon"/>
-		</Unit>
-		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/OrizonMusic.cpp">
 			<Option target="Orizon"/>
 		</Unit>
 		<Unit filename="C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Particle/Particles.cpp">

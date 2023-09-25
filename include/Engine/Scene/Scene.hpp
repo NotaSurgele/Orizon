@@ -39,14 +39,22 @@ public:
         std::string content = readConfigFile(filename);
         nlohmann::json json_content = nlohmann::json::parse(content);
 
-        get_ressources(json_content["ressources"]);
+        get_ressources(json_content["resources"]);
         parse_entities(json_content["entities"]);
         return 0;
     }
 
-    Entity *loadEntityFromFile(const std::string& filename, std::string const& name)
+
+    static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
+        nlohmann::json json_content = nlohmann::json::parse(content);
+
+        return get_entity(json_content["entities"], name);
+    }
+
+    static inline Entity *loadEntityFromFile(const std::string& content, std::string const& name)
+    {
         nlohmann::json json_content = nlohmann::json::parse(content);
 
         return get_entity(json_content["entities"], name);
@@ -233,7 +241,7 @@ public:
         };
 
     private:
-        std::string readConfigFile(std::string const& filename)
+        static inline std::string readConfigFile(std::string const& filename)
         {
             std::string file_content = "";
             try {
@@ -256,29 +264,35 @@ public:
         {
             for (auto& ressource : ressources) {
                 std::string type = ressource["type"];
-                std::string name = ressource["name"];
                 std::string path = ressource["path"];
+                std::string name = "";
 
+                if (ressource.contains("name"))
+                    name = ressource["name"];
                 if (type.find("Texture") != std::string::npos)
                     R_ADD_RESSOURCE(sf::Texture, name, path);
-                if (type.find("Tile") != std::string::npos) {
+                else if (type.find("Tile") != std::string::npos) {
                     float x = ressource["tile_info"][0];
                     float y = ressource["tile_info"][1];
                     float w = ressource["tile_info"][2];
                     float h = ressource["tile_info"][3];
                     R_ADD_TILE(name, path, x, y, w, h);
-                }
-                if (type.find("Sound") != std::string::npos)
+                } else if (type.find("Sound") != std::string::npos)
                     R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
-                if (type.find("Music") != std::string::npos) {
+                else if (type.find("Music") != std::string::npos)
                     R_ADD_MUSIC(name, path);
-                }
+                else if (type.find("Entities") != std::string::npos)
+                    _entitiesPath = path;
             }
         }
 
         void parse_entities(nlohmann::json const& entities)
         {
             for (auto& entity : entities) {
+                if (entity.is_string()) {
+                    loadEntityFromFilepath(_entitiesPath, entity);
+                    continue;
+                }
                 Entity *e = new Entity();
 
                 for (auto& component : entity["components"])
@@ -286,7 +300,7 @@ public:
             }
         }
 
-        Entity *get_entity(nlohmann::json const& entities, std::string const& name)
+        static inline Entity *get_entity(nlohmann::json const& entities, std::string const& name)
         {
             for (auto &entity : entities) {
                 std::string e_name = entity["name"];
@@ -309,4 +323,6 @@ public:
             ComponentFactory::addComponentConstruction(type, constructor);
         }
 
+private:
+    std::string _entitiesPath = "";
 };

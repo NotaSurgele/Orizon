@@ -158,11 +158,26 @@ CMakeFiles/Orizon.dir/src/Engine/Components/Light.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Orizon.dir/src/Engine/Components/Light.cpp.s"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\Light.cpp -o CMakeFiles\Orizon.dir\src\Engine\Components\Light.cpp.s
 
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/flags.make
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/OrizonMusic.cpp
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Components\OrizonMusic.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Components\OrizonMusic.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\OrizonMusic.cpp
+
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.i"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\OrizonMusic.cpp > CMakeFiles\Orizon.dir\src\Engine\Components\OrizonMusic.cpp.i
+
+CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.s"
+	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\OrizonMusic.cpp -o CMakeFiles\Orizon.dir\src\Engine\Components\OrizonMusic.cpp.s
+
 CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj: CMakeFiles/Orizon.dir/flags.make
 CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
 CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/Sound.cpp
 CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Components\Sound.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Components\Sound.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\Sound.cpp
 
 CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.i: cmake_force
@@ -177,7 +192,7 @@ CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj: CMakeFiles/Orizon.di
 CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
 CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Components/Sprite.cpp
 CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Components\Sprite.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Components\Sprite.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Components\Sprite.cpp
 
 CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.i: cmake_force
@@ -192,7 +207,7 @@ CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj: CMakeFiles/Orizon.dir/flags.make
 CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
 CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Core.cpp
 CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Core.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Core.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Core.cpp
 
 CMakeFiles/Orizon.dir/src/Engine/Core.cpp.i: cmake_force
@@ -207,7 +222,7 @@ CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj: CMakeFiles/Orizon.dir/flags.mak
 CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
 CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Entity.cpp
 CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Entity.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Entity.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Entity.cpp
 
 CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.i: cmake_force
@@ -222,7 +237,7 @@ CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj: CMakeFiles/Orizon.dir/flags.make
 CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
 CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/Input.cpp
 CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\Input.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\Input.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Input.cpp
 
 CMakeFiles/Orizon.dir/src/Engine/Input.cpp.i: cmake_force
@@ -232,21 +247,6 @@ CMakeFiles/Orizon.dir/src/Engine/Input.cpp.i: cmake_force
 CMakeFiles/Orizon.dir/src/Engine/Input.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Orizon.dir/src/Engine/Input.cpp.s"
 	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\Input.cpp -o CMakeFiles\Orizon.dir\src\Engine\Input.cpp.s
-
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/flags.make
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/src/Engine/OrizonMusic.cpp
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj: CMakeFiles/Orizon.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj -MF CMakeFiles\Orizon.dir\src\Engine\OrizonMusic.cpp.obj.d -o CMakeFiles\Orizon.dir\src\Engine\OrizonMusic.cpp.obj -c C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\OrizonMusic.cpp
-
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\OrizonMusic.cpp > CMakeFiles\Orizon.dir\src\Engine\OrizonMusic.cpp.i
-
-CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.2\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\src\Engine\OrizonMusic.cpp -o CMakeFiles\Orizon.dir\src\Engine\OrizonMusic.cpp.s
 
 CMakeFiles/Orizon.dir/src/Engine/Particle/Particles.cpp.obj: CMakeFiles/Orizon.dir/flags.make
 CMakeFiles/Orizon.dir/src/Engine/Particle/Particles.cpp.obj: CMakeFiles/Orizon.dir/includes_CXX.rsp
@@ -391,12 +391,12 @@ Orizon_OBJECTS = \
 "CMakeFiles/Orizon.dir/src/Engine/Components/Animator.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Components/BoxCollider.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Components/Light.cpp.obj" \
+"CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj" \
-"CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/Particle/Particles.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/RayCaster.cpp.obj" \
 "CMakeFiles/Orizon.dir/src/Engine/RenderWindow.cpp.obj" \
@@ -416,12 +416,12 @@ Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Collision/QuadTree.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/Animator.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/BoxCollider.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/Light.cpp.obj
+Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/Sound.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Components/Sprite.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Core.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Entity.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Input.cpp.obj
-Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/Particle/Particles.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/RayCaster.cpp.obj
 Orizon.exe: CMakeFiles/Orizon.dir/src/Engine/RenderWindow.cpp.obj

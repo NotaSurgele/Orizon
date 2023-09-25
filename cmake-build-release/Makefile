@@ -415,6 +415,30 @@ src/Engine/Components/Light.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/Components/Light.cpp.s
 .PHONY : src/Engine/Components/Light.cpp.s
 
+src/Engine/Components/OrizonMusic.obj: src/Engine/Components/OrizonMusic.cpp.obj
+.PHONY : src/Engine/Components/OrizonMusic.obj
+
+# target to build an object file
+src/Engine/Components/OrizonMusic.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.obj
+.PHONY : src/Engine/Components/OrizonMusic.cpp.obj
+
+src/Engine/Components/OrizonMusic.i: src/Engine/Components/OrizonMusic.cpp.i
+.PHONY : src/Engine/Components/OrizonMusic.i
+
+# target to preprocess a source file
+src/Engine/Components/OrizonMusic.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.i
+.PHONY : src/Engine/Components/OrizonMusic.cpp.i
+
+src/Engine/Components/OrizonMusic.s: src/Engine/Components/OrizonMusic.cpp.s
+.PHONY : src/Engine/Components/OrizonMusic.s
+
+# target to generate assembly for a file
+src/Engine/Components/OrizonMusic.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/Components/OrizonMusic.cpp.s
+.PHONY : src/Engine/Components/OrizonMusic.cpp.s
+
 src/Engine/Components/Sound.obj: src/Engine/Components/Sound.cpp.obj
 .PHONY : src/Engine/Components/Sound.obj
 
@@ -534,30 +558,6 @@ src/Engine/Input.s: src/Engine/Input.cpp.s
 src/Engine/Input.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/Input.cpp.s
 .PHONY : src/Engine/Input.cpp.s
-
-src/Engine/OrizonMusic.obj: src/Engine/OrizonMusic.cpp.obj
-.PHONY : src/Engine/OrizonMusic.obj
-
-# target to build an object file
-src/Engine/OrizonMusic.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.obj
-.PHONY : src/Engine/OrizonMusic.cpp.obj
-
-src/Engine/OrizonMusic.i: src/Engine/OrizonMusic.cpp.i
-.PHONY : src/Engine/OrizonMusic.i
-
-# target to preprocess a source file
-src/Engine/OrizonMusic.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.i
-.PHONY : src/Engine/OrizonMusic.cpp.i
-
-src/Engine/OrizonMusic.s: src/Engine/OrizonMusic.cpp.s
-.PHONY : src/Engine/OrizonMusic.s
-
-# target to generate assembly for a file
-src/Engine/OrizonMusic.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Orizon.dir\build.make CMakeFiles/Orizon.dir/src/Engine/OrizonMusic.cpp.s
-.PHONY : src/Engine/OrizonMusic.cpp.s
 
 src/Engine/Particle/Particles.obj: src/Engine/Particle/Particles.cpp.obj
 .PHONY : src/Engine/Particle/Particles.obj
@@ -814,6 +814,9 @@ help:
 	@echo ... src/Engine/Components/Light.obj
 	@echo ... src/Engine/Components/Light.i
 	@echo ... src/Engine/Components/Light.s
+	@echo ... src/Engine/Components/OrizonMusic.obj
+	@echo ... src/Engine/Components/OrizonMusic.i
+	@echo ... src/Engine/Components/OrizonMusic.s
 	@echo ... src/Engine/Components/Sound.obj
 	@echo ... src/Engine/Components/Sound.i
 	@echo ... src/Engine/Components/Sound.s
@@ -829,9 +832,6 @@ help:
 	@echo ... src/Engine/Input.obj
 	@echo ... src/Engine/Input.i
 	@echo ... src/Engine/Input.s
-	@echo ... src/Engine/OrizonMusic.obj
-	@echo ... src/Engine/OrizonMusic.i
-	@echo ... src/Engine/OrizonMusic.s
 	@echo ... src/Engine/Particle/Particles.obj
 	@echo ... src/Engine/Particle/Particles.i
 	@echo ... src/Engine/Particle/Particles.s

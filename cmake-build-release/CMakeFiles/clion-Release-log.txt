@@ -1,32 +1,6 @@
 "C:\Program Files\JetBrains\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon -B C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release
--- The C compiler identification is GNU 13.1.0
--- The CXX compiler identification is GNU 13.1.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: C:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/bin/gcc.exe - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: C:/Program Files/JetBrains/CLion 2023.2.2/bin/mingw/bin/g++.exe - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
 Declaring SFML..
 Downloading SFML...
--- Looking for sys/types.h
--- Looking for sys/types.h - found
--- Looking for stdint.h
--- Looking for stdint.h - found
--- Looking for stddef.h
--- Looking for stddef.h - found
--- Check size of void*
--- Check size of void* - done
--- Found OpenGL: opengl32   
--- Looking for dinput.h
--- Looking for dinput.h - found
--- Found OpenAL: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libopenal32.a  
--- Found VORBIS: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libvorbisenc.a;C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libvorbisfile.a;C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libvorbis.a;C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libogg.a  
--- Found FLAC: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release/_deps/sfml-src/extlibs/libs-mingw/x64/libFLAC.a  
--- Configuring done (45.5s)
--- Generating done (0.2s)
+-- Configuring done (3.9s)
+-- Generating done (0.5s)
 -- Build files have been written to: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release
