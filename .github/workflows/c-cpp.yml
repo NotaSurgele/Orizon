@@ -25,8 +25,6 @@ jobs:
         sudo apt-get install libxinerama-dev 
         sudo apt-get install libxi-dev
         sudo apt-get install libfreetype6-dev
-        sudo apt-get install libglew1.5-dev
-        sudo apt-get install libjpeg8-dev
         sudo apt-get install libsndfile1-dev
         sudo apt-get install libopenal-dev
         sudo apt-get install libudev-dev
