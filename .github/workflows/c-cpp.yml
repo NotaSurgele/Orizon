@@ -8,9 +8,12 @@ on:
 
 jobs:
   linux-build:
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - name: Downloading openGL
+      run: apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
     - name: Compiling program
       run: cmake -G "Unix Makefiles"
