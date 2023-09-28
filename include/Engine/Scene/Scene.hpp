@@ -230,7 +230,7 @@ public:
                     { "Sprite" , create_sprite },
                     { "Velocity", create_velocity },
                     { "Animator", create_animator },
-                    { "Tag", create_signature },
+                    { "Tag", create_tag },
                     { "Gravity", create_gravity },
                     { "View", create_view },
                     { "Layer", create_layer },
