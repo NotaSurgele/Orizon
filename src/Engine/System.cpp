@@ -36,20 +36,37 @@ void System::velocity_system(Entity *e)
 
     if (!velocity || !transform)
         return;
+    auto values = velocity->values();
     if (box != nullptr) {
         if (box->collide) {
             for (auto side : box->getSides()) {
                 switch (side) {
                     case BoxCollider::Side::DOWN:
+                        if (values.y == 0.0f) {
+                            transform->position.y -= 5;
+                            break;
+                        }
                         velocity->setY(0.0f);
                         break;
                     case BoxCollider::Side::TOP:
+                        if (values.y == 0.0f) {
+                            transform->position.y += 5;
+                            break;
+                        }
                         velocity->setY(0.0f);
                         break;
                     case BoxCollider::Side::LEFT:
+                        if (values.x == 0.0f) {
+                            transform->position.x -= 5;
+                            break;
+                        }
                         velocity->setX(0.0f);
                         break;
                     case BoxCollider::Side::RIGHT:
+                        if (values.x == 0.0f) {
+                            transform->position.x += 5;
+                            break;
+                        }
                         velocity->setX(0.0f);
                         break;
                     default:
@@ -105,13 +122,13 @@ void System::systems()
             continue;
         _inView.push_back(e);
         // Test
+        update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
         gravity_system(e);
         BoxSystem(e);
         collider_system(e);
         velocity_system(e);
-        update_custom_component(e);
     }
     for (auto &it : componentCache) {
         delete it;

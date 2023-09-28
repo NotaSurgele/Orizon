@@ -64,6 +64,7 @@ bool BoxCollider::overlap(BoxCollider *box)
 
     auto max_x = _position.x + _size.x;
     auto max_y = _position.y + _size.y;
+
     if (!box) return false;
     return _position.x < pos.x + size.x &&
            _position.x + _size.x > pos.x &&
@@ -90,7 +91,6 @@ bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
     bool res = box1.intersects(box2, box1);
     sf::Vector2f pos = sf::Vector2f(box1.left, box1.top);
     sf::Vector2f size = sf::Vector2f(box1.width, box1.height);
-
     intersection._position = pos;
     intersection._size = size;
     return res;
