@@ -18,15 +18,24 @@ public:
     ~Input() = default;
 
     static bool isKeyPressed(std::string const& key);
+    static bool isButtonPressed(std::string const& key);
     static bool isKeyReleased(std::string const& key);
+    static bool isButtonReleased(std::string const& key);
     static bool isKeyDown(std::string const& key);
+    static bool isButtonDown(std::string const& key);
     static bool isActionPressed(std::string const& action);
+    static bool isActionButtonPressed(std::string const& action);
     static bool isActionKeyDown(std::string const& action);
+    static bool isActionButtonDown(std::string const& action);
     static bool isActionKeyReleased(std::string const& action);
+    static bool isActionButtonReleased(std::string const& action);
     static bool isKeyPressed(void);
+    static bool isButtonPressed(void);
     void loadFromFile(std::string const& file);
     void ___push_key(sf::Keyboard::Key key);
+    void ___push_button(sf::Mouse::Button button);
     void ___remove_key(sf::Keyboard::Key key);
+    void ___remove_button(sf::Mouse::Button button);
     void __add_action(std::string const& action, std::string const& input);
 
 
@@ -132,8 +141,16 @@ private:
         {sf::Keyboard::Key::F13, "F13"},
         {sf::Keyboard::Key::F14, "F14"}
     };
+    std::unordered_map<sf::Mouse::Button, std::string> _sfml_to_button = {
+            {sf::Mouse::Button::Left, "Left"},
+            {sf::Mouse::Button::Right, "Right"},
+            {sf::Mouse::Button::Middle, "Middle"},
+    };
     static inline std::unordered_map<std::string, std::string> _action_map;
     static inline std::vector<std::string> ___keyArray;
     static inline std::vector<std::string> ___key_down;
     static inline std::vector<std::string> ___key_release;
+    static inline std::vector<std::string> ___buttonArray;
+    static inline std::vector<std::string> ___button_down;
+    static inline std::vector<std::string> ___button_release;
 };
