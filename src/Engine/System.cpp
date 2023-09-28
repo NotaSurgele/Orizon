@@ -269,6 +269,13 @@ void System::collider_system(Entity *e)
                 }
                 (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
                 (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
+
+                // CAll Collider Systems
+                auto systems = box->getColliderSystem();
+
+                for (auto &system : systems) {
+                    system(collider);
+                }
             }
         }
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;

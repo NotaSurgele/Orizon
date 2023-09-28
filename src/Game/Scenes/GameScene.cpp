@@ -34,19 +34,15 @@ void GameScene::create()
     c.a = 40;
     player->getComponent<Light>()->setColor(c);
     player->getComponent<Sprite>()->setShadowIntensity(1);
+    player->getComponent<BoxCollider>()->registerColliderSystem([](BoxCollider *other) {
+        other->attachedEntity()->destroy();
+    });
 }
 
 void GameScene::update()
 {
     // _particles.play(false);
-    auto collider = player->getComponent<BoxCollider>();
 
-
-    if (collider->isColliding) {
-        collider->collidingWithEntity()->destroy();
-    }
-    if (Input::isActionKeyDown("Play")) {
-    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
