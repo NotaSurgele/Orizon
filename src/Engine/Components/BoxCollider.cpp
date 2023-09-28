@@ -115,6 +115,13 @@ bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
     return res;
 }
 
+BoxCollider* BoxCollider::registerColliderSystem(const std::function<void(BoxCollider *)> &system)
+{
+    _colliderSystem.push_back(system);
+    return this;
+}
+
+
 bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
 {
     auto box = collider;
