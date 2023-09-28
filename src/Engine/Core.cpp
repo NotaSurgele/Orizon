@@ -87,6 +87,10 @@ void Core::run()
                 _input.___push_key(event.key.code);
             if (event.type == sf::Event::KeyReleased)
                 _input.___remove_key(event.key.code);
+            if (event.type == sf::Event::MouseButtonPressed)
+                _input.___push_button(event.mouseButton.button);
+            if (event.type == sf::Event::MouseButtonReleased)
+                _input.___remove_button(event.mouseButton.button);
         }
         render();
         _system_handler.systems();

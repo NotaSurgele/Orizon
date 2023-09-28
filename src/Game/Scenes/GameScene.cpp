@@ -34,7 +34,7 @@ void GameScene::create()
     c.a = 40;
     player->getComponent<Light>()->setColor(c);
     player->getComponent<Sprite>()->setShadowIntensity(1);
-    player->getComponent<BoxCollider>()->registerColliderSystem([](BoxCollider *other) {
+    player->getComponent<BoxCollider>()->registerColliderSystem([&](BoxCollider *other) {
         other->attachedEntity()->destroy();
     });
     layer = new TileMap(0, 0, 3000, 3000, 16, 16);
