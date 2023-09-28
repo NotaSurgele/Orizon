@@ -42,7 +42,7 @@ public:
 
     ~BoxCollider() = default;
 
-    void destroy() override final {}
+    void destroy() override final { _colliderSystem.clear(); }
 
     bool overlap(BoxCollider *collider);
     bool overlap(BoxCollider *collider, Velocity<float> *velocity);
@@ -106,6 +106,8 @@ public:
         sides.push_back(side);
     }
 
+    BoxCollider *registerColliderSystem(const std::function<void(BoxCollider *)>& system);
+
     std::vector<Side>& getSides()
     {
         return sides;
@@ -116,6 +118,11 @@ public:
         auto it = std::find(sides.begin(), sides.end(), side);
 
         return it != sides.end();
+    }
+
+    const std::vector<std::function<void(BoxCollider *)>>& getColliderSystem()
+    {
+        return _colliderSystem;
     }
 
 public:
@@ -132,5 +139,6 @@ private:
     std::vector<RayCaster> _rays;
     Type _type = Type::DYNAMIC;
     Entity *_e = nullptr;
+    std::vector<std::function<void(BoxCollider *)>> _colliderSystem;
     int _range = 0;
 };
