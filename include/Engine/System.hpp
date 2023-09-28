@@ -4,7 +4,7 @@
 #include <functional>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
-#include "Components/EntitySignature.hpp"
+#include "Components/Tag.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
 #include "Collision/QuadTree.hpp"
@@ -30,12 +30,12 @@ public:
     static Entity *getEntity(std::string const& signature)
     {
         for (auto& e : _registry) {
-            EntitySignature *esignature = e->getComponent<EntitySignature>();
+            Tag *esignature = e->getComponent<Tag>();
             std::string ssignature = "";
 
             if (!esignature)
                 continue;
-            ssignature = esignature->signature();
+            ssignature = esignature->value();
             if (ssignature.find(signature) != std::string::npos)
                 return e;
         }

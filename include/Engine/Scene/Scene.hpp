@@ -4,7 +4,7 @@
 #include "Engine/System.hpp"
 #include "Engine/Core.hpp"
 #include "Components/Animator.hpp"
-#include "Components/EntitySignature.hpp"
+#include "Components/Tag.hpp"
 #include "Components/Light.hpp"
 #include <fstream>
 
@@ -156,11 +156,11 @@ public:
                     }
                 }
 
-                static void create_signature(Entity *e, nlohmann::json const& json)
+                static void create_tag(Entity *e, nlohmann::json const& json)
                 {
-                    const std::string signature = json["signature"];
+                    const std::string signature = json["tag"];
 
-                    e->addComponent<EntitySignature>(signature);
+                    e->addComponent<Tag>(signature);
                 }
 
                 static void create_gravity(Entity *e, nlohmann::json const& json)
@@ -230,7 +230,7 @@ public:
                     { "Sprite" , create_sprite },
                     { "Velocity", create_velocity },
                     { "Animator", create_animator },
-                    { "EntitySignature", create_signature },
+                    { "Tag", create_signature },
                     { "Gravity", create_gravity },
                     { "View", create_view },
                     { "Layer", create_layer },
