@@ -45,13 +45,13 @@ add_executable(${PROJECT_NAME} main.cpp ${SRC})
 
 if (MSVC)
 target_link_libraries(
-${PROJECT_NAME}
-sfml-graphics
-sfml-window
-sfml-audio
-sfml-network
-sfml-system
-Threads::Threads
+	${PROJECT_NAME}
+	sfml-graphics
+	sfml-window
+	sfml-audio
+	sfml-network
+	sfml-system
+	Threads::Threads
 )
 else()
 target_link_libraries(
