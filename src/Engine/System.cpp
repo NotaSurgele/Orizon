@@ -217,6 +217,8 @@ void System::collider_system(Entity *e)
         return;
     if (box->getType() == BoxCollider::Type::STATIC)
         return;
+    box->isColliding = false;
+    box->collidingWith = nullptr;
     range = box->getRange();
     if (range == 0)
         return;
@@ -238,6 +240,8 @@ void System::collider_system(Entity *e)
 
             // Resolve collision
             if (box->collide) {
+                box->isColliding = true;
+                box->collidingWith = entity;
                 auto pos1 = box->getPosition();
                 auto pos2 = collider->getPosition();
                 auto size1 = box->getSize();

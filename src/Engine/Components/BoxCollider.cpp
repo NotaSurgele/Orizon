@@ -7,7 +7,8 @@ BoxCollider::BoxCollider(   Entity *e,
                             const int& checkRange)
                             : _position(position),
                             _size(size),
-                            _range(checkRange)
+                            _range(checkRange),
+                            _e(e)
 {
     float angle = 0;
 
@@ -28,7 +29,8 @@ BoxCollider::BoxCollider(   Entity *e,
                             sf::Vector2<float> const& position,
                             sf::Vector2<float> const& size)
                             : _position(position),
-                            _size(size)
+                            _size(size),
+                            _e(e)
 {
     _shape = sf::RectangleShape();
     _shape.setSize(size);
@@ -55,6 +57,16 @@ int& BoxCollider::getRange()
 BoxCollider::Type BoxCollider::getType()
 {
     return _type;
+}
+
+Entity * BoxCollider::collidingWithEntity()
+{
+    return collidingWith;
+}
+
+Entity * BoxCollider::attachedEntity()
+{
+    return _e;
 }
 
 bool BoxCollider::overlap(BoxCollider *box)
@@ -86,6 +98,8 @@ sf::RectangleShape BoxCollider::shape(const sf::Color& color)
 
 bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
 {
+    collidingWith = nullptr;
+    isColliding = false;
     sf::Rect<float> box1 = sf::Rect<float>(this->_position, this->_size);
     sf::Rect<float> box2 = sf::Rect<float>(collider->getPosition(), collider->getSize());
     bool res = box1.intersects(box2, box1);
@@ -93,12 +107,19 @@ bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
     sf::Vector2f size = sf::Vector2f(box1.width, box1.height);
     intersection._position = pos;
     intersection._size = size;
+
+    if (res) {
+        isColliding = true;
+        collidingWith = collider->attachedEntity();
+    }
     return res;
 }
 
 bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
 {
     auto box = collider;
+    if (!box)
+        return false;
     auto pos = box->getPosition();
     auto size = box->getSize();
 
@@ -110,10 +131,12 @@ bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
     );
     auto max_x = _position.x + _size.x;
     auto max_y = _position.y + _size.y;
-    if (!box) return false;
 
-    return _position.x < predicted_pos.x + size.x &&
-           _position.x + _size.x > predicted_pos.x &&
-           _position.y < predicted_pos.y + size.y &&
-           _position.y + _size.y > predicted_pos.y;
+    isColliding = _position.x < predicted_pos.x + size.x &&
+                  _position.x + _size.x > predicted_pos.x &&
+                  _position.y < predicted_pos.y + size.y &&
+                  _position.y + _size.y > predicted_pos.y;
+    if (isColliding)
+        collidingWith = box->attachedEntity();
+    return isColliding;
 }
