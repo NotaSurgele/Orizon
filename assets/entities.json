@@ -48,8 +48,8 @@
                     "follow": true
                 },
                 {
-                    "type": "EntitySignature",
-                    "signature": "player"
+                    "type": "Tag",
+                    "tag": "player"
                 },
                 {
                     "type": "CharacterController",

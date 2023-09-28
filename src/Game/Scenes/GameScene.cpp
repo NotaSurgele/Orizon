@@ -37,12 +37,11 @@ void GameScene::create()
     player->getComponent<BoxCollider>()->registerColliderSystem([](BoxCollider *other) {
         other->attachedEntity()->destroy();
     });
+    layer = new TileMap(0, 0, 3000, 3000, 16, 16);
 }
 
 void GameScene::update()
 {
-    // _particles.play(false);
-
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
