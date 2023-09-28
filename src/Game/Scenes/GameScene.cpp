@@ -39,8 +39,12 @@ void GameScene::create()
 void GameScene::update()
 {
     // _particles.play(false);
-    auto box1 = player->getComponent<BoxCollider>();
+    auto collider = player->getComponent<BoxCollider>();
 
+
+    if (collider->isColliding) {
+        collider->collidingWithEntity()->destroy();
+    }
     if (Input::isActionKeyDown("Play")) {
     }
     if (Input::isActionPressed("Exit"))

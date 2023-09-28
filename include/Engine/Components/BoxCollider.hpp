@@ -74,6 +74,9 @@ public:
         _position.y = y;
     }
 
+    Entity * collidingWithEntity();
+    Entity * attachedEntity();
+
     sf::RectangleShape shape(const sf::Color& color);
 
     sf::Vector2<float> &getPosition();
@@ -119,6 +122,8 @@ public:
     Collide collide = Collide::FALSE;
     Side side = Side::NONE;
     std::vector<Side> sides;
+    bool isColliding = false;
+    Entity *collidingWith;
 
 private:
     sf::Vector2<float> _position;
@@ -126,5 +131,6 @@ private:
     sf::RectangleShape _shape;
     std::vector<RayCaster> _rays;
     Type _type = Type::DYNAMIC;
+    Entity *_e = nullptr;
     int _range = 0;
 };

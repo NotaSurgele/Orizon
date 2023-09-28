@@ -57,6 +57,8 @@ class Entity {
         template <typename T>
         T* getComponent()
         {
+            if (_component_map.size() <= 0)
+                return nullptr;
             T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
             if (component == nullptr && DEBUG_MESSAGE) {
