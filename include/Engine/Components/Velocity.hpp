@@ -39,6 +39,8 @@ public:
     const T getX() { return _vel.x; }
     const T getY() { return _vel.y; }
 
+    const sf::Vector2<T>& values() { return _vel; }
+
 private:
     sf::Vector2<T> _vel = sf::Vector2<T>(0, 0);
     static inline bool _is_zero = false;
