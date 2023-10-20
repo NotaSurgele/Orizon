@@ -17,7 +17,8 @@ public:
 
     enum Type {
         DYNAMIC=0,
-        STATIC=1
+        STATIC=1,
+        NUL=2,
     };
 
     enum Side {
@@ -54,10 +55,13 @@ public:
         _position = pos;
     }
 
-    void setType(const Type& type)
+    void setType(const Type& type);
+
+    void setTrigger(bool isTrigger)
     {
-        _type = type;
+        _isTrigger = isTrigger;
     }
+
 
     void setPosition(const float& x, const float& y)
     {
@@ -75,7 +79,7 @@ public:
     }
 
     Entity * collidingWithEntity();
-    Entity * attachedEntity();
+    Entity * entity();
 
     sf::RectangleShape shape(const sf::Color& color);
 
@@ -106,7 +110,8 @@ public:
         sides.push_back(side);
     }
 
-    BoxCollider *registerColliderSystem(const std::function<void(BoxCollider *)>& system);
+    BoxCollider *onCollision(const std::function<void(BoxCollider *)>& system);
+    BoxCollider *onTrigger(const std::function<void(BoxCollider *)>& system);
 
     std::vector<Side>& getSides()
     {
@@ -118,6 +123,11 @@ public:
         auto it = std::find(sides.begin(), sides.end(), side);
 
         return it != sides.end();
+    }
+
+    bool isTriggered()
+    {
+        return _isTrigger;
     }
 
     const std::vector<std::function<void(BoxCollider *)>>& getColliderSystem()
@@ -137,8 +147,10 @@ private:
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
     std::vector<RayCaster> _rays;
-    Type _type = Type::DYNAMIC;
+    Type _type = Type::NUL;
     Entity *_e = nullptr;
     std::vector<std::function<void(BoxCollider *)>> _colliderSystem;
+    std::vector<std::function<void(BoxCollider *)>> _triggerSystem;
     int _range = 0;
+    bool _isTrigger = false;
 };

@@ -1,5 +1,6 @@
 #include "BoxCollider.hpp"
 #include "Velocity.hpp"
+#include "System.hpp"
 
 BoxCollider::BoxCollider(   Entity *e,
                             sf::Vector2<float> const& position,
@@ -64,9 +65,16 @@ Entity * BoxCollider::collidingWithEntity()
     return collidingWith;
 }
 
-Entity * BoxCollider::attachedEntity()
+Entity * BoxCollider::entity()
 {
     return _e;
+}
+
+void BoxCollider::setType(const BoxCollider::Type &type)
+{
+    if (type == Type::DYNAMIC)
+        //System::__registerDynamicCollider(this->entity());
+    _type = type;
 }
 
 bool BoxCollider::overlap(BoxCollider *box)
@@ -110,17 +118,22 @@ bool BoxCollider::intersect(BoxCollider *collider, BoxCollider& intersection)
 
     if (res) {
         isColliding = true;
-        collidingWith = collider->attachedEntity();
+        collidingWith = collider->entity();
     }
     return res;
 }
 
-BoxCollider* BoxCollider::registerColliderSystem(const std::function<void(BoxCollider *)> &system)
+BoxCollider* BoxCollider::onCollision(const std::function<void(BoxCollider *)> &system)
 {
     _colliderSystem.push_back(system);
     return this;
 }
 
+BoxCollider* BoxCollider::onTrigger(const std::function<void(BoxCollider *)> &system)
+{
+    _triggerSystem.push_back(system);
+    return this;
+}
 
 bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
 {
@@ -144,6 +157,6 @@ bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
                   _position.y < predicted_pos.y + size.y &&
                   _position.y + _size.y > predicted_pos.y;
     if (isColliding)
-        collidingWith = box->attachedEntity();
+        collidingWith = box->entity();
     return isColliding;
 }
