@@ -111,6 +111,8 @@ void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
+    // Handle hashGrid moving entity
+
     for (auto& e : _registry) {
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
@@ -208,6 +210,52 @@ void System::update_custom_component(Entity *e)
     }
 }
 
+void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
+{
+    auto entity = collider->entity();
+
+    box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    // Resolve collision
+    if (box->collide) {
+        box->isColliding = true;
+        box->collidingWith = entity;
+        auto pos1 = box->getPosition();
+        auto pos2 = collider->getPosition();
+        auto size1 = box->getSize();
+        auto size2 = collider->getSize();
+
+        auto fixedSize1X = size1.x / 2;
+        auto fixedSize1Y = size1.y / 2;
+        auto fixedSize2X = size2.x / 2;
+        auto fixedSize2Y = size2.y / 2;
+
+        auto fixedPos1X = pos1.x + fixedSize1X;
+        auto fixedPos1Y = pos1.y + fixedSize1Y;
+        auto fixedPos2X = pos2.x + fixedSize2X;
+        auto fixedPos2Y = pos2.y + fixedSize2Y;
+
+        float dx = std::abs(fixedPos1X - fixedPos2X);
+        float dy = std::abs(fixedPos1Y - fixedPos2Y);
+
+        float overlapX = fixedPos1X + fixedPos2X - dx;
+        float overlapY = fixedPos1Y + fixedPos2Y - dy;
+
+        // Determine the direction of overlap
+        if (overlapX < 0 || overlapY < 0) {
+            return;
+        }
+        (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
+        (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
+
+        // CAll Collider Systems
+        auto systems = box->getColliderSystem();
+
+        for (auto &system : systems) {
+            system(collider);
+        }
+    }
+}
+
 void System::collider_system(Entity *e)
 {
     auto box = e->getComponent<BoxCollider>();
@@ -226,60 +274,27 @@ void System::collider_system(Entity *e)
     box->sides.clear();
     box->side = BoxCollider::Side::NONE;
     box->collide = BoxCollider::Collide::FALSE;
+
+
+    // check collision with layers
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
 
         if (!layer->contain(x, y))
             continue;
+        // Careful with Dynamic Entity if they are not in the layer collision detection will not works !!!!!!!!
+        // [TODO] push dynamic entity inside a new array on the layer class and return it on checkAround
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto *entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-
-            box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-
-            // Resolve collision
-            if (box->collide) {
-                box->isColliding = true;
-                box->collidingWith = entity;
-                auto pos1 = box->getPosition();
-                auto pos2 = collider->getPosition();
-                auto size1 = box->getSize();
-                auto size2 = collider->getSize();
-
-                auto fixedSize1X = size1.x / 2;
-                auto fixedSize1Y = size1.y / 2;
-                auto fixedSize2X = size2.x / 2;
-                auto fixedSize2Y = size2.y / 2;
-
-                auto fixedPos1X = pos1.x + fixedSize1X;
-                auto fixedPos1Y = pos1.y + fixedSize1Y;
-                auto fixedPos2X = pos2.x + fixedSize2X;
-                auto fixedPos2Y = pos2.y + fixedSize2Y;
-
-                float dx = std::abs(fixedPos1X - fixedPos2X);
-                float dy = std::abs(fixedPos1Y - fixedPos2Y);
-
-                float overlapX = fixedPos1X + fixedPos2X - dx;
-                float overlapY = fixedPos1Y + fixedPos2Y - dy;
-
-                // Determine the direction of overlap
-                if (overlapX < 0 || overlapY < 0) {
-                    continue;
-                }
-                (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
-                (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
-
-                // CAll Collider Systems
-                auto systems = box->getColliderSystem();
-
-                for (auto &system : systems) {
-                    system(collider);
-                }
-            }
+            collision_resolution(box, collider);
         }
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
+
+    // check collision with other dynamic entity
+    // [TODO] spatial partialization implementation for dynamic entity
 }
 
 void System::camera_system(Entity *e)
