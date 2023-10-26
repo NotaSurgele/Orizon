@@ -42,22 +42,26 @@ public:
 
     static int RemoveEntity(Entity *e)
     {
-        for (auto it = _registry.cbegin(); it != _registry.cend(); ) {
-            Entity *en = *it;
-
-            if (e == en) {
-                _registry.erase(it);
-                _registry_size--;
-                return 0;
-            }
-            it++;
-        }
-        return -1;
+        _registry.erase(std::remove(
+                            _registry.begin(),
+                            _registry.end(),
+                            e),
+                            _registry.end());
+        _dynamic_collider.erase(std::remove(
+                                    _dynamic_collider.begin(),
+                                    _dynamic_collider.end(),
+                                    e),
+                                    _dynamic_collider.end());
+        _hashGrid->remove(e);
+        _registry_size--;
+        delete e;
+        e = nullptr;
+        return 0;
     }
 
     static void __registerDynamicCollider(Entity *other)
     {
-        _hashGrid->insert(other);
+        _dynamic_collider.push_back(other);
     }
 
     static void addTileMap(TileMap *layer)
@@ -85,8 +89,6 @@ public:
     void BoxSystem(Entity *e);
 
     void collider_system(Entity *e);
-
-    void dynamic_collider_system(Entity *e);
 
     void collision_resolution(BoxCollider *box, BoxCollider *collider);
 

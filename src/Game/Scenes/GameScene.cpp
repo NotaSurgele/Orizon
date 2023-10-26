@@ -28,6 +28,9 @@ void GameScene::create()
     c.a = 40;
     player->getComponent<Light>()->setColor(c);
     player->getComponent<Sprite>()->setShadowIntensity(1);
+
+
+    /// FIXME Does not work when you push dynamic entity in HashGRID
     player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });
