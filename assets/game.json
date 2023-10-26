@@ -36,5 +36,5 @@
             "path": "../assets/entities.json"
         }
     ],
-    "entities": ["player"]
+    "entities": ["player", "player2", "player3"]
 }

@@ -112,8 +112,11 @@ void System::systems()
     std::vector<IComponent *> componentCache;
 
     // Handle hashGrid moving entity
-
-    for (auto& e : _registry) {
+    for (auto e : _dynamic_collider) {
+        _hashGrid->insert(e);
+    }
+    for (auto e : _registry) {
+        auto instance = _hashGrid->instance();
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 
@@ -123,6 +126,7 @@ void System::systems()
         if (!isInView(e))
             continue;
         _inView.push_back(e);
+
         // Test
         update_custom_component(e);
         sprite_system(e, componentCache);
@@ -132,6 +136,7 @@ void System::systems()
         collider_system(e);
         velocity_system(e);
     }
+    _hashGrid->clear();
     for (auto &it : componentCache) {
         delete it;
         it = nullptr;
@@ -155,10 +160,8 @@ void System::light_system(Entity *e)
         } else
             sprite->setColor(color);
     }
-    if (!light)
-        return;
-    if (!isInView(e))
-        return;
+    if (!light) return;
+    if (!isInView(e)) return;
     if (_layers.size() > 0) {
         for (auto layer : _layers) {
             if (!layer->contain(e))
@@ -215,6 +218,8 @@ void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
     auto entity = collider->entity();
 
     box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    DRAW(collider);
+    DRAW(box);
     // Resolve collision
     if (box->collide) {
         box->isColliding = true;
@@ -275,7 +280,6 @@ void System::collider_system(Entity *e)
     box->side = BoxCollider::Side::NONE;
     box->collide = BoxCollider::Collide::FALSE;
 
-
     // check collision with layers
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
@@ -286,7 +290,7 @@ void System::collider_system(Entity *e)
         // Careful with Dynamic Entity if they are not in the layer collision detection will not works !!!!!!!!
         // [TODO] push dynamic entity inside a new array on the layer class and return it on checkAround
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
-        for (auto *entity : arr) {
+        for (auto entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
             collision_resolution(box, collider);
         }
@@ -294,7 +298,25 @@ void System::collider_system(Entity *e)
     }
 
     // check collision with other dynamic entity
-    // [TODO] spatial partialization implementation for dynamic entity
+    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
+
+    for (size_t i = 0; i < dynamic_entity.size(); i++) {
+        auto d_e = dynamic_entity[i];
+
+        if (d_e == e)
+            continue;
+        if (d_e == nullptr) {
+            _dynamic_collider.erase(std::remove(
+                                _dynamic_collider.begin(),
+                                _dynamic_collider.end(), d_e),
+                        _dynamic_collider.end());
+            continue;
+
+        }
+        auto other = d_e->getComponent<BoxCollider>();
+        collision_resolution(box, other);
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    }
 }
 
 void System::camera_system(Entity *e)
