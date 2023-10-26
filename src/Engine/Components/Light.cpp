@@ -112,14 +112,16 @@ bool Light::isSpriteLoaded()
 void Light::emit()
 {
     auto texture = _sprite->getTexture();
-    auto textureSize = texture.getSize();
+    auto textureSize = texture->getSize();
     auto scale = _sprite->getScale();
 
     auto fixedPositionX = _transform->position.x - ((textureSize.x * scale.x) / 2);
     auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
 
     _sprite->setPosition(fixedPositionX, fixedPositionY);
-    texture.setSmooth(true);
+
+    /// CAREFUL
+    //texture->setSmooth(true);
 /*
     DRAW(_shape);
 */

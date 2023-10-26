@@ -17,6 +17,12 @@
             "path": "../assets/tileset.png"
         },
         {
+            "type": "Tile",
+            "name": "test",
+            "tile_info": [48, 48, 16, 16],
+            "path": "../assets/tileset.png"
+        },
+        {
             "type": "Sound",
             "name": "toto",
             "path": "../assets/slash.mp3"
@@ -36,5 +42,5 @@
             "path": "../assets/entities.json"
         }
     ],
-    "entities": ["player"]
+    "entities": ["player", "player2", "player3"]
 }

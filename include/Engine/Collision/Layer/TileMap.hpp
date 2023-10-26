@@ -118,6 +118,17 @@ public:
         return arr;
     }
 
+    void destroy()
+    {
+        for (auto cols : _layer) {
+            for (auto cell : cols) {
+                delete cell;
+            }
+            cols.clear();
+        }
+        _layer.clear();
+    }
+
     void display();
 
 public:
