@@ -7,12 +7,16 @@
 #include "Engine/Collision/Layer/TileMap.hpp"
 #include "Engine/RayCaster.hpp"
 #include"OrizonMusic.hpp"
+#include "TiledMap.hpp"
 
 class GameScene : public Scene {
 public:
     void create() override final;
     void update() override final;
     void destroy() override final;
+
+private:
+    void loadTiledMap(const std::string& filePath);
 
 private:
     Entity *player = nullptr;
@@ -26,4 +30,5 @@ private:
     sf::RectangleShape wall2 = sf::RectangleShape();
     std::vector<RayCaster> _rayCaster;
     OrizonMusic *_music = nullptr;
+    TiledMap *tiledMap = new TiledMap();
 };
