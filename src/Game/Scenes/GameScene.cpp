@@ -29,12 +29,11 @@ void GameScene::create()
     player->getComponent<Light>()->setColor(c);
     player->getComponent<Sprite>()->setShadowIntensity(1);
 
-
-    /// FIXME Does not work when you push dynamic entity in HashGRID
     player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });
     layer = new TileMap(0, 0, 3000, 3000, 16, 16);
+    tiledMap->load("../assets/Maps/test.json");
 }
 
 void GameScene::update()
@@ -44,6 +43,11 @@ void GameScene::update()
     if (Input::isActionPressed("Refresh"))
         CORE->loadInputFromFile(INPUT_FILE);
     player->getComponent<Animator>()->playAnimation("idle", true);
+}
+
+void GameScene::loadTiledMap(const std::string &filePath)
+{
+
 }
 
 void GameScene::destroy()
