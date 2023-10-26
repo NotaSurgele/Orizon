@@ -7,13 +7,11 @@
 #include "Components/Tag.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
-#include "Collision/QuadTree.hpp"
+#include "Collision/HashGrid.hpp"
 #include "Collision/Layer/TileMap.hpp"
 #include "Time.hpp"
 #include "Layer.hpp"
 #include "Entity.hpp"
-
-using SharedEntity = std::shared_ptr<Entity>;
 
 class System {
 public:
@@ -44,30 +42,26 @@ public:
 
     static int RemoveEntity(Entity *e)
     {
-        for (auto it = _registry.cbegin(); it != _registry.cend(); ) {
-            Entity *en = *it;
-
-            if (e == en) {
-                _registry.erase(it);
-                _registry_size--;
-                return 0;
-            }
-            it++;
-        }
-        return -1;
+        _registry.erase(std::remove(
+                            _registry.begin(),
+                            _registry.end(),
+                            e),
+                            _registry.end());
+        _dynamic_collider.erase(std::remove(
+                                    _dynamic_collider.begin(),
+                                    _dynamic_collider.end(),
+                                    e),
+                                    _dynamic_collider.end());
+        _hashGrid->remove(e);
+        _registry_size--;
+        delete e;
+        e = nullptr;
+        return 0;
     }
 
-    static void refresh_quad()
+    static void __registerDynamicCollider(Entity *other)
     {
-        // _quad->clear();
-        for (auto &e : _registry) {
-            auto box = e->getComponent<Transform2D>();
-            auto transform = e->getComponent<Transform2D>();
-
-            if (box && transform)
-                _quad->insert(e);
-        }
-        std::cout << _registry.size() << std::endl;
+        _dynamic_collider.push_back(other);
     }
 
     static void addTileMap(TileMap *layer)
@@ -96,6 +90,8 @@ public:
 
     void collider_system(Entity *e);
 
+    void collision_resolution(BoxCollider *box, BoxCollider *collider);
+
     void gravity_system(Entity *e);
 
     void update_custom_component(Entity *e);
@@ -116,10 +112,11 @@ private:
 
 private:
     std::vector<Entity *> _inView;
+    static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::vector<Sprite *> _drawQueue;
-    static inline Quadtree *_quad = new Quadtree(sf::FloatRect(0, 0, 300, 300));
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
+    static inline std::vector<Entity *> _dynamic_collider;
 };

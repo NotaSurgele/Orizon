@@ -111,7 +111,13 @@ public:
                         { "Static", BoxCollider::Type::STATIC },
                     };
                     BoxCollider::Type type = types.at(type_string);
-                    e->addComponent<BoxCollider>(position, size, range)->setType(type);
+                    auto collider = e->addComponent<BoxCollider>(position, size, range);
+
+                    collider->setType(type);
+                    if (json.contains("isTrigger")) {
+                        bool trigger = json["isTrigger"];
+                        collider->setTrigger(trigger);
+                    }
                 }
 
                 static void create_layer(Entity *e, nlohmann::json const& json)

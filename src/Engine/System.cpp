@@ -111,7 +111,12 @@ void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
-    for (auto& e : _registry) {
+    // Handle hashGrid moving entity
+    for (auto e : _dynamic_collider) {
+        _hashGrid->insert(e);
+    }
+    for (auto e : _registry) {
+        auto instance = _hashGrid->instance();
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 
@@ -121,6 +126,7 @@ void System::systems()
         if (!isInView(e))
             continue;
         _inView.push_back(e);
+
         // Test
         update_custom_component(e);
         sprite_system(e, componentCache);
@@ -130,6 +136,7 @@ void System::systems()
         collider_system(e);
         velocity_system(e);
     }
+    _hashGrid->clear();
     for (auto &it : componentCache) {
         delete it;
         it = nullptr;
@@ -153,10 +160,8 @@ void System::light_system(Entity *e)
         } else
             sprite->setColor(color);
     }
-    if (!light)
-        return;
-    if (!isInView(e))
-        return;
+    if (!light) return;
+    if (!isInView(e)) return;
     if (_layers.size() > 0) {
         for (auto layer : _layers) {
             if (!layer->contain(e))
@@ -208,6 +213,54 @@ void System::update_custom_component(Entity *e)
     }
 }
 
+void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
+{
+    auto entity = collider->entity();
+
+    box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    DRAW(collider);
+    DRAW(box);
+    // Resolve collision
+    if (box->collide) {
+        box->isColliding = true;
+        box->collidingWith = entity;
+        auto pos1 = box->getPosition();
+        auto pos2 = collider->getPosition();
+        auto size1 = box->getSize();
+        auto size2 = collider->getSize();
+
+        auto fixedSize1X = size1.x / 2;
+        auto fixedSize1Y = size1.y / 2;
+        auto fixedSize2X = size2.x / 2;
+        auto fixedSize2Y = size2.y / 2;
+
+        auto fixedPos1X = pos1.x + fixedSize1X;
+        auto fixedPos1Y = pos1.y + fixedSize1Y;
+        auto fixedPos2X = pos2.x + fixedSize2X;
+        auto fixedPos2Y = pos2.y + fixedSize2Y;
+
+        float dx = std::abs(fixedPos1X - fixedPos2X);
+        float dy = std::abs(fixedPos1Y - fixedPos2Y);
+
+        float overlapX = fixedPos1X + fixedPos2X - dx;
+        float overlapY = fixedPos1Y + fixedPos2Y - dy;
+
+        // Determine the direction of overlap
+        if (overlapX < 0 || overlapY < 0) {
+            return;
+        }
+        (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
+        (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
+
+        // CAll Collider Systems
+        auto systems = box->getColliderSystem();
+
+        for (auto &system : systems) {
+            system(collider);
+        }
+    }
+}
+
 void System::collider_system(Entity *e)
 {
     auto box = e->getComponent<BoxCollider>();
@@ -226,58 +279,42 @@ void System::collider_system(Entity *e)
     box->sides.clear();
     box->side = BoxCollider::Side::NONE;
     box->collide = BoxCollider::Collide::FALSE;
+
+    // check collision with layers
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
 
         if (!layer->contain(x, y))
             continue;
+        // Careful with Dynamic Entity if they are not in the layer collision detection will not works !!!!!!!!
+        // [TODO] push dynamic entity inside a new array on the layer class and return it on checkAround
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
-        for (auto *entity : arr) {
+        for (auto entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-
-            box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-
-            // Resolve collision
-            if (box->collide) {
-                box->isColliding = true;
-                box->collidingWith = entity;
-                auto pos1 = box->getPosition();
-                auto pos2 = collider->getPosition();
-                auto size1 = box->getSize();
-                auto size2 = collider->getSize();
-
-                auto fixedSize1X = size1.x / 2;
-                auto fixedSize1Y = size1.y / 2;
-                auto fixedSize2X = size2.x / 2;
-                auto fixedSize2Y = size2.y / 2;
-
-                auto fixedPos1X = pos1.x + fixedSize1X;
-                auto fixedPos1Y = pos1.y + fixedSize1Y;
-                auto fixedPos2X = pos2.x + fixedSize2X;
-                auto fixedPos2Y = pos2.y + fixedSize2Y;
-
-                float dx = std::abs(fixedPos1X - fixedPos2X);
-                float dy = std::abs(fixedPos1Y - fixedPos2Y);
-
-                float overlapX = fixedPos1X + fixedPos2X - dx;
-                float overlapY = fixedPos1Y + fixedPos2Y - dy;
-
-                // Determine the direction of overlap
-                if (overlapX < 0 || overlapY < 0) {
-                    continue;
-                }
-                (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
-                (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
-
-                // CAll Collider Systems
-                auto systems = box->getColliderSystem();
-
-                for (auto &system : systems) {
-                    system(collider);
-                }
-            }
+            collision_resolution(box, collider);
         }
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    }
+
+    // check collision with other dynamic entity
+    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
+
+    for (size_t i = 0; i < dynamic_entity.size(); i++) {
+        auto d_e = dynamic_entity[i];
+
+        if (d_e == e)
+            continue;
+        if (d_e == nullptr) {
+            _dynamic_collider.erase(std::remove(
+                                _dynamic_collider.begin(),
+                                _dynamic_collider.end(), d_e),
+                        _dynamic_collider.end());
+            continue;
+
+        }
+        auto other = d_e->getComponent<BoxCollider>();
+        collision_resolution(box, other);
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
