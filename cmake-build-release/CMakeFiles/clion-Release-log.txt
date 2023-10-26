@@ -1,6 +1,0 @@
-"C:\Program Files\JetBrains\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -S C:\Users\alexi\OneDrive\Bureau\Dev\Orizon -B C:\Users\alexi\OneDrive\Bureau\Dev\Orizon\cmake-build-release
-Declaring SFML..
-Downloading SFML...
--- Configuring done (3.9s)
--- Generating done (0.5s)
--- Build files have been written to: C:/Users/alexi/OneDrive/Bureau/Dev/Orizon/cmake-build-release

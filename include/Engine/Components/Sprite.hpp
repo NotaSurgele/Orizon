@@ -16,7 +16,7 @@ class Sprite : public IComponent, public Drawable {
         ~Sprite() = default;
 
         sf::Sprite& getSprite();
-        sf::Texture& getTexture();
+        const sf::Texture*  getTexture();
         Sprite& setSprite(sf::Sprite const& sprite);
         Sprite& setTexture(sf::Texture const& texture);
         Sprite& setTexture(std::string const &filePath);
