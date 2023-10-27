@@ -150,7 +150,7 @@ void System::light_system(Entity *e)
     auto light = e->getComponent<Light>();
     auto sprite = e->getComponent<Sprite>();
 
-    if (sprite && !sprite->isLightApply()) {
+    if (sprite && !sprite->isLightApply() && lightSources > 0) {
         auto color = Light::darkColor;
         auto spriteIntensity = sprite->getShadowIntensity();
 
@@ -218,8 +218,6 @@ void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
     auto entity = collider->entity();
 
     box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-    DRAW(collider);
-    DRAW(box);
     // Resolve collision
     if (box->collide) {
         box->isColliding = true;
@@ -287,8 +285,6 @@ void System::collider_system(Entity *e)
 
         if (!layer->contain(x, y))
             continue;
-        // Careful with Dynamic Entity if they are not in the layer collision detection will not works !!!!!!!!
-        // [TODO] push dynamic entity inside a new array on the layer class and return it on checkAround
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
