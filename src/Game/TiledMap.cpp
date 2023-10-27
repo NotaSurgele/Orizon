@@ -4,6 +4,9 @@
 
 bool TiledMap::load(const std::string &filePath)
 {
+    for (auto layer : _tileMaps) {
+        layer->destroy();
+    }
     std::string fileContent = Utils::readFile(filePath);
 
     if (fileContent.size() <= 0)
@@ -41,10 +44,10 @@ bool TiledMap::_loadTileMap()
         for (auto cell : cells) {
             int cellId = cell;
 
-            if (index >= 20) {
+            if (index >= height) {
                 index = 0;
-                posX = 0;
-                posY += _tileHeight;
+                posY = 0;
+                posX += _tileHeight;
             }
             sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
             Entity *e = new Entity();
@@ -52,10 +55,11 @@ bool TiledMap::_loadTileMap()
             e->addComponent<Transform2D>()->position = sf::Vector2f(posX, posY);
             e->addComponent<Sprite>(texture);
             tilemap->emplaceEntity(e);
-            _tileMaps.push_back(tilemap);
-            posX += _tileWidth;
+
+            posY += _tileWidth;
             index++;
         }
+        _tileMaps.push_back(tilemap);
     }
     return true;
 }
@@ -67,7 +71,7 @@ void TiledMap::_loadTileSet()
         std::string source = tileset["source"];
 
         // Handle tileset parsing
-        std::string tilesetInfoStr = Utils::readFile("../assets/Maps/" + source);
+        std::string tilesetInfoStr = Utils::readFile("../assets/" + source);
         nlohmann::json tilesetInfo = Utils::fileToJson(tilesetInfoStr);
 
         int imgHeight = tilesetInfo["imageheight"];
