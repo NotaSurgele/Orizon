@@ -41,6 +41,51 @@ public:
         return nullptr;
     }
 
+    template <typename T>
+    static std::vector<T *> getEntitiesFromType()
+    {
+        std::vector<T *> results;
+        for (auto entity : _registry) {
+            auto cast = dynamic_cast<T *>(entity);
+            if (cast)
+                results.push_back(entity);
+        }
+        return results;
+    }
+
+    static std::vector<Entity *> getEntitiesFromTag(const std::string& tagName)
+    {
+        std::vector<Entity *> results;
+        for (auto &e : _registry) {
+            Tag *name = e->getComponent<Tag>();
+
+            if (name->value().find(tagName) != std::string::npos)
+                results.push_back(e);
+        }
+        return results;
+    }
+
+    static std::vector<Entity *> setRegistry(const std::vector<Entity *>& newRegistry)
+    {
+        std::vector<Entity *> old = _registry;
+        _registry.clear();
+        _registry = newRegistry;
+        _registry_size = _registry.size();
+
+        for (auto dynamic : _dynamic_collider) {
+            auto collider = dynamic->getComponent<BoxCollider>();
+
+            collider->___isSet = false;
+        }
+        _dynamic_collider.clear();
+        return old;
+    }
+
+    static std::vector<Entity *> getDynamicEntities()
+    {
+        return _dynamic_collider;
+    }
+
     static int RemoveEntity(Entity *e)
     {
         _registry.erase(std::remove(
@@ -84,8 +129,6 @@ public:
     void merge();
 
     void velocity_system(Entity *e);
-
-    void quad_collision_system();
 
     void BoxSystem(Entity *e);
 
