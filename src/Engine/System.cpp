@@ -28,6 +28,47 @@ void System::addEntity(Entity *entity)
     _registry_size++;
 }
 
+void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity)
+{
+    if (box->collide) {
+        auto values = velocity->values();
+        for (auto side : box->getSides()) {
+            switch (side) {
+                case BoxCollider::Side::DOWN:
+                    if (values.y == 0.0f) {
+                        transform->position.y -= 5;
+                        break;
+                    }
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::TOP:
+                    if (values.y == 0.0f) {
+                        transform->position.y += 5;
+                        break;
+                    }
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::LEFT:
+                    if (values.x == 0.0f) {
+                        transform->position.x -= 5;
+                        break;
+                    }
+                    velocity->setX(0.0f);
+                    break;
+                case BoxCollider::Side::RIGHT:
+                    if (values.x == 0.0f) {
+                        transform->position.x += 5;
+                        break;
+                    }
+                    velocity->setX(0.0f);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
 void System::velocity_system(Entity *e)
 {
     auto velocity = e->getComponent<Velocity<float>>();
@@ -38,42 +79,7 @@ void System::velocity_system(Entity *e)
         return;
     auto values = velocity->values();
     if (box != nullptr) {
-        if (box->collide) {
-            for (auto side : box->getSides()) {
-                switch (side) {
-                    case BoxCollider::Side::DOWN:
-                        if (values.y == 0.0f) {
-                            transform->position.y -= 5;
-                            break;
-                        }
-                        velocity->setY(0.0f);
-                        break;
-                    case BoxCollider::Side::TOP:
-                        if (values.y == 0.0f) {
-                            transform->position.y += 5;
-                            break;
-                        }
-                        velocity->setY(0.0f);
-                        break;
-                    case BoxCollider::Side::LEFT:
-                        if (values.x == 0.0f) {
-                            transform->position.x -= 5;
-                            break;
-                        }
-                        velocity->setX(0.0f);
-                        break;
-                    case BoxCollider::Side::RIGHT:
-                        if (values.x == 0.0f) {
-                            transform->position.x += 5;
-                            break;
-                        }
-                        velocity->setX(0.0f);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        handle_velocity_colliding_sides(box, transform, velocity);
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
@@ -107,6 +113,14 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
+void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
+{
+    for (auto it : componentCache) {
+        delete it;
+        it = nullptr;
+    }
+}
+
 void System::systems()
 {
     std::vector<IComponent *> componentCache;
@@ -116,7 +130,6 @@ void System::systems()
         _hashGrid->insert(e);
     }
     for (auto e : _registry) {
-        auto instance = _hashGrid->instance();
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 
@@ -136,20 +149,14 @@ void System::systems()
         collider_system(e);
         velocity_system(e);
     }
-    _hashGrid->clear();
-    for (auto &it : componentCache) {
-        delete it;
-        it = nullptr;
-    }
+    clear_component_cache(componentCache);
     componentCache.clear();
+    _hashGrid->clear();
     Light::set = true;
 }
 
-void System::light_system(Entity *e)
+void System::handle_sprite_lightning(Sprite *sprite, Light *light)
 {
-    auto light = e->getComponent<Light>();
-    auto sprite = e->getComponent<Sprite>();
-
     if (sprite && !sprite->isLightApply() && lightSources > 0) {
         auto color = Light::darkColor;
         auto spriteIntensity = sprite->getShadowIntensity();
@@ -160,22 +167,37 @@ void System::light_system(Entity *e)
         } else
             sprite->setColor(color);
     }
-    if (!light) return;
-    if (!isInView(e)) return;
+}
+
+bool System::light_layer_raycast(Light *light, Entity *e)
+{
     if (_layers.size() > 0) {
         for (auto layer : _layers) {
             if (!layer->contain(e))
                 continue;
             if (!light->isSpriteLoaded()) {
-                std::vector<Entity *> entities = layer->checkEdges<Transform2D>(e, light->getEmission() / layer->tileWidth);
-
+                std::vector<Entity *> entities = layer->checkEdges<Transform2D>(
+                        e,light->getEmission() / layer->tileWidth);
                 light->emit(entities);
                 continue;
             }
             light->emit();
         }
-        return;
+        return true;
     }
+    return false;
+}
+
+void System::light_system(Entity *e)
+{
+    auto light = e->getComponent<Light>();
+    auto sprite = e->getComponent<Sprite>();
+
+    handle_sprite_lightning(sprite, light);
+    if (!light) return;
+    if (!isInView(e)) return;
+    if (light_layer_raycast(light, e))
+        return;
     if (!light->isSpriteLoaded()) {
         light->emit(_registry);
         return;
@@ -213,6 +235,40 @@ void System::update_custom_component(Entity *e)
     }
 }
 
+bool System::resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity)
+{
+    box->isColliding = true;
+    box->collidingWith = entity;
+    auto pos1 = box->getPosition();
+    auto pos2 = collider->getPosition();
+    auto size1 = box->getSize();
+    auto size2 = collider->getSize();
+
+    auto fixedSize1X = size1.x / 2;
+    auto fixedSize1Y = size1.y / 2;
+    auto fixedSize2X = size2.x / 2;
+    auto fixedSize2Y = size2.y / 2;
+
+    auto fixedPos1X = pos1.x + fixedSize1X;
+    auto fixedPos1Y = pos1.y + fixedSize1Y;
+    auto fixedPos2X = pos2.x + fixedSize2X;
+    auto fixedPos2Y = pos2.y + fixedSize2Y;
+
+    float dx = std::abs(fixedPos1X - fixedPos2X);
+    float dy = std::abs(fixedPos1Y - fixedPos2Y);
+
+    float overlapX = fixedPos1X + fixedPos2X - dx;
+    float overlapY = fixedPos1Y + fixedPos2Y - dy;
+
+    // Determine the direction of overlap
+    if (overlapX < 0 || overlapY < 0) {
+        return false;
+    }
+    (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
+    (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
+    return true;
+}
+
 void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
 {
     auto entity = collider->entity();
@@ -220,42 +276,59 @@ void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
     box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     // Resolve collision
     if (box->collide) {
-        box->isColliding = true;
-        box->collidingWith = entity;
-        auto pos1 = box->getPosition();
-        auto pos2 = collider->getPosition();
-        auto size1 = box->getSize();
-        auto size2 = collider->getSize();
-
-        auto fixedSize1X = size1.x / 2;
-        auto fixedSize1Y = size1.y / 2;
-        auto fixedSize2X = size2.x / 2;
-        auto fixedSize2Y = size2.y / 2;
-
-        auto fixedPos1X = pos1.x + fixedSize1X;
-        auto fixedPos1Y = pos1.y + fixedSize1Y;
-        auto fixedPos2X = pos2.x + fixedSize2X;
-        auto fixedPos2Y = pos2.y + fixedSize2Y;
-
-        float dx = std::abs(fixedPos1X - fixedPos2X);
-        float dy = std::abs(fixedPos1Y - fixedPos2Y);
-
-        float overlapX = fixedPos1X + fixedPos2X - dx;
-        float overlapY = fixedPos1Y + fixedPos2Y - dy;
-
-        // Determine the direction of overlap
-        if (overlapX < 0 || overlapY < 0) {
+        if (!resolution_calculation(box, collider, entity))
             return;
-        }
-        (fixedPos1X < fixedPos2X) ? box->registerSide(BoxCollider::Side::LEFT) : box->registerSide(BoxCollider::Side::RIGHT);
-        (fixedPos1Y < fixedPos2Y) ? box->registerSide(BoxCollider::Side::DOWN) : box->registerSide(BoxCollider::Side::TOP);
 
-        // CAll Collider Systems
+        // Call Collider Systems
         auto systems = box->getColliderSystem();
 
         for (auto &system : systems) {
             system(collider);
         }
+    }
+}
+
+void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
+{
+    box->setColor(sf::Color::Green);
+    box->sides.clear();
+    box->side = BoxCollider::Side::NONE;
+    box->collide = BoxCollider::Collide::FALSE;
+    for (TileMap *layer : _layers) {
+        float x = box->getPosition().x;
+        float y = box->getPosition().y;
+
+        if (!layer->contain(x, y))
+            continue;
+        std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
+        for (auto entity : arr) {
+            auto collider = entity->getComponent<BoxCollider>();
+            collision_resolution(box, collider);
+        }
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    }
+}
+
+void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
+{
+    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
+
+    for (size_t i = 0; i < dynamic_entity.size(); i++) {
+        auto d_e = dynamic_entity[i];
+
+        if (d_e == e)
+            continue;
+        if (d_e == nullptr) {
+            _dynamic_collider.erase(std::remove(
+                                            _dynamic_collider.begin(),
+                                            _dynamic_collider.end(), d_e),
+                                    _dynamic_collider.end());
+            continue;
+
+        }
+        auto other = d_e->getComponent<BoxCollider>();
+        collision_resolution(box, other);
+        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
@@ -273,46 +346,11 @@ void System::collider_system(Entity *e)
     range = box->getRange();
     if (range == 0)
         return;
-    box->setColor(sf::Color::Green);
-    box->sides.clear();
-    box->side = BoxCollider::Side::NONE;
-    box->collide = BoxCollider::Collide::FALSE;
-
     // check collision with layers
-    for (TileMap *layer : _layers) {
-        float x = box->getPosition().x;
-        float y = box->getPosition().y;
-
-        if (!layer->contain(x, y))
-            continue;
-        std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
-        for (auto entity : arr) {
-            auto collider = entity->getComponent<BoxCollider>();
-            collision_resolution(box, collider);
-        }
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-    }
+    handle_layer_collision(box, range, e);
 
     // check collision with other dynamic entity
-    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
-
-    for (size_t i = 0; i < dynamic_entity.size(); i++) {
-        auto d_e = dynamic_entity[i];
-
-        if (d_e == e)
-            continue;
-        if (d_e == nullptr) {
-            _dynamic_collider.erase(std::remove(
-                                _dynamic_collider.begin(),
-                                _dynamic_collider.end(), d_e),
-                        _dynamic_collider.end());
-            continue;
-
-        }
-        auto other = d_e->getComponent<BoxCollider>();
-        collision_resolution(box, other);
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
-    }
+    handle_dynamic_entity_collision(e, box);
 }
 
 void System::camera_system(Entity *e)
