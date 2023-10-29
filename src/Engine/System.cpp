@@ -28,6 +28,47 @@ void System::addEntity(Entity *entity)
     _registry_size++;
 }
 
+void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity)
+{
+    if (box->collide) {
+        auto values = velocity->values();
+        for (auto side : box->getSides()) {
+            switch (side) {
+                case BoxCollider::Side::DOWN:
+                    if (values.y == 0.0f) {
+                        transform->position.y -= 5;
+                        break;
+                    }
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::TOP:
+                    if (values.y == 0.0f) {
+                        transform->position.y += 5;
+                        break;
+                    }
+                    velocity->setY(0.0f);
+                    break;
+                case BoxCollider::Side::LEFT:
+                    if (values.x == 0.0f) {
+                        transform->position.x -= 5;
+                        break;
+                    }
+                    velocity->setX(0.0f);
+                    break;
+                case BoxCollider::Side::RIGHT:
+                    if (values.x == 0.0f) {
+                        transform->position.x += 5;
+                        break;
+                    }
+                    velocity->setX(0.0f);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
 void System::velocity_system(Entity *e)
 {
     auto velocity = e->getComponent<Velocity<float>>();
@@ -38,42 +79,7 @@ void System::velocity_system(Entity *e)
         return;
     auto values = velocity->values();
     if (box != nullptr) {
-        if (box->collide) {
-            for (auto side : box->getSides()) {
-                switch (side) {
-                    case BoxCollider::Side::DOWN:
-                        if (values.y == 0.0f) {
-                            transform->position.y -= 5;
-                            break;
-                        }
-                        velocity->setY(0.0f);
-                        break;
-                    case BoxCollider::Side::TOP:
-                        if (values.y == 0.0f) {
-                            transform->position.y += 5;
-                            break;
-                        }
-                        velocity->setY(0.0f);
-                        break;
-                    case BoxCollider::Side::LEFT:
-                        if (values.x == 0.0f) {
-                            transform->position.x -= 5;
-                            break;
-                        }
-                        velocity->setX(0.0f);
-                        break;
-                    case BoxCollider::Side::RIGHT:
-                        if (values.x == 0.0f) {
-                            transform->position.x += 5;
-                            break;
-                        }
-                        velocity->setX(0.0f);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        handle_velocity_colliding_sides(box, transform, velocity);
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;

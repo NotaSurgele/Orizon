@@ -126,6 +126,9 @@ private:
     //Collision
     bool resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
 
+    // Velocity
+    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity);
+
 private:
     std::vector<Entity *> _inView;
     static inline HashGrid *_hashGrid = new HashGrid();
