@@ -341,6 +341,10 @@ void System::collider_system(Entity *e)
         return;
     if (box->getType() == BoxCollider::Type::STATIC)
         return;
+    if (!box->___isSet) {
+        _dynamic_collider.push_back(e);
+        box->___isSet = true;
+    }
     box->isColliding = false;
     box->collidingWith = nullptr;
     range = box->getRange();
@@ -353,8 +357,7 @@ void System::collider_system(Entity *e)
     handle_dynamic_entity_collision(e, box);
 }
 
-void System::camera_system(Entity *e)
-{
+void System::camera_system(Entity *e) {
     auto view = e->getComponent<View>();
     auto transform = e->getComponent<Transform2D>();
     bool destroy = false;
@@ -373,15 +376,6 @@ void System::camera_system(Entity *e)
         transform->destroy();
         destroy = false;
     }
-}
-
-void System::quad_collision_system()
-{
-    // _quad->show();
-    sf::Vector2f pos = Window.getView()->getCenter();
-    sf::Vector2f size = Window.getView()->getSize();
-
-    // std::cout << pos.x << " " << pos.y << " " << size.x << " " << size.y << std::endl;
 }
 
 void System::BoxSystem(Entity *e)

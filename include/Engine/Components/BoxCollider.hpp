@@ -141,6 +141,7 @@ public:
     std::vector<Side> sides;
     bool isColliding = false;
     Entity *collidingWith;
+    bool ___isSet = false;
 
 private:
     sf::Vector2<float> _position;
