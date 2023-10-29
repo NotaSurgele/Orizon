@@ -44,7 +44,6 @@ public:
         return 0;
     }
 
-
     static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
@@ -125,11 +124,7 @@ public:
                     std::size_t value = json["value"];
                     auto layer = e->getComponent<Layer>();
 
-                    if (layer) {
-                        layer->set(value);
-                        return;
-                    }
-                    e->addComponent<Layer>(value);
+                    layer->set(value);
                 }
 
                 static void create_velocity(Entity *e, nlohmann::json const& json)
