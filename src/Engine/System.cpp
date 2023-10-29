@@ -9,21 +9,6 @@ void System::addEntity(Entity *entity)
     entity->addComponent<Id>(_id++);
     entity->addComponent<Layer>(0);
     Light::set = false;
-    if (_registry_size >= 2) {
-        auto it = _registry.begin();
-
-        for (auto e : _registry) {
-            auto v = e->getComponent<Layer>()->value();
-            auto v2 = entity->getComponent<Layer>()->value();
-
-            if (v > v2) {
-                _registry.insert(it, entity);
-                _registry_size++;
-                return;
-            }
-            it++;
-        }
-    }
     _registry.push_back(entity);
     _registry_size++;
 }
@@ -77,7 +62,6 @@ void System::velocity_system(Entity *e)
 
     if (!velocity || !transform)
         return;
-    auto values = velocity->values();
     if (box != nullptr) {
         handle_velocity_colliding_sides(box, transform, velocity);
     }
@@ -89,8 +73,13 @@ void System::sort()
 {
     std::sort(_registry.begin(), _registry.end(),
         [](Entity *e1, Entity *e2) {
-            auto v1 = e1->getComponent<Layer>()->value();
-            auto v2 = e2->getComponent<Layer>()->value();
+            auto l1 =  e1->getComponent<Layer>();
+            auto l2 = e2->getComponent<Layer>();
+
+            if (!l1 || !l2)
+                return true;
+            auto v1 = l1->value();
+            auto v2 = l2->value();
 
             return v1 > v2;
         }
