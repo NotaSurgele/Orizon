@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <thread>
 #include <functional>
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
@@ -11,7 +10,6 @@
 #include "Collision/Layer/TileMap.hpp"
 #include "Time.hpp"
 #include "Layer.hpp"
-#include "Entity.hpp"
 #include "Light.hpp"
 
 class System {
@@ -41,6 +39,51 @@ public:
         return nullptr;
     }
 
+    template <typename T>
+    static std::vector<T *> getEntitiesFromType()
+    {
+        std::vector<T *> results;
+        for (auto entity : _registry) {
+            auto cast = dynamic_cast<T *>(entity);
+            if (cast)
+                results.push_back(entity);
+        }
+        return results;
+    }
+
+    static std::vector<Entity *> getEntitiesFromTag(const std::string& tagName)
+    {
+        std::vector<Entity *> results;
+        for (auto &e : _registry) {
+            Tag *name = e->getComponent<Tag>();
+
+            if (name->value().find(tagName) != std::string::npos)
+                results.push_back(e);
+        }
+        return results;
+    }
+
+    static std::vector<Entity *> setRegistry(const std::vector<Entity *>& newRegistry)
+    {
+        std::vector<Entity *> old = _registry;
+        _registry.clear();
+        _registry = newRegistry;
+        _registry_size = _registry.size();
+
+        for (auto dynamic : _dynamic_collider) {
+            auto collider = dynamic->getComponent<BoxCollider>();
+
+            collider->___isSet = false;
+        }
+        _dynamic_collider.clear();
+        return old;
+    }
+
+    static std::vector<Entity *> getDynamicEntities()
+    {
+        return _dynamic_collider;
+    }
+
     static int RemoveEntity(Entity *e)
     {
         _registry.erase(std::remove(
@@ -65,6 +108,48 @@ public:
         _dynamic_collider.push_back(other);
     }
 
+    static void ___insert_entity_at_location(Entity *e)
+    {
+        auto layerValue = e->getComponent<Layer>()->value();
+        auto exist = _orders_values[layerValue];
+
+        //FIXME entity is not draw in the correct order !!!
+        std::thread thread([e]() {
+            for (int i = 0; i < _registry_size; i++) {
+                if (_registry[i] == e) {
+                    _registry.erase(_registry.begin() + i);
+                    return;
+                }
+            }
+        });
+        thread.join();
+        if (exist) {
+            auto it = _registry.begin();
+            _registry.insert(it + exist, e);
+            return;
+        }
+        int index = 0;
+        for (auto pair : _orders_values) {
+            auto value = pair.first;
+            auto position = pair.second;
+
+            if (layerValue < value) {
+                _orders_values[value] = position;
+                _registry.insert(_registry.begin() + index, e);
+                auto start = _orders_values.begin();
+
+                for (; start != _orders_values.end(); start++) {
+                    start->second += 1;
+                }
+                return;
+            }
+            index++;
+        }
+        _orders_values[layerValue] = index;
+        auto end = _registry.end();
+        _registry.insert(end, e);
+    }
+
     static void addTileMap(TileMap *layer)
     {
         _layers.push_back(layer);
@@ -84,8 +169,6 @@ public:
     void merge();
 
     void velocity_system(Entity *e);
-
-    void quad_collision_system();
 
     void BoxSystem(Entity *e);
 
@@ -138,4 +221,5 @@ private:
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
     static inline std::vector<Entity *> _dynamic_collider;
+    static inline std::map<std::size_t, int> _orders_values;
 };

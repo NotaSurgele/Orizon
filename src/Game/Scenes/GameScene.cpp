@@ -21,6 +21,7 @@ void GameScene::create()
     });
 
     loadSceneFromFile("../assets/game.json");
+    tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
@@ -33,7 +34,6 @@ void GameScene::create()
         other->entity()->destroy();
     });
     //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
-    tiledMap->load("../assets/map_test.tmj");
 }
 
 void GameScene::update()

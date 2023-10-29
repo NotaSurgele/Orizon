@@ -1,8 +1,9 @@
 #pragma once
 
-#include "IComponent.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include "Entity.hpp"
+#include "IComponent.hpp"
 
 class Transform2D : public IComponent {
     public:
