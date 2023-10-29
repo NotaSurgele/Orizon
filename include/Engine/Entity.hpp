@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Components/Transform2D.hpp"
 #include "Components/IComponent.hpp"
 #include "Components/Id.hpp"
 #include "Components/CustomComponents.hpp"
-#include "Components/Layer.hpp"
 #include "config.hpp"
+#include <SFML/System.hpp>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -15,6 +14,7 @@
 
 class Sprite;
 class Animator;
+class Transform2D;
 
 template <typename T>
 class Velocity;
@@ -97,15 +97,5 @@ class Entity {
     protected:
         std::unordered_map<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;
-};
-
-struct SortEntity
-{
-    bool operator()(Entity *e1, Entity* e2) const {
-        auto v1 = e1->getComponent<Layer>()->value();
-        auto v2 = e2->getComponent<Layer>()->value();
-
-        return v1 < v2;
-    }
 };
 

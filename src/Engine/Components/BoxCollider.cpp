@@ -72,8 +72,10 @@ Entity * BoxCollider::entity()
 
 void BoxCollider::setType(const BoxCollider::Type &type)
 {
-    if (type == Type::DYNAMIC)
+    if (type == Type::DYNAMIC) {
+        ___isSet = true;
         System::__registerDynamicCollider(this->entity());
+    }
     _type = type;
 }
 

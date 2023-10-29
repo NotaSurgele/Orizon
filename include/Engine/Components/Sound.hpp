@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IComponent.hpp"
-#include "Entity.hpp"
 #include <SFML/Audio.hpp>
 
 class Sound : public IComponent {

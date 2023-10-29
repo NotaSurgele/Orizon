@@ -1,4 +1,5 @@
 #include "Sprite.hpp"
+#include "Transform2D.hpp"
 #include <iostream>
 
 Sprite::Sprite( Entity *self,
