@@ -12,6 +12,7 @@
 #include "Time.hpp"
 #include "Layer.hpp"
 #include "Entity.hpp"
+#include "Light.hpp"
 
 class System {
 public:
@@ -109,6 +110,24 @@ public:
 
 private:
     static void sort();
+
+    //Component
+
+    // Light
+    void handle_sprite_lightning(Sprite *sprite, Light *light);
+    bool light_layer_raycast(Light *light, Entity *e);
+
+    void clear_component_cache(const std::vector<IComponent *> &componentCache);
+
+    // Collider
+    void handle_layer_collision(BoxCollider *box, int range, Entity *e);
+    void handle_dynamic_entity_collision(Entity *e, BoxCollider *box);
+
+    //Collision
+    bool resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
+
+    // Velocity
+    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity);
 
 private:
     std::vector<Entity *> _inView;

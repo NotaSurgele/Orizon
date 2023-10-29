@@ -74,7 +74,13 @@ void Core::setView(View *view)
 void Core::run()
 {
     Input input = Input();
-
+    sf::Font font;
+    font.loadFromFile("../assets/LEMONMILK-Regular.otf"); // Load a font
+    sf::Text fpsText;
+    fpsText.setFont(font);
+    fpsText.setCharacterSize(11);
+    fpsText.setFillColor(sf::Color::White);
+    fpsText.setPosition(-10, -10);
     start();
     while (isOpen()) {
         _time.update();
@@ -93,11 +99,23 @@ void Core::run()
                 _input.___remove_button(event.mouseButton.button);
         }
         render();
-        _system_handler.systems();
-        CoreDisplay();
         float currentTime = _time.getClock().getElapsedTime().asSeconds();
-        Core::fps = 1.f / (currentTime - _lastTime);
-        _lastTime = currentTime;
+        Core::fps = 1.f / currentTime;
+
+        _system_handler.systems();
+        auto view = _window.getView();
+        if (view) {
+            auto center = view->getCenter();
+            auto size = view->getSize();
+
+            auto fixedPosition = sf::Vector2f(center.x - (size.x / 2), center.y - (size.y / 2));
+            fpsText.setPosition(fixedPosition);
+        } else {
+            fpsText.setPosition(10, 10);
+        }
+        fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+        _window.draw(fpsText);
+        CoreDisplay();
     }
     destroy();
     _window.close();

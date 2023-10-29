@@ -64,8 +64,6 @@ public:
         static inline Time _time;
         static inline RessourcesManager _r_manager;
 
-        float _lastTime = 0.0f;
-
         //Utils
         RenderWindow _window;
         Input _input;

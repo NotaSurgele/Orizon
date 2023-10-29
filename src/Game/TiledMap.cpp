@@ -52,7 +52,7 @@ bool TiledMap::_loadTileMap()
             sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
             Entity *e = new Entity();
 
-            e->addComponent<Transform2D>()->position = sf::Vector2f(posX, posY);
+            e->addComponent<Transform2D>()->position = sf::Vector2f(posY, posX);
             e->addComponent<Sprite>(texture);
             tilemap->emplaceEntity(e);
 
