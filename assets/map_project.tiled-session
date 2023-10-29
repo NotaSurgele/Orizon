@@ -1,0 +1,45 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map_test.tmj",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "0x72_DungeonTilesetII_v1.6.tsj": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "map_test.tmj": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 454.66666666666674,
+                "y": 244
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/alexi/Desktop/Dev/Orizon/assets",
+    "map.height": 100,
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 100,
+    "openFiles": [
+        "0x72_DungeonTilesetII_v1.6.tsj",
+        "map_test.tmj"
+    ],
+    "project": "map_project.tiled-project",
+    "recentFiles": [
+        "0x72_DungeonTilesetII_v1.6.tsj",
+        "map_test.tmj"
+    ],
+    "tileset.lastUsedFormat": "json",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

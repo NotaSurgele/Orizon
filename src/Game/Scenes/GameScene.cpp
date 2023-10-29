@@ -26,14 +26,14 @@ void GameScene::create()
     player->getComponent<OrizonMusic>();
     auto c = sf::Color::Yellow;
     c.a = 40;
-    player->getComponent<Light>()->setColor(c);
-    player->getComponent<Sprite>()->setShadowIntensity(1);
+    //player->getComponent<Light>()->setColor(c);
+    //player->getComponent<Sprite>()->setShadowIntensity(1);
 
     player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });
-    layer = new TileMap(0, 0, 3000, 3000, 16, 16);
-    tiledMap->load("../assets/Maps/test.json");
+    //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
+    tiledMap->load("../assets/map_test.tmj");
 }
 
 void GameScene::update()
@@ -41,7 +41,10 @@ void GameScene::update()
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Refresh"))
+    {
         CORE->loadInputFromFile(INPUT_FILE);
+        tiledMap->load("../assets/map_test.tmj");
+    }
     player->getComponent<Animator>()->playAnimation("idle", true);
 }
 
