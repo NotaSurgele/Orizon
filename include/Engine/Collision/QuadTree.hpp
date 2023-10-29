@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
 #include <algorithm>
-#include "../Engine/Entity.hpp"
+#include "Entity.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 
 class QuadtreeNode {
 public:

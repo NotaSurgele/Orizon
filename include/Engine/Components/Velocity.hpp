@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "IComponent.hpp"
+#include <SFML/System.hpp>
+class IComponent;
 
 template<typename T>
 class Velocity : public IComponent {
