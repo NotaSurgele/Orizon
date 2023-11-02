@@ -1,5 +1,7 @@
 #include "BoxCollider.hpp"
 #include "Velocity.hpp"
+
+#define SYSTEM_CALLER
 #include "System.hpp"
 
 BoxCollider::BoxCollider(   Entity *e,
