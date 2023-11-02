@@ -103,66 +103,35 @@ public:
         return 0;
     }
 
+#ifdef SYSTEM_CALLER
     static void __registerDynamicCollider(Entity *other)
     {
         _dynamic_collider.push_back(other);
     }
 
+
     static void ___insert_entity_at_location(Entity *e)
     {
         auto layerValue = e->getComponent<Layer>()->value();
-        auto exist = _orders_values[layerValue];
 
-        //FIXME entity is not draw in the correct order !!!
-        std::thread thread([e]() {
-            for (int i = 0; i < _registry_size; i++) {
-                if (_registry[i] == e) {
-                    _registry.erase(_registry.begin() + i);
-                    return;
-                }
-            }
-        });
-        thread.join();
-        if (exist) {
+        if (_orders_values.contains(layerValue)) {
+            auto position = _orders_values[layerValue];
             auto it = _registry.begin();
-            _registry.insert(it + exist, e);
+
+            _registry.insert(it + position, e);
             return;
         }
-        int index = 0;
-        for (auto pair : _orders_values) {
-            auto value = pair.first;
-            auto position = pair.second;
 
-            if (layerValue < value) {
-                _orders_values[value] = position;
-                _registry.insert(_registry.begin() + index, e);
-                auto start = _orders_values.begin();
 
-                for (; start != _orders_values.end(); start++) {
-                    start->second += 1;
-                }
-                return;
-            }
-            index++;
-        }
-        _orders_values[layerValue] = index;
-        auto end = _registry.end();
-        _registry.insert(end, e);
     }
+#endif // SYSTEM_CALLER
 
     static void addTileMap(TileMap *layer)
     {
         _layers.push_back(layer);
     }
 
-    static void addInDrawQueue(Sprite *sprite)
-    {
-        _drawQueue.push_back(sprite);
-    }
-
     bool isInView(Entity *e);
-
-    // System that apply force such has velocity and all
 
     void init();
 
@@ -215,7 +184,6 @@ private:
 private:
     std::vector<Entity *> _inView;
     static inline HashGrid *_hashGrid = new HashGrid();
-    static inline std::vector<Sprite *> _drawQueue;
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
