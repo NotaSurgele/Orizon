@@ -107,7 +107,7 @@
                     "position": [0, 0],
                     "size": [16, 16],
                     "range": 0,
-                    "collision_type": "Static"
+                    "collision_type": "Dynamic"
                 },
                 {
                     "type": "Sprite",
@@ -115,7 +115,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 0
+                    "value": 9
                 }
             ]
         }
