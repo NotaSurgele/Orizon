@@ -7,7 +7,7 @@ Entity::Entity()
     System::addEntity(this);
 }
 
-void Entity::destroy()
+Entity::~Entity()
 {
     for (auto &it : _component_map) {
         if (it.second) {
@@ -15,5 +15,9 @@ void Entity::destroy()
         }
     }
     _component_map.clear();
+}
+
+void Entity::destroy()
+{
     System::RemoveEntity(this);
 }

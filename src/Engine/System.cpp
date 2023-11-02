@@ -431,13 +431,18 @@ bool System::isInView(Entity *e)
 void System::destroy_entity()
 {
     for (auto& e : _to_destroy) {
+        _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
         _hashGrid->remove(e);
-        e->destroy();
+        for (auto& layer : _layers) {
+            if (layer->contain(e)) {
+                layer->removeEntity(e);
+            }
+        }
         delete e;
         _registry_size--;
     }
