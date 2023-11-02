@@ -74,10 +74,19 @@ bool TileMap::removeEntity(const int& x, const int& y)
     for (std::size_t i = 0; i < size; i++) {
         if (e == _entities[i]) {
             _entities.erase(_entities.begin() + i);
-            break;
+            _layer[x][y] = nullptr;
+            return true;
         }
     }
-    _layer[x][y] = nullptr;
+    return false;
+}
+
+bool TileMap::removeEntity(Entity *e)
+{
+    auto position = e->getComponent<Transform2D>()->position;
+
+    auto fixedPosition = sf::Vector2i((int)position.x / tileWidth, (int)position.y / tileHeight);
+    removeEntity(fixedPosition.x, fixedPosition.y);
     return true;
 }
 
@@ -85,12 +94,6 @@ bool TileMap::contain(Entity *e)
 {
     auto position = e->getComponent<Transform2D>()->position;
     sf::FloatRect bounds = { _x, _y, (float)w, (float)h };
-    sf::RectangleShape rect = sf::RectangleShape();
-    rect.setSize(sf::Vector2f(w, h));
-    rect.setFillColor(sf::Color::Transparent);
-    rect.setOutlineColor(sf::Color::Red);
-    rect.setOutlineThickness(1.0f);
-    DRAW(rect);
     return bounds.contains(position.x, position.y);
 }
 

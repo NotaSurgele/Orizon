@@ -24,7 +24,7 @@ class Entity {
     public:
         Entity();
 
-        virtual ~Entity() = default;
+        ~Entity();
 
         template <typename T, class... Args>
         T* addComponent(Args... args)
