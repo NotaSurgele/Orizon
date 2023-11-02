@@ -14,6 +14,7 @@ public:
     bool contain(Entity *e);
     bool contain(const float& x, const float& y);
     bool removeEntity(const int& x, const int& y);
+    bool removeEntity(Entity *e);
     sf::Vector2f emptySpot(int range);
     std::vector<Entity *> getAllEntities();
 
