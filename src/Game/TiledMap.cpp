@@ -42,29 +42,28 @@ bool TiledMap::_loadTileMap()
         int index = 0;
         float posX = 0;
         float posY = 0;
+        std::cout << "DRAW " << draw << std::endl;
         for (auto cell : cells) {
             int cellId = cell;
-
             if (index >= height) {
                 index = 0;
                 posY = 0;
                 posX += _tileHeight;
             }
-            sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
-            Entity *e = new Entity();
+            if (cellId > 0) {
+                sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
+                Entity *e = new Entity();
 
-/*
-            e->getComponent<Layer>()->set(draw);
-*/
-            e->addComponent<Transform2D>()->position = sf::Vector2f(posY, posX);
-            e->addComponent<Sprite>(texture);
-            tilemap->emplaceEntity(e);
-
+                e->getComponent<Layer>()->set(draw);
+                e->addComponent<Transform2D>()->position = sf::Vector2f(posY, posX);
+                e->addComponent<Sprite>(texture);
+                tilemap->emplaceEntity(e);
+            }
             posY += _tileWidth;
             index++;
         }
         _tileMaps.push_back(tilemap);
-        draw++;
+        draw += 2;
     }
     return true;
 }

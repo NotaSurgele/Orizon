@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <functional>
+
+// internal
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Components/Tag.hpp"
@@ -86,83 +88,83 @@ public:
 
     static int RemoveEntity(Entity *e)
     {
-        _registry.erase(std::remove(
-                            _registry.begin(),
-                            _registry.end(),
-                            e),
-                            _registry.end());
-        _dynamic_collider.erase(std::remove(
-                                    _dynamic_collider.begin(),
-                                    _dynamic_collider.end(),
-                                    e),
-                                    _dynamic_collider.end());
-        _hashGrid->remove(e);
-        _registry_size--;
-        delete e;
-        e = nullptr;
+        _to_destroy.push_back(e);
         return 0;
     }
+
+
+#ifdef SYSTEM_CALLER
 
     static void __registerDynamicCollider(Entity *other)
     {
         _dynamic_collider.push_back(other);
     }
 
+
     static void ___insert_entity_at_location(Entity *e)
     {
         auto layerValue = e->getComponent<Layer>()->value();
-        auto exist = _orders_values[layerValue];
 
-        //FIXME entity is not draw in the correct order !!!
-        std::thread thread([e]() {
-            for (int i = 0; i < _registry_size; i++) {
-                if (_registry[i] == e) {
-                    _registry.erase(_registry.begin() + i);
-                    return;
-                }
-            }
-        });
-        thread.join();
-        if (exist) {
+        // Remove entity from registry
+        _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
+
+        // check if layerValue exist in map
+        if (_orders_values.contains(layerValue)) {
+            auto& position = _orders_values[layerValue];
             auto it = _registry.begin();
-            _registry.insert(it + exist, e);
+
+            _registry.insert(it + position, e);
+            int i = 0;
+            position += 1;
+            for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
+                 it != _orders_values.end(); it++) {
+                if (i > position) {
+                    it->second += 1;
+                }
+                i++;
+            }
             return;
         }
+
         int index = 0;
-        for (auto pair : _orders_values) {
+        // find position
+        int incr = 0;
+        for (auto &pair : _orders_values) {
             auto value = pair.first;
             auto position = pair.second;
 
-            if (layerValue < value) {
-                _orders_values[value] = position;
-                _registry.insert(_registry.begin() + index, e);
-                auto start = _orders_values.begin();
+            if (value > layerValue) {
+                _orders_values.insert(std::pair<std::size_t, int>(layerValue, incr));
+                auto it = _registry.begin();
 
-                for (; start != _orders_values.end(); start++) {
-                    start->second += 1;
+                _registry.insert(it + position, e);
+                // update position
+                int i = 0;
+                for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
+                    it != _orders_values.end(); it++) {
+                    if (i > index) {
+                        it->second += 1;
+                    }
+                    i++;
                 }
                 return;
             }
+            incr += position;
             index++;
         }
-        _orders_values[layerValue] = index;
-        auto end = _registry.end();
-        _registry.insert(end, e);
+        _orders_values.insert(std::pair<std::size_t, int>(layerValue, _registry_size));
+        _registry.push_back(e);
     }
+
+#endif // SYSTEM_CALLER
+
 
     static void addTileMap(TileMap *layer)
     {
         _layers.push_back(layer);
     }
 
-    static void addInDrawQueue(Sprite *sprite)
-    {
-        _drawQueue.push_back(sprite);
-    }
-
     bool isInView(Entity *e);
-
-    // System that apply force such has velocity and all
 
     void init();
 
@@ -212,14 +214,16 @@ private:
     // Velocity
     void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity);
 
+    // Destroy
+    void destroy_entity();
 private:
     std::vector<Entity *> _inView;
     static inline HashGrid *_hashGrid = new HashGrid();
-    static inline std::vector<Sprite *> _drawQueue;
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
     static inline std::vector<Entity *> _dynamic_collider;
     static inline std::map<std::size_t, int> _orders_values;
+    static inline std::vector<Entity *> _to_destroy;
 };

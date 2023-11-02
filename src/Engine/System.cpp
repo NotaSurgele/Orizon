@@ -140,7 +140,9 @@ void System::systems()
     }
     clear_component_cache(componentCache);
     componentCache.clear();
-    _hashGrid->clear();
+
+    // Destroy entities
+    destroy_entity();
     Light::set = true;
 }
 
@@ -424,4 +426,21 @@ bool System::isInView(Entity *e)
         return bounds.contains(transform->position);
     }
     return true;
+}
+
+void System::destroy_entity()
+{
+    for (auto& e : _to_destroy) {
+        _dynamic_collider.erase(std::remove(
+                                        _dynamic_collider.begin(),
+                                        _dynamic_collider.end(),
+                                        e),
+                                _dynamic_collider.end());
+        _hashGrid->remove(e);
+        e->destroy();
+        delete e;
+        _registry_size--;
+    }
+    _to_destroy.clear();
+    _hashGrid->clear();
 }
