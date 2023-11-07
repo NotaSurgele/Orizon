@@ -9,7 +9,13 @@ void System::addEntity(Entity *entity)
     entity->addComponent<Id>(_id++);
     entity->addComponent<Layer>(0);
     Light::set = false;
-    _registry.push_back(entity);
+}
+
+void System::pushEntity(Entity *entity)
+{
+    int index = _orders_values[entity->getComponent<Layer>()->value()];
+
+    _registry.insert(_registry.begin() + index, entity);
     _registry_size++;
 }
 
@@ -289,7 +295,7 @@ void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
         float x = box->getPosition().x;
         float y = box->getPosition().y;
 
-        if (!layer->contain(x, y))
+        if (!layer->isRender() || !layer->contain(x, y))
             continue;
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto entity : arr) {
