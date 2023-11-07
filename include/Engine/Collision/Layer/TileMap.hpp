@@ -15,6 +15,10 @@ public:
     bool contain(const float& x, const float& y);
     bool removeEntity(const int& x, const int& y);
     bool removeEntity(Entity *e);
+    bool isRender();
+    void render();
+    void hide();
+
     sf::Vector2f emptySpot(int range);
     std::vector<Entity *> getAllEntities();
 
@@ -131,7 +135,7 @@ public:
         _layer.clear();
     }
 
-    void display();
+    void outputValues();
 
 public:
     int w = 0;
@@ -142,6 +146,7 @@ public:
     float _y = 0;
 
 private:
+    bool _isRender = false;
     std::vector<Entity *> _entities;
     std::vector<std::vector<Entity *>> _layer;
 };
