@@ -40,10 +40,11 @@ void GameScene::update()
 {
     if (Input::isActionPressed("Exit"))
         CLOSE();
-    if (Input::isActionPressed("Refresh"))
+    if (Input::isActionPressed("Hide"))
+        tiledMap->hide();
+    if (Input::isActionKeyDown("Render"))
     {
-        CORE->loadInputFromFile(INPUT_FILE);
-        tiledMap->load("../assets/map_test.tmj");
+        tiledMap->render();
     }
     player->getComponent<Animator>()->playAnimation("idle", true);
 }
