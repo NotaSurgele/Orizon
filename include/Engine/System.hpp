@@ -20,6 +20,7 @@ public:
     ~System() = default;
 
     static void addEntity(Entity *entity);
+    static void pushEntity(Entity *entity);
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -106,14 +107,14 @@ public:
         auto layerValue = e->getComponent<Layer>()->value();
 
         // Remove entity from registry
-        _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
+        //_registry.erase(std::remove(_registry.begin(), _registry.end(), e));
 
         // check if layerValue exist in map
         if (_orders_values.contains(layerValue)) {
             auto& position = _orders_values[layerValue];
             auto it = _registry.begin();
 
-            _registry.insert(it + position, e);
+            //_registry.insert(it + position, e);
             int i = 0;
             position += 1;
             for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
@@ -137,7 +138,7 @@ public:
                 _orders_values.insert(std::pair<std::size_t, int>(layerValue, incr));
                 auto it = _registry.begin();
 
-                _registry.insert(it + position, e);
+                //_registry.insert(it + position, e);
                 // update position
                 int i = 0;
                 for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
@@ -153,7 +154,7 @@ public:
             index++;
         }
         _orders_values.insert(std::pair<std::size_t, int>(layerValue, _registry_size));
-        _registry.push_back(e);
+        //_registry.push_back(e);
     }
 
 #endif // SYSTEM_CALLER
