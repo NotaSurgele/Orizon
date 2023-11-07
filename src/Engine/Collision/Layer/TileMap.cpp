@@ -90,6 +90,11 @@ bool TileMap::removeEntity(Entity *e)
     return true;
 }
 
+bool TileMap::isRender()
+{
+    return _isRender;
+}
+
 bool TileMap::contain(Entity *e)
 {
     auto position = e->getComponent<Transform2D>()->position;
@@ -103,7 +108,7 @@ bool TileMap::contain(const float& x, const float& y)
     return bounds.contains(x, y);
 }
 
-void TileMap::display()
+void TileMap::outputValues()
 {
     for (std::size_t x = 0; x < w; x++) {
         for (std::size_t y = 0; y < h; y++) {
@@ -112,3 +117,20 @@ void TileMap::display()
         std::cout << std::endl;
     }
 }
+
+void TileMap::render()
+{
+    _isRender = true;
+    for (auto& e : _entities) {
+        System::pushEntity(e);
+    }
+}
+
+void TileMap::hide()
+{
+    _isRender = false;
+    for (auto& e : _entities) {
+        System::RemoveEntity(e);
+    }
+}
+
