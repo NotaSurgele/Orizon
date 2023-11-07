@@ -11,6 +11,8 @@ public:
 
     bool load(const std::string& filePath);
     void destroy(void);
+    void render();
+    void hide();
 
 private:
     bool _loadTileMap();

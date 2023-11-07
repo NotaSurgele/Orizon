@@ -128,11 +128,12 @@ public:
     {
         for (auto cols : _layer) {
             for (auto cell : cols) {
-                delete cell;
+                cell->destroy();
             }
             cols.clear();
         }
         _layer.clear();
+        _entities.clear();
     }
 
     void outputValues();

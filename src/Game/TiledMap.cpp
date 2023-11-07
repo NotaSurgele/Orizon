@@ -25,6 +25,20 @@ void TiledMap::destroy()
     }
 }
 
+void TiledMap::render()
+{
+    for (auto& map : _tileMaps) {
+        map->render();
+    }
+}
+
+void TiledMap::hide()
+{
+    for (auto& map : _tileMaps) {
+        map->hide();
+    }
+}
+
 bool TiledMap::_loadTileMap()
 {
     auto layers = _mapContent["layers"];
@@ -59,9 +73,7 @@ bool TiledMap::_loadTileMap()
                 e->addComponent<Sprite>(texture);
                 e->addComponent<BoxCollider>(e->getComponent<Transform2D>()->position,
                                              sf::Vector2f(16, 16))->setType(BoxCollider::STATIC);
-                e->addComponent<Tag>("map");
                 tilemap->emplaceEntity(e);
-                //System::pushEntity(e);
             }
             posY += _tileWidth;
             index++;
