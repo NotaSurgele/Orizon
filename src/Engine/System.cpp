@@ -15,7 +15,8 @@ void System::pushEntity(Entity *entity)
 {
     int index = _orders_values[entity->getComponent<Layer>()->value()];
 
-    _registry.insert(_registry.begin() + index, entity);
+    if (index > _registry_size) _registry.push_back(entity);
+    else _registry.insert(_registry.begin() + index, entity);
     _registry_size++;
 }
 
@@ -436,6 +437,9 @@ bool System::isInView(Entity *e)
 
 void System::destroy_entity()
 {
+/*    std::cout << "Registry size " << _registry.size() << std::endl;
+    std::cout << "toDestroy size " << _to_destroy.size() << std::endl;
+    std::cout << "_dynamic_collider_size " << _dynamic_collider.size() << std::endl;*/
     for (auto& e : _to_destroy) {
         _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
         _dynamic_collider.erase(std::remove(
