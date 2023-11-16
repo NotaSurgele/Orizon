@@ -56,7 +56,7 @@ bool TiledMap::_loadTileMap()
         int index = 0;
         float posX = 0;
         float posY = 0;
-        std::cout << "DRAW " << draw << std::endl;
+
         for (auto cell : cells) {
             int cellId = cell;
             if (index >= height) {
