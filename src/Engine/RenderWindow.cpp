@@ -1,7 +1,8 @@
 #include "Engine/RenderWindow.hpp"
 #include "config.hpp"
 #include "Components/View.hpp"
-
+#include <imgui.h>
+#include <imgui-SFML.h>
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
                             std::size_t height) :
@@ -9,6 +10,7 @@ RenderWindow::RenderWindow(std::string const& windowName,
                             _height(height),
                             _window(sf::VideoMode(width, height), windowName)
 {
+    _window.setFramerateLimit(144);
 }
 
 void RenderWindow::clear(sf::Color color)

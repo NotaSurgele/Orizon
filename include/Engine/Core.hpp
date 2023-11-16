@@ -21,8 +21,6 @@ public:
 
 class View;
 
-using Signature = const char *;
-
 class Core : public ICore {
     public:
         Core() = delete;
@@ -99,7 +97,7 @@ public:
 #define SET_VIEW(view) \
         Core::instance->setView(view)
 
-#define Window \
+#define WindowInstance \
         Core::instance->getWindow()
 
 #define CLOSE()\

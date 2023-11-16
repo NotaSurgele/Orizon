@@ -1,3 +1,5 @@
+#include <imgui.h>
+#include <imgui-SFML.h>
 #include "Engine/Core.hpp"
 
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
@@ -81,12 +83,17 @@ void Core::run()
     fpsText.setCharacterSize(11);
     fpsText.setFillColor(sf::Color::White);
     fpsText.setPosition(-10, -10);
+
+    ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
     start();
     while (isOpen()) {
+
         _time.update();
         sf::Event event;
 
         while (CoreEvent(event)) {
+            ImGui::SFML::ProcessEvent(event);
+
             if (event.type == sf::Event::Closed)
                 CoreClose();
             if (event.type == sf::Event::KeyPressed)
@@ -98,6 +105,12 @@ void Core::run()
             if (event.type == sf::Event::MouseButtonReleased)
                 _input.___remove_button(event.mouseButton.button);
         }
+        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+        ImGui::ShowDemoWindow();
+/*
+        ImGui::Begin("Hello, world!");
+        ImGui::Button("Look at this pretty button");
+        ImGui::End();*/
         render();
         float currentTime = _time.getClock().getElapsedTime().asSeconds();
         Core::fps = 1.f / currentTime;
@@ -114,6 +127,8 @@ void Core::run()
             fpsText.setPosition(10, 10);
         }
         fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+
+        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
         _window.draw(fpsText);
         CoreDisplay();
     }
