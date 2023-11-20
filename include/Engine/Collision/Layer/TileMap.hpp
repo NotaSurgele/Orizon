@@ -13,6 +13,7 @@ public:
     bool emplaceEntity(Entity *e);
     bool contain(Entity *e);
     bool contain(const float& x, const float& y);
+    bool isInside(Entity *e);
     bool removeEntity(const int& x, const int& y);
     bool removeEntity(Entity *e);
     bool isRender();

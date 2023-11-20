@@ -6,6 +6,7 @@
 #include "Engine/Input.hpp"
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
+#include "Engine/EngineHud.hpp"
 #include "external/json.hpp"
 #include <SFML/System.hpp>
 #include <string>
@@ -73,7 +74,8 @@ public:
         sf::RenderTexture _texture;
         sf::Font font;
         sf::Text fpsText;
-
+        sf::View _hud;
+        EngineHud _gui;
 };
 
 /**

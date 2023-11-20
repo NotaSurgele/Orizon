@@ -4,17 +4,18 @@
 
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _window(name, width, height),
-                                                _input()
+                                                _input(),
+                                                _gui(width, height)
 {
     _r_manager = RessourcesManager();
     _time = Time();
     instance = this;
-    _texture.create(800, 600);
     font.loadFromFile("../assets/LEMONMILK-Regular.otf"); // Load a font
     fpsText.setFont(font);
     fpsText.setCharacterSize(11);
     fpsText.setFillColor(sf::Color::White);
     fpsText.setPosition(-10, -10);
+    _hud = sf::View(sf::FloatRect(0, 0, width, height));
 }
 
 void Core::loadInputFromFile(std::string const& file)
@@ -128,19 +129,22 @@ void Core::run()
 
         inputHandler(event);
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        //ImGui::ShowDemoWindow();
 
-        ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();
         render();
+        auto old = WindowInstance.getView();
+
         _system_handler.systems();
+        WindowInstance.getSFMLRenderWindow().setView(_hud);
+        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+        _gui.entityInformation();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
+        if (old) WindowInstance.setView(old);
         _window.draw(fpsText);
         CoreDisplay();
         _time.end();
         fpsCalculation();
     }
     destroy();
+    ImGui::SFML::Shutdown();
     _window.close();
 }
