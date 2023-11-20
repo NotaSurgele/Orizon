@@ -11,7 +11,7 @@ sf::Clock& Time::getClock()
 
 sf::Time Time::start()
 {
-    _clock.restart();
+    return _clock.restart();
 }
 
 sf::Time Time::end()
@@ -21,4 +21,5 @@ sf::Time Time::end()
     deltaTime = dt.asSeconds();
     if (deltaTime > 2.0f)
         deltaTime = .1f;
+    return dt;
 }
