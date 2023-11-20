@@ -16,8 +16,34 @@ endif()
 message("Declaring SFML..")
 FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git GIT_TAG 2.6.x)
 
+FetchContent_Declare(
+		imgui
+		GIT_REPOSITORY https://github.com/ocornut/imgui
+		GIT_TAG 35b1148efb839381b84de9290d9caf0b66ad7d03
+)
+
+FetchContent_MakeAvailable(imgui)
+
+FetchContent_Declare(
+		imgui-sfml
+		GIT_REPOSITORY https://github.com/SFML/imgui-sfml
+		GIT_TAG 82dc2033e51b8323857c3ae1cf1f458b3a933c35
+)
+
+message(STATUS "Fetching ImGui-SFML...")
+
 message("Downloading SFML...")
 FetchContent_MakeAvailable(SFML)
+
+message("Downloading IMGUI...")
+FetchContent_MakeAvailable(IMGUI)
+
+
+set(IMGUI_DIR ${imgui_SOURCE_DIR})
+set(IMGUI_SFML_FIND_SFML OFF)
+set(IMGUI_SFML_IMGUI_DEMO ON)
+
+FetchContent_MakeAvailable(imgui-sfml)
 
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
@@ -47,6 +73,8 @@ add_executable(${PROJECT_NAME} main.cpp ${SRC})
 if (MSVC)
 target_link_libraries(
 	${PROJECT_NAME}
+	PUBLIC
+		ImGui-SFML::ImGui-SFML
 	sfml-graphics
 	sfml-window
 	sfml-audio
@@ -57,6 +85,8 @@ target_link_libraries(
 else()
 target_link_libraries(
  	${PROJECT_NAME}
+	PUBLIC
+		ImGui-SFML::ImGui-SFML
     sfml-graphics
     sfml-window
     sfml-audio
