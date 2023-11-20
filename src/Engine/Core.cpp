@@ -4,7 +4,8 @@
 
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _window(name, width, height),
-                                                _input()
+                                                _input(),
+                                                _gui(width, height)
 {
     _r_manager = RessourcesManager();
     _time = Time();
@@ -134,10 +135,8 @@ void Core::run()
 
         _system_handler.systems();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
-        _gui.entityWindow(_system_handler.getRegistry());
-        /*ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();*/
+        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+        _gui.entityInformation();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
         if (old) WindowInstance.setView(old);
         _window.draw(fpsText);
