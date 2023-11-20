@@ -179,7 +179,7 @@ public:
                     float h = json["viewport"][3];
                     bool follow = json["follow"];
 
-                    e->addComponent<View>(x, y, w, h, follow);
+                    auto view = e->addComponent<View>(x, y, w, h, follow);
                 }
 
                 static void create_sound(Entity *e, nlohmann::json const& json)
