@@ -16,7 +16,7 @@ void GameScene::create()
     });
 
     loadSceneFromFile("../assets/game.json");
-    tiledMap->load("../assets/map_test.tmj");
+    //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();

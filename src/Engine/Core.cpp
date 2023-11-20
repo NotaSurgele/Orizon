@@ -98,10 +98,9 @@ void Core::inputHandler(sf::Event& event)
 
 void Core::fpsCalculation()
 {
-    float currentTime = _time.getClock().getElapsedTime().asSeconds();
+    float currentTime = Time::deltaTime;
     Core::fps = 1.f / currentTime;
 
-    _system_handler.systems();
     auto view = _window.getView();
     if (view) {
         auto center = view->getCenter();
@@ -124,22 +123,23 @@ void Core::run()
     start();
     while (isOpen()) {
 
-        _time.update();
+        _time.start();
         sf::Event event;
 
         inputHandler(event);
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        ImGui::ShowDemoWindow();
-        fpsCalculation();
-        /*
+        //ImGui::ShowDemoWindow();
+
         ImGui::Begin("Hello, world!");
         ImGui::Button("Look at this pretty button");
-        ImGui::End();*/
+        ImGui::End();
         render();
-
+        _system_handler.systems();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
         _window.draw(fpsText);
         CoreDisplay();
+        _time.end();
+        fpsCalculation();
     }
     destroy();
     _window.close();
