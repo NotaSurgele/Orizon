@@ -437,9 +437,6 @@ bool System::isInView(Entity *e)
 
 void System::destroy_entity()
 {
-/*    std::cout << "Registry size " << _registry.size() << std::endl;
-    std::cout << "toDestroy size " << _to_destroy.size() << std::endl;
-    std::cout << "_dynamic_collider_size " << _dynamic_collider.size() << std::endl;*/
     for (auto& e : _to_destroy) {
         _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
         _dynamic_collider.erase(std::remove(

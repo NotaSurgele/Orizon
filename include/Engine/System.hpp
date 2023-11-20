@@ -165,6 +165,8 @@ public:
         _layers.push_back(layer);
     }
 
+    std::vector<Entity *> getRegistry() { return _registry; }
+
     bool isInView(Entity *e);
 
     void init();
