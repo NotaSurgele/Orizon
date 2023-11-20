@@ -12,6 +12,9 @@ public:
     void entityInformation();
 
 private:
+    void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);
+
+private:
     Entity *_selected = nullptr;
     std::size_t _width;
     std::size_t _height;
