@@ -409,7 +409,7 @@ void System::merge()
 bool System::isInView(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
-    auto currentView = Window.getView();
+    auto currentView = WindowInstance.getView();
 
     if (!transform)
         transform = Transform2D::zero();

@@ -1,3 +1,5 @@
+#include <imgui.h>
+#include <imgui-SFML.h>
 #include "Engine/Core.hpp"
 
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
@@ -8,6 +10,11 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     _time = Time();
     instance = this;
     _texture.create(800, 600);
+    font.loadFromFile("../assets/LEMONMILK-Regular.otf"); // Load a font
+    fpsText.setFont(font);
+    fpsText.setCharacterSize(11);
+    fpsText.setFillColor(sf::Color::White);
+    fpsText.setPosition(-10, -10);
 }
 
 void Core::loadInputFromFile(std::string const& file)
@@ -71,51 +78,68 @@ void Core::setView(View *view)
     _window.setView(view);
 }
 
+void Core::inputHandler(sf::Event& event)
+{
+    while (CoreEvent(event)) {
+        ImGui::SFML::ProcessEvent(event);
+
+        if (event.type == sf::Event::Closed)
+            CoreClose();
+        if (event.type == sf::Event::KeyPressed)
+            _input.___push_key(event.key.code);
+        if (event.type == sf::Event::KeyReleased)
+            _input.___remove_key(event.key.code);
+        if (event.type == sf::Event::MouseButtonPressed)
+            _input.___push_button(event.mouseButton.button);
+        if (event.type == sf::Event::MouseButtonReleased)
+            _input.___remove_button(event.mouseButton.button);
+    }
+}
+
+void Core::fpsCalculation()
+{
+    float currentTime = Time::deltaTime;
+    Core::fps = 1.f / currentTime;
+
+    auto view = _window.getView();
+    if (view) {
+        auto center = view->getCenter();
+        auto size = view->getSize();
+
+        auto fixedPosition = sf::Vector2f(center.x - (size.x / 2), center.y - (size.y / 2));
+        fpsText.setPosition(fixedPosition);
+    } else {
+        fpsText.setPosition(10, 10);
+    }
+    fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+}
+
 void Core::run()
 {
     Input input = Input();
-    sf::Font font;
-    font.loadFromFile("../assets/LEMONMILK-Regular.otf"); // Load a font
-    sf::Text fpsText;
-    fpsText.setFont(font);
-    fpsText.setCharacterSize(11);
-    fpsText.setFillColor(sf::Color::White);
-    fpsText.setPosition(-10, -10);
+
+
+    ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
     start();
     while (isOpen()) {
-        _time.update();
+
+        _time.start();
         sf::Event event;
 
-        while (CoreEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                CoreClose();
-            if (event.type == sf::Event::KeyPressed)
-                _input.___push_key(event.key.code);
-            if (event.type == sf::Event::KeyReleased)
-                _input.___remove_key(event.key.code);
-            if (event.type == sf::Event::MouseButtonPressed)
-                _input.___push_button(event.mouseButton.button);
-            if (event.type == sf::Event::MouseButtonReleased)
-                _input.___remove_button(event.mouseButton.button);
-        }
+        inputHandler(event);
+        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+        //ImGui::ShowDemoWindow();
+
+        ImGui::Begin("Hello, world!");
+        ImGui::Button("Look at this pretty button");
+        ImGui::End();
         render();
-        float currentTime = _time.getClock().getElapsedTime().asSeconds();
-        Core::fps = 1.f / currentTime;
-
         _system_handler.systems();
-        auto view = _window.getView();
-        if (view) {
-            auto center = view->getCenter();
-            auto size = view->getSize();
-
-            auto fixedPosition = sf::Vector2f(center.x - (size.x / 2), center.y - (size.y / 2));
-            fpsText.setPosition(fixedPosition);
-        } else {
-            fpsText.setPosition(10, 10);
-        }
-        fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
         _window.draw(fpsText);
         CoreDisplay();
+        _time.end();
+        fpsCalculation();
     }
     destroy();
     _window.close();

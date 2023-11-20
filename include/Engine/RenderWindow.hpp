@@ -27,7 +27,7 @@ class RenderWindow {
         void close();
         void setView(View *view);
         void setActive(bool active);
-        
+
         View *getView();
         sf::RenderWindow& getSFMLRenderWindow();
         // void setView(const &)
