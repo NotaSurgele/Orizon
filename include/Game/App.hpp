@@ -8,7 +8,7 @@ class GameScene;
 
 class App : public Core {
 public:
-    App(std::string const& windowName, std::size_t width=800, std::size_t height=600) : Core(windowName, width, height) {}
+    App(std::string const& windowName, std::size_t width=1680, std::size_t height=920) : Core(windowName, width, height) {}
     App() = delete;
     ~App() = default;
 

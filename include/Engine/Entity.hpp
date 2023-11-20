@@ -92,6 +92,11 @@ class Entity {
             return getComponent<Id>()->get_id();
         }
 
+        std::unordered_map<const char *, IComponent *> getComponents()
+        {
+            return _component_map;
+        }
+
         void destroy();
 
     protected:

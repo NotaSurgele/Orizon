@@ -108,6 +108,12 @@ bool TileMap::contain(const float& x, const float& y)
     return bounds.contains(x, y);
 }
 
+bool TileMap::isInside(Entity *e)
+{
+    auto f = std::find(_entities.begin(), _entities.end(), e);
+    return f != _entities.end();
+}
+
 void TileMap::outputValues()
 {
     for (std::size_t x = 0; x < w; x++) {
