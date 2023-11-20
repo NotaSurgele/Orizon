@@ -165,6 +165,10 @@ public:
         _layers.push_back(layer);
     }
 
+    std::vector<Entity *> getRegistry() { return _registry; }
+
+    std::vector<TileMap *> getTileMaps() {  return _layers; }
+
     bool isInView(Entity *e);
 
     void init();
