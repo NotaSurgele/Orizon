@@ -11,7 +11,7 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
     ImGui::Begin("Entities");
     std::size_t index = 1;
 
-    /* process entity that are not tiles */
+    /* Process entity that are not tiles */
     for (const auto& e : _registry) {
         bool contain = false;
 
@@ -33,6 +33,12 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
         index++;
     }
     /* Handle tiles */
+    layersEntity(index, tileMap);
+    ImGui::End();
+}
+
+void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& tileMap)
+{
     std::size_t layerIndex = 1;
     for (const auto& layer : tileMap) {
         std::string layerName = "Layer " + std::to_string(layerIndex);
@@ -51,7 +57,6 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
         }
         layerIndex++;
     }
-    ImGui::End();
 }
 
 void EngineHud::entityInformation()
