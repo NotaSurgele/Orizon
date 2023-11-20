@@ -1,19 +1,14 @@
 #include "Game/Scenes/GameScene.hpp"
 #include "Engine/Components/Animator.hpp"
-#include "Game/App.hpp"
-#include "Engine/System.hpp"
 #include "Game/CustomComponents/CharacterController.hpp"
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
-#include "Components/Light.hpp"
 
 #include <random>
 #include <math.h>
 
 void GameScene::create()
 {
-    // _particles = Particles(10);
-    // _particles.setShape(ParticleShape::SQUARE, 10);
     addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         auto speed = json["speed"];
 
@@ -21,7 +16,7 @@ void GameScene::create()
     });
 
     loadSceneFromFile("../assets/game.json");
-    tiledMap->load("../assets/map_test.tmj");
+    //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
