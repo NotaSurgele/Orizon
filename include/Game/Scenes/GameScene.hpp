@@ -16,7 +16,6 @@ public:
     void destroy() override final;
 
 private:
-    void loadTiledMap(const std::string& filePath);
 
 private:
     Entity *player = nullptr;

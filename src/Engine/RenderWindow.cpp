@@ -3,6 +3,7 @@
 #include "Components/View.hpp"
 #include <imgui.h>
 #include <imgui-SFML.h>
+
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
                             std::size_t height) :
