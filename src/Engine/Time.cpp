@@ -9,11 +9,16 @@ sf::Clock& Time::getClock()
     return _clock;
 }
 
-void Time::update()
+sf::Time Time::start()
 {
-    sf::Time dt = _clock.restart();
+    _clock.restart();
+}
+
+sf::Time Time::end()
+{
+    sf::Time dt = _clock.getElapsedTime();
 
     deltaTime = dt.asSeconds();
     if (deltaTime > 2.0f)
-        deltaTime = 0.1f;
+        deltaTime = .1f;
 }

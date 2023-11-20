@@ -50,13 +50,17 @@ class Core : public ICore {
         virtual void render() = 0;
         virtual void destroy() = 0;
 
+    private:
+        bool CoreEvent(sf::Event& event);
+        void CoreDisplay();
+
+        void inputHandler(sf::Event& event);
+        void fpsCalculation();
+
 public:
     static inline Core *instance;
     static inline float fps = 0.0f;
 
-    private:
-        bool CoreEvent(sf::Event& event);
-        void CoreDisplay();
 
     private:
         static inline Time _time;
@@ -67,6 +71,9 @@ public:
         Input _input;
         System _system_handler;
         sf::RenderTexture _texture;
+        sf::Font font;
+        sf::Text fpsText;
+
 };
 
 /**
