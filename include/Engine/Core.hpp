@@ -12,7 +12,6 @@
 #include <string>
 #include <unordered_map>
 
-
 class ICore {
 public:
     virtual void start() = 0;
@@ -57,6 +56,11 @@ class Core : public ICore {
 
         void inputHandler(sf::Event& event);
         void fpsCalculation();
+
+        // ENGINE GUI
+        void initGui();
+        void updateGUI();
+        void destroyGUI();
 
 public:
     static inline Core *instance;
