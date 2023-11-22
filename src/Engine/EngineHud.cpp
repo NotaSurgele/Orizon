@@ -2,15 +2,16 @@
 #include "Tag.hpp"
 #include <imgui.h>
 #include <imgui-SFML.h>
+#define GUI
 
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(_height * 0.42f, _width * 0.3f));
+    ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
+                                    _width * GUI_ENTITIES_WIDTH_SIZE_RATIO), ImGuiCond_FirstUseEver);
     ImGui::Begin("Entities");
     std::size_t index = 1;
-
     /* Process entity that are not tiles */
     for (const auto& e : _registry) {
         bool contain = false;
@@ -61,8 +62,9 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
 
 void EngineHud::entityInformation()
 {
-    ImGui::SetNextWindowPos(ImVec2(_width - (_height * 0.42f), 0));
-    ImGui::SetNextWindowSize(ImVec2(_height * 0.42f, _width * 0.3f));
+    ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO), 0));
+    ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
+                                    _width * GUI_ENTITIES_WIDTH_SIZE_RATIO));
     ImGui::Begin("Entity informations");
     if (_selected) {
         auto components = _selected->getComponents();
