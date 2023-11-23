@@ -80,6 +80,7 @@ public:
         sf::Text fpsText;
         sf::View _hud;
         EngineHud _gui;
+        float _fpsTime=1.0f;
 };
 
 /**

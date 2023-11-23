@@ -70,8 +70,11 @@ void EngineHud::entityInformation()
         auto components = _selected->getComponents();
 
         for (auto& elem : components) {
+            if (elem.second == nullptr) {
+                _selected->removeComponent(elem.second);
+                continue;
+            }
             auto signature = elem.first;
-
             ImGui::Text(signature);
         }
     }

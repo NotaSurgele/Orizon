@@ -112,7 +112,12 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
+    if (_fpsTime < .1f) {
+        _fpsTime += _time.getClock().getElapsedTime().asSeconds();
+        return;
+    }
     fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+    _fpsTime = 0.0f;
 }
 
 void Core::initGui()
@@ -152,7 +157,6 @@ void Core::run()
 
         render();
         auto old = WindowInstance.getView();
-
         _system_handler.systems();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
         updateGUI();
