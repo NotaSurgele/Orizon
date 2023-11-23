@@ -12,8 +12,7 @@
 class EngineHud {
 public:
     EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height)
-    {
-    }
+    {}
 
     ~EngineHud() = default;
 
