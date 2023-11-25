@@ -38,11 +38,9 @@ FetchContent_MakeAvailable(SFML)
 message("Downloading IMGUI...")
 FetchContent_MakeAvailable(IMGUI)
 
-
 set(IMGUI_DIR ${imgui_SOURCE_DIR})
 set(IMGUI_SFML_FIND_SFML OFF)
 set(IMGUI_SFML_IMGUI_DEMO ON)
-
 FetchContent_MakeAvailable(imgui-sfml)
 
 set(BUILD_SHARED_LIBS OFF)
@@ -64,11 +62,12 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/Layer
+	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
+	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/GameMonkey
 	${CMAKE_SOURCE_DIR}/include/Game/
-    # ${CMAKE_SOURCE_DIR}/include/Game/CustomComponents
     ${SFML_SOURCE_DIR}/include/
 )
-
+add_compile_options(-fpermissive)
 add_executable(${PROJECT_NAME} main.cpp ${SRC})
 
 if (MSVC)
