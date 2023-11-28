@@ -3,6 +3,8 @@
 #include "Game/CustomComponents/CharacterController.hpp"
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
+#include "Utils.hpp"
+#include "sol/sol.hpp"
 
 #include <random>
 #include <math.h>
@@ -15,8 +17,12 @@ void GameScene::create()
         e->addCustomComponent<CharacterController>(speed);
     });
 
+    sol::state lua;
+    lua.open_libraries(sol::lib::base);
+
+    lua.script("print('bark bark bark!')");
     loadSceneFromFile("../assets/game.json");
-    tiledMap->load("../assets/map_test.tmj");
+    //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     player->getComponent<OrizonMusic>();
