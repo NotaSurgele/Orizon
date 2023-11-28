@@ -1,3 +1,3 @@
-function addOne(value) {
+global addOne = function (value) {
     return value + 1;
-}
+};
