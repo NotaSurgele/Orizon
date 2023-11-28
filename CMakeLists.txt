@@ -47,12 +47,14 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
+# Lua source files
+set(LUA_SOURCE_DIR src/external/lua)
+set(LUA_INCLUDE_DIR include/external/lua)
 add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
-		# LINK LUA FILES
-	${PROJECT_SOURCE_DIR}/src/*.c
+	${LUA_SOURCE_DIR}/*.c
 )
 
 include_directories(
