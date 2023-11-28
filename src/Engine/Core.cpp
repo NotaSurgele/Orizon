@@ -112,15 +112,41 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
+    if (_fpsTime < .1f) {
+        _fpsTime += _time.getClock().getElapsedTime().asSeconds();
+        return;
+    }
     fpsText.setString("FPS :" + std::to_string(static_cast<int>(Core::fps)));
+    _fpsTime = 0.0f;
+}
+
+void Core::initGui()
+{
+    if (ENGINE_MODE)
+        ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
+}
+
+void Core::updateGUI()
+{
+    if (ENGINE_MODE) {
+        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+        _gui.entityInformation();
+        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
+    }
+}
+
+void Core::destroyGUI()
+{
+    if (ENGINE_MODE)
+        ImGui::SFML::Shutdown();
 }
 
 void Core::run()
 {
     Input input = Input();
 
-
-    ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
+    initGui();
     start();
     while (isOpen()) {
 
@@ -128,23 +154,19 @@ void Core::run()
         sf::Event event;
 
         inputHandler(event);
-        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
 
         render();
         auto old = WindowInstance.getView();
-
         _system_handler.systems();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
-        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
-        _gui.entityInformation();
-        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
+        updateGUI();
         if (old) WindowInstance.setView(old);
         _window.draw(fpsText);
         CoreDisplay();
         _time.end();
         fpsCalculation();
     }
+    destroyGUI();
     destroy();
-    ImGui::SFML::Shutdown();
     _window.close();
 }

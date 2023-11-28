@@ -82,6 +82,17 @@ class Entity {
             return this->getComponent<Last>() != nullptr;
         }
 
+        bool removeComponent(IComponent *c)
+        {
+            for (auto& it : _component_map) {
+                if (it.second == c) {
+                    _component_map.erase(it.first);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         std::unordered_map<const char*, CustomComponents *> getCustomComponents()
         {
             return _custom_comp_map;
