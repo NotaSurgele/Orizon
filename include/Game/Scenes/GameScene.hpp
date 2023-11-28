@@ -8,8 +8,6 @@
 #include "Engine/RayCaster.hpp"
 #include"OrizonMusic.hpp"
 #include "TiledMap.hpp"
-#include "Scripting/GameMonkey/gmMachine.h"
-#include "Scripting/GameMonkey/gmThread.h"
 
 class GameScene : public Scene {
 public:
@@ -32,5 +30,4 @@ private:
     std::vector<RayCaster> _rayCaster;
     OrizonMusic *_music = nullptr;
     TiledMap *tiledMap = new TiledMap();
-    gmMachine _machine;
 };
