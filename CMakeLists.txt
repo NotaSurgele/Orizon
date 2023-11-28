@@ -47,14 +47,12 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-# Lua source files
-set(LUA_SOURCE_DIR src/external/lua)
-set(LUA_INCLUDE_DIR include/external/lua)
+
 add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
-	${LUA_SOURCE_DIR}/*.c
+	${PROJECT_SOURCE_DIR}/src/*.c
 )
 
 include_directories(
@@ -68,14 +66,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/Layer
 	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/GameMonkey
 	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/sol
 	${CMAKE_SOURCE_DIR}/include/Game/
     ${SFML_SOURCE_DIR}/include/
 )
 # Hide sol warnings with c++17
 add_compile_options(-fpermissive)
-add_compile_options(-Wregister)
+
 # end
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
