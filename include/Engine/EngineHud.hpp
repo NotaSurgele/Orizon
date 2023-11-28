@@ -2,10 +2,18 @@
 #include "Entity.hpp"
 #include "TileMap.hpp"
 #include <vector>
+#include <thread>
+
+#ifndef GUI
+#define GUI_ENTITIES_HEIGHT_SIZE_RATIO 0.25f
+#define GUI_ENTITIES_WIDTH_SIZE_RATIO 0.2f
+#endif
 
 class EngineHud {
 public:
-    EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height) {}
+    EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height)
+    {}
+
     ~EngineHud() = default;
 
     void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);

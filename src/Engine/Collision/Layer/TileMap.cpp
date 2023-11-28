@@ -110,8 +110,9 @@ bool TileMap::contain(const float& x, const float& y)
 
 bool TileMap::isInside(Entity *e)
 {
-    auto f = std::find(_entities.begin(), _entities.end(), e);
-    return f != _entities.end();
+    auto position = e->getComponent<Transform2D>()->position;
+    auto fixedPosition = sf::Vector2i((int)position.x / tileWidth, (int)position.y / tileHeight);
+    return e == _layer[fixedPosition.x][fixedPosition.y];
 }
 
 void TileMap::outputValues()
