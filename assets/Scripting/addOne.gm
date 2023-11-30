@@ -1,3 +1,0 @@
-global addOne = function (value) {
-    return value + 1;
-};

@@ -3,8 +3,7 @@
 #include "Game/CustomComponents/CharacterController.hpp"
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
-#include "Utils.hpp"
-#include "sol/sol.hpp"
+#include "Script.hpp"
 
 #include <random>
 #include <math.h>
@@ -17,15 +16,24 @@ void GameScene::create()
         e->addCustomComponent<CharacterController>(speed);
     });
 
-    sol::state lua;
+/*    sol::state lua;
     lua.open_libraries(sol::lib::base);
 
-    lua.script("print('bark bark bark!')");
+    sol::usertype<game> gameType = lua.new_usertype<game>("game",sol::constructors<game(int)>());
+    gameType.set("isOdd", &game::isOdd);
+    script();*/
     loadSceneFromFile("../assets/game.json");
     //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
+/*
     player->getComponent<OrizonMusic>();
+*/
+    Entity *toto = new Entity();
+    toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
+/*
+    player->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
+*/
     auto c = sf::Color::Yellow;
     c.a = 40;
     //player->getComponent<Light>()->setColor(c);
@@ -39,6 +47,10 @@ void GameScene::create()
 
 void GameScene::update()
 {
+    if (Input::isActionKeyDown("Refresh")) {
+        destroy();
+        create();
+    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Hide"))
@@ -47,9 +59,16 @@ void GameScene::update()
     {
         tiledMap->render();
     }
-    player->getComponent<Animator>()->playAnimation("idle", true);
+    /*if (player) {
+        std::cout << "goodbye" << std::endl;
+        auto animator =    player->getComponent<Animator>();
+        if (animator) {
+            animator->playAnimation("idle", true);
+        }
+    }*/
 }
 
 void GameScene::destroy()
 {
+    player->destroy();
 }
