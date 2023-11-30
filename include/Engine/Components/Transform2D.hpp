@@ -46,6 +46,11 @@ class Transform2D : public IComponent {
             rotation = rota;
         }
 
+        Transform2D *operator=(Transform2D *other)
+        {
+            return other;
+        }
+
         void destroy() override final { delete this; };
 
         static inline Transform2D* zero()
