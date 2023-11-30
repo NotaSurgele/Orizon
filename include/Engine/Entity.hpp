@@ -27,9 +27,22 @@ class Entity {
         ~Entity();
 
         template <typename T, class... Args>
-        T* addComponent(Args... args)
-        {
+        T* addComponent(Args... args) {
             T *component = new T(this, args ...);
+
+            if (_component_map.contains(SIGNATURE(T))) {
+                T *c = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
+                delete component;
+                return c;
+            }
+            _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
+            return component;
+        }
+
+        template <typename T, class... Args>
+        T* addComponent(Entity *self, Args... args)
+        {
+            T *component = new T(self, args ...);
 
             if (_component_map.contains(SIGNATURE(T))) {
                 T *c = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
@@ -60,6 +73,7 @@ class Entity {
             if (_component_map.size() <= 0 ) {
                 return nullptr;
             }
+            std::cout << _component_map.size() << std::endl;
             T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
             if (component == nullptr && DEBUG_MESSAGE) {
@@ -67,6 +81,21 @@ class Entity {
                     " does not exist in entity" << std::endl;
             }
             return component;
+        }
+
+        template <typename T>
+        std::vector<T *> getComponents()
+        {
+            std::vector<T *> components;
+
+            for (auto& it : _component_map) {
+                std::string signature = SIGNATURE(T);
+
+                if (signature.find(it.first) != std::string::npos) {
+                    components.push_back(static_cast<T *>(it.second));
+                }
+            }
+            return components;
         }
 
         template <typename First, typename... Others>
@@ -91,6 +120,22 @@ class Entity {
                 }
             }
             return false;
+        }
+
+        template<typename T>
+        bool removeComponent()
+        {
+            std::size_t removedValue = 0;
+
+            for (auto& it : _component_map) {
+                std::string componentSignature = it.first;
+                if (componentSignature.find(SIGNATURE(T))
+                    != std::string::npos) {
+                    removedValue = _component_map.erase(it.first);
+                    break;
+                }
+            }
+            return removedValue > 0;
         }
 
         std::unordered_map<const char*, CustomComponents *> getCustomComponents()
