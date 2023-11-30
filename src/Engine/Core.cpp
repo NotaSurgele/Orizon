@@ -156,8 +156,8 @@ void Core::run()
         inputHandler(event);
 
         render();
-        auto old = WindowInstance.getView();
         _system_handler.systems();
+        auto old = WindowInstance.getView();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
         updateGUI();
         if (old) WindowInstance.setView(old);
