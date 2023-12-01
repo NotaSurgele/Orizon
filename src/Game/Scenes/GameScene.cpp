@@ -26,11 +26,12 @@ void GameScene::create()
     //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
+    toto = new Entity();
+    toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
+    System::pushEntity(toto);
 /*
     player->getComponent<OrizonMusic>();
 */
-    Entity *toto = new Entity();
-    toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
 /*
     player->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
 */
@@ -47,9 +48,9 @@ void GameScene::create()
 
 void GameScene::update()
 {
+    auto script = toto->getComponent<Script>();
     if (Input::isActionKeyDown("Refresh")) {
-        destroy();
-        create();
+        script->reload();
     }
     if (Input::isActionPressed("Exit"))
         CLOSE();
@@ -66,6 +67,7 @@ void GameScene::update()
             animator->playAnimation("idle", true);
         }
     }*/
+    script->call();
 }
 
 void GameScene::destroy()
