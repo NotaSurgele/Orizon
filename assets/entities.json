@@ -22,8 +22,7 @@
                     "texture_name": "hobbit"
                 },
                 {
-                    "type": "Velocity",
-                    "value_type": "float"
+                    "type": "Velocity"
                 },
                 {
                     "type": "Animator",

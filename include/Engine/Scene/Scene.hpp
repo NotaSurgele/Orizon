@@ -129,14 +129,7 @@ public:
 
                 static void create_velocity(Entity *e, nlohmann::json const& json)
                 {
-                    std::string type = json["value_type"];
-
-                    if (type.find("float") != std::string::npos)
-                        e->addComponent<Velocity<float>>();
-                    if (type.find("int") != std::string::npos)
-                        e->addComponent<Velocity<int>>();
-                    if (type.find("double") != std::string::npos)
-                        e->addComponent<Velocity<double>>();
+                    e->addComponent<Velocity>();
                 }
 
                 static void create_animator(Entity *e, nlohmann::json const& json)

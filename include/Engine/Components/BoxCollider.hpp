@@ -46,7 +46,7 @@ public:
     void destroy() override final { _colliderSystem.clear(); }
 
     bool overlap(BoxCollider *collider);
-    bool overlap(BoxCollider *collider, Velocity<float> *velocity);
+    bool overlap(BoxCollider *collider, Velocity *velocity);
     bool intersect(BoxCollider *collider, BoxCollider& intersections);
 
     void setPosition(sf::Vector2<float> const& pos)

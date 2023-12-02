@@ -11,7 +11,7 @@ class CharacterController : public CustomComponents {
 
         void update() override
         {
-            auto velocity = _self->getComponent<Velocity<float>>();
+            auto velocity = _self->getComponent<Velocity>();
             auto transform = _self->getComponent<Transform2D>();
 
            /* if (Input::isActionPressed("MoveUp"))
