@@ -16,7 +16,6 @@ class Sprite;
 class Animator;
 class Transform2D;
 
-template <typename T>
 class Velocity;
 class BoxCollider;
 
@@ -73,7 +72,6 @@ class Entity {
             if (_component_map.size() <= 0 ) {
                 return nullptr;
             }
-            std::cout << _component_map.size() << std::endl;
             T* component = dynamic_cast<T *>(_component_map[SIGNATURE(T)]);
 
             if (component == nullptr && DEBUG_MESSAGE) {
