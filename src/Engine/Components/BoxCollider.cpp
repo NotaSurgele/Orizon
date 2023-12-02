@@ -139,7 +139,7 @@ BoxCollider* BoxCollider::onTrigger(const std::function<void(BoxCollider *)> &sy
     return this;
 }
 
-bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
+bool BoxCollider::overlap(BoxCollider *collider, Velocity *velocity)
 {
     auto box = collider;
     if (!box)
