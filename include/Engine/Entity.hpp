@@ -16,7 +16,6 @@ class Sprite;
 class Animator;
 class Transform2D;
 
-template <typename T>
 class Velocity;
 class BoxCollider;
 
