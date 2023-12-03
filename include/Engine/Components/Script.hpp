@@ -21,6 +21,9 @@ public:
 
 private:
 
+    // System
+    void registerInputSystem();
+
     // base types
     void registerIComponentType();
     void registerVectorType();
