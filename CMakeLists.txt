@@ -3,7 +3,9 @@ project(Orizon)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_USE_PTHREADS_INIT true)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 include(FetchContent)
 
@@ -47,7 +49,6 @@ set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-
 add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
 file(GLOB_RECURSE SRC
@@ -70,8 +71,6 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/include/Game/
     ${SFML_SOURCE_DIR}/include/
 )
-# Hide sol warnings with c++17
-add_compile_options(-fpermissive)
 
 # end
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})

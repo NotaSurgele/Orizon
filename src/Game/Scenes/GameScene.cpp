@@ -23,12 +23,13 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    //tiledMap->load("../assets/map_test.tmj");
+    tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
-    toto = new Entity();
+    player->addComponent<Script>("../assets/Scripting/helloWorld.lua");
+    /*    toto = new Entity();
     toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
-    System::pushEntity(toto);
+    System::pushEntity(toto);*/
 /*
     player->getComponent<OrizonMusic>();
 */
@@ -40,15 +41,15 @@ void GameScene::create()
     //player->getComponent<Light>()->setColor(c);
     //player->getComponent<Sprite>()->setShadowIntensity(1);
 
-    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
+/*    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
-    });
+    });*/
     //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
 }
 
 void GameScene::update()
 {
-    auto script = toto->getComponent<Script>();
+    auto script = player->getComponent<Script>();
     if (Input::isActionKeyDown("Refresh")) {
         script->reload();
     }
@@ -60,13 +61,9 @@ void GameScene::update()
     {
         tiledMap->render();
     }
-    /*if (player) {
-        std::cout << "goodbye" << std::endl;
-        auto animator =    player->getComponent<Animator>();
-        if (animator) {
-            animator->playAnimation("idle", true);
-        }
-    }*/
+
+    auto animator = player->getComponent<Animator>();
+    animator->playAnimation("idle", true);
     script->call();
 }
 
