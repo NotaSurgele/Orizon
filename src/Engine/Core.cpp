@@ -132,6 +132,7 @@ void Core::updateGUI()
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
         _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
         _gui.entityInformation();
+        _gui.displayScript();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
     }
 }
@@ -154,7 +155,6 @@ void Core::run()
         sf::Event event;
 
         inputHandler(event);
-
         render();
         _system_handler.systems();
         auto old = WindowInstance.getView();

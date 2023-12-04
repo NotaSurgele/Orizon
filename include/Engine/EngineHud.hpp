@@ -18,6 +18,7 @@ public:
 
     void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
+    void displayScript();
 
 private:
     void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);

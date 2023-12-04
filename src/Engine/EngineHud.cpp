@@ -1,5 +1,7 @@
 #include "EngineHud.hpp"
 #include "Tag.hpp"
+#include "Utils.hpp"
+#include "Core.hpp"
 #include <imgui.h>
 #include <imgui-SFML.h>
 #define GUI
@@ -78,5 +80,25 @@ void EngineHud::entityInformation()
             ImGui::Text(signature);
         }
     }
+    ImGui::End();
+}
+
+void EngineHud::displayScript()
+{
+    std::string file = R_GET_SCRIPT("../assets/Scripting/helloWorld.lua");
+
+    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+    ImGui::Begin("File Editor");
+    if (ImGui::Button("Open File")) {
+        // Implement file opening logic here
+    }
+
+    if (ImGui::Button("Save File")) {
+        // Implement file saving logic here
+    }
+
+    ImGui::Separator();
+    ImGui::InputTextMultiline("##editor", file.data(), file.size(),
+      ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
 }
