@@ -23,10 +23,9 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    tiledMap->load("../assets/map_test.tmj");
+    //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
-    player->addComponent<Script>("../assets/Scripting/helloWorld.lua");
     /*    toto = new Entity();
     toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
     System::pushEntity(toto);*/
@@ -49,8 +48,8 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    auto script = player->getComponent<Script>();
     if (Input::isActionKeyDown("Refresh")) {
+        auto script = player->getComponent<Script>();
         script->reload();
     }
     if (Input::isActionPressed("Exit"))
@@ -64,7 +63,9 @@ void GameScene::update()
 
     auto animator = player->getComponent<Animator>();
     animator->playAnimation("idle", true);
+/*
     script->call();
+*/
 }
 
 void GameScene::destroy()

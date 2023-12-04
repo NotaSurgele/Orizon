@@ -3,6 +3,7 @@
 #include "Components/Light.hpp"
 #include "Core.hpp"
 #include "RayCaster.hpp"
+#include "Script.hpp"
 
 void System::addEntity(Entity *entity)
 {
@@ -109,6 +110,16 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
+void System::script_system(Entity *e)
+{
+    std::vector<Script *> scriptArray = e->getComponents<Script>();
+
+    for (auto& s : scriptArray) {
+        s->start();
+        s->update();
+    }
+}
+
 void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
 {
     for (auto it : componentCache) {
@@ -137,6 +148,7 @@ void System::systems()
         _inView.push_back(e);
 
         // Test
+        script_system(e);
         update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
