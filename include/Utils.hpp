@@ -42,6 +42,22 @@ public:
         return content;
     }
 
+    static inline bool writeFile(const std::string& filepath, const std::string& content)
+    {
+        try {
+            std::ofstream file(filepath);
+
+            if (!file.is_open())
+                return false;
+            file << content.c_str();
+            file.close();
+            return true;
+        } catch (std::exception& error) {
+            std::cerr << "Failed opening files named " << filepath << " " << error.what() << std::endl;
+            return false;
+        }
+    }
+
     static inline nlohmann::json fileToJson(const std::string& fileContent)
     {
         return nlohmann::json::parse(fileContent);
