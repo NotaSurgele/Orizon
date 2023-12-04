@@ -50,7 +50,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 10
+                    "value": 100
                 },
                 {
                     "type": "Sound",
@@ -61,6 +61,14 @@
                     "type": "Music",
                     "music_name": "tata",
                     "loop": true
+                },
+                {
+                    "type": "Script",
+                    "path": "../assets/Scripting/helloWorld.lua"
+                },
+                {
+                    "type": "Script",
+                    "path": "../assets/Scripting/helloWorld2.lua"
                 }
             ]
         },
@@ -114,7 +122,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 9
+                    "value": 1
                 }
             ]
         }

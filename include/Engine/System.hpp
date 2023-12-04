@@ -193,6 +193,8 @@ public:
 
     void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
 
+    void script_system(Entity *e);
+
     void systems();
 
 public:

@@ -6,6 +6,7 @@
 #include "Components/Animator.hpp"
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
+#include "Components/Script.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -210,6 +211,13 @@ public:
                     e->addComponent<Light>(emission);
                 }
 
+                static void create_script(Entity *e, const nlohmann::json& json)
+                {
+                    std::string path = json["path"];
+
+                    e->addComponent<Script>(path);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -231,6 +239,7 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
+                    { "Script", create_script }
                 };
         };
 

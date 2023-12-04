@@ -11,6 +11,8 @@
 #include "Tag.hpp"
 #include "Velocity.hpp"
 #include "View.hpp"
+#include "Input.hpp"
+#include "Time.hpp"
 
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
@@ -18,14 +20,27 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     _state.open_libraries(sol::lib::base);
 
     // register entity type inside lua script
-
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
     // registered attached entity
     _state["self"] = e;
     // set Getter
-    _instance = _state.load_file(scriptPath);
+    _state.script_file(scriptPath);
+}
+
+void Script::registerInputSystem()
+{
+    sol::usertype<Input> inputType = _state.new_usertype<Input>(
+        "Input",  // Name of the type in Lua
+
+        // Constructors
+        sol::constructors<Input()>(),
+        // Member functions
+        "isActionKeyDown", &Input::isActionKeyDown,
+        "isActionPressed", &Input::isActionPressed
+    );
+    _state["Input"] = Input();
 }
 
 void Script::registerVectorType()
@@ -61,6 +76,7 @@ void Script::registerVectorType()
 
 void Script::registerBaseTypes()
 {
+    registerInputSystem();
     registerVectorType();
 }
 
@@ -153,23 +169,22 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Sprite>(texturePath, width, height);
                     }
             ),
-            "addComponentTag", sol::overload(
-                    [](Entity *entity, std::string tagName) {
-                        return entity->addComponent<Tag>(tagName);
-                    }
-            ),
             "addComponentVelocity", sol::overload(
                     [](Entity *entity) {
                         entity->addComponent<Velocity>();
                     }
-            )/* TODO can't compile with that component idk why,
+            ),
+             "addComponentTag", sol::overload(
+                    [](Entity *entity, std::string tagName) {
+                        return entity->addComponent<Tag>(tagName);
+                    }
+            ),
             "addComponentView", sol::overload(
                     [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
                         return entity->addComponent<View>(x, y, w, h, follow);
                     }
-            )*/
+            )
     );
-    entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
     entityType["getComponentBoxCollider"] = &Entity::getComponent<BoxCollider>;
@@ -186,18 +201,22 @@ void Script::registerEntityFunction()
 
 void Script::reload()
 {
-    _state.collect_garbage();
-    _state.open_libraries(sol::lib::base);
-    _instance = _state.load_file(_filepath);
-
-    // register entity type inside lua script
-
-    registerBaseTypes();
-    registerComponentsType();
-    registerEntityFunction();
+    _state.script_file(_filepath);
+    _start = false;
 }
 
-void Script::call()
+void Script::start()
 {
-    _instance();
+    if (_start)
+        return;
+    sol::function start = _state["Start"];
+    start();
+    _start = true;
+}
+
+void Script::update()
+{
+    _state["deltaTime"] = Time::deltaTime;
+    sol::function update = _state["Update"];
+    update();
 }

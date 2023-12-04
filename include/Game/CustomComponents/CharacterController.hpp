@@ -27,14 +27,14 @@ class CharacterController : public CustomComponents {
                 velocity->setX(_speed);
             else
                 velocity->setX(0);*/
-           if (Input::isActionPressed("MoveUp"))
+/*           if (Input::isActionPressed("MoveUp"))
                transform->position.y -= 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveDown"))
                transform->position.y += 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveLeft"))
                transform->position.x -= 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveRight"))
-               transform->position.x += 200 * Time::deltaTime;
+               transform->position.x += 200 * Time::deltaTime;*/
         }
 
         void destroy() override final {}
