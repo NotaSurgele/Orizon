@@ -13,9 +13,15 @@ public:
     Script() = delete;
     ~Script() = default;
 
-    void call();
+    void update();
+    void start();
 
     void destroy() override {}
+
+    const std::string& getFile() const
+    {
+        return _filepath;
+    }
 
     void reload();
 
@@ -35,8 +41,8 @@ private:
     void registerEntityFunction();
 
 protected:
+    bool _start = false;
     Entity *_self;
     sol::state _state;
-    sol::load_result _instance;
     std::string _filepath;
 };

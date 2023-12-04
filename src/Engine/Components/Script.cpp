@@ -20,14 +20,13 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     _state.open_libraries(sol::lib::base);
 
     // register entity type inside lua script
-
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
     // registered attached entity
     _state["self"] = e;
     // set Getter
-    _instance = _state.load_file(scriptPath);
+    _state.script_file(scriptPath);
 }
 
 void Script::registerInputSystem()
@@ -202,19 +201,22 @@ void Script::registerEntityFunction()
 
 void Script::reload()
 {
-    _state.collect_garbage();
-    _state.open_libraries(sol::lib::base);
-
-    // register entity type inside lua script
-
-    registerBaseTypes();
-    registerComponentsType();
-    registerEntityFunction();
-    _instance = _state.load_file(_filepath);
+    _state.script_file(_filepath);
+    _start = false;
 }
 
-void Script::call()
+void Script::start()
+{
+    if (_start)
+        return;
+    sol::function start = _state["Start"];
+    start();
+    _start = true;
+}
+
+void Script::update()
 {
     _state["deltaTime"] = Time::deltaTime;
-    _instance();
+    sol::function update = _state["Update"];
+    update();
 }
