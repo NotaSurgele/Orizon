@@ -27,7 +27,6 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Sound>();
     /*    toto = new Entity();
-    toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
     System::pushEntity(toto);*/
 /*
     player->getComponent<OrizonMusic>();
