@@ -6,6 +6,7 @@
 #include <memory>
 #include "Sound.hpp"
 #include"OrizonMusic.hpp"
+#include "Utils.hpp"
 
 class RessourcesManager {
     public:
@@ -48,6 +49,15 @@ class RessourcesManager {
             return *this;
         }
 
+        RessourcesManager& loadScript(const std::string& filepath)
+        {
+            std::string content = Utils::readFile(filepath, true);
+
+            _scriptMap.insert(std::pair<std::string, std::string>(filepath, content));
+            std::cout << "[RESOURCES MANAGER] New Resource Script " << filepath << " !" << std::endl;
+            return *this;
+        }
+
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
@@ -60,6 +70,11 @@ class RessourcesManager {
         sf::Music *getMusic(std::string const& ressourceName)
         {
             return _musicMap[ressourceName];
+        }
+
+        std::string& getScript(const std::string& path)
+        {
+            return _scriptMap[path];
         }
 
         void destroy()
@@ -75,4 +90,5 @@ class RessourcesManager {
         std::map<std::string, sf::Texture> _map;
         std::map<std::string, sf::SoundBuffer> _soundMap;
         std::map<std::string, sf::Music *> _musicMap;
+        std::map<std::string, std::string> _scriptMap;
 };
