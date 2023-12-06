@@ -76,7 +76,8 @@ include_directories(
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
 if (MSVC)
-target_link_libraries(
+add_compile_options(/bigobj)
+	target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
 		ImGui-SFML::ImGui-SFML
