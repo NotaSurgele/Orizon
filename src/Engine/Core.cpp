@@ -154,7 +154,6 @@ void Core::run()
         sf::Event event;
 
         inputHandler(event);
-
         render();
         _system_handler.systems();
         auto old = WindowInstance.getView();

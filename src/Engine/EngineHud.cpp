@@ -1,8 +1,11 @@
 #include "EngineHud.hpp"
 #include "Tag.hpp"
+#include "Utils.hpp"
+#include "Core.hpp"
 #include <imgui.h>
 #include <imgui-SFML.h>
 #define GUI
+#include "Script.hpp"
 
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
@@ -68,6 +71,7 @@ void EngineHud::entityInformation()
     ImGui::Begin("Entity informations");
     if (_selected) {
         auto components = _selected->getComponents();
+        std::size_t i = 0;
 
         for (auto& elem : components) {
             if (elem.second == nullptr) {
@@ -75,8 +79,38 @@ void EngineHud::entityInformation()
                 continue;
             }
             auto signature = elem.first;
-            ImGui::Text(signature);
+            std::string updated = std::to_string(i) + signature;
+            if (ImGui::Selectable(updated.c_str())) {
+                _selectedC = elem.second;
+            }
+            i++;
         }
+        if (_selectedC)
+            displayScript(_selectedC);
     }
+    ImGui::End();
+}
+
+void EngineHud::displayScript(IComponent *component)
+{
+    std::string signature = component->getSignature();
+
+    if (signature.find("Script") ==
+        std::string::npos)
+        return;
+    Script *script = static_cast<Script *>(component);
+    if (_lastScript != script) {
+        _lastScript = script;
+        _scriptContent = R_GET_SCRIPT(script->getFile());
+    }
+    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+    ImGui::Begin("File Editor");
+    if (ImGui::Button("Save File")) {
+        Utils::writeFile(script->getFile(), _scriptContent);
+        script->reload();
+    }
+    ImGui::Separator();
+    ImGui::InputTextMultiline("##editor", _scriptContent.data(), _scriptContent.size(),
+      ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
 }
