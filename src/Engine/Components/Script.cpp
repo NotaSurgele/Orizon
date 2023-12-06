@@ -86,21 +86,32 @@ void Script::registerAnimatorType()
 {
     _state.new_usertype<Animator>(
         "Animator", sol::constructors<Animator(Entity *)>(),
-        "newAnimation", &Animator::newAnimation
+        "newAnimation", &Animator::newAnimation,
+        "playAnimation", &Animator::playAnimation,
+        "reset", &Animator::reset,
+        "resetCurrentAnimation", &Animator::resetCurrentAnimation,
+        "getAnimationsFrames", &Animator::getAnimationFrames,
+        "destroy", &Animator::destroy,
+        "currentAnimation", &Animator::currentAnimation
     );
 }
 
 void Script::registerBaseTypes()
 {
     registerInputSystem();
+    registerAnimatorType();
     registerVectorType();
 }
 
 void Script::registerTransform2DComponent()
 {
     sol::usertype<Transform2D> t = _state.new_usertype<Transform2D>(
-            "Transform2D",
-            "position", &Transform2D::position
+        "Transform2D", sol::constructors<Transform2D(), Transform2D(float, float, float, float)>(),
+        "position", &Transform2D::position,
+        "rotation", &Transform2D::rotation,
+        "size", &Transform2D::scale,
+        "zero", &Transform2D::zero,
+        "destroy", &Transform2D::destroy
     );
 }
 

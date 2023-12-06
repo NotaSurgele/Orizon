@@ -23,7 +23,7 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    //tiledMap->load("../assets/map_test.tmj");
+    tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     /*    toto = new Entity();
@@ -61,8 +61,8 @@ void GameScene::update()
         tiledMap->render();
     }
 
-    auto animator = player->getComponent<Animator>();
-    animator->playAnimation("idle", true);
+/*    auto animator = player->getComponent<Animator>();
+    animator->playAnimation("idle", true);*/
 /*
     script->call();
 */

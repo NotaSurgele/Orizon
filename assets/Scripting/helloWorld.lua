@@ -1,19 +1,27 @@
-transform = self:getComponentTransform2D()
+transform = nil
+animator = nil
 
 function Start()
-    print("Starting from the bottom now we here !")
+    transform = self:getComponentTransform2D()
+    animator = self:getComponentAnimator()
+    print(animator, transform)
+end
+
+function handleAnimation()
+    animator:playAnimation("idle", true)
 end
 
 function Update()
-    if (Input.isActionPressed("MoveUp")) then
+    handleAnimation()
+    if (Input.isActionKeyPressed("MoveUp")) then
         transform.position.y = transform.position.y - (200 * deltaTime);
     end
 
-    if (Input.isActionPressed("MoveDown")) then
+    if (Input.isActionKeyPressed("MoveDown")) then
         transform.position.y = transform.position.y + (200 * deltaTime);
     end
 
-    if (Input.isActionPressed("MoveLeft")) then
+    if (Input.isActionKeyPressed("MoveLeft")) then
         transform.position.x = transform.position.x - (200 * deltaTime);
     end
 
