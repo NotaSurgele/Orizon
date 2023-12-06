@@ -23,7 +23,6 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     /*    toto = new Entity();
@@ -47,6 +46,10 @@ void GameScene::create()
 
 void GameScene::update()
 {
+    if (Input::isActionKeyPressed("Refresh"))
+    {
+        tiledMap->load("../assets/map_test.tmj");
+    }
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))
