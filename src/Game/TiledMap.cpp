@@ -78,6 +78,7 @@ bool TiledMap::_loadTileMap()
             posY += _tileWidth;
             index++;
         }
+        tilemap->render();
         _tileMaps.push_back(tilemap);
         draw += 2;
     }

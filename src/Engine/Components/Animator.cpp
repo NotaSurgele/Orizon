@@ -35,7 +35,7 @@ Animator::Animation::Animation(Entity *e,
     }
 }
 
-const std::vector<sf::IntRect>& Animator::Animation::get_animation_frames()
+const std::vector<sf::IntRect>& Animator::Animation::getAnimationFrames()
 {
     return _frames;
 }
@@ -45,10 +45,10 @@ const std::string& Animator::Animation::name()
     return _name;
 }
 
-const std::vector<sf::IntRect>& Animator::get_animation_frames(
+const std::vector<sf::IntRect>& Animator::getAnimationFrames(
                                         std::string const& name)
 {
-    return _animation_map[name].get_animation_frames();
+    return _animation_map[name].getAnimationFrames();
 }
 
 void Animator::Animation::playAnimation(const bool loop)
@@ -104,6 +104,16 @@ void Animator::playAnimation(std::string const& anim, const bool loop)
 Animator::Animation& Animator::currentAnimation()
 {
     return _animation_map[_currentAnimation];
+}
+
+void Animator::resetCurrentAnimation()
+{
+    try {
+        _animation_map[_currentAnimation].reset();
+    } catch(...) {
+        std::cerr << "Cannot reset animation: no current animation"
+                  << " does not exist !" << std::endl;
+    }
 }
 
 void Animator::reset(std::string const& anim)

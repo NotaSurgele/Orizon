@@ -124,7 +124,7 @@ public:
         Core::instance->getWindow()
 
 #define CLOSE()\
-        Core::instance->CoreClose();
+        Core::instance->CoreClose()
 
 #define DRAW(to_draw)\
         Core::instance->CoreDraw(to_draw)

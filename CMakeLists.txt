@@ -76,6 +76,7 @@ include_directories(
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
 if (MSVC)
+target_compile_options(${PROJECT_NAME} PRIVATE /bigobj)
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC

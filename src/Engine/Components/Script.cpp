@@ -32,13 +32,21 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
 void Script::registerInputSystem()
 {
     sol::usertype<Input> inputType = _state.new_usertype<Input>(
-        "Input",  // Name of the type in Lua
-
-        // Constructors
-        sol::constructors<Input()>(),
-        // Member functions
+        "Input", sol::constructors<Input()>(),
+        // Action key
         "isActionKeyDown", &Input::isActionKeyDown,
-        "isActionPressed", &Input::isActionPressed
+        "isActionKeyReleased", &Input::isActionKeyReleased,
+        "isActionKeyPressed", &Input::isActionKeyPressed,
+        "isKeyDown", &Input::isKeyDown,
+        "isAnyKeyPressed", &Input::isAnyKeyPressed,
+        "isKeyReleased", &Input::isKeyReleased,
+        "isKeyPressed", &Input::isKeyPressed,
+        "isButtonPressed", &Input::isButtonPressed,
+        "isAnyButtonPressed", &Input::isAnyButtonPressed,
+        "isButtonReleased", &Input::isButtonReleased,
+        "isActionButtonDown", &Input::isActionButtonDown,
+        "isActionButtonReleased", &Input::isActionButtonReleased,
+        "isActionButtonPressed", &Input::isActionButtonPressed
     );
     _state["Input"] = Input();
 }
@@ -83,14 +91,44 @@ void Script::registerBaseTypes()
 void Script::registerTransform2DComponent()
 {
     sol::usertype<Transform2D> t = _state.new_usertype<Transform2D>(
-            "Transform2D",
-            "position", &Transform2D::position
+        "Transform2D", sol::constructors<Transform2D(), Transform2D(float, float, float, float)>(),
+        "position", &Transform2D::position,
+        "rotation", &Transform2D::rotation,
+        "size", &Transform2D::scale,
+        "zero", &Transform2D::zero,
+        "destroy", &Transform2D::destroy
+    );
+}
+
+void Script::registerAnimatorComponent()
+{
+    _state.new_usertype<Animator>(
+        "Animator", sol::constructors<Animator(Entity *)>(),
+        "newAnimation", &Animator::newAnimation,
+        "playAnimation", &Animator::playAnimation,
+        "reset", &Animator::reset,
+        "resetCurrentAnimation", &Animator::resetCurrentAnimation,
+        "getAnimationsFrames", &Animator::getAnimationFrames,
+        "destroy", &Animator::destroy,
+        "currentAnimation", &Animator::currentAnimation
+    );
+}
+
+void Script::registerBoxColliderComponent()
+{
+    _state.new_usertype<BoxCollider>(
+    "BoxCollider", sol::constructors<BoxCollider(Entity *, sf::Vector2f, sf::Vector2f),
+                                                    BoxCollider(Entity *, sf::Vector2f, sf::Vector2f, int)>(),
+        "onCollision", &BoxCollider::onCollision,
+        "entity", &BoxCollider::entity
     );
 }
 
 void Script::registerComponentsType()
 {
     registerTransform2DComponent();
+    registerAnimatorComponent();
+    registerBoxColliderComponent();
 }
 
 void Script::registerEntityFunction()
@@ -109,7 +147,7 @@ void Script::registerEntityFunction()
                     }
             ),
             "addComponentAnimator", sol::overload(
-                    [](Entity *entity, float a, float b, float c, float d) {
+                    [](Entity *entity) {
                         return entity->addComponent<Animator>();
                     }
             ),
@@ -183,7 +221,8 @@ void Script::registerEntityFunction()
                     [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
                         return entity->addComponent<View>(x, y, w, h, follow);
                     }
-            )
+            ),
+            "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
