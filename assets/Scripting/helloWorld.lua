@@ -17,7 +17,7 @@ function Update()
         transform.position.x = transform.position.x - (200 * deltaTime);
     end
 
-    if (Input.isActionPressed("MoveRight")) then
+    if (Input.isActionKeyPressed("MoveRight")) then
         transform.position.x = transform.position.x + (200 * deltaTime);
     end
 end

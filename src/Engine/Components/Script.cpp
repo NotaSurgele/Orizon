@@ -32,13 +32,21 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
 void Script::registerInputSystem()
 {
     sol::usertype<Input> inputType = _state.new_usertype<Input>(
-        "Input",  // Name of the type in Lua
-
-        // Constructors
-        sol::constructors<Input()>(),
-        // Member functions
+        "Input", sol::constructors<Input()>(),
+        // Action key
         "isActionKeyDown", &Input::isActionKeyDown,
-        "isActionPressed", &Input::isActionPressed
+        "isActionKeyReleased", &Input::isActionKeyReleased,
+        "isActionKeyPressed", &Input::isActionKeyPressed,
+        "isKeyDown", &Input::isKeyDown,
+        "isAnyKeyPressed", &Input::isAnyKeyPressed,
+        "isKeyReleased", &Input::isKeyReleased,
+        "isKeyPressed", &Input::isKeyPressed,
+        "isButtonPressed", &Input::isButtonPressed,
+        "isAnyButtonPressed", &Input::isAnyButtonPressed,
+        "isButtonReleased", &Input::isButtonReleased,
+        "isActionButtonDown", &Input::isActionButtonDown,
+        "isActionButtonReleased", &Input::isActionButtonReleased,
+        "isActionButtonPressed", &Input::isActionButtonPressed
     );
     _state["Input"] = Input();
 }
@@ -72,6 +80,14 @@ void Script::registerVectorType()
     );
     vu["x"] = &sf::Vector2u::x;
     vu["y"] = &sf::Vector2u::y;
+}
+
+void Script::registerAnimatorType()
+{
+    _state.new_usertype<Animator>(
+        "Animator", sol::constructors<Animator(Entity *)>(),
+        "newAnimation", &Animator::newAnimation
+    );
 }
 
 void Script::registerBaseTypes()
@@ -109,7 +125,7 @@ void Script::registerEntityFunction()
                     }
             ),
             "addComponentAnimator", sol::overload(
-                    [](Entity *entity, float a, float b, float c, float d) {
+                    [](Entity *entity) {
                         return entity->addComponent<Animator>();
                     }
             ),

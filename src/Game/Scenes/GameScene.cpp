@@ -52,9 +52,9 @@ void GameScene::update()
         auto script = player->getComponent<Script>();
         script->reload();
     }
-    if (Input::isActionPressed("Exit"))
+    if (Input::isActionKeyPressed("Exit"))
         CLOSE();
-    if (Input::isActionPressed("Hide"))
+    if (Input::isActionKeyPressed("Hide"))
         tiledMap->hide();
     if (Input::isActionKeyDown("Render"))
     {

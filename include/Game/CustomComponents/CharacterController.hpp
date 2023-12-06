@@ -23,7 +23,7 @@ class CharacterController : public CustomComponents {
 
             if (Input::isActionPressed("MoveLeft"))
                 velocity->setX(-_speed);
-            else if (Input::isActionPressed("MoveRight"))
+            else if (Input::isActionKeyPressed("MoveRight"))
                 velocity->setX(_speed);
             else
                 velocity->setX(0);*/
@@ -33,7 +33,7 @@ class CharacterController : public CustomComponents {
                transform->position.y += 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveLeft"))
                transform->position.x -= 200 * Time::deltaTime;
-           if (Input::isActionPressed("MoveRight"))
+           if (Input::isActionKeyPressed("MoveRight"))
                transform->position.x += 200 * Time::deltaTime;*/
         }
 

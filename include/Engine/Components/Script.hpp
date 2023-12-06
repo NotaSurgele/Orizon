@@ -31,8 +31,8 @@ private:
     void registerInputSystem();
 
     // base types
-    void registerIComponentType();
     void registerVectorType();
+    void registerAnimatorType();
     void registerBaseTypes();
 
     // register component
