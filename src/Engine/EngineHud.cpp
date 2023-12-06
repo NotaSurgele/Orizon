@@ -7,6 +7,17 @@
 #define GUI
 #include "Script.hpp"
 
+void EngineHud::setTheme()
+{
+    if (_theme)
+        return;
+    ImGuiStyle *style = &ImGui::GetStyle();
+    ImVec4 *colors = style->Colors;
+
+    colors[ImGuiCol_WindowBg] = ImVec4(0.54, 0.56, 0.56, .5f);
+    _theme = true;
+}
+
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;

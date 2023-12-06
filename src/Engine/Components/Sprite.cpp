@@ -1,5 +1,6 @@
 #include "Sprite.hpp"
 #include "Transform2D.hpp"
+#include "Core.hpp"
 #include <iostream>
 
 Sprite::Sprite( Entity *self,
@@ -13,7 +14,7 @@ Sprite::Sprite( Entity *self,
     _sprite.setScale(scaleX, scaleY);
 }
 
-Sprite::Sprite( Entity *self,
+/*Sprite::Sprite( Entity *self,
                 std::string const& texturePath,
                 float const& scaleX,
                 float const& scaleY) : _sprite(),
@@ -23,6 +24,15 @@ Sprite::Sprite( Entity *self,
     setTexture(texturePath);
     _sprite.setScale(scaleX, scaleY);
 
+}*/
+
+Sprite::Sprite(Entity *self, const std::string& textureName, const float& w, const float& h) : _self(self),
+                                                                                                _sprite(),
+                                                                                                _texture()
+{
+    sf::Texture text = R_GET_RESSOURCE(sf::Texture, textureName);
+    setTexture(text);
+    _sprite.setScale(w, h);
 }
 
 Sprite::Sprite(const sf::Texture &texture) : _self(nullptr)
