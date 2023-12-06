@@ -19,7 +19,7 @@ public:
     {
         if (ENGINE_MODE) {
             this->setSize(w * .5f, h * .5f);
-            this->setViewport(sf::FloatRect(.25, 0,
+            this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
                                             EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));
         }
     }

@@ -15,7 +15,6 @@ void GameScene::create()
 
         e->addCustomComponent<CharacterController>(speed);
     });
-
 /*    sol::state lua;
     lua.open_libraries(sol::lib::base);
 
