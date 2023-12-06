@@ -86,12 +86,12 @@ void EngineHud::entityInformation()
             i++;
         }
         if (_selectedC)
-            displayScript(_selectedC);
+            scriptEditor(_selectedC);
     }
     ImGui::End();
 }
 
-void EngineHud::displayScript(IComponent *component)
+void EngineHud::scriptEditor(IComponent *component)
 {
     std::string signature = component->getSignature();
 
@@ -105,6 +105,11 @@ void EngineHud::displayScript(IComponent *component)
     }
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
     ImGui::Begin("File Editor");
+    if (ImGui::Button("x")) {
+         ImGui::End();
+         _selectedC = nullptr;
+         return;
+    }
     if (ImGui::Button("Save File")) {
         Utils::writeFile(script->getFile(), _scriptContent);
         script->reload();

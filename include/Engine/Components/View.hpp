@@ -4,6 +4,8 @@
 #include "Entity.hpp"
 #include "config.hpp"
 
+#define EDITOR_VIEW_SIZE_RATIO .35f
+
 class View : public IComponent, public sf::View {
 public:
     View(Entity *e,
@@ -17,7 +19,8 @@ public:
     {
         if (ENGINE_MODE) {
             this->setSize(w * .5f, h * .5f);
-            this->setViewport(sf::FloatRect(.25, 0, .5f, .5f));
+            this->setViewport(sf::FloatRect(.25, 0,
+                                            EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));
         }
     }
 
