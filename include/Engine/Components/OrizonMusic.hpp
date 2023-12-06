@@ -12,6 +12,8 @@ public:
 
 
     bool load(const std::string& path);
+    bool loadFromName(const std::string& name);
+
     void play();
     void stop();
     void pause();
@@ -19,7 +21,7 @@ public:
     void setVolume(const float& volume);
     void setLoop(bool loop);
     OrizonMusic *setMusic(sf::Music *music);
-    bool getLoop();
+    bool isLoop();
     float getVolume();
     float getDuration();
     sf::Sound::SoundSource::Status getStatus();

@@ -32,15 +32,26 @@ private:
 
     // base types
     void registerVectorType();
-    void registerAnimatorComponent();
-    void registerBoxColliderComponent();
+    void registerColorType();
+    void registerRectType();
     void registerBaseTypes();
 
     // register component
     void registerTransform2DComponent();
+    void registerAnimatorComponent();
+    void registerBoxColliderComponent();
+    void registerGravityComponent();
+    void registerLayerComponent();
+    void registerLightComponent();
+    void registerOrizonMusicComponent();
+    void registerSoundComponent();
+    void registerSpriteComponent();
+    void registerVelocityComponent();
+    void registerTagComponent();
+    void registerViewComponent();
     void registerComponentsType();
-    void registerEntityFunction();
 
+    void registerEntityFunction();
 protected:
     bool _start = false;
     Entity *_self;

@@ -12,7 +12,7 @@ function Start()
     animator = self:getComponentAnimator()
     collider = self:getComponentBoxCollider()
 
-    --collider:onCollision(handleCollisionCallback)
+    collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
 end
 

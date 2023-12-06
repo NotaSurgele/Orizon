@@ -15,7 +15,6 @@ void GameScene::create()
 
         e->addCustomComponent<CharacterController>(speed);
     });
-
 /*    sol::state lua;
     lua.open_libraries(sol::lib::base);
 
@@ -49,15 +48,12 @@ void GameScene::update()
     if (Input::isActionKeyPressed("Refresh"))
     {
         tiledMap->load("../assets/map_test.tmj");
+        tiledMap->render();
     }
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))
         tiledMap->hide();
-    if (Input::isActionKeyDown("Render"))
-    {
-        tiledMap->render();
-    }
 
 /*    auto animator = player->getComponent<Animator>();
     animator->playAnimation("idle", true);*/
