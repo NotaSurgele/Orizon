@@ -82,10 +82,76 @@ void Script::registerVectorType()
     vu["y"] = &sf::Vector2u::y;
 }
 
+void Script::registerColorType()
+{
+    _state.new_usertype<sf::Color>(
+        "Color", sol::constructors<sf::Color(uint8_t, uint8_t, uint8_t, uint8_t),
+                                            sf::Color()>(),
+            "r", &sf::Color::r,
+            "g", &sf::Color::g,
+            "b", &sf::Color::b,
+            "a", &sf::Color::a
+    );
+}
+
+void Script::registerRectType()
+{
+    _state.new_usertype<sf::FloatRect>(
+        "FloatRect", sol::constructors<sf::FloatRect(),
+                                        sf::FloatRect(float, float, float, float),
+                                        sf::FloatRect(sf::Vector2f, sf::Vector2f)>(),
+        "x", &sf::FloatRect::left,
+        "y", &sf::FloatRect::top,
+        "width", &sf::FloatRect::width,
+        "height", &sf::FloatRect::height,
+        "contains", sol::overload(
+            [] (sf::FloatRect& rect, float x, float y) {
+                return rect.contains(x, y);
+            },
+            [] (sf::FloatRect& rect, const sf::Vector2f& position) {
+                return rect.contains(position);
+            }
+        ),
+        "intersects", sol::overload(
+            [] (sf::FloatRect& rect, sf::FloatRect& rect2) {
+                return rect.intersects(rect2);
+            }
+        ),
+        "getPosition", &sf::FloatRect::getPosition,
+        "getSize", &sf::FloatRect::getSize
+    );
+    _state.new_usertype<sf::IntRect>(
+            "FloatRect", sol::constructors<sf::IntRect(),
+                    sf::IntRect(int, int, int, int),
+                    sf::IntRect(sf::Vector2i, sf::Vector2i)>(),
+            "x", &sf::IntRect::left,
+            "y", &sf::IntRect::top,
+            "width", &sf::IntRect::width,
+            "height", &sf::IntRect::height,
+            "contains", sol::overload(
+                    [] (sf::IntRect& rect, int x, int y) {
+                        return rect.contains(x, y);
+                    },
+                    [] (sf::IntRect& rect, sf::Vector2i& position) {
+                        return rect.contains(position);
+                    }
+            ),
+            "intersects", sol::overload(
+                    [] (sf::IntRect& rect, sf::IntRect& rect2) {
+                        return rect.intersects(rect2);
+                    }
+            ),
+            "getPosition", &sf::IntRect::getPosition,
+            "getSize", &sf::IntRect::getSize
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
     registerVectorType();
+    registerColorType();
+    registerRectType();
 }
 
 void Script::registerTransform2DComponent()
@@ -124,11 +190,183 @@ void Script::registerBoxColliderComponent()
     );
 }
 
+void Script::registerGravityComponent()
+{
+    _state.new_usertype<Gravity>(
+    "Gravity", sol::constructors<Gravity(Entity *), Gravity(Entity *, double)>(),
+        "force", &Gravity::force,
+        "destroy", &Gravity::destroy
+    );
+}
+
+void Script::registerLayerComponent()
+{
+    _state.new_usertype<Layer>(
+        "Layer", sol::constructors<Layer(Entity *, std::size_t)>(),
+        "set", &Layer::set,
+        "value", &Layer::value,
+        "destroy", &Layer::destroy
+    );
+}
+
+void Script::registerLightComponent()
+{
+    _state.new_usertype<Light>(
+    "Light", sol::constructors<
+                                Light(Entity *, float, float),
+                                Light(Entity *, float, Sprite *, float),
+                                Light(Entity *, float, Sprite *),
+                                Light(Entity *, float)>(),
+        "setColor", &Light::setColor,
+        "setEmission", &Light::setEmission,
+        "getEmission", &Light::getEmission,
+        "destroy", &Light::destroy,
+        "loadColorFromIntensity", &Light::loadColorFromIntensity
+    );
+}
+
+void Script::registerOrizonMusicComponent()
+{
+    _state.new_usertype<OrizonMusic>(
+        "OrizonMusic", sol::constructors<OrizonMusic(Entity *)>(),
+        "destroy", &OrizonMusic::destroy,
+        "load", &OrizonMusic::load,
+        "loadFromName", &OrizonMusic::loadFromName,
+        "stop", &OrizonMusic::stop,
+        "play", &OrizonMusic::play,
+        "pause", &OrizonMusic::pause,
+        "isLoop", &OrizonMusic::isLoop,
+        "getDuration", &OrizonMusic::getDuration,
+        "getVolume", &OrizonMusic::getVolume,
+        "setLoop", &OrizonMusic::setLoop
+    );
+}
+
+void Script::registerSoundComponent()
+{
+    _state.new_usertype<Sound>(
+        "Sound", sol::constructors<Sound(Entity *)>(),
+        "load", &Sound::load,
+        "loadFromName", &Sound::loadFromName,
+        "reload", &Sound::reload,
+        "loadFromName", &Sound::loadFromName,
+        "stop", &Sound::stop,
+        "play", &Sound::play,
+        "pause", &Sound::pause,
+        "isLoop", &Sound::isLoop,
+        "getVolume", &Sound::getVolume,
+        "destroy", &Sound::destroy,
+        "setLoop", &Sound::setLoop
+    );
+}
+
+void Script::registerSpriteComponent()
+{
+    _state.new_usertype<Sprite>(
+
+        "Sprite", sol::constructors<Sprite(Entity *, sf::Texture, float, float),
+                                            Sprite(Entity *, sf::Texture),
+                                            Sprite(Entity *, std::string, float, float)>(),
+        "setScale", &Sprite::setScale,
+        "setTexture", sol::overload(
+            [] (Sprite *sprite, const std::string& texturePath) {
+                return sprite->setTexture(texturePath);
+            },
+            [] (Sprite *sprite, const sf::Texture& texture) {
+                return sprite->setTexture(texture);
+            }
+        ),
+        "setScale", &Sprite::setScale,
+        "setColor", &Sprite::setColor,
+        "setPosition", sol::overload(
+            [] (Sprite *sprite, const sf::Vector2f& position) {
+                return sprite->setPosition(position);
+            },
+            [] (Sprite *sprite, const float& x, const float& y) {
+                return sprite->setPosition(x, y);
+            }
+        ),
+        "setTransform", &Sprite::setTransform,
+        "setTextureRect", &Sprite::setTextureRect,
+        "setSprite", &Sprite::setSprite,
+        "getPosition", &Sprite::getPosition,
+        "getTexture", &Sprite::getTexture,
+        "getScale", &Sprite::getScale,
+        "getColor", &Sprite::getColor,
+        "getSprite", &Sprite::getSprite,
+        "destroy", &Sprite::destroy
+    );
+}
+
+void Script::registerVelocityComponent()
+{
+    _state.new_usertype<Velocity>(
+        "Velocity", sol::constructors<Velocity(Entity *)>(),
+        "getX", &Velocity::getX,
+        "getY", &Velocity::getY,
+        "setX", &Velocity::setX,
+        "setY", &Velocity::setY,
+        "values", &Velocity::values,
+        "destroy", &Velocity::destroy
+    );
+}
+
+void Script::registerTagComponent()
+{
+    _state.new_usertype<Tag>(
+        "Tag", sol::constructors<Tag(Entity *, std::string)>(),
+        "value", &Tag::value,
+        "equals", &Tag::equals,
+        "destroy", &Tag::destroy
+    );
+}
+
+void Script::registerViewComponent()
+{
+    _state.new_usertype<View>(
+        "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(
+
+                ),
+        "setViewport", &View::setViewport,
+        "setSize", sol::overload(
+            [] (View *view, const sf::Vector2f& size) {
+                return view->setSize(size);
+            },
+            [] (View *view, const float& w, const float& h) {
+                return view->setSize(w, h);
+            }
+        ),
+        "setCenter", sol::overload(
+            [] (View *view, const sf::Vector2f& position) {
+                return view->setCenter(position);
+            },
+            [] (View *view, const float& x, const float& y) {
+                return view->setCenter(x, y);
+            }
+        ),
+        "setRotation", &View::setRotation,
+        "getSize", &View::getSize,
+        "getCenter", &View::getCenter,
+        "getTransform",  &View::getTransform,
+        "getInverseTransform", &View::getInverseTransform,
+        "getRotation", &View::getRotation
+    );
+}
+
 void Script::registerComponentsType()
 {
     registerTransform2DComponent();
     registerAnimatorComponent();
     registerBoxColliderComponent();
+    registerGravityComponent();
+    registerLayerComponent();
+    registerLightComponent();
+    registerOrizonMusicComponent();
+    registerSoundComponent();
+    registerSpriteComponent();
+    registerVelocityComponent();
+    registerTagComponent();
+    registerViewComponent();
 }
 
 void Script::registerEntityFunction()
