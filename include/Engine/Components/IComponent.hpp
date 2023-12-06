@@ -11,7 +11,7 @@
 class Entity;
 
 class IComponent {
-  public:
+public:
     IComponent() = default;
     ~IComponent() = default;
 

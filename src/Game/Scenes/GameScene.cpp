@@ -49,15 +49,12 @@ void GameScene::update()
     if (Input::isActionKeyPressed("Refresh"))
     {
         tiledMap->load("../assets/map_test.tmj");
+        tiledMap->render();
     }
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))
         tiledMap->hide();
-    if (Input::isActionKeyDown("Render"))
-    {
-        tiledMap->render();
-    }
 
 /*    auto animator = player->getComponent<Animator>();
     animator->playAnimation("idle", true);*/
