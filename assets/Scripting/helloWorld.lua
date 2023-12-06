@@ -1,10 +1,19 @@
 transform = nil
 animator = nil
+collider = nil
+
+-- Callback function to handle collisions
+function handleCollisionCallback(otherCollider)
+    otherCollider:entity():destroy()
+end
 
 function Start()
     transform = self:getComponentTransform2D()
     animator = self:getComponentAnimator()
-    print(animator, transform)
+    collider = self:getComponentBoxCollider()
+
+    --collider:onCollision(handleCollisionCallback)
+    print(animator, transform, collider)
 end
 
 function handleAnimation()
@@ -12,7 +21,7 @@ function handleAnimation()
 end
 
 function Update()
-    handleAnimation()
+	handleAnimation()
     if (Input.isActionKeyPressed("MoveUp")) then
         transform.position.y = transform.position.y - (200 * deltaTime);
     end

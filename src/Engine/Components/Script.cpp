@@ -82,24 +82,9 @@ void Script::registerVectorType()
     vu["y"] = &sf::Vector2u::y;
 }
 
-void Script::registerAnimatorType()
-{
-    _state.new_usertype<Animator>(
-        "Animator", sol::constructors<Animator(Entity *)>(),
-        "newAnimation", &Animator::newAnimation,
-        "playAnimation", &Animator::playAnimation,
-        "reset", &Animator::reset,
-        "resetCurrentAnimation", &Animator::resetCurrentAnimation,
-        "getAnimationsFrames", &Animator::getAnimationFrames,
-        "destroy", &Animator::destroy,
-        "currentAnimation", &Animator::currentAnimation
-    );
-}
-
 void Script::registerBaseTypes()
 {
     registerInputSystem();
-    registerAnimatorType();
     registerVectorType();
 }
 
@@ -115,9 +100,35 @@ void Script::registerTransform2DComponent()
     );
 }
 
+void Script::registerAnimatorComponent()
+{
+    _state.new_usertype<Animator>(
+        "Animator", sol::constructors<Animator(Entity *)>(),
+        "newAnimation", &Animator::newAnimation,
+        "playAnimation", &Animator::playAnimation,
+        "reset", &Animator::reset,
+        "resetCurrentAnimation", &Animator::resetCurrentAnimation,
+        "getAnimationsFrames", &Animator::getAnimationFrames,
+        "destroy", &Animator::destroy,
+        "currentAnimation", &Animator::currentAnimation
+    );
+}
+
+void Script::registerBoxColliderComponent()
+{
+    _state.new_usertype<BoxCollider>(
+    "BoxCollider", sol::constructors<BoxCollider(Entity *, sf::Vector2f, sf::Vector2f),
+                                                    BoxCollider(Entity *, sf::Vector2f, sf::Vector2f, int)>(),
+        "onCollision", &BoxCollider::onCollision,
+        "entity", &BoxCollider::entity
+    );
+}
+
 void Script::registerComponentsType()
 {
     registerTransform2DComponent();
+    registerAnimatorComponent();
+    registerBoxColliderComponent();
 }
 
 void Script::registerEntityFunction()
@@ -210,7 +221,8 @@ void Script::registerEntityFunction()
                     [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
                         return entity->addComponent<View>(x, y, w, h, follow);
                     }
-            )
+            ),
+            "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
