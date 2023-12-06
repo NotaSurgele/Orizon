@@ -27,7 +27,6 @@ void GameScene::create()
     player = getEntity("player");
     player->addComponent<Sound>();
     /*    toto = new Entity();
-    toto->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
     System::pushEntity(toto);*/
 /*
     player->getComponent<OrizonMusic>();
@@ -48,10 +47,6 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    if (Input::isActionKeyDown("Refresh")) {
-        auto script = player->getComponent<Script>();
-        script->reload();
-    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Hide"))
