@@ -1,7 +1,7 @@
 transform = self:getComponentTransform2D()
 
 function Start()
-    print("est cer que la c'est mieux ou pas ?r")
+    print("bonjour a tous comment aller vous ? ")
 end
 
 function Update()

@@ -47,10 +47,6 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    if (Input::isActionKeyDown("Refresh")) {
-        auto script = player->getComponent<Script>();
-        script->reload();
-    }
     if (Input::isActionPressed("Exit"))
         CLOSE();
     if (Input::isActionPressed("Hide"))
