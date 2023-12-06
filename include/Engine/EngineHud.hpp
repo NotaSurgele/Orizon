@@ -18,12 +18,17 @@ public:
 
     void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
+    void displayScript(IComponent *c);
 
 private:
     void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);
 
 private:
     Entity *_selected = nullptr;
+    IComponent *_selectedC = nullptr;
     std::size_t _width;
     std::size_t _height;
+    // scripting
+    std::string _scriptContent;
+    Script *_lastScript;
 };

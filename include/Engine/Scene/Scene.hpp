@@ -216,6 +216,7 @@ public:
                     std::string path = json["path"];
 
                     e->addComponent<Script>(path);
+                    R_ADD_SCRIPT(path);
                 }
 
             public:

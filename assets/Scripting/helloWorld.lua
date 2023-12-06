@@ -2,6 +2,7 @@ transform = nil
 animator = nil
 
 function Start()
+<<<<<<< HEAD
     transform = self:getComponentTransform2D()
     animator = self:getComponentAnimator()
     print(animator, transform)

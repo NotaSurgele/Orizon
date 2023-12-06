@@ -29,6 +29,7 @@ class Entity {
         T* addComponent(Args... args) {
             T *component = new T(this, args ...);
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
+            component->setSignature(SIGNATURE(T));
             return component;
         }
 
@@ -38,6 +39,7 @@ class Entity {
             T *component = new T(self, args ...);
 
             _component_map.insert(std::pair<const char *, IComponent *>(SIGNATURE(T), component));
+            component->setSignature(SIGNATURE(T));
             return component;
         }
 
@@ -47,6 +49,7 @@ class Entity {
             T *custom_component = new T(this, args ...);
 
             _custom_comp_map.insert(std::pair<const char *, CustomComponents *>(SIGNATURE(T), custom_component));
+            custom_component->setSignature(SIGNATURE(T));
             return custom_component;
         }
 
