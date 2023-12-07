@@ -4,6 +4,8 @@
 #include "Components/Velocity.hpp"
 #include "Components/BoxCollider.hpp"
 #include "Script.hpp"
+#include "Utils.hpp"
+#include "sol/sol.hpp"
 
 #include <random>
 #include <math.h>

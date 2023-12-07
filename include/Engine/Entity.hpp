@@ -126,6 +126,7 @@ class Entity {
             return removedValue > 0;
         }
 
+
         std::unordered_map<const char*, CustomComponents *> getCustomComponents()
         {
             return _custom_comp_map;
