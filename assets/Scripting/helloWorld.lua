@@ -1,6 +1,7 @@
 transform = nil
 animator = nil
 collider = nil
+test = Entity.new()
 
 -- Callback function to handle collisions
 function handleCollisionCallback(otherCollider)
@@ -12,6 +13,9 @@ function Start()
     animator = self:getComponentAnimator()
     collider = self:getComponentBoxCollider()
 
+    test:addComponentTransform2D()
+    test:addComponentTag("toto")
+    Sys.pushEntity(test)
     collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
 end
