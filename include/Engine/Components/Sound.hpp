@@ -9,6 +9,7 @@ public:
     ~Sound() = default;
 
     bool load(const std::string& filePath);
+    bool loadFromName(const std::string& name);
 
     bool reload(const std::string& filePath);
     void pause();
@@ -20,7 +21,7 @@ public:
     Sound *setBuffer(const sf::SoundBuffer& buffer);
 
     float getVolume();
-    bool getLoop();
+    bool isLoop();
     sf::Sound::Status getStatus();
 
     void destroy() override {

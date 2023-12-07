@@ -15,7 +15,6 @@ void GameScene::create()
 
         e->addCustomComponent<CharacterController>(speed);
     });
-
 /*    sol::state lua;
     lua.open_libraries(sol::lib::base);
 
@@ -23,7 +22,6 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    //tiledMap->load("../assets/map_test.tmj");
     player = getEntity("player");
     player->addComponent<Sound>();
     /*    toto = new Entity();
@@ -47,17 +45,18 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    if (Input::isActionPressed("Exit"))
-        CLOSE();
-    if (Input::isActionPressed("Hide"))
-        tiledMap->hide();
-    if (Input::isActionKeyDown("Render"))
+    if (Input::isActionKeyPressed("Refresh"))
     {
+        tiledMap->load("../assets/map_test.tmj");
         tiledMap->render();
     }
+    if (Input::isActionKeyPressed("Exit"))
+        CLOSE();
+    if (Input::isActionKeyPressed("Hide"))
+        tiledMap->hide();
 
-    auto animator = player->getComponent<Animator>();
-    animator->playAnimation("idle", true);
+/*    auto animator = player->getComponent<Animator>();
+    animator->playAnimation("idle", true);*/
 /*
     script->call();
 */

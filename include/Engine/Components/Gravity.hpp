@@ -10,5 +10,4 @@ public:
 
 public:
     const float force = 9.81f;
-    float trailingSpeed = 0.0f;
 };
