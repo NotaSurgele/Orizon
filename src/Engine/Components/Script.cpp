@@ -15,6 +15,17 @@
 #include "Time.hpp"
 #include "System.hpp"
 
+void loadScript(sol::state *state, const std::string& path)
+{
+    auto res = state->script_file(path);
+
+    if (!res.valid()) {
+        std::cerr << "[SCRIPT] error cannot import script " << path << std::endl;
+        return;
+    }
+    std::cout << "[SCRIPT] successfully import script " << path << std::endl;
+}
+
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
@@ -25,9 +36,10 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     registerComponentsType();
     registerEntityFunction();
     // registered attached entity
-    _state["self"] = e;
-    // set Getter
-    _state.script_file(scriptPath);
+    _state["_self"] = e;
+    _state["_state"] = &_state;
+    _state.set_function("Import", &loadScript);
+    auto res = _state.script_file(scriptPath);
 }
 
 void Script::registerInputSystem()
@@ -381,95 +393,95 @@ void Script::registerComponentsType()
 void Script::registerEntityFunction()
 {
     sol::usertype<Entity> entityType = _state.new_usertype<Entity>(
-            "Entity", sol::constructors<Entity()>(),
-            "addComponentTransform2D",sol::overload(
-                    [](Entity *entity, float a, float b, float c, float d) {
-                        return entity->addComponent<Transform2D>(a, b, c, d);
-                    },
-                    [](Entity *entity, float x, float y) {
-                        return entity->addComponent<Transform2D>(x, y);
-                    },
-                    [](Entity *entity) {
-                        return entity->addComponent<Transform2D>();
-                    }
-            ),
-            "addComponentAnimator", sol::overload(
-                    [](Entity *entity) {
-                        return entity->addComponent<Animator>();
-                    }
-            ),
-            "addComponentBoxCollider", sol::overload(
-                    [](Entity *entity, sf::Vector2f position, sf::Vector2f size) {
-                        return entity->addComponent<BoxCollider>(position, size);
-                    },
-                    [](Entity *entity, sf::Vector2f position, sf::Vector2f size, int range) {
-                        return entity->addComponent<BoxCollider>(position, size, range);
-                    }
-            ),
-            "addComponentGravity", sol::overload(
-                    [](Entity *entity, double value) {
-                        return entity->addComponent<Gravity>(value);
-                    },
-                    [](Entity *entity) {
-                        return entity->addComponent<Gravity>();
-                    }
-            ),
-            "addComponentLayer", sol::overload(
-                    [](Entity *entity, std::size_t layer) {
-                        return entity->addComponent<Layer>(layer);
-                    }
-            ),
-            "addComponentLight", sol::overload(
-                    [](Entity *entity, float emission, float intensity) {
-                        return entity->addComponent<Light>(emission, intensity);
-                    },
-                    [](Entity *entity, float emission, Sprite *sprite, float intensity) {
-                        return entity->addComponent<Light>(emission, sprite, intensity);
-                    },
-                    [](Entity *entity, float emission, Sprite *sprite) {
-                        return entity->addComponent<Light>(emission, sprite);
-                    },
-                    [](Entity *entity, float emission) {
-                        return entity->addComponent<Light>(emission);
-                    }
-            ),
-            "addComponentOrizonMusic", sol::overload(
-                    [](Entity *entity) {
-                        return entity->addComponent<OrizonMusic>();
-                    }
-            ),
-            "addComponentSound", sol::overload(
-                    [](Entity *entity) {
-                        return entity->addComponent<Sound>();
-                    }
-            ),
-            "addComponentSprite", sol::overload(
-                    [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
-                        return entity->addComponent<Sprite>(texture, width, height);
-                    },
-                    [](Entity *entity, sf::Texture texture) {
-                        return entity->addComponent<Sprite>(texture);
-                    },
-                    [](Entity *entity, std::string texturePath, float width=1, float height=1) {
-                        return entity->addComponent<Sprite>(texturePath, width, height);
-                    }
-            ),
-            "addComponentVelocity", sol::overload(
-                    [](Entity *entity) {
-                        entity->addComponent<Velocity>();
-                    }
-            ),
-             "addComponentTag", sol::overload(
-                    [](Entity *entity, std::string tagName) {
-                        return entity->addComponent<Tag>(tagName);
-                    }
-            ),
-            "addComponentView", sol::overload(
-                    [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
-                        return entity->addComponent<View>(x, y, w, h, follow);
-                    }
-            ),
-            "destroy", &Entity::destroy
+        "Entity", sol::constructors<Entity()>(),
+        "addComponentTransform2D",sol::overload(
+                [](Entity *entity, float a, float b, float c, float d) {
+                    return entity->addComponent<Transform2D>(a, b, c, d);
+                },
+                [](Entity *entity, float x, float y) {
+                    return entity->addComponent<Transform2D>(x, y);
+                },
+                [](Entity *entity) {
+                    return entity->addComponent<Transform2D>();
+                }
+        ),
+        "addComponentAnimator", sol::overload(
+                [](Entity *entity) {
+                    return entity->addComponent<Animator>();
+                }
+        ),
+        "addComponentBoxCollider", sol::overload(
+                [](Entity *entity, sf::Vector2f position, sf::Vector2f size) {
+                    return entity->addComponent<BoxCollider>(position, size);
+                },
+                [](Entity *entity, sf::Vector2f position, sf::Vector2f size, int range) {
+                    return entity->addComponent<BoxCollider>(position, size, range);
+                }
+        ),
+        "addComponentGravity", sol::overload(
+                [](Entity *entity, double value) {
+                    return entity->addComponent<Gravity>(value);
+                },
+                [](Entity *entity) {
+                    return entity->addComponent<Gravity>();
+                }
+        ),
+        "addComponentLayer", sol::overload(
+                [](Entity *entity, std::size_t layer) {
+                    return entity->addComponent<Layer>(layer);
+                }
+        ),
+        "addComponentLight", sol::overload(
+                [](Entity *entity, float emission, float intensity) {
+                    return entity->addComponent<Light>(emission, intensity);
+                },
+                [](Entity *entity, float emission, Sprite *sprite, float intensity) {
+                    return entity->addComponent<Light>(emission, sprite, intensity);
+                },
+                [](Entity *entity, float emission, Sprite *sprite) {
+                    return entity->addComponent<Light>(emission, sprite);
+                },
+                [](Entity *entity, float emission) {
+                    return entity->addComponent<Light>(emission);
+                }
+        ),
+        "addComponentOrizonMusic", sol::overload(
+                [](Entity *entity) {
+                    return entity->addComponent<OrizonMusic>();
+                }
+        ),
+        "addComponentSound", sol::overload(
+                [](Entity *entity) {
+                    return entity->addComponent<Sound>();
+                }
+        ),
+        "addComponentSprite", sol::overload(
+                [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
+                    return entity->addComponent<Sprite>(texture, width, height);
+                },
+                [](Entity *entity, sf::Texture texture) {
+                    return entity->addComponent<Sprite>(texture);
+                },
+                [](Entity *entity, std::string texturePath, float width=1, float height=1) {
+                    return entity->addComponent<Sprite>(texturePath, width, height);
+                }
+        ),
+        "addComponentVelocity", sol::overload(
+                [](Entity *entity) {
+                    entity->addComponent<Velocity>();
+                }
+        ),
+         "addComponentTag", sol::overload(
+                [](Entity *entity, std::string tagName) {
+                    return entity->addComponent<Tag>(tagName);
+                }
+        ),
+        "addComponentView", sol::overload(
+                [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
+                    return entity->addComponent<View>(x, y, w, h, follow);
+                }
+        ),
+        "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
@@ -513,4 +525,15 @@ void Script::update()
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
+}
+
+void Script::importScript(const std::string &path)
+{
+    auto res = _state.script_file(path);
+
+    if (!res.valid()) {
+        std::cerr << "[SCRIPT] error cannot import script " << path << std::endl;
+        return;
+    }
+    std::cout << "[SCRIPT] successfully import script " << path << std::endl;
 }

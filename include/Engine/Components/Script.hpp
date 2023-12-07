@@ -53,6 +53,9 @@ private:
     void registerComponentsType();
 
     void registerEntityFunction();
+
+    void importScript(const std::string& path);
+
 protected:
     bool _start = false;
     Entity *_self;
