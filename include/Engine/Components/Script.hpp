@@ -34,6 +34,7 @@ private:
     void registerVectorType();
     void registerColorType();
     void registerRectType();
+    void registerSystemType();
     void registerBaseTypes();
 
     // register component
@@ -52,6 +53,9 @@ private:
     void registerComponentsType();
 
     void registerEntityFunction();
+
+    void importScript(const std::string& path);
+
 protected:
     bool _start = false;
     Entity *_self;

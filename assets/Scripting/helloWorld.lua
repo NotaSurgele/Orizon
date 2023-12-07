@@ -1,6 +1,9 @@
 transform = nil
 animator = nil
 collider = nil
+test = Entity.new()
+
+Import(_state, "../assets/Scripting/helloWorld2.lua")
 
 -- Callback function to handle collisions
 function handleCollisionCallback(otherCollider)
@@ -8,10 +11,14 @@ function handleCollisionCallback(otherCollider)
 end
 
 function Start()
-    transform = self:getComponentTransform2D()
-    animator = self:getComponentAnimator()
-    collider = self:getComponentBoxCollider()
+    transform = _self:getComponentTransform2D()
+    animator = _self:getComponentAnimator()
+    collider = _self:getComponentBoxCollider()
 
+    test:addComponentTransform2D()
+    test:addComponentTag("toto")
+    system.pushEntity(test)
+    printHello()
     collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
 end
