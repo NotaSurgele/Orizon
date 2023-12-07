@@ -153,7 +153,7 @@ void Script::registerSystemType()
         "System", sol::constructors<System()>(),
             "pushEntity", &System::pushEntity
     );
-    _state["Sys"] = System();
+    _state["system"] = System();
 }
 
 void Script::registerBaseTypes()
