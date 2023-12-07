@@ -31,14 +31,30 @@ private:
     void registerInputSystem();
 
     // base types
-    void registerIComponentType();
     void registerVectorType();
+    void registerColorType();
+    void registerRectType();
+    void registerSystemType();
     void registerBaseTypes();
 
     // register component
     void registerTransform2DComponent();
+    void registerAnimatorComponent();
+    void registerBoxColliderComponent();
+    void registerGravityComponent();
+    void registerLayerComponent();
+    void registerLightComponent();
+    void registerOrizonMusicComponent();
+    void registerSoundComponent();
+    void registerSpriteComponent();
+    void registerVelocityComponent();
+    void registerTagComponent();
+    void registerViewComponent();
     void registerComponentsType();
+
     void registerEntityFunction();
+
+    void importScript(const std::string& path);
 
 protected:
     bool _start = false;

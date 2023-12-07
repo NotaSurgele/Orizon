@@ -20,7 +20,7 @@ public:
                       std::string const& name);
             ~Animation() = default;
             Animation() = default;
-            const std::vector<sf::IntRect>& get_animation_frames();
+            const std::vector<sf::IntRect>& getAnimationFrames();
             void playAnimation(bool loop);
             void reset();
             const std::string& name();
@@ -42,13 +42,14 @@ public:
     Animator(Entity *e);
     ~Animator() = default;
 
-    const std::vector<sf::IntRect>& get_animation_frames(std::string const& name);
+    const std::vector<sf::IntRect>& getAnimationFrames(std::string const& name);
     void playAnimation(std::string const& name, bool const loop);
     Animation& newAnimation( std::size_t const &nbFrames,
                              AnimatorRect const& anim_rect,
                              float const& animationSpeed,
                              std::string const& name);
     void reset(std::string const& anim);
+    void resetCurrentAnimation();
     void destroy() override final {}
     Animation& currentAnimation();
 

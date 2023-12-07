@@ -7,6 +7,17 @@
 #define GUI
 #include "Script.hpp"
 
+void EngineHud::setTheme()
+{
+    if (_theme)
+        return;
+    ImGuiStyle *style = &ImGui::GetStyle();
+    ImVec4 *colors = style->Colors;
+
+    colors[ImGuiCol_WindowBg] = ImVec4(0.54, 0.56, 0.56, .5f);
+    _theme = true;
+}
+
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;
@@ -86,12 +97,12 @@ void EngineHud::entityInformation()
             i++;
         }
         if (_selectedC)
-            displayScript(_selectedC);
+            scriptEditor(_selectedC);
     }
     ImGui::End();
 }
 
-void EngineHud::displayScript(IComponent *component)
+void EngineHud::scriptEditor(IComponent *component)
 {
     std::string signature = component->getSignature();
 
@@ -105,6 +116,11 @@ void EngineHud::displayScript(IComponent *component)
     }
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
     ImGui::Begin("File Editor");
+    if (ImGui::Button("x")) {
+         ImGui::End();
+         _selectedC = nullptr;
+         return;
+    }
     if (ImGui::Button("Save File")) {
         Utils::writeFile(script->getFile(), _scriptContent);
         script->reload();
