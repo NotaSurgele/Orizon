@@ -53,7 +53,7 @@ add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
-	${PROJECT_SOURCE_DIR}/src/*.c
+    ${PROJECT_SOURCE_DIR}/src/*.c
 )
 
 include_directories(
@@ -61,14 +61,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
-	${CMAKE_SOURCE_DIR}/include/external/
-	${CMAKE_SOURCE_DIR}/include/external/lua
+    ${CMAKE_SOURCE_DIR}/include/external/
+    ${CMAKE_SOURCE_DIR}/include/external/lua
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/Layer
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/sol
-	${CMAKE_SOURCE_DIR}/include/Game/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Scripting/sol
+    ${CMAKE_SOURCE_DIR}/include/Game/
     ${SFML_SOURCE_DIR}/include/
 )
 
