@@ -3,7 +3,9 @@ project(Orizon)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_USE_PTHREADS_INIT true)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 include(FetchContent)
 
@@ -51,8 +53,7 @@ add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
-		# LINK LUA FILES
-	${PROJECT_SOURCE_DIR}/src/*.c
+    ${PROJECT_SOURCE_DIR}/src/*.c
 )
 
 include_directories(
@@ -60,24 +61,22 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
     ${CMAKE_SOURCE_DIR}/include/Engine/Components/
-	${CMAKE_SOURCE_DIR}/include/external/
-	${CMAKE_SOURCE_DIR}/include/external/lua
+    ${CMAKE_SOURCE_DIR}/include/external/
+    ${CMAKE_SOURCE_DIR}/include/external/lua
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/
     ${CMAKE_SOURCE_DIR}/include/Engine/Collision/Layer
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/GameMonkey
-	${CMAKE_SOURCE_DIR}/include/Engine/Scripting/sol
-	${CMAKE_SOURCE_DIR}/include/Game/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Scripting/
+    ${CMAKE_SOURCE_DIR}/include/Engine/Scripting/sol
+    ${CMAKE_SOURCE_DIR}/include/Game/
     ${SFML_SOURCE_DIR}/include/
 )
-# Hide sol warnings with c++17
-add_compile_options(-fpermissive)
-add_compile_options(-Wregister)
+
 # end
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
 if (MSVC)
+target_compile_options(${PROJECT_NAME} PRIVATE /bigobj)
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC

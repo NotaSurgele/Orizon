@@ -130,6 +130,7 @@ void Core::updateGUI()
 {
     if (ENGINE_MODE) {
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+        _gui.setTheme();
         _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
         _gui.entityInformation();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
@@ -154,10 +155,9 @@ void Core::run()
         sf::Event event;
 
         inputHandler(event);
-
         render();
-        auto old = WindowInstance.getView();
         _system_handler.systems();
+        auto old = WindowInstance.getView();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
         updateGUI();
         if (old) WindowInstance.setView(old);

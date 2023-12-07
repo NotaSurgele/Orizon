@@ -1,8 +1,16 @@
 #include "OrizonMusic.hpp"
+#include "Core.hpp"
 
 bool OrizonMusic::load(const std::string& path)
 {
     return _music->openFromFile(path);
+}
+
+bool OrizonMusic::loadFromName(const std::string &name)
+{
+    _music = R_GET_MUSIC(name);
+
+    return _music != nullptr;
 }
 
 void OrizonMusic::setLoop(bool loop)
@@ -26,7 +34,7 @@ sf::Sound::SoundSource::Status OrizonMusic::getStatus()
     return _music->getStatus();
 }
 
-bool OrizonMusic::getLoop()
+bool OrizonMusic::isLoop()
 {
     return _music->getLoop();
 }

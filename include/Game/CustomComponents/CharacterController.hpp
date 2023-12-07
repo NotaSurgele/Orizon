@@ -11,7 +11,7 @@ class CharacterController : public CustomComponents {
 
         void update() override
         {
-            auto velocity = _self->getComponent<Velocity<float>>();
+            auto velocity = _self->getComponent<Velocity>();
             auto transform = _self->getComponent<Transform2D>();
 
            /* if (Input::isActionPressed("MoveUp"))
@@ -23,18 +23,18 @@ class CharacterController : public CustomComponents {
 
             if (Input::isActionPressed("MoveLeft"))
                 velocity->setX(-_speed);
-            else if (Input::isActionPressed("MoveRight"))
+            else if (Input::isActionKeyPressed("MoveRight"))
                 velocity->setX(_speed);
             else
                 velocity->setX(0);*/
-           if (Input::isActionPressed("MoveUp"))
+/*           if (Input::isActionPressed("MoveUp"))
                transform->position.y -= 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveDown"))
                transform->position.y += 200 * Time::deltaTime;
            if (Input::isActionPressed("MoveLeft"))
                transform->position.x -= 200 * Time::deltaTime;
-           if (Input::isActionPressed("MoveRight"))
-               transform->position.x += 200 * Time::deltaTime;
+           if (Input::isActionKeyPressed("MoveRight"))
+               transform->position.x += 200 * Time::deltaTime;*/
         }
 
         void destroy() override final {}

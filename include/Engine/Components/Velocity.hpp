@@ -4,7 +4,6 @@
 #include <SFML/System.hpp>
 class IComponent;
 
-template<typename T>
 class Velocity : public IComponent {
 public:
     Velocity(Entity *e) { }
@@ -25,11 +24,11 @@ public:
     static inline Velocity* zero()
     {
         _is_zero = true;
-        return new Velocity<T>();
+        return new Velocity();
     }
 
-    void setX(T x) { _vel.x = x; }
-    void setY(T y) { _vel.y = y; }
+    void setX(float x) { _vel.x = x; }
+    void setY(float y) { _vel.y = y; }
 
     void reset()
     {
@@ -37,12 +36,12 @@ public:
         _vel.y = 0;
     }
 
-    const T getX() { return _vel.x; }
-    const T getY() { return _vel.y; }
+    const float getX() { return _vel.x; }
+    const float getY() { return _vel.y; }
 
-    const sf::Vector2<T>& values() { return _vel; }
+    const sf::Vector2f& values() { return _vel; }
 
 private:
-    sf::Vector2<T> _vel = sf::Vector2<T>(0, 0);
+    sf::Vector2<float> _vel = sf::Vector2f(0, 0);
     static inline bool _is_zero = false;
 };

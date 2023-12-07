@@ -193,6 +193,8 @@ public:
 
     void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
 
+    void script_system(Entity *e);
+
     void systems();
 
 public:
@@ -217,7 +219,7 @@ private:
     bool resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
 
     // Velocity
-    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity);
+    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity);
 
     // Destroy
     void destroy_entity();

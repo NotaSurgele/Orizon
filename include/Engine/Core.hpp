@@ -98,6 +98,12 @@ public:
 
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::RessourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
+
+/**
+ * @brief load a script and keep it in Resource manager
+ */
+#define R_ADD_SCRIPT(path)\
+        Core::RessourceManager().loadScript(path)
 /**
  * @brief  macro to retrieve a ressouce from name
  * @retval the ressource asked
@@ -106,7 +112,10 @@ public:
         Core::RessourceManager().getRessource<type>(name)
 
 #define R_GET_MUSIC(name) \
-        Core::RessourceManager().getMusic(name);
+        Core::RessourceManager().getMusic(name)
+
+#define R_GET_SCRIPT(path) \
+        Core::RessourceManager().getScript(path)
 
 #define SET_VIEW(view) \
         Core::instance->setView(view)
@@ -115,7 +124,7 @@ public:
         Core::instance->getWindow()
 
 #define CLOSE()\
-        Core::instance->CoreClose();
+        Core::instance->CoreClose()
 
 #define DRAW(to_draw)\
         Core::instance->CoreDraw(to_draw)

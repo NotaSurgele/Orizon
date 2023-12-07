@@ -22,8 +22,7 @@
                     "texture_name": "hobbit"
                 },
                 {
-                    "type": "Velocity",
-                    "value_type": "float"
+                    "type": "Velocity"
                 },
                 {
                     "type": "Animator",
@@ -51,7 +50,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 10
+                    "value": 100
                 },
                 {
                     "type": "Sound",
@@ -62,6 +61,10 @@
                     "type": "Music",
                     "music_name": "tata",
                     "loop": true
+                },
+                {
+                    "type": "Script",
+                    "path": "../assets/Scripting/helloWorld.lua"
                 }
             ]
         },
@@ -115,7 +118,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 9
+                    "value": 1
                 }
             ]
         }

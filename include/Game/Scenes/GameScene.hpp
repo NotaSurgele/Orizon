@@ -30,4 +30,5 @@ private:
     std::vector<RayCaster> _rayCaster;
     OrizonMusic *_music = nullptr;
     TiledMap *tiledMap = new TiledMap();
+    Entity *toto = nullptr;
 };
