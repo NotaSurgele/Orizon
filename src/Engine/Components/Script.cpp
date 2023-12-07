@@ -13,6 +13,7 @@
 #include "View.hpp"
 #include "Input.hpp"
 #include "Time.hpp"
+#include "System.hpp"
 
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
@@ -146,12 +147,22 @@ void Script::registerRectType()
     );
 }
 
+void Script::registerSystemType()
+{
+    _state.new_usertype<System>(
+        "System", sol::constructors<System()>(),
+            "pushEntity", &System::pushEntity
+    );
+    _state["Sys"] = System();
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
     registerVectorType();
     registerColorType();
     registerRectType();
+    registerSystemType();
 }
 
 void Script::registerTransform2DComponent()
@@ -324,9 +335,7 @@ void Script::registerTagComponent()
 void Script::registerViewComponent()
 {
     _state.new_usertype<View>(
-        "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(
-
-                ),
+        "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(),
         "setViewport", &View::setViewport,
         "setSize", sol::overload(
             [] (View *view, const sf::Vector2f& size) {
@@ -484,16 +493,24 @@ void Script::reload()
 
 void Script::start()
 {
-    if (_start)
-        return;
-    sol::function start = _state["Start"];
-    start();
-    _start = true;
+    try {
+        if (_start)
+            return;
+        sol::function start = _state["Start"];
+        start();
+        _start = true;
+    } catch (sol::error& error) {
+        std::cerr << error.what() << std::endl;
+    }
 }
 
 void Script::update()
 {
-    _state["deltaTime"] = Time::deltaTime;
-    sol::function update = _state["Update"];
-    update();
+    try {
+        _state["deltaTime"] = Time::deltaTime;
+        sol::function update = _state["Update"];
+        update();
+    } catch (sol::error& error) {
+        std::cerr << error.what() << std::endl;
+    }
 }

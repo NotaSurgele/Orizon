@@ -34,6 +34,7 @@ private:
     void registerVectorType();
     void registerColorType();
     void registerRectType();
+    void registerSystemType();
     void registerBaseTypes();
 
     // register component
