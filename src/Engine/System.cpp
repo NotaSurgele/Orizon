@@ -3,6 +3,7 @@
 #include "Components/Light.hpp"
 #include "Core.hpp"
 #include "RayCaster.hpp"
+#include "Script.hpp"
 
 void System::addEntity(Entity *entity)
 {
@@ -20,7 +21,7 @@ void System::pushEntity(Entity *entity)
     _registry_size++;
 }
 
-void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity)
+void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
 {
     if (box->collide) {
         auto values = velocity->values();
@@ -63,7 +64,7 @@ void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *tran
 
 void System::velocity_system(Entity *e)
 {
-    auto velocity = e->getComponent<Velocity<float>>();
+    auto velocity = e->getComponent<Velocity>();
     auto transform = e->getComponent<Transform2D>();
     auto box = e->getComponent<BoxCollider>();
 
@@ -109,6 +110,16 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
+void System::script_system(Entity *e)
+{
+    std::vector<Script *> scriptArray = e->getComponents<Script>();
+
+    for (auto& s : scriptArray) {
+        s->start();
+        s->update();
+    }
+}
+
 void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
 {
     for (auto it : componentCache) {
@@ -137,6 +148,7 @@ void System::systems()
         _inView.push_back(e);
 
         // Test
+        script_system(e);
         update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
@@ -205,7 +217,7 @@ void System::light_system(Entity *e)
 
 void System::gravity_system(Entity *e)
 {
-    auto velocity = e->getComponent<Velocity<float>>();
+    auto velocity = e->getComponent<Velocity>();
     auto gravity = e->getComponent<Gravity>();
     auto collider = e->getComponent<BoxCollider>();
 
@@ -379,14 +391,14 @@ void System::camera_system(Entity *e) {
 void System::BoxSystem(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
-    auto velocity = e->getComponent<Velocity<float>>();
+    auto velocity = e->getComponent<Velocity>();
     auto box = e->getComponent<BoxCollider>();
     bool d_v = false;
 
     if (!box)
         return;
     if (!velocity) {
-        velocity = Velocity<float>::zero(),
+        velocity = Velocity::zero(),
         d_v = true;
     }
     float velX = velocity->getX();

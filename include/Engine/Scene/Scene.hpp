@@ -6,6 +6,7 @@
 #include "Components/Animator.hpp"
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
+#include "Components/Script.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -129,14 +130,7 @@ public:
 
                 static void create_velocity(Entity *e, nlohmann::json const& json)
                 {
-                    std::string type = json["value_type"];
-
-                    if (type.find("float") != std::string::npos)
-                        e->addComponent<Velocity<float>>();
-                    if (type.find("int") != std::string::npos)
-                        e->addComponent<Velocity<int>>();
-                    if (type.find("double") != std::string::npos)
-                        e->addComponent<Velocity<double>>();
+                    e->addComponent<Velocity>();
                 }
 
                 static void create_animator(Entity *e, nlohmann::json const& json)
@@ -217,6 +211,14 @@ public:
                     e->addComponent<Light>(emission);
                 }
 
+                static void create_script(Entity *e, const nlohmann::json& json)
+                {
+                    std::string path = json["path"];
+
+                    e->addComponent<Script>(path);
+                    R_ADD_SCRIPT(path);
+                }
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -238,6 +240,7 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
+                    { "Script", create_script }
                 };
         };
 

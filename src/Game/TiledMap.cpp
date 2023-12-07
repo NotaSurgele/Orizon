@@ -43,7 +43,7 @@ bool TiledMap::_loadTileMap()
 {
     auto layers = _mapContent["layers"];
 
-    int draw = 0;
+    int draw = 10;
     for (auto layer : layers) {
         int height = layer["height"];
         int width = layer["width"];
@@ -78,6 +78,7 @@ bool TiledMap::_loadTileMap()
             posY += _tileWidth;
             index++;
         }
+        tilemap->render();
         _tileMaps.push_back(tilemap);
         draw += 2;
     }

@@ -1,4 +1,5 @@
 #include "Sound.hpp"
+#include "Core.hpp"
 
 Sound::Sound(Entity *e)
 {
@@ -10,6 +11,14 @@ bool Sound::load(const std::string& filePath)
         return false;
     _sound.setBuffer(_buffer);
     return true;
+}
+
+bool Sound::loadFromName(const std::string &name)
+{
+    sf::SoundBuffer buff = R_GET_RESSOURCE(sf::SoundBuffer, name);
+    _buffer = buff;
+    _sound.setBuffer(_buffer);
+    return _buffer.getDuration().asSeconds() > 0;
 }
 
 bool Sound::reload(const std::string& filePath)
@@ -56,7 +65,7 @@ float Sound::getVolume()
     return _sound.getVolume();
 }
 
-bool Sound::getLoop()
+bool Sound::isLoop()
 {
     return _sound.getLoop();
 }
