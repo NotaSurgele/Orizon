@@ -168,12 +168,44 @@ void Script::registerSystemType()
     _state["system"] = System();
 }
 
+void Script::registerTileMap()
+{
+    _state.new_usertype<TileMap>(
+        "TileMap", sol::constructors<TileMap(float, float, int, int, int, int)>(),
+        "emplaceEntity", &TileMap::emplaceEntity,
+        "contain", sol::overload(
+            [] (TileMap *map, Entity *e) {
+                return map->contain(e);
+            },
+            [] (TileMap *map, const float& x, const float& y) {
+                return map->contain(x, y);
+            }
+        ),
+        "isInside", &TileMap::isInside,
+        "removeEntity", sol::overload(
+            [] (TileMap *map, Entity *e) {
+                return map->removeEntity(e);
+            },
+            [] (TileMap *map, const float& x, const float& y) {
+                return map->removeEntity(x, y);
+            }
+        ),
+        "isRender", &TileMap::isRender,
+        "render", &TileMap::render,
+        "hide", &TileMap::hide,
+        "destroy", &TileMap::destroy,
+        "getAllEntities", &TileMap::getAllEntities,
+        "getLayerInfo", &TileMap::getLayerInfo
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
     registerVectorType();
     registerColorType();
     registerRectType();
+    registerTileMap();
     registerSystemType();
 }
 
@@ -495,6 +527,7 @@ void Script::registerEntityFunction()
     entityType["getComponentTag"] = &Entity::getComponent<Tag>;
     entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
     entityType["getComponentView"] = &Entity::getComponent<View>;
+    entityType["getComponentScript"] = &Entity::getComponent<Script>;
 }
 
 void Script::reload()

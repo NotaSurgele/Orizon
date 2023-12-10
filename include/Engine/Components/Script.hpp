@@ -35,6 +35,7 @@ private:
     void registerColorType();
     void registerRectType();
     void registerSystemType();
+    void registerTileMap();
     void registerBaseTypes();
 
     // register component

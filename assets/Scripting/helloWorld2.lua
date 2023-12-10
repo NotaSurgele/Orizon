@@ -1,9 +1,8 @@
 function Start()
-    print("Hello world")
 end
 
 function printHello()
-    print("hello from script2")
+    print("Hello")
 end
 
 function Update()
