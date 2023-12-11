@@ -51,11 +51,11 @@ private:
     void registerVelocityComponent();
     void registerTagComponent();
     void registerViewComponent();
+    void registerScriptComponent();
     void registerComponentsType();
 
     void registerEntityFunction();
-
-    void importScript(const std::string& path);
+    sol::table getTable(sol::state *state, const std::string& table);
 
 protected:
     bool _start = false;
