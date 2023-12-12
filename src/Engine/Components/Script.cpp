@@ -406,6 +406,14 @@ void Script::registerViewComponent()
     );
 }
 
+void Script::registerScriptComponent()
+{
+    _state.new_usertype<Script>(
+        "Script", sol::constructors<Script(Entity *, const std::string&)>(),
+            "getTable", &Script::getTable
+    );
+}
+
 void Script::registerComponentsType()
 {
     registerTransform2DComponent();
@@ -419,6 +427,7 @@ void Script::registerComponentsType()
     registerSpriteComponent();
     registerVelocityComponent();
     registerTagComponent();
+    registerScriptComponent();
     registerViewComponent();
 }
 
@@ -513,6 +522,11 @@ void Script::registerEntityFunction()
                     return entity->addComponent<View>(x, y, w, h, follow);
                 }
         ),
+        "addComponentScript", sol::overload(
+            [] (Entity *e, const std::string& path) {
+                return e->addComponent<Script>(path);
+            }
+        ),
         "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
@@ -560,13 +574,20 @@ void Script::update()
     }
 }
 
-void Script::importScript(const std::string &path)
+sol::table Script::getTable(sol::state *state, const std::string& tableName)
 {
-    auto res = _state.script_file(path);
+    sol::table table = _state[tableName];
 
-    if (!res.valid()) {
-        std::cerr << "[SCRIPT] error cannot import script " << path << std::endl;
-        return;
+    if (!table.valid()) {
+        std::cerr << "[SCRIPTING] table " << " is not valid !" << std::endl;
     }
-    std::cout << "[SCRIPT] successfully import script " << path << std::endl;
+    // Create a new table in the target state
+    sol::table targetTable = state->create_table();
+
+    // Copy elements from sourceTable to targetTable
+    for (auto entry : table) {
+        targetTable[entry.first.as<std::string>()] = entry.second;
+    }
+    state->set(tableName, targetTable);
+    return (*state)[tableName];
 }
