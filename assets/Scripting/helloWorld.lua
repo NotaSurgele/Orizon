@@ -1,6 +1,7 @@
 transform = nil
 animator = nil
 collider = nil
+script = nil
 test = Entity.new()
 
 Import(_state, "../assets/Scripting/helloWorld2.lua")
@@ -10,6 +11,12 @@ function handleCollisionCallback(otherCollider)
     otherCollider:entity():destroy()
 end
 
+function displayTable(tbl)
+    for key, value in pairs(tbl) do
+        print(key, value)
+    end
+end
+
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
@@ -17,8 +24,13 @@ function Start()
 
     test:addComponentTransform2D()
     test:addComponentTag("toto")
+    script = test:addComponentScript("../assets/Scripting/helloWorld2.lua")
+    --displayTable(table)
     system.pushEntity(test)
-    printHello()
+    script:getTable(_state, "kiki")
+    displayTable(kiki)
+    print(kiki.hello())
+    --printHello()
     collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
 end
