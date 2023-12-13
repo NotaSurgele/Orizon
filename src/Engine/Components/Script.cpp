@@ -38,8 +38,9 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     // registered attached entity
     _state["_self"] = e;
     _state["_state"] = &_state;
+
     _state.set_function("Import", &loadScript);
-    auto res = _state.script_file(scriptPath);
+    _state.script_file(scriptPath);
 }
 
 void Script::registerInputSystem()
@@ -410,7 +411,7 @@ void Script::registerScriptComponent()
 {
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "getTable", &Script::getTable
+            "getState", &Script::getState
     );
 }
 
@@ -555,6 +556,7 @@ void Script::start()
     try {
         if (_start)
             return;
+        _state["_self"] = _self;
         sol::function start = _state["Start"];
         start();
         _start = true;
@@ -574,20 +576,20 @@ void Script::update()
     }
 }
 
-sol::table Script::getTable(sol::state *state, const std::string& tableName)
+void Script::getState(sol::state *state, const std::string& tableName)
 {
-    sol::table table = _state[tableName];
+    sol::table globalTable = _state.globals();
 
-    if (!table.valid()) {
-        std::cerr << "[SCRIPTING] table " << " is not valid !" << std::endl;
-    }
-    // Create a new table in the target state
-    sol::table targetTable = state->create_table();
+    sol::table targetTable = state->create_table(tableName);
 
-    // Copy elements from sourceTable to targetTable
-    for (auto entry : table) {
-        targetTable[entry.first.as<std::string>()] = entry.second;
+    for (const auto& entry : globalTable) {
+        const sol::object& key = entry.first;
+        const sol::object& value = entry.second;
+
+        if (value.is<sol::function>()) {
+            targetTable[key.as<std::string>()] = value.as<sol::function>();
+        } else if (value.is<Entity *>()) {
+            targetTable[key.as<std::string>()] = value.as<Entity *>();
+        }
     }
-    state->set(tableName, targetTable);
-    return (*state)[tableName];
 }
