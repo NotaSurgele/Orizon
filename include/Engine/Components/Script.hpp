@@ -55,7 +55,8 @@ private:
     void registerComponentsType();
 
     void registerEntityFunction();
-    sol::table getTable(sol::state *state, const std::string& table);
+    void getState(sol::state *state, const std::string& table);
+
 
 protected:
     bool _start = false;

@@ -143,12 +143,11 @@ void System::systems()
         if (System::lightSources > 0 && !Light::set && sprite) {
             sprite->setColor(Light::darkColor);
         }
+        script_system(e);
         if (!isInView(e))
             continue;
-        _inView.push_back(e);
 
         // Test
-        script_system(e);
         update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
