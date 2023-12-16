@@ -1,4 +1,4 @@
-toto = "titi"
+i = 0
 
 function displayTable(tbl)
     for key, value in pairs(tbl) do
@@ -6,13 +6,13 @@ function displayTable(tbl)
     end
 end
 
-function printHello(entity)
-    print(entity:getComponentTransform2D())
+function printHello(kiki)
+    print(kiki["type"])
 end
 
 
 function getPosition(entity)
-    print(_self)
+    print(entity)
 end
 
 function Start()

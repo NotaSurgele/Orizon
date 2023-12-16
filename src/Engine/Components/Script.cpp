@@ -578,18 +578,9 @@ void Script::update()
 
 void Script::getState(sol::state *state, const std::string& tableName)
 {
-    sol::table globalTable = _state.globals();
-
-    sol::table targetTable = state->create_table(tableName);
-
-    for (const auto& entry : globalTable) {
-        const sol::object& key = entry.first;
-        const sol::object& value = entry.second;
-
-        if (value.is<sol::function>()) {
-            targetTable[key.as<std::string>()] = value.as<sol::function>();
-        } else if (value.is<Entity *>()) {
-            targetTable[key.as<std::string>()] = value.as<Entity *>();
-        }
+    auto newTable = state->create_table(tableName);
+    for (const auto& entry : _state.globals()) {
+        newTable[entry.first.as<std::string>()] = entry.second;
     }
+    newTable["_self"] = sol::make_object(*state, _state["_self"].get<Entity *>());
 }
