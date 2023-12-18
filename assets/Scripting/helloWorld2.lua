@@ -10,10 +10,12 @@ function getEntity()
     return _self
 end
 
-function printHello(x, y)
-    print("Hello World", x, y)
-    _self:getComponentTransform2D().position.x = x
-    _self:getComponentTransform2D().position.y = y
+function printHello()
+    print("Hello")
+end
+
+function kill()
+    _self:destroy()
 end
 
 function getPosition(entity)
