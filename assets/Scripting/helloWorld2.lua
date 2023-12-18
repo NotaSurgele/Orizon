@@ -12,7 +12,7 @@ end
 
 function printEntity(entity)
     if entity ~= nil then
-        print(entity)
+        print(entity:getComponentTransform2D())
     end
 end
 

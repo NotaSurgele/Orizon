@@ -100,7 +100,7 @@ private:
             if (res.is<sol::nil_t>()) {
                 return T();
             }
-
+            return res.as<T>();
         } catch (sol::error& error) {
             std::cerr << error.what() << std::endl;
         }
