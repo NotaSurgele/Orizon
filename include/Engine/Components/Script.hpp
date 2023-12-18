@@ -65,11 +65,15 @@ private:
             if (!f.valid()) {
                 std::cerr << "Not a valid function name " << function << std::endl;
             }
-            return f(args).get<T>();
+            sol::object res = f(args);
+
+            if (res.is<sol::nil_t>())
+                return T();
+            return res.as<T>();
         } catch (sol::error& error) {
             std::cerr << error.what() << std::endl;
         }
-        return 0;
+        return T();
     }
 
 

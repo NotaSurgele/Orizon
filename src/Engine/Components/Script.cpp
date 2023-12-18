@@ -411,7 +411,18 @@ void Script::registerScriptComponent()
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
         "getState", &Script::getState,
-        "call", sol::overload(&Script::call<Entity *>, &Script::call<int>, &Script::call<std::string>)
+        "call", sol::overload(      &Script::call<Entity *>,
+                                    &Script::call<int>,
+                                    &Script::call<std::string>,
+                                    &Script::call<float>,
+                                    &Script::call<double>,
+                                    &Script::call<bool>,
+                                    &Script::call<sf::Vector2f>,
+                                    &Script::call<sf::Vector2i>,
+                                    &Script::call<sf::Vector2u>,
+                                    &Script::call<sf::Color>,
+                                    &Script::call<sf::FloatRect>,
+                                    &Script::call<sf::IntRect>)
     );
 }
 
