@@ -10,6 +10,12 @@ function getEntity()
     return _self
 end
 
+function printEntity(entity)
+    if entity ~= nil then
+        print(entity)
+    end
+end
+
 function printHello()
     print("Hello")
 end

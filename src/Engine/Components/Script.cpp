@@ -15,6 +15,7 @@
 #include "Time.hpp"
 #include "System.hpp"
 
+
 void loadScript(sol::state *state, const std::string& path)
 {
     auto res = state->script_file(path);
@@ -410,7 +411,7 @@ void Script::registerScriptComponent()
 {
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-        "call", sol::overload(      &Script::call<Entity *>,
+        "call", sol::overload(&Script::call<Entity *>,
                                     &Script::call<int>,
                                     &Script::call<std::string>,
                                     &Script::call<float>,
@@ -553,6 +554,22 @@ void Script::registerEntityFunction()
     entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
     entityType["getComponentView"] = &Entity::getComponent<View>;
     entityType["getComponentScript"] = &Entity::getComponent<Script>;
+}
+
+void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, int i)
+{
+    if (modifiedArgs[i].is<sol::userdata>()) {
+        sol::userdata ud = modifiedArgs[i].as<sol::userdata>();
+
+        for (auto& it : typesArray) {
+            auto res = it(ud);
+            if (res != sol::nil) {
+                std::cout << "Hello world" << std::endl;
+                modifiedArgs[i] = res;
+                return;
+            }
+        }
+    }
 }
 
 void Script::reload()

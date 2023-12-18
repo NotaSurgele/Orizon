@@ -21,7 +21,7 @@ function Start()
     test:addComponentTag("toto")
     script = test:addComponentScript("../assets/Scripting/helloWorld2.lua")
     system.pushEntity(test)
-    test:destroy()
+    script:call("printEntity", _self:getComponentAnimator())
     --displayTable(table)
 
     --printHello()
