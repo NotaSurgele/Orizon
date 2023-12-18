@@ -1,20 +1,4 @@
 #include "Script.hpp"
-#include "Transform2D.hpp"
-#include "Animator.hpp"
-#include "BoxCollider.hpp"
-#include "Gravity.hpp"
-#include "Layer.hpp"
-#include "Light.hpp"
-#include "OrizonMusic.hpp"
-#include "Sound.hpp"
-#include "Sprite.hpp"
-#include "Tag.hpp"
-#include "Velocity.hpp"
-#include "View.hpp"
-#include "Input.hpp"
-#include "Time.hpp"
-#include "System.hpp"
-
 
 void loadScript(sol::state *state, const std::string& path)
 {
