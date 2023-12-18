@@ -410,7 +410,6 @@ void Script::registerScriptComponent()
 {
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-        "getState", &Script::getState,
         "call", sol::overload(      &Script::call<Entity *>,
                                     &Script::call<int>,
                                     &Script::call<std::string>,
@@ -585,13 +584,4 @@ void Script::update()
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
-}
-
-void Script::getState(sol::state *state, const std::string& tableName)
-{
-    auto newTable = state->create_table(tableName);
-    for (const auto& entry : _state.globals()) {
-        newTable[entry.first.as<std::string>()] = entry.second;
-    }
-    newTable["_self"] = sol::make_object(*state, _state["_self"].get<Entity *>());
 }
