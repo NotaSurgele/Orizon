@@ -224,7 +224,6 @@ private:
     // Destroy
     void destroy_entity();
 private:
-    std::vector<Entity *> _inView;
     static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;

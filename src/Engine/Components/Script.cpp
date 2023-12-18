@@ -1,19 +1,5 @@
 #include "Script.hpp"
-#include "Transform2D.hpp"
-#include "Animator.hpp"
-#include "BoxCollider.hpp"
-#include "Gravity.hpp"
-#include "Layer.hpp"
-#include "Light.hpp"
-#include "OrizonMusic.hpp"
-#include "Sound.hpp"
-#include "Sprite.hpp"
-#include "Tag.hpp"
-#include "Velocity.hpp"
-#include "View.hpp"
-#include "Input.hpp"
-#include "Time.hpp"
-#include "System.hpp"
+#include "Core.hpp"
 
 void loadScript(sol::state *state, const std::string& path)
 {
@@ -29,6 +15,7 @@ void loadScript(sol::state *state, const std::string& path)
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
+    R_ADD_SCRIPT(scriptPath);
     _state.open_libraries(sol::lib::base);
 
     // register entity type inside lua script
@@ -39,7 +26,7 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     _state["_self"] = e;
     _state["_state"] = &_state;
     _state.set_function("Import", &loadScript);
-    auto res = _state.script_file(scriptPath);
+    _state.script_file(scriptPath);
 }
 
 void Script::registerInputSystem()
@@ -410,7 +397,18 @@ void Script::registerScriptComponent()
 {
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "getTable", &Script::getTable
+        "call", sol::overload(&Script::call<Entity *>,
+                                    &Script::call<int>,
+                                    &Script::call<std::string>,
+                                    &Script::call<float>,
+                                    &Script::call<double>,
+                                    &Script::call<bool>,
+                                    &Script::call<sf::Vector2f>,
+                                    &Script::call<sf::Vector2i>,
+                                    &Script::call<sf::Vector2u>,
+                                    &Script::call<sf::Color>,
+                                    &Script::call<sf::FloatRect>,
+                                    &Script::call<sf::IntRect>)
     );
 }
 
@@ -544,6 +542,21 @@ void Script::registerEntityFunction()
     entityType["getComponentScript"] = &Entity::getComponent<Script>;
 }
 
+void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, int i)
+{
+    if (modifiedArgs[i].is<sol::userdata>()) {
+        sol::userdata ud = modifiedArgs[i].as<sol::userdata>();
+
+        for (auto& it : typesArray) {
+            auto res = it(ud);
+            if (res != sol::nil) {
+                modifiedArgs[i] = res;
+                return;
+            }
+        }
+    }
+}
+
 void Script::reload()
 {
     _state.script_file(_filepath);
@@ -555,6 +568,7 @@ void Script::start()
     try {
         if (_start)
             return;
+        _state["_self"] = _self;
         sol::function start = _state["Start"];
         start();
         _start = true;
@@ -572,22 +586,4 @@ void Script::update()
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
-}
-
-sol::table Script::getTable(sol::state *state, const std::string& tableName)
-{
-    sol::table table = _state[tableName];
-
-    if (!table.valid()) {
-        std::cerr << "[SCRIPTING] table " << " is not valid !" << std::endl;
-    }
-    // Create a new table in the target state
-    sol::table targetTable = state->create_table();
-
-    // Copy elements from sourceTable to targetTable
-    for (auto entry : table) {
-        targetTable[entry.first.as<std::string>()] = entry.second;
-    }
-    state->set(tableName, targetTable);
-    return (*state)[tableName];
 }
