@@ -13,12 +13,6 @@ function handleCollisionCallback(otherCollider)
     otherCollider:entity():destroy()
 end
 
-function displayTable(tbl)
-    for key, value in pairs(tbl) do
-        print(key, value)
-    end
-end
-
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
@@ -32,7 +26,7 @@ function Start()
     print("Before ", entity2:getComponentTransform2D().position.x, entity2:getComponentTransform2D().position.y)
     script:call("printHello", 100, 100)
     print("After ", entity2:getComponentTransform2D().position.x, entity2:getComponentTransform2D().position.y)
-
+    tata()
     --displayTable(table)
 
     --printHello()
