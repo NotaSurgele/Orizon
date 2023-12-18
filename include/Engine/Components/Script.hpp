@@ -55,7 +55,6 @@ private:
     void registerComponentsType();
 
     void registerEntityFunction();
-    void getState(sol::state *state, const std::string& table);
 
     template <typename T>
     T call(const std::string& function, sol::variadic_args args)
