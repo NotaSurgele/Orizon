@@ -27,9 +27,14 @@ function Start()
     test:addComponentTag("toto")
     script = test:addComponentScript("../assets/Scripting/helloWorld2.lua")
     system.pushEntity(test)
+    entity2 = script:call("getEntity")
+
+    print("Before ", entity2:getComponentTransform2D().position.x, entity2:getComponentTransform2D().position.y)
+    script:call("printHello", 100, 100)
+    print("After ", entity2:getComponentTransform2D().position.x, entity2:getComponentTransform2D().position.y)
+
     --displayTable(table)
-    script:getState(_state, "kiki")
-    kiki:printHello(kiki._self)
+
     --printHello()
     collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)

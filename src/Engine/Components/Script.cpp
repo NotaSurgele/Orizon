@@ -38,7 +38,6 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     // registered attached entity
     _state["_self"] = e;
     _state["_state"] = &_state;
-
     _state.set_function("Import", &loadScript);
     _state.script_file(scriptPath);
 }
@@ -411,7 +410,8 @@ void Script::registerScriptComponent()
 {
     _state.new_usertype<Script>(
         "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "getState", &Script::getState
+        "getState", &Script::getState,
+        "call", sol::overload(&Script::call<Entity *>, &Script::call<int>, &Script::call<std::string>)
     );
 }
 
