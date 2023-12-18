@@ -427,7 +427,7 @@ bool System::isInView(Entity *e)
     if (currentView != nullptr) {
         sf::Vector2f padding(0, 0);
 
-        if (_layers.size() > 0) {
+        if (!_layers.empty()) {
             padding.x = _layers[0]->tileWidth;
             padding.y = _layers[0]->tileHeight;
         }
@@ -448,8 +448,8 @@ bool System::isInView(Entity *e)
 
 void System::destroy_entity()
 {
-    for (auto& e : _to_destroy) {
-        _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
+    for (auto e : _to_destroy) {
+        _registry.erase(std::remove(_registry.begin(), _registry.end(), e), _registry.end());
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
@@ -461,7 +461,7 @@ void System::destroy_entity()
                 layer->removeEntity(e);
             }
         }
-        delete e;
+        // delete e; [TODO] Fix this
         _registry_size--;
     }
     _to_destroy.clear();

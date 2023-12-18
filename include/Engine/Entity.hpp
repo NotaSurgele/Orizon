@@ -56,7 +56,7 @@ class Entity {
         template <typename T>
         T* getComponent()
         {
-            if (_component_map.size() <= 0 ) {
+            if (_component_map.empty()) {
                 return nullptr;
             }
             auto it = _component_map.find(SIGNATURE(T));

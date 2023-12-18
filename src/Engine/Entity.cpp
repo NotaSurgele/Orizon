@@ -9,12 +9,13 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-    for (auto &it : _component_map) {
+    std::cout << "hello world" << std::endl;
+/*    for (auto &it : _component_map) {
         if (it.second) {
             it.second->destroy();
         }
     }
-    _component_map.clear();
+    _component_map.clear();*/
 }
 
 void Entity::destroy()
