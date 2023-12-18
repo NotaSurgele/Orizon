@@ -1,4 +1,5 @@
 #include "Script.hpp"
+#include "Core.hpp"
 
 void loadScript(sol::state *state, const std::string& path)
 {
@@ -14,6 +15,7 @@ void loadScript(sol::state *state, const std::string& path)
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
+    R_ADD_SCRIPT(scriptPath);
     _state.open_libraries(sol::lib::base);
 
     // register entity type inside lua script
