@@ -57,6 +57,21 @@ private:
     void registerEntityFunction();
     void getState(sol::state *state, const std::string& table);
 
+    template <typename T>
+    T call(const std::string& function, sol::variadic_args args)
+    {
+        try {
+            sol::function f = _state[function];
+            if (!f.valid()) {
+                std::cerr << "Not a valid function name " << function << std::endl;
+            }
+            return f(args).get<T>();
+        } catch (sol::error& error) {
+            std::cerr << error.what() << std::endl;
+        }
+        return 0;
+    }
+
 
 protected:
     bool _start = false;

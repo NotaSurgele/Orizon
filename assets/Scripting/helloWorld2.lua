@@ -6,8 +6,15 @@ function displayTable(tbl)
     end
 end
 
-function printHello(kiki)
-    print(kiki["type"])
+function getEntity()
+    return _self
+end
+
+function printHello(x, y)
+    print("Hello World", x, y)
+    _self:getComponentTransform2D().position.x = x
+    _self:getComponentTransform2D().position.y = y
+    return nil
 end
 
 
