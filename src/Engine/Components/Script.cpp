@@ -564,7 +564,6 @@ void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, in
         for (auto& it : typesArray) {
             auto res = it(ud);
             if (res != sol::nil) {
-                std::cout << "Hello world" << std::endl;
                 modifiedArgs[i] = res;
                 return;
             }
