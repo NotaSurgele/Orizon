@@ -5,9 +5,6 @@ script = nil
 test2 = nil
 test = Entity.new()
 
-
-Import(_state, "../assets/Scripting/debug.lua")
-
 -- Callback function to handle collisions
 function handleCollisionCallback(otherCollider)
     otherCollider:entity():destroy()
@@ -20,10 +17,14 @@ function Start()
     test:addComponentTransform2D()
     test:addComponentTag("toto")
     script = test:addComponentScript("../assets/Scripting/helloWorld2.lua")
+    content = Utils.readFile("../assets/map_test.tmj", true)
+    json = require "json"
+    table = json.decode('[1,2,3,{"x":10}]')
+    print(table[4]["x"])
     system.pushEntity(test)
-    v = script:call("getEntity")
+    content = Utils.readFile("../assets/map_test.tmj", false)
+    script:call("move", 10, 10)
     --displayTable(table)
-
     --printHello()
     collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
@@ -34,7 +35,7 @@ function handleAnimation()
 end
 
 function Update()
-	handleAnimation()
+    handleAnimation()
     if (Input.isActionKeyPressed("MoveUp")) then
         transform.position.y = transform.position.y - (200 * deltaTime);
     end

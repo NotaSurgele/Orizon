@@ -1,11 +1,7 @@
-function toto()
-    print("toto")
+toto = {}
+
+function toto.titi()
+    print("titi")
 end
 
-function tata()
-    print("tata")
-end
-
-function titi(entity)
-    print(entity)
-end
+return toto
