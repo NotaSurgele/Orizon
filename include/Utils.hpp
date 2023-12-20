@@ -28,7 +28,7 @@ public:
         return file_content;
     }
 
-    static inline std::vector<std::string> splitString(std::string& s, const std::string& delimiter)
+    static inline std::vector<std::string> splitString(std::string s, const std::string& delimiter)
     {
         size_t pos = 0;
         std::string token;
@@ -58,8 +58,15 @@ public:
         }
     }
 
-    static inline nlohmann::json fileToJson(const std::string& fileContent)
+    static inline nlohmann::json fileContentToJson(const std::string& fileContent)
     {
         return nlohmann::json::parse(fileContent);
+    }
+
+    static inline nlohmann::json readfileToJson(const std::string& filePath)
+    {
+        std::string fileContent = readFile(filePath);
+
+        return fileContentToJson(fileContent);
     }
 };
