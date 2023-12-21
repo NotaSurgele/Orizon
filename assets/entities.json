@@ -64,7 +64,7 @@
                 },
                 {
                     "type": "Script",
-                    "path": "../assets/Scripting/helloWorld.lua"
+                    "path": "./assets/Scripting/Player.lua"
                 }
             ]
         },
@@ -119,6 +119,26 @@
                 {
                     "type": "Layer",
                     "value": 1
+                }
+            ]
+        },
+        {
+            "name": "MapManager",
+            "components": [
+                {
+                    "type": "Transform2D",
+                    "position": [0, 0],
+                    "rotation": 0,
+                    "scale": [1, 1],
+                    "size": [1, 1]
+                },
+                {
+                    "type": "Script",
+                    "path": "./assets/Scripting/MapManager.lua"
+                },
+                {
+                    "type": "Tag",
+                    "tag": "MapManager"
                 }
             ]
         }

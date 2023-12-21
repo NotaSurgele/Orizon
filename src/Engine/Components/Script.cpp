@@ -26,6 +26,7 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     _state["_self"] = e;
     _state["_state"] = &_state;
     _state["Utils"] = Utils();
+    _state["ResourceManager"] = Core::RessourceManager();
     _state.set_function("Import", &loadScript);
     _state.script_file(scriptPath);
 }
@@ -195,6 +196,22 @@ void Script::registerUtilsType()
         "writeFile", &Utils::writeFile);
 }
 
+void Script::registerResourceManager()
+{
+    _state.new_usertype<RessourcesManager>(
+        "ResourceManager",
+        "R_ADD_TILE", &RessourcesManager::loadTileFromSpriteSheet,
+        "R_GET_RESSOURCE", sol::overload(
+            [] (RessourcesManager& rm, const std::string& resourceName) {
+                return rm.getRessource<sf::Texture>(resourceName);
+            },
+            [] (RessourcesManager& rm, const std::string& resourceName) {
+                return rm.getRessource<sf::SoundBuffer>(resourceName);
+            }
+        )
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -203,6 +220,7 @@ void Script::registerBaseTypes()
     registerRectType();
     registerTileMap();
     registerUtilsType();
+    registerResourceManager();
     registerSystemType();
 }
 

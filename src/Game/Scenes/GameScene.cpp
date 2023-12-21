@@ -33,7 +33,7 @@ void GameScene::create()
     player->getComponent<OrizonMusic>();
 */
 /*
-    player->addComponent<Script>("../assets/Scripting/helloWorld.lua")->call();
+    player->addComponent<Script>("../assets/Scripting/Player.lua")->call();
 */
     auto c = sf::Color::Yellow;
     c.a = 40;
@@ -48,11 +48,11 @@ void GameScene::create()
 
 void GameScene::update()
 {
-    if (Input::isActionKeyPressed("Refresh"))
+/*    if (Input::isActionKeyPressed("Refresh"))
     {
         tiledMap->load("../assets/map_test.tmj");
         tiledMap->render();
-    }
+    }*/
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))
