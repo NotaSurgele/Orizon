@@ -43,8 +43,11 @@ class RessourcesManager {
                 std::string const& filepath, int x, int y, int w, int h)
         {
             sf::Texture tile = sf::Texture();
-
-            tile.loadFromFile(filepath, sf::IntRect{x, y, w, h});
+            if (!tile.loadFromFile(filepath,
+               sf::IntRect{x, y, w, h})) {
+                std::cerr << "[ResourceManager] ERROR cannot load Tile " << filepath << " at position "
+                    << x << " " << y << std::endl;
+            }
             _map.insert(std::pair<std::string, sf::Texture>(tilename, tile));
             return *this;
         }

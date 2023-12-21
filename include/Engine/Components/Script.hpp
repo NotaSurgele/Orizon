@@ -52,6 +52,7 @@ private:
     void registerSystemType();
     void registerTileMap();
     void registerUtilsType();
+    void registerResourceManager();
     void registerBaseTypes();
 
     // register component
