@@ -51,6 +51,7 @@ private:
     void registerRectType();
     void registerSystemType();
     void registerTileMap();
+    void registerUtilsType();
     void registerBaseTypes();
 
     // register component
