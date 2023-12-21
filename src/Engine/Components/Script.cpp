@@ -16,8 +16,8 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
     R_ADD_SCRIPT(scriptPath);
-    _state.open_libraries(sol::lib::base);
-
+    _state.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string, sol::lib::table,
+                          sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
     // register entity type inside lua script
     registerBaseTypes();
     registerComponentsType();
@@ -25,6 +25,7 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     // registered attached entity
     _state["_self"] = e;
     _state["_state"] = &_state;
+    _state["Utils"] = Utils();
     _state.set_function("Import", &loadScript);
     _state.script_file(scriptPath);
 }
@@ -186,6 +187,14 @@ void Script::registerTileMap()
     );
 }
 
+void Script::registerUtilsType()
+{
+    _state.new_usertype<Utils>(
+        "Utils", sol::constructors<Utils()>(),
+        "readFile", &Utils::readFile,
+        "writeFile", &Utils::writeFile);
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -193,6 +202,7 @@ void Script::registerBaseTypes()
     registerColorType();
     registerRectType();
     registerTileMap();
+    registerUtilsType();
     registerSystemType();
 }
 

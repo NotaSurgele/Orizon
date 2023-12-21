@@ -11,7 +11,7 @@ bool TiledMap::load(const std::string &filePath)
 
     if (fileContent.size() <= 0)
         return false;
-    _mapContent = Utils::fileToJson(fileContent);
+    _mapContent = Utils::fileContentToJson(fileContent);
     _loadTileSet();
     _loadTileMap();
     return true;
@@ -93,7 +93,7 @@ void TiledMap::_loadTileSet()
 
         // Handle tileset parsing
         std::string tilesetInfoStr = Utils::readFile("../assets/" + source);
-        nlohmann::json tilesetInfo = Utils::fileToJson(tilesetInfoStr);
+        nlohmann::json tilesetInfo = Utils::fileContentToJson(tilesetInfoStr);
 
         int imgHeight = tilesetInfo["imageheight"];
         int imgWidth = tilesetInfo["imagewidth"];
