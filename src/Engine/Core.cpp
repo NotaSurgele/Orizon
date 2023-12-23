@@ -145,8 +145,6 @@ void Core::destroyGUI()
 
 void Core::run()
 {
-    Input input = Input();
-
     initGui();
     start();
     while (isOpen()) {

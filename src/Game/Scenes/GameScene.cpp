@@ -12,11 +12,11 @@
 
 void GameScene::create()
 {
-    addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
+/*    addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         auto speed = json["speed"];
 
         e->addCustomComponent<CharacterController>(speed);
-    });
+    });*/
 /*    sol::state lua;
     lua.open_libraries(sol::lib::base);
 
@@ -24,8 +24,8 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    player = getEntity("player");
-    player->addComponent<Sound>();
+/*    player = getEntity("player");
+    player->addComponent<Sound>();*/
 
     /*    toto = new Entity();
     System::pushEntity(toto);*/
@@ -44,15 +44,15 @@ void GameScene::create()
         other->entity()->destroy();
     });*/
     //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
+    //tiledMap->load("../assets/map_test.tmj");
+    //player->addCustomComponent<CharacterController>(tiledMap);
 }
 
 void GameScene::update()
 {
-/*    if (Input::isActionKeyPressed("Refresh"))
+    if (Input::isActionKeyPressed("Refresh"))
     {
-        tiledMap->load("../assets/map_test.tmj");
-        tiledMap->render();
-    }*/
+    }
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))

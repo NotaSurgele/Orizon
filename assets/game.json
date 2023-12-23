@@ -42,5 +42,5 @@
             "path": "../assets/entities.json"
         }
     ],
-    "entities": ["player", "MapManager"]
+    "entities": [ "player", "MapManager"] //[FIXME] Changing both position make the scripting works!!!!!!!!
 }

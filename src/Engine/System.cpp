@@ -14,11 +14,19 @@ void System::addEntity(Entity *entity)
 
 void System::pushEntity(Entity *entity)
 {
-    int index = _orders_values[entity->getComponent<Layer>()->value()];
+    _registry.push_back(entity);
+/*    auto l = entity->getComponent<Layer>();
+
+    if (!l) {
+        std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
+        return;
+    }
+    int index = _orders_values[l->value()];
 
     if (index > _registry_size) _registry.push_back(entity);
     else _registry.insert(_registry.begin() + index, entity);
-    _registry_size++;
+    _registry_size++;*/
+    std::cout << "I'm pushing entity_id " << entity << std::endl;
 }
 
 void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
@@ -137,6 +145,7 @@ void System::systems()
         _hashGrid->insert(e);
     }
     for (auto e : _registry) {
+        if (!e) continue;
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 

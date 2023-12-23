@@ -128,7 +128,7 @@ void TileMap::outputValues()
 void TileMap::render()
 {
     _isRender = true;
-    for (auto& e : _entities) {
+    for (auto e : _entities) {
         System::pushEntity(e);
     }
 }
@@ -136,7 +136,7 @@ void TileMap::render()
 void TileMap::hide()
 {
     _isRender = false;
-    for (auto& e : _entities) {
+    for (auto e : _entities) {
         System::RemoveEntity(e);
     }
 }
