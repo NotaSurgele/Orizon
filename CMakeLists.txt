@@ -3,7 +3,7 @@ project(Orizon)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_USE_PTHREADS_INIT true)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -g3 -ggdb")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -g3 -ggdb -gdwarf-2")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
