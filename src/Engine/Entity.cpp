@@ -2,6 +2,8 @@
 #include "Engine/Entity.hpp"
 #include "Engine/System.hpp"
 
+int i = 0;
+
 Entity::Entity()
 {
     System::addEntity(this);

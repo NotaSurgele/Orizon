@@ -56,19 +56,25 @@ class Entity {
         template <typename T>
         T* getComponent()
         {
-            if (_component_map.empty()) {
-                return nullptr;
-            }
-            auto it = _component_map.find(SIGNATURE(T));
-            if (it == _component_map.end())
-                return nullptr;
-            T* component = dynamic_cast<T *>(_component_map.find(SIGNATURE(T))->second);
+            try {
+                if (_component_map.empty() ||
+                    _component_map.size() <= 0) {
+                    return nullptr;
+                }
+                auto it = _component_map.find(SIGNATURE(T));
+                if (it == _component_map.end())
+                    return nullptr;
+                T* component = dynamic_cast<T *>(_component_map.find(SIGNATURE(T))->second);
 
-            if (component == nullptr && DEBUG_MESSAGE) {
-                std::cerr << "Component type " << SIGNATURE(T) <<
-                    " does not exist in entity" << std::endl;
+                if (component == nullptr && DEBUG_MESSAGE) {
+                    std::cerr << "Component type " << SIGNATURE(T) <<
+                        " does not exist in entity" << std::endl;
+                }
+                return component;
+            } catch (std::exception& error) {
+                std::cerr << error.what() << std::endl;
+                return nullptr;
             }
-            return component;
         }
 
         template <typename T>
@@ -76,14 +82,19 @@ class Entity {
         {
             std::vector<T *> components;
 
-            for (auto& it : _component_map) {
-                std::string signature = SIGNATURE(T);
+            try {
+                for (auto& it : _component_map) {
+                    std::string signature = SIGNATURE(T);
 
-                if (signature.find(it.first) != std::string::npos) {
-                    components.push_back(static_cast<T *>(it.second));
+                    if (signature.find(it.first) != std::string::npos) {
+                        components.push_back(static_cast<T *>(it.second));
+                    }
                 }
+                return components;
+            } catch (std::exception& error) {
+                std::cerr << error.what() << std::endl;
+                return components;
             }
-            return components;
         }
 
         template <typename First, typename... Others>

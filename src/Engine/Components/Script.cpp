@@ -1,4 +1,19 @@
 #include "Script.hpp"
+#include "Transform2D.hpp"
+#include "Animator.hpp"
+#include "BoxCollider.hpp"
+#include "Gravity.hpp"
+#include "Layer.hpp"
+#include "Light.hpp"
+#include "OrizonMusic.hpp"
+#include "Sound.hpp"
+#include "Sprite.hpp"
+#include "Tag.hpp"
+#include "Velocity.hpp"
+#include "View.hpp"
+#include "Input.hpp"
+#include "Time.hpp"
+#include "System.hpp"
 #include "Core.hpp"
 
 void loadScript(sol::state *state, const std::string& path)
@@ -15,24 +30,36 @@ void loadScript(sol::state *state, const std::string& path)
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
-    R_ADD_SCRIPT(scriptPath);
-    _state.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string, sol::lib::table,
-                          sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
+    _state = new sol::state();
+    _state->open_libraries(sol::lib::base
+            , sol::lib::math, sol::lib::string, sol::lib::table,
+           sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
+
     // register entity type inside lua script
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
     // registered attached entity
-    _state["_self"] = e;
-    _state["_state"] = &_state;
-    _state["Utils"] = Utils();
-    _state.set_function("Import", &loadScript);
-    _state.script_file(scriptPath);
+    (*_state)["_self"] = e;
+    (*_state)["_state"] = _state;
+    (*_state)["Utils"] = Utils();
+    (*_state)["ResourceManager"] = Core::RessourceManager();
+    _state->set_function("Import", &loadScript);
+    auto result = _state->script_file(scriptPath);
+
+    if (!result.valid()) {
+        sol::error res = result;
+        std::cerr << "Error executing lua script " << res.what() << std::endl;
+    } else {
+        R_ADD_SCRIPT(scriptPath);
+        System::__registerScriptedEntity(e);
+        std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
+    }
 }
 
 void Script::registerInputSystem()
 {
-    sol::usertype<Input> inputType = _state.new_usertype<Input>(
+    sol::usertype<Input> inputType = _state->new_usertype<Input>(
         "Input", sol::constructors<Input()>(),
         // Action key
         "isActionKeyDown", &Input::isActionKeyDown,
@@ -49,34 +76,34 @@ void Script::registerInputSystem()
         "isActionButtonReleased", &Input::isActionButtonReleased,
         "isActionButtonPressed", &Input::isActionButtonPressed
     );
-    _state["Input"] = Input();
+    (*_state)["Input"] = Input();
 }
 
 void Script::registerVectorType()
 {
-   // float
-    sol::usertype<sf::Vector2f> vf = _state.new_usertype<sf::Vector2f>(
-        "Vector2f", sol::constructors<sf::Vector2f(), sf::Vector2f(float, float)>()
+    // float
+    sol::usertype<sf::Vector2f> vf = _state->new_usertype<sf::Vector2f>(
+            "Vector2f", sol::constructors<sf::Vector2f(), sf::Vector2f(float, float)>()
     );
     vf["x"] = &sf::Vector2f::x;
     vf["y"] = &sf::Vector2f::y;
 
-     // int
-    sol::usertype<sf::Vector2i> vi = _state.new_usertype<sf::Vector2i>(
+    // int
+    sol::usertype<sf::Vector2i> vi = _state->new_usertype<sf::Vector2i>(
             "Vector2i", sol::constructors<sf::Vector2i(), sf::Vector2i(int, int)>()
     );
     vi["x"] = &sf::Vector2i::x;
     vi["y"] = &sf::Vector2i::y;
 
     //double
-    sol::usertype<sf::Vector2<double>> vd = _state.new_usertype<sf::Vector2<double>>(
+    sol::usertype<sf::Vector2<double>> vd = _state->new_usertype<sf::Vector2<double>>(
             "Vector2d", sol::constructors<sf::Vector2<double>(), sf::Vector2<double>(double, double)>()
     );
     vd["x"] = &sf::Vector2<double>::x;
     vd["y"] = &sf::Vector2<double>::y;
 
     // unsigned int
-    sol::usertype<sf::Vector2u> vu = _state.new_usertype<sf::Vector2u>(
+    sol::usertype<sf::Vector2u> vu = _state->new_usertype<sf::Vector2u>(
             "Vector2u", sol::constructors<sf::Vector2u(), sf::Vector2u(uint, uint)>()
     );
     vu["x"] = &sf::Vector2u::x;
@@ -85,9 +112,9 @@ void Script::registerVectorType()
 
 void Script::registerColorType()
 {
-    _state.new_usertype<sf::Color>(
-        "Color", sol::constructors<sf::Color(uint8_t, uint8_t, uint8_t, uint8_t),
-                                            sf::Color()>(),
+    _state->new_usertype<sf::Color>(
+            "Color", sol::constructors<sf::Color(uint8_t, uint8_t, uint8_t, uint8_t),
+                    sf::Color()>(),
             "r", &sf::Color::r,
             "g", &sf::Color::g,
             "b", &sf::Color::b,
@@ -97,31 +124,31 @@ void Script::registerColorType()
 
 void Script::registerRectType()
 {
-    _state.new_usertype<sf::FloatRect>(
-        "FloatRect", sol::constructors<sf::FloatRect(),
-                                        sf::FloatRect(float, float, float, float),
-                                        sf::FloatRect(sf::Vector2f, sf::Vector2f)>(),
-        "x", &sf::FloatRect::left,
-        "y", &sf::FloatRect::top,
-        "width", &sf::FloatRect::width,
-        "height", &sf::FloatRect::height,
-        "contains", sol::overload(
-            [] (sf::FloatRect& rect, float x, float y) {
-                return rect.contains(x, y);
-            },
-            [] (sf::FloatRect& rect, const sf::Vector2f& position) {
-                return rect.contains(position);
-            }
-        ),
-        "intersects", sol::overload(
-            [] (sf::FloatRect& rect, sf::FloatRect& rect2) {
-                return rect.intersects(rect2);
-            }
-        ),
-        "getPosition", &sf::FloatRect::getPosition,
-        "getSize", &sf::FloatRect::getSize
+    _state->new_usertype<sf::FloatRect>(
+            "FloatRect", sol::constructors<sf::FloatRect(),
+                    sf::FloatRect(float, float, float, float),
+                    sf::FloatRect(sf::Vector2f, sf::Vector2f)>(),
+            "x", &sf::FloatRect::left,
+            "y", &sf::FloatRect::top,
+            "width", &sf::FloatRect::width,
+            "height", &sf::FloatRect::height,
+            "contains", sol::overload(
+                    [] (sf::FloatRect& rect, float x, float y) {
+                        return rect.contains(x, y);
+                    },
+                    [] (sf::FloatRect& rect, const sf::Vector2f& position) {
+                        return rect.contains(position);
+                    }
+            ),
+            "intersects", sol::overload(
+                    [] (sf::FloatRect& rect, sf::FloatRect& rect2) {
+                        return rect.intersects(rect2);
+                    }
+            ),
+            "getPosition", &sf::FloatRect::getPosition,
+            "getSize", &sf::FloatRect::getSize
     );
-    _state.new_usertype<sf::IntRect>(
+    _state->new_usertype<sf::IntRect>(
             "FloatRect", sol::constructors<sf::IntRect(),
                     sf::IntRect(int, int, int, int),
                     sf::IntRect(sf::Vector2i, sf::Vector2i)>(),
@@ -149,50 +176,66 @@ void Script::registerRectType()
 
 void Script::registerSystemType()
 {
-    _state.new_usertype<System>(
-        "System", sol::constructors<System()>(),
+    _state->new_usertype<System>(
+            "System", sol::constructors<System()>(),
             "pushEntity", &System::pushEntity
     );
-    _state["system"] = System();
+    (*_state)["system"] = System();
 }
 
 void Script::registerTileMap()
 {
-    _state.new_usertype<TileMap>(
-        "TileMap", sol::constructors<TileMap(float, float, int, int, int, int)>(),
-        "emplaceEntity", &TileMap::emplaceEntity,
-        "contain", sol::overload(
-            [] (TileMap *map, Entity *e) {
-                return map->contain(e);
-            },
-            [] (TileMap *map, const float& x, const float& y) {
-                return map->contain(x, y);
-            }
-        ),
-        "isInside", &TileMap::isInside,
-        "removeEntity", sol::overload(
-            [] (TileMap *map, Entity *e) {
-                return map->removeEntity(e);
-            },
-            [] (TileMap *map, const float& x, const float& y) {
-                return map->removeEntity(x, y);
-            }
-        ),
-        "isRender", &TileMap::isRender,
-        "render", &TileMap::render,
-        "hide", &TileMap::hide,
-        "destroy", &TileMap::destroy,
-        "getAllEntities", &TileMap::getAllEntities,
-        "getLayerInfo", &TileMap::getLayerInfo
+    _state->new_usertype<TileMap>(
+            "TileMap", sol::constructors<TileMap(float, float, int, int, int, int)>(),
+            "emplaceEntity", &TileMap::emplaceEntity,
+            "contain", sol::overload(
+                    [] (TileMap *map, Entity *e) {
+                        return map->contain(e);
+                    },
+                    [] (TileMap *map, const float& x, const float& y) {
+                        return map->contain(x, y);
+                    }
+            ),
+            "isInside", &TileMap::isInside,
+            "removeEntity", sol::overload(
+                    [] (TileMap *map, Entity *e) {
+                        return map->removeEntity(e);
+                    },
+                    [] (TileMap *map, const float& x, const float& y) {
+                        return map->removeEntity(x, y);
+                    }
+            ),
+            "isRender", &TileMap::isRender,
+            "render", &TileMap::render,
+            "hide", &TileMap::hide,
+            "destroy", &TileMap::destroy,
+            "getAllEntities", &TileMap::getAllEntities,
+            "getLayerInfo", &TileMap::getLayerInfo
     );
 }
 
 void Script::registerUtilsType()
 {
-    _state.new_usertype<Utils>(
-        "Utils", sol::constructors<Utils()>(),
-        "readFile", &Utils::readFile,
-        "writeFile", &Utils::writeFile);
+    _state->new_usertype<Utils>(
+            "Utils", sol::constructors<Utils()>(),
+            "readFile", &Utils::readFile,
+            "writeFile", &Utils::writeFile);
+}
+
+void Script::registerResourceManager()
+{
+    _state->new_usertype<RessourcesManager>(
+        "ResourceManager",
+        "R_ADD_TILE", &RessourcesManager::loadTileFromSpriteSheet,
+        "R_GET_RESSOURCE", sol::overload(
+            [] (RessourcesManager& rm, const std::string& resourceName) {
+                return rm.getRessource<sf::Texture>(resourceName);
+            },
+            [] (RessourcesManager& rm, const std::string& resourceName) {
+                return rm.getRessource<sf::SoundBuffer>(resourceName);
+            }
+        )
+    );
 }
 
 void Script::registerBaseTypes()
@@ -203,24 +246,25 @@ void Script::registerBaseTypes()
     registerRectType();
     registerTileMap();
     registerUtilsType();
+    registerResourceManager();
     registerSystemType();
 }
 
 void Script::registerTransform2DComponent()
 {
-    sol::usertype<Transform2D> t = _state.new_usertype<Transform2D>(
-        "Transform2D", sol::constructors<Transform2D(), Transform2D(float, float, float, float)>(),
-        "position", &Transform2D::position,
-        "rotation", &Transform2D::rotation,
-        "size", &Transform2D::scale,
-        "zero", &Transform2D::zero,
-        "destroy", &Transform2D::destroy
+    sol::usertype<Transform2D> t = _state->new_usertype<Transform2D>(
+            "Transform2D", sol::constructors<Transform2D(), Transform2D(float, float, float, float)>(),
+            "position", &Transform2D::position,
+            "rotation", &Transform2D::rotation,
+            "size", &Transform2D::scale,
+            "zero", &Transform2D::zero,
+            "destroy", &Transform2D::destroy
     );
 }
 
 void Script::registerAnimatorComponent()
 {
-    _state.new_usertype<Animator>(
+    _state->new_usertype<Animator>(
         "Animator", sol::constructors<Animator(Entity *)>(),
         "newAnimation", &Animator::newAnimation,
         "playAnimation", &Animator::playAnimation,
@@ -234,18 +278,24 @@ void Script::registerAnimatorComponent()
 
 void Script::registerBoxColliderComponent()
 {
-    _state.new_usertype<BoxCollider>(
-    "BoxCollider", sol::constructors<BoxCollider(Entity *, sf::Vector2f, sf::Vector2f),
-                                                    BoxCollider(Entity *, sf::Vector2f, sf::Vector2f, int)>(),
-        "onCollision", &BoxCollider::onCollision,
-        "entity", &BoxCollider::entity
+    auto box = _state->new_usertype<BoxCollider>(
+            "BoxCollider", sol::constructors<BoxCollider(Entity *, sf::Vector2f, sf::Vector2f),
+                    BoxCollider(Entity *, sf::Vector2f, sf::Vector2f, int)>(),
+            "onCollision", &BoxCollider::onCollision,
+            "entity", &BoxCollider::entity,
+            "setType", &BoxCollider::setType
+    );
+    _state->new_enum("BoxColliderType",
+                     "STATIC", BoxCollider::Type::STATIC,
+                     "DYNAMIC", BoxCollider::Type::DYNAMIC,
+                     "NUL", BoxCollider::Type::NUL
     );
 }
 
 void Script::registerGravityComponent()
 {
-    _state.new_usertype<Gravity>(
-    "Gravity", sol::constructors<Gravity(Entity *), Gravity(Entity *, double)>(),
+    _state->new_usertype<Gravity>(
+        "Gravity", sol::constructors<Gravity(Entity *), Gravity(Entity *, double)>(),
         "force", &Gravity::force,
         "destroy", &Gravity::destroy
     );
@@ -253,7 +303,7 @@ void Script::registerGravityComponent()
 
 void Script::registerLayerComponent()
 {
-    _state.new_usertype<Layer>(
+    _state->new_usertype<Layer>(
         "Layer", sol::constructors<Layer(Entity *, std::size_t)>(),
         "set", &Layer::set,
         "value", &Layer::value,
@@ -263,12 +313,12 @@ void Script::registerLayerComponent()
 
 void Script::registerLightComponent()
 {
-    _state.new_usertype<Light>(
-    "Light", sol::constructors<
-                                Light(Entity *, float, float),
-                                Light(Entity *, float, Sprite *, float),
-                                Light(Entity *, float, Sprite *),
-                                Light(Entity *, float)>(),
+    _state->new_usertype<Light>(
+        "Light", sol::constructors<
+                Light(Entity *, float, float),
+                Light(Entity *, float, Sprite *, float),
+                Light(Entity *, float, Sprite *),
+                Light(Entity *, float)>(),
         "setColor", &Light::setColor,
         "setEmission", &Light::setEmission,
         "getEmission", &Light::getEmission,
@@ -279,7 +329,7 @@ void Script::registerLightComponent()
 
 void Script::registerOrizonMusicComponent()
 {
-    _state.new_usertype<OrizonMusic>(
+    _state->new_usertype<OrizonMusic>(
         "OrizonMusic", sol::constructors<OrizonMusic(Entity *)>(),
         "destroy", &OrizonMusic::destroy,
         "load", &OrizonMusic::load,
@@ -296,7 +346,7 @@ void Script::registerOrizonMusicComponent()
 
 void Script::registerSoundComponent()
 {
-    _state.new_usertype<Sound>(
+    _state->new_usertype<Sound>(
         "Sound", sol::constructors<Sound(Entity *)>(),
         "load", &Sound::load,
         "loadFromName", &Sound::loadFromName,
@@ -314,29 +364,29 @@ void Script::registerSoundComponent()
 
 void Script::registerSpriteComponent()
 {
-    _state.new_usertype<Sprite>(
-
-        "Sprite", sol::constructors<Sprite(Entity *, sf::Texture, float, float),
-                                            Sprite(Entity *, sf::Texture),
-                                            Sprite(Entity *, std::string, float, float)>(),
+    _state->new_usertype<Sprite>(
+        "Sprite", sol::constructors<
+                            Sprite(Entity *, sf::Texture, float, float),
+                            Sprite(Entity *, sf::Texture),
+                            Sprite(Entity *, std::string, float, float)>(),
         "setScale", &Sprite::setScale,
         "setTexture", sol::overload(
-            [] (Sprite *sprite, const std::string& texturePath) {
-                return sprite->setTexture(texturePath);
-            },
-            [] (Sprite *sprite, const sf::Texture& texture) {
-                return sprite->setTexture(texture);
-            }
+                [] (Sprite *sprite, const std::string& texturePath) {
+                    return sprite->setTexture(texturePath);
+                },
+                [] (Sprite *sprite, const sf::Texture& texture) {
+                    return sprite->setTexture(texture);
+                }
         ),
         "setScale", &Sprite::setScale,
         "setColor", &Sprite::setColor,
         "setPosition", sol::overload(
-            [] (Sprite *sprite, const sf::Vector2f& position) {
-                return sprite->setPosition(position);
-            },
-            [] (Sprite *sprite, const float& x, const float& y) {
-                return sprite->setPosition(x, y);
-            }
+                [] (Sprite *sprite, const sf::Vector2f& position) {
+                    return sprite->setPosition(position);
+                },
+                [] (Sprite *sprite, const float& x, const float& y) {
+                    return sprite->setPosition(x, y);
+                }
         ),
         "setTransform", &Sprite::setTransform,
         "setTextureRect", &Sprite::setTextureRect,
@@ -352,7 +402,7 @@ void Script::registerSpriteComponent()
 
 void Script::registerVelocityComponent()
 {
-    _state.new_usertype<Velocity>(
+    _state->new_usertype<Velocity>(
         "Velocity", sol::constructors<Velocity(Entity *)>(),
         "getX", &Velocity::getX,
         "getY", &Velocity::getY,
@@ -365,7 +415,7 @@ void Script::registerVelocityComponent()
 
 void Script::registerTagComponent()
 {
-    _state.new_usertype<Tag>(
+    _state->new_usertype<Tag>(
         "Tag", sol::constructors<Tag(Entity *, std::string)>(),
         "value", &Tag::value,
         "equals", &Tag::equals,
@@ -375,24 +425,24 @@ void Script::registerTagComponent()
 
 void Script::registerViewComponent()
 {
-    _state.new_usertype<View>(
+    _state->new_usertype<View>(
         "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(),
         "setViewport", &View::setViewport,
         "setSize", sol::overload(
-            [] (View *view, const sf::Vector2f& size) {
-                return view->setSize(size);
-            },
-            [] (View *view, const float& w, const float& h) {
-                return view->setSize(w, h);
-            }
+                [] (View *view, const sf::Vector2f& size) {
+                    return view->setSize(size);
+                },
+                [] (View *view, const float& w, const float& h) {
+                    return view->setSize(w, h);
+                }
         ),
         "setCenter", sol::overload(
-            [] (View *view, const sf::Vector2f& position) {
-                return view->setCenter(position);
-            },
-            [] (View *view, const float& x, const float& y) {
-                return view->setCenter(x, y);
-            }
+                [] (View *view, const sf::Vector2f& position) {
+                    return view->setCenter(position);
+                },
+                [] (View *view, const float& x, const float& y) {
+                    return view->setCenter(x, y);
+                }
         ),
         "setRotation", &View::setRotation,
         "getSize", &View::getSize,
@@ -405,20 +455,20 @@ void Script::registerViewComponent()
 
 void Script::registerScriptComponent()
 {
-    _state.new_usertype<Script>(
-        "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-        "call", sol::overload(&Script::call<Entity *>,
-                                    &Script::call<int>,
-                                    &Script::call<std::string>,
-                                    &Script::call<float>,
-                                    &Script::call<double>,
-                                    &Script::call<bool>,
-                                    &Script::call<sf::Vector2f>,
-                                    &Script::call<sf::Vector2i>,
-                                    &Script::call<sf::Vector2u>,
-                                    &Script::call<sf::Color>,
-                                    &Script::call<sf::FloatRect>,
-                                    &Script::call<sf::IntRect>)
+    _state->new_usertype<Script>(
+            "Script", sol::constructors<Script(Entity *, const std::string&)>(),
+            "call", sol::overload(&Script::call<Entity *>,
+                                  &Script::call<int>,
+                                  &Script::call<std::string>,
+                                  &Script::call<float>,
+                                  &Script::call<double>,
+                                  &Script::call<bool>,
+                                  &Script::call<sf::Vector2f>,
+                                  &Script::call<sf::Vector2i>,
+                                  &Script::call<sf::Vector2u>,
+                                  &Script::call<sf::Color>,
+                                  &Script::call<sf::FloatRect>,
+                                  &Script::call<sf::IntRect>)
     );
 }
 
@@ -441,101 +491,101 @@ void Script::registerComponentsType()
 
 void Script::registerEntityFunction()
 {
-    sol::usertype<Entity> entityType = _state.new_usertype<Entity>(
-        "Entity", sol::constructors<Entity()>(),
-        "addComponentTransform2D",sol::overload(
-                [](Entity *entity, float a, float b, float c, float d) {
-                    return entity->addComponent<Transform2D>(a, b, c, d);
-                },
-                [](Entity *entity, float x, float y) {
-                    return entity->addComponent<Transform2D>(x, y);
-                },
-                [](Entity *entity) {
-                    return entity->addComponent<Transform2D>();
-                }
-        ),
-        "addComponentAnimator", sol::overload(
-                [](Entity *entity) {
-                    return entity->addComponent<Animator>();
-                }
-        ),
-        "addComponentBoxCollider", sol::overload(
-                [](Entity *entity, sf::Vector2f position, sf::Vector2f size) {
-                    return entity->addComponent<BoxCollider>(position, size);
-                },
-                [](Entity *entity, sf::Vector2f position, sf::Vector2f size, int range) {
-                    return entity->addComponent<BoxCollider>(position, size, range);
-                }
-        ),
-        "addComponentGravity", sol::overload(
-                [](Entity *entity, double value) {
-                    return entity->addComponent<Gravity>(value);
-                },
-                [](Entity *entity) {
-                    return entity->addComponent<Gravity>();
-                }
-        ),
-        "addComponentLayer", sol::overload(
-                [](Entity *entity, std::size_t layer) {
-                    return entity->addComponent<Layer>(layer);
-                }
-        ),
-        "addComponentLight", sol::overload(
-                [](Entity *entity, float emission, float intensity) {
-                    return entity->addComponent<Light>(emission, intensity);
-                },
-                [](Entity *entity, float emission, Sprite *sprite, float intensity) {
-                    return entity->addComponent<Light>(emission, sprite, intensity);
-                },
-                [](Entity *entity, float emission, Sprite *sprite) {
-                    return entity->addComponent<Light>(emission, sprite);
-                },
-                [](Entity *entity, float emission) {
-                    return entity->addComponent<Light>(emission);
-                }
-        ),
-        "addComponentOrizonMusic", sol::overload(
-                [](Entity *entity) {
-                    return entity->addComponent<OrizonMusic>();
-                }
-        ),
-        "addComponentSound", sol::overload(
-                [](Entity *entity) {
-                    return entity->addComponent<Sound>();
-                }
-        ),
-        "addComponentSprite", sol::overload(
-                [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
-                    return entity->addComponent<Sprite>(texture, width, height);
-                },
-                [](Entity *entity, sf::Texture texture) {
-                    return entity->addComponent<Sprite>(texture);
-                },
-                [](Entity *entity, std::string texturePath, float width=1, float height=1) {
-                    return entity->addComponent<Sprite>(texturePath, width, height);
-                }
-        ),
-        "addComponentVelocity", sol::overload(
-                [](Entity *entity) {
-                    entity->addComponent<Velocity>();
-                }
-        ),
-         "addComponentTag", sol::overload(
-                [](Entity *entity, std::string tagName) {
-                    return entity->addComponent<Tag>(tagName);
-                }
-        ),
-        "addComponentView", sol::overload(
-                [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
-                    return entity->addComponent<View>(x, y, w, h, follow);
-                }
-        ),
-        "addComponentScript", sol::overload(
-            [] (Entity *e, const std::string& path) {
-                return e->addComponent<Script>(path);
-            }
-        ),
-        "destroy", &Entity::destroy
+    sol::usertype<Entity> entityType = _state->new_usertype<Entity>(
+            "Entity", sol::constructors<Entity()>(),
+            "addComponentTransform2D",sol::overload(
+                    [](Entity *entity, float a, float b, float c, float d) {
+                        return entity->addComponent<Transform2D>(a, b, c, d);
+                    },
+                    [](Entity *entity, float x, float y) {
+                        return entity->addComponent<Transform2D>(x, y);
+                    },
+                    [](Entity *entity) {
+                        return entity->addComponent<Transform2D>();
+                    }
+            ),
+            "addComponentAnimator", sol::overload(
+                    [](Entity *entity) {
+                        return entity->addComponent<Animator>();
+                    }
+            ),
+            "addComponentBoxCollider", sol::overload(
+                    [](Entity *entity, sf::Vector2f position, sf::Vector2f size) {
+                        return entity->addComponent<BoxCollider>(position, size);
+                    },
+                    [](Entity *entity, sf::Vector2f position, sf::Vector2f size, int range) {
+                        return entity->addComponent<BoxCollider>(position, size, range);
+                    }
+            ),
+            "addComponentGravity", sol::overload(
+                    [](Entity *entity, double value) {
+                        return entity->addComponent<Gravity>(value);
+                    },
+                    [](Entity *entity) {
+                        return entity->addComponent<Gravity>();
+                    }
+            ),
+            "addComponentLayer", sol::overload(
+                    [](Entity *entity, std::size_t layer) {
+                        return entity->addComponent<Layer>(layer);
+                    }
+            ),
+            "addComponentLight", sol::overload(
+                    [](Entity *entity, float emission, float intensity) {
+                        return entity->addComponent<Light>(emission, intensity);
+                    },
+                    [](Entity *entity, float emission, Sprite *sprite, float intensity) {
+                        return entity->addComponent<Light>(emission, sprite, intensity);
+                    },
+                    [](Entity *entity, float emission, Sprite *sprite) {
+                        return entity->addComponent<Light>(emission, sprite);
+                    },
+                    [](Entity *entity, float emission) {
+                        return entity->addComponent<Light>(emission);
+                    }
+            ),
+            "addComponentOrizonMusic", sol::overload(
+                    [](Entity *entity) {
+                        return entity->addComponent<OrizonMusic>();
+                    }
+            ),
+            "addComponentSound", sol::overload(
+                    [](Entity *entity) {
+                        return entity->addComponent<Sound>();
+                    }
+            ),
+            "addComponentSprite", sol::overload(
+                    [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
+                        return entity->addComponent<Sprite>(texture, width, height);
+                    },
+                    [](Entity *entity, sf::Texture texture) {
+                        return entity->addComponent<Sprite>(texture);
+                    },
+                    [](Entity *entity, std::string texturePath, float width=1, float height=1) {
+                        return entity->addComponent<Sprite>(texturePath, width, height);
+                    }
+            ),
+            "addComponentVelocity", sol::overload(
+                    [](Entity *entity) {
+                        entity->addComponent<Velocity>();
+                    }
+            ),
+            "addComponentTag", sol::overload(
+                    [](Entity *entity, std::string tagName) {
+                        return entity->addComponent<Tag>(tagName);
+                    }
+            ),
+            "addComponentView", sol::overload(
+                    [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
+                        return entity->addComponent<View>(x, y, w, h, follow);
+                    }
+            ),
+            "addComponentScript", sol::overload(
+                    [] (Entity *e, const std::string& path) {
+                        return e->addComponent<Script>(path);
+                    }
+            ),
+            "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
     entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
@@ -550,6 +600,37 @@ void Script::registerEntityFunction()
     entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
     entityType["getComponentView"] = &Entity::getComponent<View>;
     entityType["getComponentScript"] = &Entity::getComponent<Script>;
+}
+
+void Script::reload()
+{
+    _state->script_file(_filepath);
+    _start = false;
+}
+
+void Script::start()
+{
+    try {
+        if (_start)
+            return;
+        (*_state)["_self"] = _self;
+        sol::function start = (*_state)["Start"];
+        start();
+        _start = true;
+    } catch (sol::error& error) {
+        std::cerr << error.what() << std::endl;
+    }
+}
+
+void Script::update()
+{
+    try {
+        (*_state)["deltaTime"] = Time::deltaTime;
+        sol::function update = (*_state)["Update"];
+        update();
+    } catch (sol::error& error) {
+        std::cerr << error.what() << std::endl;
+    }
 }
 
 void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, int i)
@@ -567,33 +648,3 @@ void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, in
     }
 }
 
-void Script::reload()
-{
-    _state.script_file(_filepath);
-    _start = false;
-}
-
-void Script::start()
-{
-    try {
-        if (_start)
-            return;
-        _state["_self"] = _self;
-        sol::function start = _state["Start"];
-        start();
-        _start = true;
-    } catch (sol::error& error) {
-        std::cerr << error.what() << std::endl;
-    }
-}
-
-void Script::update()
-{
-    try {
-        _state["deltaTime"] = Time::deltaTime;
-        sol::function update = _state["Update"];
-        update();
-    } catch (sol::error& error) {
-        std::cerr << error.what() << std::endl;
-    }
-}
