@@ -61,7 +61,6 @@ class Entity {
                     _component_map.size() <= 0) {
                     return nullptr;
                 }
-                //std::cout << " Size " << _component_map.size() << " " <<  this << std::endl;
                 auto it = _component_map.find(SIGNATURE(T));
                 if (it == _component_map.end())
                     return nullptr;

@@ -46,6 +46,7 @@ void GameScene::create()
     //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
     //tiledMap->load("../assets/map_test.tmj");
     //player->addCustomComponent<CharacterController>(tiledMap);
+
 }
 
 void GameScene::update()
