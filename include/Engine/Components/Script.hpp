@@ -79,7 +79,7 @@ private:
     sol::object convertUserDataToTypes(const sol::userdata& ud)
     {
         if (ud.is<T>()) {
-            return sol::make_object(_state, ud.as<T>());
+            return sol::make_object(*_state, ud.as<T>());
         }
         return sol::nil;
     }
@@ -88,7 +88,7 @@ private:
     T call(const std::string& function, sol::variadic_args args)
     {
         try {
-            sol::function f = _state[function];
+            sol::function f = (*_state)[function];
             if (!f.valid()) {
                 std::cerr << "Not a valid function name " << function << std::endl;
             }
@@ -135,7 +135,7 @@ private:
 
 protected:
     bool _start = false;
-    Entity *_self;
-    sol::state _state;
+    Entity *_self = nullptr;
+    sol::state *_state = nullptr;
     std::string _filepath;
 };

@@ -28,6 +28,7 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
     std::size_t index = 1;
     /* Process entity that are not tiles */
     for (const auto& e : _registry) {
+        if (!e) continue;
         bool contain = false;
 
         for (auto& layer : tileMap) {

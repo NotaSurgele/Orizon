@@ -93,6 +93,12 @@ public:
         return 0;
     }
 
+    static void __registerScriptedEntity(Entity *e)
+    {
+        if (!e) return;
+        _scripted_entity.push_back(e);
+    }
+
 
 #ifdef SYSTEM_CALLER
 
@@ -100,7 +106,6 @@ public:
     {
         _dynamic_collider.push_back(other);
     }
-
 
     static void ___insert_entity_at_location(Entity *e)
     {
@@ -230,6 +235,7 @@ private:
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
     static inline std::vector<Entity *> _dynamic_collider;
+    static inline std::vector<Entity *> _scripted_entity;
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
 };
