@@ -1,7 +1,6 @@
 transform = nil
 animator = nil
 collider = nil
-local tiledMap = nil
 
 -- Callback function to handle collisions
 function handleCollisionCallback(otherCollider)
@@ -18,7 +17,6 @@ function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
     collider = _self:getComponentBoxCollider()
-    print(tiledMap.load("../assets/game.json"))
     --displayTable(table)
     --printHello()
     collider:onCollision(handleCollisionCallback)

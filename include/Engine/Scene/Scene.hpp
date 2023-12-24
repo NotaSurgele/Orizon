@@ -246,16 +246,16 @@ public:
     private:
         static inline std::string readConfigFile(std::string const& filename)
         {
-            std::string file_content = "";
+            std::string file_content;
             try {
                 std::fstream file(filename);
-                std::string buff = "";
+                std::string buff;
 
                 if (file.is_open()) {
                     while (std::getline(file, buff))
                         file_content.append(buff);
                     file.close();
-                };
+                }
             } catch(std::exception &e) {
                 std::cerr << e.what() << std::endl;
                 throw e;

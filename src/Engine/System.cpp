@@ -14,7 +14,17 @@ void System::addEntity(Entity *entity)
 
 void System::pushEntity(Entity *entity)
 {
-    int index = _orders_values[entity->getComponent<Layer>()->value()];
+    if (!entity) {
+        std::cerr << "[SYSTEM] Cannot push entity because entity is NULL" << std::endl;
+        return;
+    }
+    auto l = entity->getComponent<Layer>();
+
+    if (!l) {
+        std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
+        return;
+    }
+    int index = _orders_values[l->value()];
 
     if (index > _registry_size) _registry.push_back(entity);
     else _registry.insert(_registry.begin() + index, entity);
@@ -137,13 +147,14 @@ void System::systems()
         _hashGrid->insert(e);
     }
     for (auto e : _registry) {
+        if (!e) continue;
         camera_system(e);
         auto sprite = e->getComponent<Sprite>();
 
-        if (System::lightSources > 0 && !Light::set && sprite) {
+        if (System::lightSources > 0 &&
+            !Light::set && sprite) {
             sprite->setColor(Light::darkColor);
         }
-        script_system(e);
         if (!isInView(e))
             continue;
 
@@ -155,6 +166,10 @@ void System::systems()
         BoxSystem(e);
         collider_system(e);
         velocity_system(e);
+    }
+    // Handle entity with script
+    for (auto& e : _scripted_entity) {
+        script_system(e); // [FIXME] crashing when destroying dynamic entity in the hashGrid
     }
     clear_component_cache(componentCache);
     componentCache.clear();

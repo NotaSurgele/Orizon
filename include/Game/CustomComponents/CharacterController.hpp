@@ -3,17 +3,19 @@
 #include "CustomComponents.hpp"
 #include "Components/Velocity.hpp"
 #include "Input.hpp"
+#include "TiledMap.hpp"
 
 class CharacterController : public CustomComponents {
     public:
-        CharacterController(Entity *e, float const& speed) : _self(e), _speed(speed) {}
+        CharacterController(Entity *e, TiledMap *tilemap) : _self(e), _tileMap(tilemap) {}
         ~CharacterController() = default;
 
         void update() override
         {
-            auto velocity = _self->getComponent<Velocity>();
-            auto transform = _self->getComponent<Transform2D>();
-
+            if (!_render) {
+                _tileMap->render();
+                _render = !_render;
+            }
            /* if (Input::isActionPressed("MoveUp"))
                 velocity->setY(-_speed);
             else if (Input::isActionPressed("MoveDown"))
@@ -40,6 +42,7 @@ class CharacterController : public CustomComponents {
         void destroy() override final {}
 
     private:
-        const float _speed = 0.0f;
+        bool _render = false;
+        TiledMap *_tileMap = nullptr;
         Entity *_self = nullptr;
 };
