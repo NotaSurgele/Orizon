@@ -6,7 +6,7 @@
 class HashGrid {
 public:
 
-    HashGrid(float const& cellSize=100, int capacity=100) : _size(0),
+    HashGrid(float const& cellSize=50, int capacity=100) : _size(0),
                                                               _cellSize(cellSize),
                                                               _capacity(capacity) {
         _grid.reserve(capacity);
@@ -77,12 +77,12 @@ private:
 
     std::vector<sf::Vector2i> calculateCells(Entity *e) {
         if (!e)
-            return std::vector<sf::Vector2i>();
+            return {};
         auto transform = e->getComponent<Transform2D>();
         auto sprite = e->getComponent<Sprite>();
 
         if (!transform || !sprite)
-            return std::vector<sf::Vector2i>();
+            return {};
         int cell_x = static_cast<int>(transform->position.x / _cellSize);
         int cell_y = static_cast<int>(transform->position.y / _cellSize);
 
@@ -100,13 +100,7 @@ private:
 
     void resize() {
         _capacity *= 2;
-        std::unordered_map<sf::Vector2i, std::vector<Entity *>, VectorHash> newGrid;
-        for (auto& entry : _grid) {
-            for (Entity *entity : entry.second) {
-                insert(entity);
-            }
-        }
-        _grid = newGrid;
+        _grid.reserve(_capacity);
     }
 
 

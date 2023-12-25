@@ -144,6 +144,7 @@ void System::systems()
 
     // Handle hashGrid moving entity
     for (auto e : _dynamic_collider) {
+        if (!e) continue;
         _hashGrid->insert(e);
     }
     for (auto e : _registry) {
