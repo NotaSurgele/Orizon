@@ -24,9 +24,8 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-/*    player = getEntity("player");
-    player->addComponent<Sound>();*/
-
+    player = getEntity("player");
+    player->addComponent<Sound>();
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
@@ -43,9 +42,6 @@ void GameScene::create()
 /*    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });*/
-    //layer = new TileMap(0, 0, 3000, 3000, 16, 16);
-    //tiledMap->load("../assets/map_test.tmj");
-    //player->addCustomComponent<CharacterController>(tiledMap);
 
 }
 
