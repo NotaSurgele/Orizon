@@ -170,7 +170,7 @@ void System::systems()
     }
     // Handle entity with script
     for (auto& e : _scripted_entity) {
-        script_system(e); // [FIXME] crashing when destroying dynamic entity in the hashGrid
+        script_system(e);
     }
     clear_component_cache(componentCache);
     componentCache.clear();
