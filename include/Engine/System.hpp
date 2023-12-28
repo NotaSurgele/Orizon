@@ -124,9 +124,8 @@ public:
 
         // if the layer value already exist
         if (_orders_values.contains(value)) {
-
             for (auto& v : _orders_values) {
-                if (v.first > value) {
+                if (v.first >= value) {
                     v.second++;
                 }
             }
@@ -145,17 +144,13 @@ public:
                     if (v.first > value) {
                         v.second++;
                     }
-                    std::cout << "Increase " << v.first << " " << v.second << std::endl;
                 }
-                //_registry.insert(_registry.begin() + oldPosition, e);
                 return;
             }
             oldPosition = position;
         }
         // if value is greater than everything in the array then insert at the end
         _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition + 1));
-        std::cout << "Inserting value " << value << " at position " << oldPosition + 1 << std::endl;
-        //_registry.insert(_registry.begin() + oldPosition, e);
     }
 
 //#endif // SYSTEM_CALLER

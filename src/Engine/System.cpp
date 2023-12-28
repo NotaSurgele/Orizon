@@ -24,6 +24,9 @@ void System::pushEntity(Entity *entity)
         std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
         return;
     }
+/*    for (auto& v : _orders_values) {
+        std::cout << "Value " << v.first << " Position " << v.second << std::endl;
+    }*/
     System::___insert_entity_at_location(entity);
     auto value = l->value();
     auto position = _orders_values[value];
