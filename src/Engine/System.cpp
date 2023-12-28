@@ -24,14 +24,12 @@ void System::pushEntity(Entity *entity)
         std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
         return;
     }
-    ___insert_entity_at_location(entity);
+    System::___insert_entity_at_location(entity);
     auto value = l->value();
     auto position = _orders_values[value];
-    for (auto& it : _orders_values) {
-        std::cout << "Value " << it.first << " Position" << it.second  << std::endl;
-    }
     _registry.insert(_registry.begin() + position, entity);
     entity->__registryPosition = position;
+    _registry_size++;
 }
 
 void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
