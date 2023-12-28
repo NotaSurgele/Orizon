@@ -24,10 +24,7 @@ void System::pushEntity(Entity *entity)
         std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
         return;
     }
-/*    for (auto& v : _orders_values) {
-        std::cout << "Value " << v.first << " Position " << v.second << std::endl;
-    }*/
-    System::___insert_entity_at_location(entity);
+    ___insert_entity_at_location(entity);
     auto value = l->value();
     auto position = _orders_values[value];
     _registry.insert(_registry.begin() + position, entity);
@@ -151,6 +148,10 @@ void System::systems()
         if (!e) continue;
         _hashGrid->insert(e);
     }
+    // Handle entity with script
+    for (auto& e : _scripted_entity) {
+        script_system(e);
+    }
     for (auto e : _registry) {
         if (!e) continue;
         camera_system(e);
@@ -163,7 +164,6 @@ void System::systems()
         if (!isInView(e))
             continue;
 
-        // Test
         update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
@@ -172,14 +172,9 @@ void System::systems()
         collider_system(e);
         velocity_system(e);
     }
-    // Handle entity with script
-    for (auto& e : _scripted_entity) {
-        script_system(e); // [FIXME] crashing when destroying dynamic entity in the hashGrid
-    }
     clear_component_cache(componentCache);
     componentCache.clear();
 
-    // Destroy entities
     destroy_entity();
     Light::set = true;
 }
