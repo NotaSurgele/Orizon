@@ -110,18 +110,7 @@ public:
     static void ___insert_entity_at_location(Entity *e)
     {
         auto value = e->getComponent<Layer>()->value();
-        int oldPosition = 0;
-
-        // if the layer value already exist
-        if (_orders_values.contains(value)) {
-
-            for (auto& v : _orders_values) {
-                if (v.first > value) {
-                    v.second++;
-                }
-            }
-            return;
-        }
+        int oldPosition = -1;
 
         // check if the entity is already push in the registry
         if (e->__registryPosition < _registry_size &&
@@ -133,6 +122,16 @@ public:
             }
         }
 
+        // if the layer value already exist
+        if (_orders_values.contains(value)) {
+
+            for (auto& v : _orders_values) {
+                if (v.first > value) {
+                    v.second++;
+                }
+            }
+            return;
+        }
         // Find the correct position to insert the Entity
         for (auto& values : _orders_values) {
             auto layer = values.first;
@@ -140,20 +139,22 @@ public:
 
             if (value < layer) {
                 _orders_values.insert(std::pair<std::size_t, int>(value, position));
+
                 // Update greater values
                 for (auto& v : _orders_values) {
                     if (v.first > value) {
                         v.second++;
                     }
+                    std::cout << "Increase " << v.first << " " << v.second << std::endl;
                 }
                 //_registry.insert(_registry.begin() + oldPosition, e);
                 return;
             }
             oldPosition = position;
         }
-
         // if value is greater than everything in the array then insert at the end
-        _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition));
+        _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition + 1));
+        std::cout << "Inserting value " << value << " at position " << oldPosition + 1 << std::endl;
         //_registry.insert(_registry.begin() + oldPosition, e);
     }
 
