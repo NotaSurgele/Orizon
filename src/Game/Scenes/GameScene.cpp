@@ -42,7 +42,6 @@ void GameScene::create()
 /*    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });*/
-
 }
 
 void GameScene::update()
