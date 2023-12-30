@@ -53,6 +53,8 @@ private:
     void registerTileMap();
     void registerUtilsType();
     void registerResourceManager();
+    void registerDrawableType();
+    void registerCoreType();
     void registerBaseTypes();
 
     // register component

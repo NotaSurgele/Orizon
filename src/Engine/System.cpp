@@ -148,10 +148,7 @@ void System::systems()
         if (!e) continue;
         _hashGrid->insert(e);
     }
-    // Handle entity with script
-    for (auto& e : _scripted_entity) {
-        script_system(e);
-    }
+
     for (auto e : _registry) {
         if (!e) continue;
         camera_system(e);
@@ -171,6 +168,10 @@ void System::systems()
         BoxSystem(e);
         collider_system(e);
         velocity_system(e);
+    }
+    // Handle entity with script
+    for (auto& e : _scripted_entity) {
+        script_system(e);
     }
     clear_component_cache(componentCache);
     componentCache.clear();
