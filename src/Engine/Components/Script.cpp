@@ -525,11 +525,6 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Gravity>();
                     }
             ),
-            "addComponentLayer", sol::overload(
-                    [](Entity *entity, std::size_t layer) {
-                        return entity->addComponent<Layer>(layer);
-                    }
-            ),
             "addComponentLight", sol::overload(
                     [](Entity *entity, float emission, float intensity) {
                         return entity->addComponent<Light>(emission, intensity);

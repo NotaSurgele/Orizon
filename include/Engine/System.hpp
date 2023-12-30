@@ -100,7 +100,7 @@ public:
     }
 
 
-#ifdef SYSTEM_CALLER
+//#ifdef SYSTEM_CALLER
 
     static void __registerDynamicCollider(Entity *other)
     {
@@ -109,60 +109,51 @@ public:
 
     static void ___insert_entity_at_location(Entity *e)
     {
-        auto layerValue = e->getComponent<Layer>()->value();
+        auto value = e->getComponent<Layer>()->value();
+        int oldPosition = -1;
 
-        // Remove entity from registry
-        //_registry.erase(std::remove(_registry.begin(), _registry.end(), e));
+        // check if the entity is already push in the registry
+        if (e->__registryPosition < _registry_size &&
+            e->__registryPosition > -1) {
+            auto exist = _registry.at(e->__registryPosition);
+            if (exist) {
+                _registry.erase(_registry.begin() + e->__registryPosition);
+                e->__registryPosition = -1;
+            }
+        }
 
-        // check if layerValue exist in map
-        if (_orders_values.contains(layerValue)) {
-            auto& position = _orders_values[layerValue];
-            auto it = _registry.begin();
-
-            //_registry.insert(it + position, e);
-            int i = 0;
-            position += 1;
-            for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
-                 it != _orders_values.end(); it++) {
-                if (i > position) {
-                    it->second += 1;
+        // if the layer value already exist
+        if (_orders_values.contains(value)) {
+            for (auto& v : _orders_values) {
+                if (v.first >= value) {
+                    v.second++;
                 }
-                i++;
             }
             return;
         }
+        // Find the correct position to insert the Entity
+        for (auto& values : _orders_values) {
+            auto layer = values.first;
+            auto position = values.second;
 
-        int index = 0;
-        // find position
-        int incr = 0;
-        for (auto &pair : _orders_values) {
-            auto value = pair.first;
-            auto position = pair.second;
+            if (value < layer) {
+                _orders_values.insert(std::pair<std::size_t, int>(value, position));
 
-            if (value > layerValue) {
-                _orders_values.insert(std::pair<std::size_t, int>(layerValue, incr));
-                auto it = _registry.begin();
-
-                //_registry.insert(it + position, e);
-                // update position
-                int i = 0;
-                for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
-                    it != _orders_values.end(); it++) {
-                    if (i > index) {
-                        it->second += 1;
+                // Update greater values
+                for (auto& v : _orders_values) {
+                    if (v.first > value) {
+                        v.second++;
                     }
-                    i++;
                 }
                 return;
             }
-            incr += position;
-            index++;
+            oldPosition = position;
         }
-        _orders_values.insert(std::pair<std::size_t, int>(layerValue, _registry_size));
-        //_registry.push_back(e);
+        // if value is greater than everything in the array then insert at the end
+        _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition + 1));
     }
 
-#endif // SYSTEM_CALLER
+//#endif // SYSTEM_CALLER
 
 
     static void addTileMap(TileMap *layer)

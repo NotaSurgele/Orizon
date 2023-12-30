@@ -155,6 +155,9 @@ class Entity {
 
         void destroy();
 
+public:
+    int __registryPosition = -1;
+
     protected:
         std::unordered_multimap<const char *, IComponent *> _component_map;
         std::unordered_map<const char *, CustomComponents *> _custom_comp_map;

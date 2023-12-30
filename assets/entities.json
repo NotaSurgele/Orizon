@@ -46,7 +46,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 0
+                    "value": 5
                 },
                 {
                     "type": "Sound",
@@ -135,10 +135,6 @@
                 {
                     "type": "Tag",
                     "tag": "MapManager"
-                },
-                {
-                    "type": "Layer",
-                    "value": 0
                 }
             ]
         }
