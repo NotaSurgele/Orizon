@@ -44,6 +44,14 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
     (*_state)["_state"] = _state;
     (*_state)["Utils"] = Utils();
     (*_state)["ResourceManager"] = Core::RessourceManager();
+    (*_state)["DRAW"] = sol::overload(
+            [](Core* core, Drawable *drawable) {
+                return core->CoreDraw(drawable);
+            },
+            [] (Core* core, const sf::Drawable& drawable) {
+                return core->CoreDraw(drawable);
+            }
+    );
     _state->set_function("Import", &loadScript);
     auto result = _state->script_file(scriptPath);
 
@@ -238,6 +246,28 @@ void Script::registerResourceManager()
     );
 }
 
+void Script::registerDrawableType()
+{
+    _state->new_usertype<sf::Drawable>("sf::Drawable");
+    _state->new_usertype<Drawable>("Drawable", "draw", &Drawable::draw);
+}
+
+void Script::registerCoreType()
+{
+    _state->new_usertype<Core>(
+        "Core",
+        "draw", sol::overload(
+            [] (Core *core, BoxCollider *drawable) {
+                return core->CoreDraw(drawable);
+            },
+            [] (Core *core, const sf::Drawable& drawable) {
+                return core->CoreDraw(drawable);
+            }
+        )
+   );
+    (*_state)["Core"] = Core::instance;
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -248,6 +278,8 @@ void Script::registerBaseTypes()
     registerUtilsType();
     registerResourceManager();
     registerSystemType();
+    registerDrawableType();
+    registerCoreType();
 }
 
 void Script::registerTransform2DComponent()
