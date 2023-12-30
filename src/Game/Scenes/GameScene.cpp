@@ -42,8 +42,6 @@ void GameScene::create()
 /*    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
     });*/
-    tiledMap->load("../assets/map_test.tmj");
-    player->addCustomComponent<CharacterController>(tiledMap);
 }
 
 void GameScene::update()
