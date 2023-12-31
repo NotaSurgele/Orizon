@@ -29,6 +29,9 @@ Light::Light(Entity *e, const float& emission, Sprite *sprite, const float& inte
     int newRed = static_cast<int>(color.r * _intensity);
     int newGreen = static_cast<int>(color.g * _intensity);
     int newBlue = static_cast<int>(color.b * _intensity);
+    auto spriteColor = sf::Color::White;
+    spriteColor.a = 40;
+    _sprite->setColor(spriteColor);
     Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
     _sprite->setScale(2, 2);
     System::lightSources += 1;
