@@ -400,7 +400,8 @@ void Script::registerSpriteComponent()
         "Sprite", sol::constructors<
                             Sprite(Entity *, sf::Texture, float, float),
                             Sprite(Entity *, sf::Texture),
-                            Sprite(Entity *, std::string, float, float)>(),
+                            Sprite(Entity *, std::string, float, float),
+                            Sprite(sf::Texture texture)>(),
         "setScale", &Sprite::setScale,
         "setTexture", sol::overload(
                 [] (Sprite *sprite, const std::string& texturePath) {
