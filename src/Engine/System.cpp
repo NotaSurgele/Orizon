@@ -32,6 +32,11 @@ void System::pushEntity(Entity *entity)
     _registry_size++;
 }
 
+void System::forceUpdate(Entity *e)
+{
+    _forceUpdate.push_back(e);
+}
+
 void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
 {
     if (box->collide) {
@@ -143,6 +148,21 @@ void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
+    // Go through layers
+    for (auto& m : _layers) {
+        if (!m->isRender() || !isInView(m)) continue;
+
+        auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
+
+        for (auto& e : entities) {
+            _registry.push_back(e);
+        }
+    }
+
+    // Handle force update entity
+    for (auto& e : _forceUpdate) {
+        _registry.push_back(e);
+    }
     // Handle hashGrid moving entity
     for (auto e : _dynamic_collider) {
         if (!e) continue;
@@ -158,8 +178,6 @@ void System::systems()
             !Light::set && sprite) {
             sprite->setColor(Light::darkColor);
         }
-        if (!isInView(e))
-            continue;
 
         update_custom_component(e);
         sprite_system(e, componentCache);
@@ -177,6 +195,7 @@ void System::systems()
     componentCache.clear();
 
     destroy_entity();
+    _registry.clear();
     Light::set = true;
 }
 
@@ -460,6 +479,16 @@ bool System::isInView(Entity *e)
         return bounds.contains(transform->position);
     }
     return true;
+}
+
+bool System::isInView(TileMap *map)
+{
+    auto mapPosition = map->getPosition();
+    auto mapSize = map->getSize();
+    sf::FloatRect mapBounds = sf::FloatRect(mapPosition, mapSize);
+    auto view = WindowInstance.getView();
+
+    return view->getViewBounds().intersects(mapBounds);
 }
 
 void System::destroy_entity()

@@ -20,6 +20,21 @@ public:
     void render();
     void hide();
 
+    sf::Vector2f getPosition() const
+    {
+        return {_x, _y};
+    }
+
+    sf::Vector2f getSize() const
+    {
+        return {w, h};
+    }
+
+    sf::Vector2i getTileSize() const
+    {
+        return {tileWidth, tileHeight};
+    }
+
     sf::Vector2f emptySpot(int range);
     std::vector<Entity *> getAllEntities();
 
@@ -29,6 +44,8 @@ public:
     {
         return _layer;
     }
+
+    std::vector<Entity *> getEntityInBounds(const sf::FloatRect& bounds);
 
     template <typename... Others>
     std::vector<Entity *> checkEdges(Entity *e, int range)
@@ -123,8 +140,8 @@ public:
     void outputValues();
 
 public:
-    int w = 0;
-    int h = 0;
+    float w = 0;
+    float h = 0;
     int tileWidth = 0;
     int tileHeight = 0;
     float _x = 0;
