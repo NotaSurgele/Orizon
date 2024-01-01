@@ -186,7 +186,7 @@ void Script::registerSystemType()
 {
     _state->new_usertype<System>(
             "System", sol::constructors<System()>(),
-            "pushEntity", &System::pushEntity
+            "pushEntity", &System::forceUpdate
     );
     (*_state)["system"] = System();
 }

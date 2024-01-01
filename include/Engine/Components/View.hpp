@@ -28,6 +28,14 @@ public:
 
     void destroy() override final {}
 
+    sf::FloatRect getViewBounds() const
+    {
+        auto viewSize = getSize();
+        auto viewPos = getCenter() - (viewSize / 2.0f);
+
+        return {viewPos, viewSize };
+    }
+
     ~View() = default;
 
 private:

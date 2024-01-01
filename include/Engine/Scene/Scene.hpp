@@ -301,6 +301,7 @@ public:
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
                 System::pushEntity(e);
+                System::forceUpdate(e);
             }
         }
 
@@ -316,6 +317,7 @@ public:
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
                 System::pushEntity(e);
+                System::forceUpdate(e);
                 return e;
             }
             return nullptr;
