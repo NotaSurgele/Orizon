@@ -113,16 +113,6 @@ public:
         auto value = e->getComponent<Layer>()->value();
         int oldPosition = -1;
 
-        // check if the entity is already push in the registry
-        if (e->__registryPosition < _registry_size &&
-            e->__registryPosition > -1) {
-            auto exist = _registry.at(e->__registryPosition);
-            if (exist) {
-                _registry.erase(_registry.begin() + e->__registryPosition);
-                e->__registryPosition = -1;
-            }
-        }
-
         // if the layer value already exist
         if (_orders_values.contains(value)) {
             for (auto& v : _orders_values) {

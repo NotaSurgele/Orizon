@@ -24,12 +24,18 @@ void System::pushEntity(Entity *entity)
         std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
         return;
     }
+    _registry_size = _registry.size();
     ___insert_entity_at_location(entity);
     auto value = l->value();
     auto position = _orders_values[value];
-    _registry.insert(_registry.begin() + position, entity);
-    entity->__registryPosition = position;
-    _registry_size++;
+    if (position >= _registry_size) {
+        _registry.push_back(entity);
+        entity->__registryPosition = _registry_size + 1;
+    }
+    else {
+        _registry.insert(_registry.begin() + position, entity);
+        entity->__registryPosition = position;
+    }
 }
 
 void System::forceUpdate(Entity *e)
@@ -148,6 +154,11 @@ void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
+    // Handle force update entity
+    for (auto& e : _forceUpdate) {
+        pushEntity(e);
+    }
+
     // Go through layers
     for (auto& m : _layers) {
         if (!m->isRender() || !isInView(m)) continue;
@@ -155,13 +166,8 @@ void System::systems()
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
-            _registry.push_back(e);
+            pushEntity(e);
         }
-    }
-
-    // Handle force update entity
-    for (auto& e : _forceUpdate) {
-        _registry.push_back(e);
     }
     // Handle hashGrid moving entity
     for (auto e : _dynamic_collider) {
@@ -196,6 +202,7 @@ void System::systems()
 
     destroy_entity();
     _registry.clear();
+    _orders_values.clear();
     Light::set = true;
 }
 
