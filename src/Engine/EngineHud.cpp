@@ -103,6 +103,22 @@ void EngineHud::entityInformation()
     ImGui::End();
 }
 
+void EngineHud::consoleWindow()
+{
+    ImGui::SetNextWindowSize(ImVec2(100, 50), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Console");
+    while (!_consoleMsg.empty()) {
+        auto& msg = _consoleMsg.front();
+
+        ImGui::Text(msg.data());
+        _consoleMsg.pop();
+    }
+    ImGui::Separator();
+    ImGui::InputText("##consoleInput", _consoleInputText.data(), 4096, ImGuiInputTextFlags_AllowTabInput);
+    ImGui::End();
+}
+
 void EngineHud::scriptEditor(IComponent *component)
 {
     std::string signature = component->getSignature();
