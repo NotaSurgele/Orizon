@@ -162,7 +162,7 @@ public:
         _layers.push_back(layer);
     }
 
-    std::vector<Entity *> getRegistry() { return _registry; }
+    std::vector<Entity *> getRegistry() { return _forceUpdate; }
 
     std::vector<TileMap *> getTileMaps() {  return _layers; }
 

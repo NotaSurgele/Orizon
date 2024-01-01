@@ -133,6 +133,7 @@ void Core::updateGUI()
         _gui.setTheme();
         _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
         _gui.entityInformation();
+        _gui.consoleWindow();
         ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
     }
 }
