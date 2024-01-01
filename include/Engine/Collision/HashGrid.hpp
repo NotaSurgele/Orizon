@@ -6,7 +6,7 @@
 class HashGrid {
 public:
 
-    HashGrid(float const& cellSize=50, int capacity=100) : _size(0),
+    HashGrid(float const& cellSize=100, int capacity=100) : _size(0),
                                                               _cellSize(cellSize),
                                                               _capacity(capacity) {
         _grid.reserve(capacity);
