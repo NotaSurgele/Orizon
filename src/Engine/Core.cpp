@@ -87,7 +87,7 @@ void Core::inputHandler(sf::Event& event)
     auto mousePosition = sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow());
 
     EngineHud::writeConsole<std::string, bool>("Main view is ", _mainViewSelected);
-    EngineHud::writeConsole<std::string, int, int>("Mouse position ", mousePosition.x, mousePosition.y);
+    EngineHud::writeConsole<std::string, int, std::string, int>("Mouse position ", mousePosition.x, " ", mousePosition.y);
     while (CoreEvent(event)) {
         ImGui::SFML::ProcessEvent(event);
 

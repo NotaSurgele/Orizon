@@ -126,10 +126,9 @@ void EngineHud::scriptEditor(IComponent *component)
 {
     std::string signature = component->getSignature();
 
-    if (signature.find("Script") ==
-        std::string::npos)
-        return;
-    Script *script = dynamic_cast<Script *>(component);
+    if (signature.find("Script") == std::string::npos) return;
+
+    auto *script = dynamic_cast<Script *>(component);
     if (_lastScript != script) {
         _lastScript = script;
         _scriptContent = R_GET_SCRIPT(script->getFile());
