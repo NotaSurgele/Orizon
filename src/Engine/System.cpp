@@ -191,13 +191,9 @@ void System::systems()
     for (auto& e : _scripted_entity) {
         script_system(e);
     }
-    EngineHud::writeConsole("the size of the registry is " + std::to_string(_registry_size));
-    EngineHud::writeConsole("Hello my name is alexis");
-    EngineHud::writeConsole("I'm a student at Epitech");
-    EngineHud::writeConsole("How are you today?");
+    EngineHud::writeConsole("the size of the registry is " + std::to_string(_registry.size()));
     clear_component_cache(componentCache);
     componentCache.clear();
-
     destroy_entity();
     _registry.clear();
     Light::set = true;

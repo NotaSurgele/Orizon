@@ -80,7 +80,7 @@ void EngineHud::entityInformation()
     ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO), 0));
     ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
                                     _width * GUI_ENTITIES_WIDTH_SIZE_RATIO));
-    ImGui::Begin("Entity informations");
+    ImGui::Begin("Entity information");
     if (_selected) {
         auto components = _selected->getComponents();
         std::size_t i = 0;
@@ -106,16 +106,19 @@ void EngineHud::entityInformation()
 void EngineHud::consoleWindow()
 {
     ImGui::SetNextWindowSize(ImVec2(100, 50), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_CONSOLE_HEIGHT_SIZE_RATIO),
+                                       _height - (_width * GUI_CONSOLE_WIDTH_SIZE_RATIO)),
+                                    ImGuiCond_FirstUseEver);
     ImGui::Begin("Console");
     while (!_consoleMsg.empty()) {
-        auto& msg = _consoleMsg.front();
+        auto msg = _consoleMsg.front();
 
-        ImGui::Text(msg.data());
+        ImGui::Text(msg.c_str());
         _consoleMsg.pop();
     }
     ImGui::Separator();
-    ImGui::InputText("##consoleInput", _consoleInputText.data(), 4096, ImGuiInputTextFlags_AllowTabInput);
+    ImGui::InputText("##consoleInput", _consoleInputText.data(),
+                     4096, ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
 }
 
@@ -126,7 +129,7 @@ void EngineHud::scriptEditor(IComponent *component)
     if (signature.find("Script") ==
         std::string::npos)
         return;
-    Script *script = static_cast<Script *>(component);
+    Script *script = dynamic_cast<Script *>(component);
     if (_lastScript != script) {
         _lastScript = script;
         _scriptContent = R_GET_SCRIPT(script->getFile());

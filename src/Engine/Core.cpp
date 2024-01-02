@@ -81,11 +81,27 @@ void Core::setView(View *view)
 
 void Core::inputHandler(sf::Event& event)
 {
+    if (!WindowInstance.getView()) return;
+    auto& sfmlWindow = WindowInstance.getSFMLRenderWindow();
+    auto viewBounds = sfmlWindow.getViewport(sfmlWindow.getView());
+    auto mousePosition = sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow());
+
+    EngineHud::writeConsole("Mouse coordinate " + std::to_string(mousePosition.x) + " " + std::to_string(mousePosition.y));
+    EngineHud::writeConsole("Main view is " + std::to_string(_mainViewSelected));
     while (CoreEvent(event)) {
         ImGui::SFML::ProcessEvent(event);
 
+        if (event.type == sf::Event::MouseButtonPressed && ENGINE_MODE) {
+            if (event.mouseButton.button == sf::Mouse::Left) {
+                _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
+            }
+        }
+
         if (event.type == sf::Event::Closed)
             CoreClose();
+        if (ENGINE_MODE && !_mainViewSelected) {
+            return;
+        }
         if (event.type == sf::Event::KeyPressed)
             _input.___push_key(event.key.code);
         if (event.type == sf::Event::KeyReleased)
