@@ -111,7 +111,7 @@ void EngineHud::consoleWindow()
                                     ImGuiCond_FirstUseEver);
     ImGui::Begin("Console");
     while (!_consoleMsg.empty()) {
-        auto msg = _consoleMsg.front();
+        auto& msg = _consoleMsg.front();
 
         ImGui::Text(msg.c_str());
         _consoleMsg.pop();

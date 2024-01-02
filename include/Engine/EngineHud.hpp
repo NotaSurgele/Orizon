@@ -4,6 +4,8 @@
 #include <vector>
 #include <thread>
 #include <queue>
+#include <ostream>
+#include <sstream>
 
 #ifndef GUI
 #define GUI_ENTITIES_HEIGHT_SIZE_RATIO 0.25f
@@ -27,12 +29,42 @@ public:
     void consoleWindow();
     void scriptEditor(IComponent *component);
 
-    static inline void writeConsole(const std::string& msg)
+    template <typename T, typename ...Args>
+    static inline void writeConsole(const T& first, Args... args)
     {
-        _consoleMsg.emplace(msg);
+        std::string data;
+
+        data = std::to_string(first);
+        _msg += data;
+        writeConsole(args ...);
+    }
+
+    template <typename T, typename ...Args>
+    static inline void writeConsole(const std::string& first, Args... args)
+    {
+        _msg += first;
+        writeConsole(args ...);
     }
 
 private:
+    static inline std::string _msg;
+
+    template <typename T>
+    static inline void writeConsole(const T& last)
+    {
+        std::string data = std::to_string(last);
+        _msg += data;
+        insert(_msg);
+    }
+
+    static inline void writeConsole(const std::string& last)
+    {
+        _msg += last;
+        insert(_msg);
+    }
+
+private:
+    static void insert(const std::string& msg) { _consoleMsg.push(msg); _msg.clear(); }
     void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);
 
 private:
