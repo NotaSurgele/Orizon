@@ -37,13 +37,16 @@ public:
     int loadSceneFromFile(const std::string& filename)
     {
         std::string content = readConfigFile(filename);
-        nlohmann::json json_content = nlohmann::json::parse(content);
+        _sceneContent = nlohmann::json::parse(content);
 
-        get_ressources(json_content["resources"]);
-        parse_entities(json_content["entities"]);
+        get_ressources(_sceneContent["resources"]);
+        parse_entities(_sceneContent["entities"]);
+        _sceneFile = filename;
         return 0;
     }
 
+    const std::string& getSceneFilepath() const { return _sceneFile; }
+    nlohmann::json& getSceneContent() { return _sceneContent; }
     static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
@@ -167,7 +170,7 @@ public:
                     float h = json["viewport"][3];
                     bool follow = json["follow"];
 
-                    auto view = e->addComponent<View>(x, y, w, h, follow);
+                    e->addComponent<View>(x, y, w, h, follow);
                 }
 
                 static void create_sound(Entity *e, nlohmann::json const& json);
@@ -237,7 +240,7 @@ public:
                     loadEntityFromFilepath(_entitiesPath, entity);
                     continue;
                 }
-                Entity *e = new Entity();
+                auto *e = new Entity();
 
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
@@ -272,5 +275,7 @@ public:
         }
 
 private:
-    std::string _entitiesPath = "";
+    std::string _sceneFile;
+    std::string _entitiesPath;
+    nlohmann::json _sceneContent;
 };
