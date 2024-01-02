@@ -10,7 +10,7 @@ void SceneManager::popScene()
     return _sceneQueue.pop();
 }
 
-Scene const& SceneManager::getScene()
+Scene& SceneManager::getScene()
 {
     return _sceneQueue.front();
 }
@@ -28,4 +28,5 @@ void SceneManager::update()
 void SceneManager::destroy()
 {
     _sceneQueue.front().destroy();
+    popScene();
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include "Scene.hpp"
 #include <queue>
+#include "Scene.hpp"
 
 class SceneManager {
     public:
@@ -9,7 +9,7 @@ class SceneManager {
 
         void addScene(Scene const& scene);
         void popScene();
-        Scene const& getScene();
+        Scene& getScene();
 
         void create();
         void update();

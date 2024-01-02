@@ -165,9 +165,8 @@ void Core::run()
     initGui();
     start();
     while (isOpen()) {
-
         _time.start();
-        sf::Event event;
+        sf::Event event {};
 
         inputHandler(event);
         render();
