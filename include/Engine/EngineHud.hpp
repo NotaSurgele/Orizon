@@ -29,6 +29,13 @@ public:
     void consoleWindow();
     void scriptEditor(IComponent *component);
 
+    template <class T = std::string, typename ...Args>
+    static inline void writeConsole(const std::string& first, Args... args)
+    {
+        _msg += first;
+        writeConsole(args ...);
+    }
+
     template <typename T, typename ...Args>
     static inline void writeConsole(const T& first, Args... args)
     {
@@ -36,13 +43,6 @@ public:
 
         data = std::to_string(first);
         _msg += data;
-        writeConsole(args ...);
-    }
-
-    template <typename T, typename ...Args>
-    static inline void writeConsole(const std::string& first, Args... args)
-    {
-        _msg += first;
         writeConsole(args ...);
     }
 

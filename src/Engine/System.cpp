@@ -191,7 +191,7 @@ void System::systems()
     for (auto& e : _scripted_entity) {
         script_system(e);
     }
-    EngineHud::writeConsole<std::string, int>("the size of the registry is ", _registry.size());
+    EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
     clear_component_cache(componentCache);
     componentCache.clear();
     destroy_entity();
