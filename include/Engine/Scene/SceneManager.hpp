@@ -7,14 +7,19 @@ class SceneManager {
         SceneManager() = default;
         ~SceneManager() = default;
 
-        void addScene(Scene const& scene);
+        void addScene(Scene* scene);
         void popScene();
-        Scene& getScene();
+        Scene *getScene();
 
         void create();
         void update();
         void destroy();
 
+        void size()
+        {
+            std::cout << _sceneQueue.size() << std::endl;
+        }
+
     private:
-        std::queue<Scene> _sceneQueue;
+        std::queue<Scene *> _sceneQueue;
 };

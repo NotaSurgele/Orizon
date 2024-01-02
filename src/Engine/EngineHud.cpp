@@ -2,8 +2,6 @@
 #include "Tag.hpp"
 #include "Utils.hpp"
 #include "Core.hpp"
-#include <imgui.h>
-#include <imgui-SFML.h>
 #define GUI
 #include "Script.hpp"
 
@@ -16,6 +14,16 @@ void EngineHud::setTheme()
 
     colors[ImGuiCol_WindowBg] = ImVec4(0.54, 0.56, 0.56, .5f);
     _theme = true;
+}
+
+void EngineHud::setCurrentSceneFilepath(const std::string &sceneFilepath)
+{
+    _currentSceneFilepath = sceneFilepath;
+}
+
+void EngineHud::currentSceneContent(const nlohmann::json &sceneContent)
+{
+    _currentSceneContent = sceneContent;
 }
 
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
@@ -92,8 +100,10 @@ void EngineHud::entityInformation()
             }
             auto signature = elem.first;
             std::string updated = std::to_string(i) + signature;
-            if (ImGui::Selectable(updated.c_str())) {
+            if (ImGui::TreeNode(updated.c_str())) {
                 _selectedC = elem.second;
+                ComponentTreeNodeFactory::create(elem.second);
+                ImGui::TreePop();
             }
             i++;
         }

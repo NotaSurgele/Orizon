@@ -48,7 +48,7 @@ class Core : public ICore {
 
         void run();
         virtual void start() override = 0;
-        void render() override { _sceneManager.getScene().update(); };
+        void render() override { _sceneManager.update(); };
         virtual void destroy() override = 0;
 
     protected:
@@ -71,7 +71,7 @@ public:
     static inline float fps = 0.0f;
 
 protected:
-    SceneManager _sceneManager {};
+    static inline SceneManager _sceneManager {};
 
 private:
     static inline Time _time;
