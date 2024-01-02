@@ -8,6 +8,7 @@
 #include "Engine/Entity.hpp"
 #include "Engine/EngineHud.hpp"
 #include "external/json.hpp"
+#include "SceneManager.hpp"
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
@@ -46,9 +47,11 @@ class Core : public ICore {
         void CoreClose();
 
         void run();
-        virtual void start() = 0;
-        virtual void render() = 0;
-        virtual void destroy() = 0;
+        virtual void start() override = 0;
+        void render() override { _sceneManager.getScene().update(); };
+        virtual void destroy() override = 0;
+
+    protected:
 
     private:
         bool CoreEvent(sf::Event& event);
@@ -62,26 +65,29 @@ class Core : public ICore {
         void updateGUI();
         void destroyGUI();
 
+
 public:
     static inline Core *instance;
     static inline float fps = 0.0f;
 
+protected:
+    SceneManager _sceneManager {};
 
-    private:
-        static inline Time _time;
-        static inline RessourcesManager _r_manager;
+private:
+    static inline Time _time;
+    static inline RessourcesManager _r_manager;
 
-        //Utils
-        RenderWindow _window;
-        Input _input;
-        System _system_handler;
-        sf::RenderTexture _texture;
-        sf::Font font;
-        sf::Text fpsText;
-        sf::View _hud;
-        EngineHud _gui;
-        float _fpsTime=1.0f;
-        bool _mainViewSelected = true;
+    //Utils
+    RenderWindow _window;
+    Input _input;
+    System _system_handler;
+    sf::RenderTexture _texture;
+    sf::Font font;
+    sf::Text fpsText;
+    sf::View _hud;
+    EngineHud _gui;
+    float _fpsTime=1.0f;
+    bool _mainViewSelected = true;
 };
 
 /**

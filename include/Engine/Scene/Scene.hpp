@@ -1,12 +1,11 @@
 #pragma once
-
-#include "Engine/Scene/IScene.hpp"
 #include "Engine/System.hpp"
-#include "Engine/Core.hpp"
+#include "Engine/Scene/IScene.hpp"
 #include "Components/Animator.hpp"
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
 #include "Components/Script.hpp"
+#include "json.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -82,12 +81,7 @@ public:
                 }
 
             private:
-                static void create_sprite(Entity *e, nlohmann::json const& json)
-                {
-                    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
-
-                    e->addComponent<Sprite>(texture);
-                }
+                static void create_sprite(Entity *e, nlohmann::json const& json);
 
                 static void create_transform(Entity *e, nlohmann::json const& json)
                 {
@@ -176,40 +170,11 @@ public:
                     auto view = e->addComponent<View>(x, y, w, h, follow);
                 }
 
-                static void create_sound(Entity *e, nlohmann::json const& json)
-                {
-                    sf::SoundBuffer buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
-                    bool loop = json["loop"];
+                static void create_sound(Entity *e, nlohmann::json const& json);
 
-                    e->addComponent<Sound>()->setBuffer(buffer)
-                                            ->setLoop(loop);
-                }
+                static void create_music(Entity *e, nlohmann::json const& json);
 
-                static void create_music(Entity *e, nlohmann::json const& json)
-                {
-                    sf::Music *buffer = R_GET_MUSIC(json["music_name"]);
-                    bool loop = json["loop"];
-
-                    e->addComponent<OrizonMusic>()->setMusic(buffer)
-                                            ->setLoop(loop);
-                }
-
-                static void create_light(Entity *e, nlohmann::json const& json)
-                {
-                    float emission = json["emission"];
-                    float intensity = .4f;
-
-                    if (json.contains("intensity"))
-                        intensity = json["intensity"];
-                    if (json.contains("texture_name")) {
-                        sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
-                        Sprite *sprite = new Sprite(lightTexture);
-
-                        e->addComponent<Light>(emission, sprite, intensity);
-                        return;
-                    }
-                    e->addComponent<Light>(emission);
-                }
+                static void create_light(Entity *e, nlohmann::json const& json);
 
                 static void create_script(Entity *e, const nlohmann::json& json)
                 {
@@ -263,31 +228,7 @@ public:
             return file_content;
         }
 
-        void get_ressources(nlohmann::json const& ressources)
-        {
-            for (auto& ressource : ressources) {
-                std::string type = ressource["type"];
-                std::string path = ressource["path"];
-                std::string name = "";
-
-                if (ressource.contains("name"))
-                    name = ressource["name"];
-                if (type.find("Texture") != std::string::npos)
-                    R_ADD_RESSOURCE(sf::Texture, name, path);
-                else if (type.find("Tile") != std::string::npos) {
-                    float x = ressource["tile_info"][0];
-                    float y = ressource["tile_info"][1];
-                    float w = ressource["tile_info"][2];
-                    float h = ressource["tile_info"][3];
-                    R_ADD_TILE(name, path, x, y, w, h);
-                } else if (type.find("Sound") != std::string::npos)
-                    R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
-                else if (type.find("Music") != std::string::npos)
-                    R_ADD_MUSIC(name, path);
-                else if (type.find("Entities") != std::string::npos)
-                    _entitiesPath = path;
-            }
-        }
+        void get_ressources(nlohmann::json const& ressources);
 
         void parse_entities(nlohmann::json const& entities)
         {
@@ -312,7 +253,7 @@ public:
 
                 if (e_name.find(name) == std::string::npos)
                     continue;
-                Entity *e = new Entity();
+                auto *e = new Entity();
 
                 for (auto& component : entity["components"])
                     ComponentFactory::link_component(e, component);
