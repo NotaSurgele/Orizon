@@ -1,4 +1,5 @@
 #pragma once
+#include "EngineHud.hpp"
 #include "Engine/System.hpp"
 #include "Engine/Scene/IScene.hpp"
 #include "Components/Animator.hpp"
@@ -241,11 +242,25 @@ public:
                     continue;
                 }
                 auto *e = new Entity();
+                std::vector<nlohmann::json> scripts;
 
-                for (auto& component : entity["components"])
+
+                for (auto& component : entity["components"]) {
+                    auto type = component["type"];
+
+                    if (type.get<std::string>().find("Script") != std::string::npos) {
+                        scripts.push_back(component);
+                        continue;
+                    }
                     ComponentFactory::link_component(e, component);
+                }
+                for (auto& script : scripts) {
+                    ComponentFactory::link_component(e, script);
+                }
                 System::pushEntity(e);
                 System::forceUpdate(e);
+
+                if (ENGINE_MODE) EngineHud::registerSavedEntity(e);
             }
         }
 
@@ -257,11 +272,23 @@ public:
                 if (e_name.find(name) == std::string::npos)
                     continue;
                 auto *e = new Entity();
+                std::vector<nlohmann::json> scripts;
 
-                for (auto& component : entity["components"])
+                for (auto& component : entity["components"]) {
+                    auto type = component["type"];
+
+                    if (type.get<std::string>().find("Script") != std::string::npos) {
+                        scripts.push_back(component);
+                        continue;
+                    }
                     ComponentFactory::link_component(e, component);
+                }
+                for (auto& script : scripts) {
+                    ComponentFactory::link_component(e, script);
+                }
                 System::pushEntity(e);
                 System::forceUpdate(e);
+                if (ENGINE_MODE) EngineHud::registerSavedEntity(e);
                 return e;
             }
             return nullptr;

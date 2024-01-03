@@ -22,6 +22,8 @@ public:
     float getIntensity();
     bool isSpriteLoaded();
 
+    Sprite *getSprite() { return _sprite; }
+
     static inline sf::Color loadColorFromIntensity(const float& intensity, const sf::Color& color=sf::Color::White)
     {
         unsigned char newRed = static_cast<unsigned char>(color.r * intensity);

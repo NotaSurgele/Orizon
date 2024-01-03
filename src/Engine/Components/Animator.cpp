@@ -19,10 +19,10 @@ Animator::Animation::Animation(Entity *e,
                     _name(name)
 {
     _sprite = e->getComponent<Sprite>();
-    if (_sprite == nullptr) {
-        std::cerr << "Entity does not have sprite component" << std::endl;
+/*    if (_sprite == nullptr) {
+        std::cerr << "[ANIMATOR] Entity does not have sprite component" << std::endl;
         return;
-    }
+    }*/
 
     float x = _offset_x;
     float y = _offset_y;
@@ -51,12 +51,16 @@ const std::vector<sf::IntRect>& Animator::getAnimationFrames(
     return _animation_map[name].getAnimationFrames();
 }
 
+void Animator::Animation::setSprite(Sprite *sprite)
+{
+    _sprite = sprite;
+}
+
 void Animator::Animation::playAnimation(const bool loop)
 {
     _currentTime += Time::deltaTime;
 
-    if (!_sprite)
-        return;
+    if (!_sprite) return;
     if ((!loop && _index >= _frames_nb) ||
         (_currentTime < _animation_speed && _index > 0))
         return;
@@ -93,6 +97,7 @@ void Animator::Animation::reset()
 void Animator::playAnimation(std::string const& anim, const bool loop)
 {
     try {
+        _animation_map[anim].setSprite(_e->getComponent<Sprite>());
         _animation_map[anim].playAnimation(loop);
         _currentAnimation = anim;
     } catch(...) {

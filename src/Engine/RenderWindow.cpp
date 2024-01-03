@@ -11,7 +11,7 @@ RenderWindow::RenderWindow(std::string const& windowName,
                             _height(height),
                             _window(sf::VideoMode(width, height), windowName)
 {
-    _window.setFramerateLimit(2000);
+    _window.setFramerateLimit(144);
 }
 
 void RenderWindow::clear(sf::Color color)

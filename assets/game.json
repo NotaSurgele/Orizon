@@ -39,7 +39,7 @@
         },
         {
             "type": "Entities",
-            "path": "../assets/entities.json"
+            "path": "../assets/entities.json11"
         }
     ],
     "entities": ["player", "MapManager"]
