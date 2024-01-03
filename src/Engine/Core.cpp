@@ -145,16 +145,19 @@ void Core::initGui()
 void Core::updateGUI()
 {
     if (ENGINE_MODE) {
-        auto currentScene = _sceneManager.getScene();
-
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        _gui.setTheme();
-        _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
-        _gui.currentSceneContent(currentScene->getSceneContent());
-        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
-        _gui.entityInformation();
-        _gui.consoleWindow();
-        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
+        _guiThread = std::thread([&] () {
+            auto currentScene = _sceneManager.getScene();
+
+            _gui.setTheme();
+            _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
+            _gui.currentSceneContent(currentScene->getSceneContent());
+            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+            _gui.entityInformation();
+            _gui.consoleWindow();
+        });
+        if (_guiThread.joinable()) _guiThread.join();
+        ImGui::SFML::Render(_window.getSFMLRenderWindow());
     }
 }
 

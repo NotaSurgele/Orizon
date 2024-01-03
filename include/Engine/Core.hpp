@@ -12,6 +12,7 @@
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
+#include <thread>
 
 class ICore {
 public:
@@ -88,6 +89,7 @@ private:
     EngineHud _gui;
     float _fpsTime=1.0f;
     bool _mainViewSelected = true;
+    std::thread _guiThread;
 };
 
 /**
