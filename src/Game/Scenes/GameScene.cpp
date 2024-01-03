@@ -25,7 +25,6 @@ void GameScene::create()
     script();*/
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    player->addComponent<Sound>();
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*

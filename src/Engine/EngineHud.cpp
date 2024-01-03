@@ -2,8 +2,6 @@
 #include "Tag.hpp"
 #include "Utils.hpp"
 #include "Core.hpp"
-#include <imgui.h>
-#include <imgui-SFML.h>
 #define GUI
 #include "Script.hpp"
 
@@ -16,6 +14,238 @@ void EngineHud::setTheme()
 
     colors[ImGuiCol_WindowBg] = ImVec4(0.54, 0.56, 0.56, .5f);
     _theme = true;
+}
+
+void EngineHud::setCurrentSceneFilepath(const std::string &sceneFilepath)
+{
+    _currentSceneFilepath = sceneFilepath;
+}
+
+void EngineHud::currentSceneContent(const nlohmann::json &sceneContent)
+{
+    _currentSceneContent = sceneContent;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
+{
+    auto transform = dynamic_cast<Transform2D *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Transform2D";
+    json["position"] = { transform->position.x, transform->position.y };
+    json["rotation"] = transform->rotation;
+    json["scale"] = { transform->scale.x, transform->scale.y };
+    json["size"] = { transform->size.x, transform->size.y };
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComponent *c)
+{
+    auto box = dynamic_cast<BoxCollider *>(c);
+    nlohmann::json json;
+
+    json["type"] = "BoxCollider";
+    json["position"] = { box->getPosition().x, box->getPosition().y };
+    json["size"] = { box->getSize().x, box->getSize().y };
+    json["range"] = box->getRange();
+    json["collision_type"] = box->getType() == BoxCollider::Type::STATIC ? "Static" : "Dynamic";
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent *c)
+{
+    auto sprite = dynamic_cast<Sprite *>(c);
+    nlohmann::json json;
+    json["type"] = "Sprite";
+    json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(IComponent *c)
+{
+    nlohmann::json json;
+    json["type"] = "Velocity";
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(IComponent *c)
+{
+    auto animator = dynamic_cast<Animator *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Animator";
+    for (auto& it : animator->getAnimations()) {
+        auto& name = it.first;
+        auto animation = it.second;
+        auto offset = animation.getOffsetRect();
+
+        json["animations"].push_back({
+            { "name", name },
+            { "frames_number", animation.getFramesNumber() },
+            { "rect",  { offset[0], offset[1], offset[2], offset[3] }},
+            { "speed", animation.getSpeed() }
+        });
+    }
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *c)
+{
+    auto view = dynamic_cast<View *>(c);
+    nlohmann::json json;
+    auto viewPort = view->getViewBounds();
+
+    json["type"] = "View";
+    json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
+    json["follow"] = view->isFollowing();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c)
+{
+    auto tag = dynamic_cast<Tag *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Tag";
+    json["tag"] = tag->value();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent *c)
+{
+    auto layer = dynamic_cast<Layer *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Layer";
+    json["value"] = layer->value();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent *c)
+{
+    auto sound = dynamic_cast<Sound *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Sound";
+    json["sound_name"] = sound->name();
+    json["loop"] = sound->isLoop();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeMusic(IComponent *c)
+{
+    auto music = dynamic_cast<OrizonMusic *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Music";
+    json["music_name"] = music->name();
+    json["loop"] = music->isLoop();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeScript(IComponent *c)
+{
+    auto script = dynamic_cast<Script *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Script";
+    json["path"] = script->getFile();
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent *c)
+{
+    auto light = dynamic_cast<Light *>(c);
+    float intensity = light->getIntensity();
+    float emission = light->getEmission();
+    Sprite *sprite = light->getSprite();
+    nlohmann::json json;
+
+    json["type"] = "Light";
+    if (intensity != .4f)
+        json["intensity"] = intensity;
+    if (light->isSpriteLoaded())
+        json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+    json["emission"] = emission;
+    return json;
+}
+
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponent *c)
+{
+    auto gravity = dynamic_cast<Gravity *>(c);
+    nlohmann::json json;
+
+    json["type"] = "Gravity";
+    json["force"] = gravity->force;
+    return json;
+}
+
+
+std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const nlohmann::json &entitiesJson)
+{
+    // Get all the wanted to saved entity
+    std::unordered_map<std::string, Entity *> entitiesName;
+
+    for (auto& s : entitiesJson) {
+        for (auto& eSave : _toSave) {
+            auto tag = eSave->getComponent<Tag>();
+
+            if (!tag) continue;
+            if (tag->value().find(s) != std::string::npos) {
+                entitiesName[s] = eSave;
+                break;
+            }
+        }
+    }
+    return entitiesName;
+}
+
+void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
+{
+    auto components = e->getComponents();
+    entityJson["components"].clear();
+
+    for (auto& it : components) {
+        if (it.second != nullptr) {
+            auto serializedComponent = ComponentSerializerFactory::serialize(it.second);
+            if (!serializedComponent.is_null())
+                entityJson["components"].push_back(serializedComponent);
+        }
+    }
+}
+
+void EngineHud::saveScene()
+{
+    if (Input::isKeyDown("LControl") &&
+        Input::isKeyDown("S")) {
+        try {
+
+            std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(_currentSceneContent["entities"]);
+            std::string entitiesPath;
+
+            for (auto& r : _currentSceneContent["resources"]) {
+                if (r["type"].get<std::string>().find("Entities") != std::string::npos)
+                    entitiesPath = r["path"];
+            }
+            auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
+
+            for (auto &it : toSaves) {
+                auto& name = it.first;
+                auto *e = it.second;
+
+                for (auto& json : entitiesContentJson["entities"]) {
+                    auto entityName = json["name"];
+                    if (entityName.get<std::string>().find(name) != std::string::npos) {
+                        componentSerializer(json, e);
+                    }
+                }
+            }
+            std::string content = entitiesContentJson.dump(4);
+            Utils::writeFile(entitiesPath + std::to_string(1), content);
+        } catch (std::exception& msg) {
+            std::cerr << msg.what() << std::endl;
+        }
+    }
 }
 
 void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
@@ -80,7 +310,7 @@ void EngineHud::entityInformation()
     ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO), 0));
     ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
                                     _width * GUI_ENTITIES_WIDTH_SIZE_RATIO));
-    ImGui::Begin("Entity informations");
+    ImGui::Begin("Entity information");
     if (_selected) {
         auto components = _selected->getComponents();
         std::size_t i = 0;
@@ -92,8 +322,10 @@ void EngineHud::entityInformation()
             }
             auto signature = elem.first;
             std::string updated = std::to_string(i) + signature;
-            if (ImGui::Selectable(updated.c_str())) {
+            if (ImGui::TreeNode(updated.c_str())) {
                 _selectedC = elem.second;
+                ComponentTreeNodeFactory::create(elem.second);
+                ImGui::TreePop();
             }
             i++;
         }
@@ -103,14 +335,32 @@ void EngineHud::entityInformation()
     ImGui::End();
 }
 
+void EngineHud::consoleWindow()
+{
+    ImGui::SetNextWindowSize(ImVec2(100, 50), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_CONSOLE_HEIGHT_SIZE_RATIO),
+                                       _height - (_width * GUI_CONSOLE_WIDTH_SIZE_RATIO)),
+                                    ImGuiCond_FirstUseEver);
+    ImGui::Begin("Console");
+    while (!_consoleMsg.empty()) {
+        auto& msg = _consoleMsg.front();
+
+        ImGui::Text(msg.c_str());
+        _consoleMsg.pop();
+    }
+    ImGui::Separator();
+    ImGui::InputText("##consoleInput", _consoleInputText.data(),
+                     4096, ImGuiInputTextFlags_AllowTabInput);
+    ImGui::End();
+}
+
 void EngineHud::scriptEditor(IComponent *component)
 {
     std::string signature = component->getSignature();
 
-    if (signature.find("Script") ==
-        std::string::npos)
-        return;
-    Script *script = static_cast<Script *>(component);
+    if (signature.find("Script") == std::string::npos) return;
+
+    auto *script = dynamic_cast<Script *>(component);
     if (_lastScript != script) {
         _lastScript = script;
         _scriptContent = R_GET_SCRIPT(script->getFile());

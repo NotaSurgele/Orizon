@@ -81,11 +81,27 @@ void Core::setView(View *view)
 
 void Core::inputHandler(sf::Event& event)
 {
+    if (!WindowInstance.getView()) return;
+    auto& sfmlWindow = WindowInstance.getSFMLRenderWindow();
+    auto viewBounds = sfmlWindow.getViewport(sfmlWindow.getView());
+    auto mousePosition = sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow());
+
+    EngineHud::writeConsole<std::string, bool>("Main view is ", _mainViewSelected);
+    EngineHud::writeConsole<std::string, int, std::string, int>("Mouse position ", mousePosition.x, " ", mousePosition.y);
     while (CoreEvent(event)) {
         ImGui::SFML::ProcessEvent(event);
 
+        if (event.type == sf::Event::MouseButtonPressed && ENGINE_MODE) {
+            if (event.mouseButton.button == sf::Mouse::Left) {
+                _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
+            }
+        }
+
         if (event.type == sf::Event::Closed)
             CoreClose();
+        if (ENGINE_MODE && !_mainViewSelected) {
+            return;
+        }
         if (event.type == sf::Event::KeyPressed)
             _input.___push_key(event.key.code);
         if (event.type == sf::Event::KeyReleased)
@@ -130,10 +146,19 @@ void Core::updateGUI()
 {
     if (ENGINE_MODE) {
         ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        _gui.setTheme();
-        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
-        _gui.entityInformation();
-        ImGui::SFML::Render(WindowInstance.getSFMLRenderWindow());
+        _guiThread = std::thread([&] () {
+            auto currentScene = _sceneManager.getScene();
+
+            _gui.setTheme();
+            _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
+            _gui.currentSceneContent(currentScene->getSceneContent());
+            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+            _gui.entityInformation();
+            _gui.consoleWindow();
+            _gui.saveScene();
+        });
+        if (_guiThread.joinable()) _guiThread.join();
+        ImGui::SFML::Render(_window.getSFMLRenderWindow());
     }
 }
 
@@ -148,9 +173,8 @@ void Core::run()
     initGui();
     start();
     while (isOpen()) {
-
         _time.start();
-        sf::Event event;
+        sf::Event event {};
 
         inputHandler(event);
         render();
