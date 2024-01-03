@@ -22,8 +22,12 @@ public:
             Animation() = default;
             const std::vector<sf::IntRect>& getAnimationFrames();
             void playAnimation(bool loop);
+            void setSprite(Sprite *sprite);
             void reset();
+            std::size_t getFramesNumber() const { return _frames_nb; }
             const std::string& name();
+            std::array<float, 4> getOffsetRect() const { return { _offset_x, _offset_y, _sizeWidth, _sizeHeight }; }
+            float getSpeed() const { return _animation_speed; }
         private:
             std::string _name = "";
             float _currentTime = 0.0f;
@@ -43,6 +47,8 @@ public:
     ~Animator() = default;
 
     const std::vector<sf::IntRect>& getAnimationFrames(std::string const& name);
+    const std::unordered_map<std::string, Animation> getAnimations() { return _animation_map; };
+
     void playAnimation(std::string const& name, bool const loop);
     Animation& newAnimation( std::size_t const &nbFrames,
                              AnimatorRect const& anim_rect,

@@ -1,20 +1,25 @@
 #pragma once
-#include "Scene.hpp"
 #include <queue>
+#include "Scene.hpp"
 
 class SceneManager {
     public:
         SceneManager() = default;
         ~SceneManager() = default;
 
-        void addScene(Scene const& scene);
+        void addScene(Scene* scene);
         void popScene();
-        Scene const& getScene();
+        Scene *getScene();
 
         void create();
         void update();
         void destroy();
 
+        void size()
+        {
+            std::cout << _sceneQueue.size() << std::endl;
+        }
+
     private:
-        std::queue<Scene> _sceneQueue;
+        std::queue<Scene *> _sceneQueue;
 };

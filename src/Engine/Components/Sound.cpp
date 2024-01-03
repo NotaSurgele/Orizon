@@ -1,8 +1,9 @@
 #include "Sound.hpp"
 #include "Core.hpp"
 
-Sound::Sound(Entity *e)
+Sound::Sound(Entity *e, const std::string& name) : _name(name)
 {
+
 }
 
 bool Sound::load(const std::string& filePath)
