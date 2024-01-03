@@ -362,7 +362,7 @@ void Script::registerLightComponent()
 void Script::registerOrizonMusicComponent()
 {
     _state->new_usertype<OrizonMusic>(
-        "OrizonMusic", sol::constructors<OrizonMusic(Entity *)>(),
+        "OrizonMusic", sol::constructors<OrizonMusic(Entity *, const std::string&)>(),
         "destroy", &OrizonMusic::destroy,
         "load", &OrizonMusic::load,
         "loadFromName", &OrizonMusic::loadFromName,
@@ -379,7 +379,7 @@ void Script::registerOrizonMusicComponent()
 void Script::registerSoundComponent()
 {
     _state->new_usertype<Sound>(
-        "Sound", sol::constructors<Sound(Entity *)>(),
+        "Sound", sol::constructors<Sound(Entity *, const std::string&)>(),
         "load", &Sound::load,
         "loadFromName", &Sound::loadFromName,
         "reload", &Sound::reload,
@@ -407,7 +407,7 @@ void Script::registerSpriteComponent()
                 [] (Sprite *sprite, const std::string& texturePath) {
                     return sprite->setTexture(texturePath);
                 },
-                [] (Sprite *sprite, const sf::Texture& texture) {
+                [] (Sprite *sprite, sf::Texture& texture) {
                     return sprite->setTexture(texture);
                 }
         ),
@@ -573,13 +573,13 @@ void Script::registerEntityFunction()
                     }
             ),
             "addComponentOrizonMusic", sol::overload(
-                    [](Entity *entity) {
-                        return entity->addComponent<OrizonMusic>();
+                    [](Entity *entity, const std::string& name) {
+                        return entity->addComponent<OrizonMusic>(name);
                     }
             ),
             "addComponentSound", sol::overload(
-                    [](Entity *entity) {
-                        return entity->addComponent<Sound>();
+                    [](Entity *entity, const std::string& name) {
+                        return entity->addComponent<Sound>(name);
                     }
             ),
             "addComponentSprite", sol::overload(

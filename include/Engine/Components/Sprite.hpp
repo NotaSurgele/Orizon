@@ -8,9 +8,9 @@
 
 class Sprite : public IComponent, public Drawable {
     public:
-        Sprite(Entity *self, sf::Texture const& texture,
+        Sprite(Entity *self, sf::Texture& texture,
             float const& width=1, float const& height=1);
-        Sprite(sf::Texture const& texture);
+        Sprite(sf::Texture& texture);
 /*        Sprite(Entity *self, std::string const& texturePath,
               float const& width=1, float const& height=1);*/
         Sprite(Entity *self, const std::string& textureName,
@@ -21,7 +21,7 @@ class Sprite : public IComponent, public Drawable {
         sf::Sprite& getSprite();
         const sf::Texture*  getTexture();
         Sprite& setSprite(sf::Sprite const& sprite);
-        Sprite& setTexture(sf::Texture const& texture);
+        Sprite& setTexture(sf::Texture& texture);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
         Sprite& setTransform(Transform2D *transform);

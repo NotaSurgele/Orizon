@@ -7,7 +7,7 @@
 
 class OrizonMusic : public IComponent {
 public:
-   OrizonMusic(Entity *e) : _e(e) {};
+   OrizonMusic(Entity *e, const std::string& name) : _e(e), _name(name) {};
     ~OrizonMusic() { delete _music; };
 
 
@@ -25,10 +25,12 @@ public:
     float getVolume();
     float getDuration();
     sf::Sound::SoundSource::Status getStatus();
+    std::string name() { return _name; }
 
     void destroy() override;
 
 private:
+    std::string _name;
     std::string _path;
     sf::Music *_music = nullptr;
     Entity *_e = nullptr;

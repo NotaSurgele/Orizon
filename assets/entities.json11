@@ -1,0 +1,210 @@
+{
+    "entities": [
+        {
+            "components": [
+                {
+                    "position": [
+                        679.1480102539063,
+                        696.4166870117188
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "texture_name": "hobbit",
+                    "type": "Sprite"
+                },
+                {
+                    "collision_type": "Dynamic",
+                    "position": [
+                        679.1480102539063,
+                        696.4166870117188
+                    ],
+                    "range": 10,
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "type": "Velocity"
+                },
+                {
+                    "animations": [
+                        {
+                            "frames_number": 4,
+                            "name": "idle",
+                            "rect": [
+                                0.0,
+                                0.0,
+                                18.0,
+                                18.0
+                            ],
+                            "speed": 0.20000000298023224
+                        }
+                    ],
+                    "type": "Animator"
+                },
+                {
+                    "follow": true,
+                    "type": "View",
+                    "viewport": [
+                        279.14801025390625,
+                        396.41668701171875,
+                        800.0,
+                        600.0
+                    ]
+                },
+                {
+                    "tag": "player",
+                    "type": "Tag"
+                },
+                {
+                    "loop": true,
+                    "sound_name": "toto",
+                    "type": "Sound"
+                },
+                {
+                    "path": "./assets/Scripting/Player.lua",
+                    "type": "Script"
+                },
+                {
+                    "loop": true,
+                    "music_name": "tata",
+                    "type": "Music"
+                },
+                {
+                    "type": "Layer",
+                    "value": 5
+                }
+            ],
+            "name": "player"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "rotation": 0,
+                    "scale": [
+                        1,
+                        1
+                    ],
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "collision_type": "Static",
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "range": 1,
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "block",
+                    "type": "Sprite"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "block"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "rotation": 0,
+                    "scale": [
+                        1,
+                        1
+                    ],
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "collision_type": "Dynamic",
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "range": 0,
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "grass",
+                    "type": "Sprite"
+                },
+                {
+                    "type": "Layer",
+                    "value": 1
+                }
+            ],
+            "name": "grass"
+        },
+        {
+            "components": [
+                {
+                    "path": "./assets/Scripting/MapManager.lua",
+                    "type": "Script"
+                },
+                {
+                    "position": [
+                        500.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "tag": "MapManager",
+                    "type": "Tag"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "MapManager"
+        }
+    ]
+}

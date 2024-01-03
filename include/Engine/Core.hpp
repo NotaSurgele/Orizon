@@ -99,6 +99,8 @@ private:
 #define R_ADD_RESSOURCE(type, name, path) \
         Core::RessourceManager().addRessource<type>(name, path)
 
+#define RESOURCE_MANAGER() \
+        Core::RessourceManager()
 /**
  * @brief macro to push a music inside the ressource manager
 */

@@ -13,7 +13,7 @@ void Scene::ComponentFactory::create_music(Entity *e, nlohmann::json const& json
     sf::Music *buffer = R_GET_MUSIC(json["music_name"]);
     bool loop = json["loop"];
 
-    e->addComponent<OrizonMusic>()->setMusic(buffer)
+    e->addComponent<OrizonMusic>(json["music_name"])->setMusic(buffer)
                                     ->setLoop(loop);
 }
 
@@ -39,8 +39,8 @@ void Scene::ComponentFactory::create_sound(Entity *e, nlohmann::json const& json
     sf::SoundBuffer buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
     bool loop = json["loop"];
 
-    e->addComponent<Sound>()->setBuffer(buffer)
-            ->setLoop(loop);
+    e->addComponent<Sound>(json["sound_name"])->setBuffer(buffer)
+                            ->setLoop(loop);
 }
 
 void Scene::get_ressources(nlohmann::json const& ressources)

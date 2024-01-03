@@ -35,6 +35,11 @@ public:
     void consoleWindow();
     void scriptEditor(IComponent *component);
 
+    static inline void registerSavedEntity(Entity *e)
+    {
+        _toSave.push_back(e);
+    }
+
     template <class T = std::string, typename ...Args>
     static inline void writeConsole(const std::string& first, Args... args)
     {
@@ -51,6 +56,8 @@ public:
         _msg += data;
         writeConsole(args ...);
     }
+
+    void saveScene();
 
 private:
     static inline std::string _msg;
@@ -69,6 +76,58 @@ private:
         insert(_msg);
     }
 
+    std::unordered_map<std::string, Entity *> getEntitiesNameToSave(const nlohmann::json& entitiesJson);
+    void componentSerializer(nlohmann::json& entityJson, Entity *e);
+
+    class ComponentSerializerFactory {
+    public:
+        ComponentSerializerFactory() = default;
+        ~ComponentSerializerFactory() = default;
+
+        static inline nlohmann::json serialize(IComponent *component)
+        {
+            for (auto& it : _componentMap) {
+                if (component->getSignature().find(it.first) != std::string::npos) {
+                    return it.second(component);
+                }
+            }
+            return {};
+        }
+
+    private:
+        static nlohmann::json serializeTransform2D(IComponent *c);
+        static nlohmann::json serializeBoxCollider(IComponent *c);
+        static nlohmann::json serializeSprite(IComponent *c);
+        static nlohmann::json serializeVelocity(IComponent *c);
+        static nlohmann::json serializeAnimation(IComponent *c);
+        static nlohmann::json serializeView(IComponent *c);
+        static nlohmann::json serializeTag(IComponent *c);
+        static nlohmann::json serializeLayer(IComponent *c);
+        static nlohmann::json serializeSound(IComponent *c);
+        static nlohmann::json serializeMusic(IComponent *c);
+        static nlohmann::json serializeScript(IComponent *c);
+        static nlohmann::json serializeLight(IComponent *c);
+        static nlohmann::json serializeGravity(IComponent *c);
+
+
+    private:
+        static inline std::unordered_map<std::string, std::function<nlohmann::json(IComponent *)>> _componentMap = {
+                { "Transform2D", serializeTransform2D },
+                { "BoxCollider", serializeBoxCollider },
+                { "Sprite", serializeSprite },
+                { "Velocity", serializeVelocity },
+                { "Animator", serializeAnimation },
+                { "View", serializeView },
+                { "Tag", serializeTag },
+                { "Layer", serializeLayer },
+                { "Sound", serializeSound },
+                { "Music", serializeMusic },
+                { "Script", serializeScript },
+                { "Light", serializeLight },
+                { "Gravity", serializeGravity },
+        };
+
+    };
     class ComponentTreeNodeFactory {
     public:
         ComponentTreeNodeFactory() = default;
@@ -119,6 +178,11 @@ private:
             ImGui::SameLine();
             ImGui::SetNextItemWidth(50);
             ImGui::InputFloat("##scaleY", &transform->scale.y);
+
+            //Handle rotation
+            ImGui::Text("Rotation");
+            ImGui::SameLine();
+            ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
         }
 
     private:
@@ -147,4 +211,5 @@ private:
     std::string _consoleInputText;
 
     static inline std::queue<std::string> _consoleMsg;
+    static inline std::vector<Entity *> _toSave;
 };

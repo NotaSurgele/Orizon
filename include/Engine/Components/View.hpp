@@ -18,6 +18,8 @@ public:
         _follow(follow)
     {
         if (ENGINE_MODE) {
+            _size.x = w;
+            _size.y = h;
             this->setSize(w * .5f, h * .5f);
             this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
                                             EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));
@@ -30,14 +32,14 @@ public:
 
     sf::FloatRect getViewBounds() const
     {
-        auto viewSize = getSize();
-        auto viewPos = getCenter() - (viewSize / 2.0f);
+        auto viewPos = getCenter() - (_size / 2.0f);
 
-        return {viewPos, viewSize };
+        return {viewPos, _size };
     }
 
     ~View() = default;
 
 private:
     const bool _follow = false;
+    sf::Vector2f _size;
 };

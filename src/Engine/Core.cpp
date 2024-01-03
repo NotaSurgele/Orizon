@@ -155,6 +155,7 @@ void Core::updateGUI()
             _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
             _gui.entityInformation();
             _gui.consoleWindow();
+            _gui.saveScene();
         });
         if (_guiThread.joinable()) _guiThread.join();
         ImGui::SFML::Render(_window.getSFMLRenderWindow());
