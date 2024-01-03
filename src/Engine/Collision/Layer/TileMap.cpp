@@ -121,6 +121,29 @@ bool TileMap::isInside(Entity *e)
     return e == _layer[fixedPosition.x][fixedPosition.y];
 }
 
+std::vector<Entity *> TileMap::getEntityInBounds(const sf::FloatRect& bounds)
+{
+    std::vector<Entity *> arr;
+    auto startPos = sf::Vector2i((bounds.left / tileWidth) - 1, (bounds.top / tileHeight) - 1);
+    auto endPos = sf::Vector2i((bounds.left + bounds.width) / tileWidth,
+                               (bounds.top + bounds.height) / tileHeight);
+
+    if (startPos.x < 0) startPos.x = _x;
+    if (startPos.x > (_x + w)) startPos.x = _x + w;
+    if (startPos.y < 0) startPos.y = _y;
+    if (startPos.y > (_y + h)) startPos.y = _y + h;
+
+    for (int x = startPos.x; x <= endPos.x; x++) {
+        for (int y = startPos.y; y <= endPos.y; y++) {
+            auto& e = _layer[x][y];
+
+            if (e != nullptr)
+                arr.push_back(e);
+        }
+    }
+    return arr;
+}
+
 void TileMap::outputValues()
 {
     for (std::size_t x = 0; x < w; x++) {
@@ -134,9 +157,9 @@ void TileMap::outputValues()
 void TileMap::render()
 {
     _isRender = true;
-    for (auto e : _entities) {
+    /*for (auto e : _entities) {
         System::pushEntity(e);
-    }
+    }*/
 }
 
 void TileMap::hide()

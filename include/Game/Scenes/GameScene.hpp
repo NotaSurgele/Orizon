@@ -11,9 +11,9 @@
 
 class GameScene : public Scene {
 public:
-    void create() override final;
-    void update() override final;
-    void destroy() override final;
+    void create() final;
+    void update() final;
+    void destroy() final;
 
 private:
 

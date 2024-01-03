@@ -4,7 +4,7 @@
 #include <iostream>
 
 Sprite::Sprite( Entity *self,
-                sf::Texture const& texture,
+                sf::Texture& texture,
                 float const& scaleX,
                 float const& scaleY) :  _sprite(),
                                         _texture(),
@@ -35,7 +35,7 @@ Sprite::Sprite(Entity *self, const std::string& textureName, const float& w, con
     _sprite.setScale(w, h);
 }
 
-Sprite::Sprite(const sf::Texture &texture) : _self(nullptr)
+Sprite::Sprite(sf::Texture& texture) : _self(nullptr)
 {
     setTexture(texture);
 }
@@ -125,7 +125,7 @@ bool Sprite::isLightApply()
     return _light;
 }
 
-Sprite& Sprite::setTexture(sf::Texture const& texture)
+Sprite& Sprite::setTexture(sf::Texture& texture)
 {
     _texture = texture;
     _sprite.setTexture(_texture);
