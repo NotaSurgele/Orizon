@@ -15,6 +15,6 @@ public:
     void render() override final;
     void destroy() override final;
 
-    GameScene game_scene;
+    GameScene *game_scene = nullptr;
 private:
 };

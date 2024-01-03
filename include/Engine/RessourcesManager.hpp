@@ -80,6 +80,33 @@ class RessourcesManager {
             return _scriptMap[path];
         }
 
+        std::string textureToName(const sf::Texture *texture)
+        {
+            for (auto& it : _map) {
+                bool equal = true;
+                sf::Image image1 = it.second.copyToImage();
+                sf::Image image2 = texture->copyToImage();
+
+                // Compare the size of the images
+                if (image1.getSize() != image2.getSize()) {
+                    continue;
+                }
+
+                // Compare the pixel data
+                for (unsigned int x = 0; x < image1.getSize().x; ++x) {
+                    for (unsigned int y = 0; y < image1.getSize().y; ++y) {
+                        if (image1.getPixel(x, y) != image2.getPixel(x, y)) {
+                            equal = false;
+                            break;
+                        }
+                    }
+                    if (!equal) break;
+                }
+                if (equal) return it.first;
+            }
+            return "";
+        }
+
         void destroy()
         {
 

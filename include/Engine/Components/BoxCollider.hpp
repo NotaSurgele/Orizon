@@ -68,11 +68,6 @@ public:
         float angle = 0;
         sf::Vector2f position = sf::Vector2f(x, y);
 
-        for (std::size_t i = 0; i < _rays.size(); i++) {
-            _rays[i].setPosition(position);
-            _rays[i].rotate(angle += 45);
-            // _rays[i].show(2.0f);
-        }
         _shape.setPosition(x, y);
         _position.x = x;
         _position.y = y;
@@ -147,7 +142,6 @@ private:
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
-    std::vector<RayCaster> _rays;
     Type _type = Type::NUL;
     Entity *_e = nullptr;
     std::vector<std::function<void(BoxCollider *)>> _colliderSystem;

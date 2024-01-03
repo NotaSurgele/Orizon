@@ -21,6 +21,7 @@ public:
 
     static void addEntity(Entity *entity);
     static void pushEntity(Entity *entity);
+    static void forceUpdate(Entity *e);
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -161,11 +162,12 @@ public:
         _layers.push_back(layer);
     }
 
-    std::vector<Entity *> getRegistry() { return _registry; }
+    std::vector<Entity *> getRegistry() { return _forceUpdate; }
 
     std::vector<TileMap *> getTileMaps() {  return _layers; }
 
     bool isInView(Entity *e);
+    bool isInView(TileMap *map);
 
     void init();
 
@@ -229,4 +231,5 @@ private:
     static inline std::vector<Entity *> _scripted_entity;
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
+    static inline std::vector<Entity *> _forceUpdate;
 };
