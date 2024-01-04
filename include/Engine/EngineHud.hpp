@@ -128,6 +128,7 @@ private:
         };
 
     };
+
     class ComponentTreeNodeFactory {
     public:
         ComponentTreeNodeFactory() = default;
@@ -147,47 +148,14 @@ private:
         }
 
     private:
-        static inline void buildTransformTreeNode(IComponent *c)
-        {
-            auto transform = dynamic_cast<Transform2D *>(c);
-            auto x = std::to_string(transform->position.x);
-            auto y = std::to_string(transform->position.y);
+        static void buildTransformTreeNode(IComponent *c);
 
-            // Handle position
-            ImGui::Text("Position");
-            ImGui::SameLine();
-            ImGui::Text("x: ");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(50);
-            ImGui::InputFloat("##posX", &transform->position.x);
-            ImGui::SameLine();
-            ImGui::Text("y: ");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(50);
-            ImGui::InputFloat("##posY", &transform->position.y);
-
-            // Handle size
-            ImGui::Text("Scale");
-            ImGui::SameLine();
-            ImGui::Text("x: ");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(50);
-            ImGui::InputFloat("##scaleX", &transform->scale.x);
-            ImGui::SameLine();
-            ImGui::Text("y: ");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(50);
-            ImGui::InputFloat("##scaleY", &transform->scale.y);
-
-            //Handle rotation
-            ImGui::Text("Rotation");
-            ImGui::SameLine();
-            ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
-        }
+        static void buildTagTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
-            { "Transform2D", buildTransformTreeNode }
+            { "Transform2D", buildTransformTreeNode },
+            { "Tag", buildTagTreeNode }
         };
     };
 
@@ -212,4 +180,5 @@ private:
 
     static inline std::queue<std::string> _consoleMsg;
     static inline std::vector<Entity *> _toSave;
+    static inline std::string _newVal = "new value";
 };

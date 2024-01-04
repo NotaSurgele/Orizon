@@ -200,6 +200,80 @@ std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const
     return entitiesName;
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildTransformTreeNode(IComponent *c)
+{
+    auto transform = dynamic_cast<Transform2D *>(c);
+    auto x = std::to_string(transform->position.x);
+    auto y = std::to_string(transform->position.y);
+
+    // Handle position
+    ImGui::Text("Position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &transform->position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &transform->position.y);
+
+    // Handle size
+    ImGui::Text("Scale");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleX", &transform->scale.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleY", &transform->scale.y);
+
+    //Handle rotation
+    ImGui::Text("Rotation");
+    ImGui::SameLine();
+    ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildTagTreeNode(IComponent *c)
+{
+    auto tag = dynamic_cast<Tag *>(c);
+    auto& value = tag->value();
+
+    ImGui::Text("Tag value");
+    ImGui::SameLine();
+    if (ImGui::Button(value.data())){
+        ImGui::SameLine();
+        ImGui::OpenPopup("Available tags");
+    }
+
+    if (ImGui::BeginPopup("Available tags")) {
+        for (auto& it : R_GET_TAGS()) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                tag->setValue(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Text("Register new tag value");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputText("##tagValue", _newVal.data(), 256);
+    ImGui::SameLine();
+    if (ImGui::Button("+")) {
+        R_ADD_TAG(_newVal);
+        _newVal.clear();
+        _newVal = "new value";
+    }
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
