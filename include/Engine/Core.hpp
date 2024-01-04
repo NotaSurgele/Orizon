@@ -110,6 +110,14 @@ private:
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::RessourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
 
+#define R_ADD_TAG(tag) \
+        Core::RessourceManager().addTag(tag)
+
+#define R_GET_TAGS() \
+        Core::RessourceManager().getTags()
+
+#define R_SET_TAG(tag, old) \
+        Core::RessourceManager().incrementTag(tag, old)
 /**
  * @brief load a script and keep it in Resource manager
  */
