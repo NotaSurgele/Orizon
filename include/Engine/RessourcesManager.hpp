@@ -106,6 +106,11 @@ class RessourcesManager {
             return _musicMap[ressourceName];
         }
 
+        std::map<std::string, sf::Music *> getMusics()
+        {
+            return _musicMap;
+        }
+
         std::string& getScript(const std::string& path)
         {
             return _scriptMap[path];
