@@ -417,6 +417,14 @@ void EngineHud::ComponentTreeNodeFactory::buildSoundTreeNode(IComponent *c)
     sound->setVolume(volume);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildLayerTreeNode(IComponent *c)
+{
+    auto layer = dynamic_cast<Layer *>(c);
+    int value = (int)layer->value();
+
+    ImGui::InputInt("Draw order", &value);
+    layer->set((std::size_t)value);
+}
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {

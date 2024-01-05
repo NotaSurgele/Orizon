@@ -154,6 +154,7 @@ private:
         static void buildBoxColliderTreeNode(IComponent *c);
         static void buildVelocityTreeNode(IComponent *c);
         static void buildSoundTreeNode(IComponent *c);
+        static void buildLayerTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -162,7 +163,9 @@ private:
             { "View", buildViewTreeNode },
             { "BoxCollider", buildBoxColliderTreeNode },
             { "Velocity", buildVelocityTreeNode },
-            { "Sound", buildSoundTreeNode }
+            { "Sound", buildSoundTreeNode },
+            { "Layer", buildLayerTreeNode }
+
         };
     };
 
