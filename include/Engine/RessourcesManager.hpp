@@ -92,6 +92,15 @@ class RessourcesManager {
                 return static_cast<T &>(_map[ressourceName]);
         }
 
+        template<typename T>
+        std::map<std::string, T> getRessources()
+        {
+            if constexpr (std::is_same_v<T, sf::SoundBuffer>)
+                return _soundMap;
+            else
+                return _map;
+        }
+
         sf::Music *getMusic(std::string const& ressourceName)
         {
             return _musicMap[ressourceName];

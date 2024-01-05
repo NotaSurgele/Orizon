@@ -131,6 +131,9 @@ private:
 #define R_GET_RESSOURCE(type, name) \
         Core::RessourceManager().getRessource<type>(name)
 
+#define R_GET_RESSOURCES(type) \
+        Core::RessourceManager().getRessources<type>()
+
 #define R_GET_MUSIC(name) \
         Core::RessourceManager().getMusic(name)
 

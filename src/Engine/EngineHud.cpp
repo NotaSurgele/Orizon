@@ -378,6 +378,46 @@ void EngineHud::ComponentTreeNodeFactory::buildVelocityTreeNode(IComponent *c)
     velocity->setY(vector.y);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildSoundTreeNode(IComponent *c)
+{
+    auto sound = dynamic_cast<Sound *>(c);
+    float volume = sound->getVolume();
+    std::string name = sound->name();
+    bool loop = sound->isLoop();
+
+    ImGui::InputFloat("Volume", &volume);
+    ImGui::Text("Sound buffer");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    if (ImGui::Button(name.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Sound buffers");
+    }
+    if (ImGui::BeginPopup("Sound buffers")) {
+        for (auto& it : R_GET_RESSOURCES(sf::SoundBuffer)) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                sound->setBuffer(it.second);
+                sound->setName(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Checkbox("Loop", &loop);
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Play")) sound->play();
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Stop")) sound->stop();
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Pause")) sound->pause();
+    sound->setLoop(loop);
+    sound->setVolume(volume);
+}
+
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
