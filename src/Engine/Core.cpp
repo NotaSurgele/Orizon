@@ -168,6 +168,7 @@ void Core::destroyGUI()
 {
     if (ENGINE_MODE)
         ImGui::SFML::Shutdown();
+    delete _baseView;
 }
 
 void Core::run()
