@@ -28,11 +28,6 @@
             "path": "../assets/slash.mp3"
         },
         {
-            "type": "Sound",
-            "name": "caca",
-            "path": "../assets/Freedom.wav"
-        },
-        {
             "type": "Music",
             "name": "tata",
             "path": "../assets/Freedom.wav"
