@@ -200,6 +200,184 @@ std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const
     return entitiesName;
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildTransformTreeNode(IComponent *c)
+{
+    auto transform = dynamic_cast<Transform2D *>(c);
+    auto x = std::to_string(transform->position.x);
+    auto y = std::to_string(transform->position.y);
+
+    // Handle position
+    ImGui::Text("Position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &transform->position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &transform->position.y);
+
+    // Handle size
+    ImGui::Text("Scale");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleX", &transform->scale.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleY", &transform->scale.y);
+
+    //Handle rotation
+    ImGui::Text("Rotation");
+    ImGui::SameLine();
+    ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildTagTreeNode(IComponent *c)
+{
+    auto tag = dynamic_cast<Tag *>(c);
+    auto& value = tag->value();
+
+    ImGui::Text("Tag value");
+    ImGui::SameLine();
+    if (ImGui::Button(value.data())){
+        ImGui::SameLine();
+        ImGui::OpenPopup("Available tags");
+    }
+
+    if (ImGui::BeginPopup("Available tags")) {
+        for (auto& it : R_GET_TAGS()) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                tag->setValue(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Text("Register new tag value");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputText("##tagValue", _newVal.data(), 256);
+    ImGui::SameLine();
+    if (ImGui::Button("+")) {
+        R_ADD_TAG(_newVal);
+        _newVal.clear();
+        _newVal = "new value";
+    }
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
+{
+    auto view = dynamic_cast<View *>(c);
+    auto bounds = view->getViewBounds();
+    auto position = view->getCenter();
+
+    // Handle position
+    ImGui::Text("Center position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vposX", &position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vposY", &position.y);
+
+    // Handle size
+    ImGui::Text("Size");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vscaleX", &bounds.width);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vscaleY", &bounds.height);
+
+    // Following Checkbox
+    ImGui::Checkbox("Follow entity", &view->isFollowing());
+
+    bounds.width *= .5f;
+    bounds.height *= .5f;
+    bounds.left = position.x;
+    bounds.top = position.y;
+    view->setViewBounds(bounds);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildBoxColliderTreeNode(IComponent *c)
+{
+    static bool draw = false;
+    auto box = dynamic_cast<BoxCollider *>(c);
+    auto& position = box->getOffset();
+    auto& size = box->getSize();
+
+    // Handle position
+    ImGui::Text("Position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &position.y);
+
+    // Handle size
+    ImGui::Text("Size");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleX", &size.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleY", &size.y);
+
+    // Following Checkbox
+    box->setOffset(position);
+    box->setSize(size);
+    ImGui::Checkbox("Draw box", &draw);
+    box->draw(draw);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildVelocityTreeNode(IComponent *c)
+{
+    auto velocity = dynamic_cast<Velocity *>(c);
+    auto vector = sf::Vector2<float>(velocity->getX(), velocity->getY());
+
+    // Handle position
+    ImGui::Text("Value");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &vector.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &vector.y);
+
+    velocity->setX(vector.x);
+    velocity->setY(vector.y);
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();

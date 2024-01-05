@@ -61,6 +61,28 @@ class RessourcesManager {
             return *this;
         }
 
+        RessourcesManager& addTag(const std::string& tag)
+        {
+            _tagArray[tag] = 0;
+            return *this;
+        }
+
+        std::size_t incrementTag(const std::string& tag, std::string& old)
+        {
+            for (auto& it : _tagArray) {
+                if (it.first.find(old) != std::string::npos) {
+                    it.second--;
+                    break;
+                }
+            }
+            for (auto& it : _tagArray) {
+                if (it.first.find(tag) != std::string::npos) {
+                    return ++it.second;
+                }
+            }
+            return -1;
+        }
+
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
@@ -78,6 +100,11 @@ class RessourcesManager {
         std::string& getScript(const std::string& path)
         {
             return _scriptMap[path];
+        }
+
+        std::map<std::string, std::size_t> getTags()
+        {
+            return _tagArray;
         }
 
         std::string textureToName(const sf::Texture *texture)
@@ -121,4 +148,5 @@ class RessourcesManager {
         std::map<std::string, sf::SoundBuffer> _soundMap;
         std::map<std::string, sf::Music *> _musicMap;
         std::map<std::string, std::string> _scriptMap;
+        std::map<std::string, std::size_t> _tagArray;
 };

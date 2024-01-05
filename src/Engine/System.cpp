@@ -439,11 +439,12 @@ void System::BoxSystem(Entity *e)
     float velY = velocity->getY();
     float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
     float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
+    auto offset = box->getOffset();
 
-    box->setPosition(transform->position.x + x,
-                    transform->position.y + y);
-    if (d_v)
-        delete velocity;
+    box->setPosition((transform->position.x + offset.x) + x,
+                    (transform->position.y + offset.y) + y);
+    if (box->shouldDraw()) DRAW(box);
+    if (d_v) delete velocity;
 }
 
 void System::merge()

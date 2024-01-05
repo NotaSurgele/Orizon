@@ -78,6 +78,7 @@ void Script::registerInputSystem()
         "isKeyReleased", &Input::isKeyReleased,
         "isKeyPressed", &Input::isKeyPressed,
         "isButtonPressed", &Input::isButtonPressed,
+        "isButtonDown", &Input::isButtonDown,
         "isAnyButtonPressed", &Input::isAnyButtonPressed,
         "isButtonReleased", &Input::isButtonReleased,
         "isActionButtonDown", &Input::isActionButtonDown,
@@ -600,7 +601,7 @@ void Script::registerEntityFunction()
             ),
             "addComponentTag", sol::overload(
                     [](Entity *entity, std::string tagName) {
-                        return entity->addComponent<Tag>(tagName);
+                        return entity->addComponent<Tag>(std::move(tagName));
                     }
             ),
             "addComponentView", sol::overload(
