@@ -26,7 +26,7 @@ public:
     float getDuration();
     sf::Sound::SoundSource::Status getStatus();
     std::string name() { return _name; }
-
+    void setName(const std::string& name) { _name = name; }
     void destroy() override;
 
 private:

@@ -378,6 +378,90 @@ void EngineHud::ComponentTreeNodeFactory::buildVelocityTreeNode(IComponent *c)
     velocity->setY(vector.y);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildSoundTreeNode(IComponent *c)
+{
+    auto sound = dynamic_cast<Sound *>(c);
+    float volume = sound->getVolume();
+    std::string name = sound->name();
+    bool loop = sound->isLoop();
+
+    ImGui::InputFloat("Volume", &volume);
+    ImGui::Text("Sound buffer");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    if (ImGui::Button(name.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Sound buffers");
+    }
+    if (ImGui::BeginPopup("Sound buffers")) {
+        for (auto& it : R_GET_RESSOURCES(sf::SoundBuffer)) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                sound->setBuffer(it.second);
+                sound->setName(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Checkbox("Loop", &loop);
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Play")) sound->play();
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Stop")) sound->stop();
+    sound->setLoop(loop);
+    sound->setVolume(volume);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildLayerTreeNode(IComponent *c)
+{
+    auto layer = dynamic_cast<Layer *>(c);
+    int value = (int)layer->value();
+
+    ImGui::InputInt("Draw order", &value);
+    layer->set((std::size_t)value);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildOrizonMusicTreeNode(IComponent *c)
+{
+    auto music = dynamic_cast<OrizonMusic *>(c);
+    float volume = music->getVolume();
+    std::string name = music->name();
+    bool loop = music->isLoop();
+
+    ImGui::InputFloat("Volume", &volume);
+    ImGui::Text("Music buffer");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    if (ImGui::Button(name.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Music buffers");
+    }
+    if (ImGui::BeginPopup("Music buffers")) {
+        for (auto& it : R_GET_MUSICS()) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                music->setMusic(it.second);
+                music->setName(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Checkbox("Loop", &loop);
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Play")) music->play();
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Stop")) music->stop();
+    music->setLoop(loop);
+    music->setVolume(volume);
+}
+
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
