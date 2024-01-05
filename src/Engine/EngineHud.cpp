@@ -274,6 +274,48 @@ void EngineHud::ComponentTreeNodeFactory::buildTagTreeNode(IComponent *c)
     }
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
+{
+    auto view = dynamic_cast<View *>(c);
+    auto bounds = view->getViewBounds();
+    auto position = view->getCenter();
+
+    // Handle position
+    ImGui::Text("Center position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vposX", &position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vposY", &position.y);
+
+    // Handle size
+    ImGui::Text("Size");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vscaleX", &bounds.width);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##vscaleY", &bounds.height);
+
+    // Following Checkbox
+    ImGui::Checkbox("Follow entity", &view->isFollowing());
+
+    bounds.width *= .5f;
+    bounds.height *= .5f;
+    bounds.left = position.x;
+    bounds.top = position.y;
+    view->setViewBounds(bounds);
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
