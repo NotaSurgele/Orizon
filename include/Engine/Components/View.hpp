@@ -17,16 +17,19 @@ public:
         : sf::View(sf::Vector2f(x, y), sf::Vector2f(w, h)),
         _follow(follow)
     {
+        _size.x = w;
+        _size.y = h;
         if (ENGINE_MODE) {
-            _size.x = w;
-            _size.y = h;
             this->setSize(w * .5f, h * .5f);
             this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
                                             EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));
+        } else {
+            this->setSize(w, h);
+            this->setViewport({x, y, 1.0f, 1.0f});
         }
     }
 
-    const bool& isFollowing() { return _follow; }
+    bool& isFollowing() { return _follow; }
 
     void destroy() override final {}
 
@@ -37,9 +40,17 @@ public:
         return {viewPos, _size };
     }
 
+    void setViewBounds(const sf::FloatRect& bounds)
+    {
+        _size.x = bounds.width * 2;
+        _size.y = bounds.height * 2;
+        setCenter(bounds.left, bounds.top);
+        setSize(bounds.width, bounds.height);
+    }
+
     ~View() = default;
 
 private:
-    const bool _follow = false;
+    bool _follow = false;
     sf::Vector2f _size;
 };
