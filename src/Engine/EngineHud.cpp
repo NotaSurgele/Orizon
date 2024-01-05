@@ -337,7 +337,7 @@ void EngineHud::ComponentTreeNodeFactory::buildBoxColliderTreeNode(IComponent *c
     ImGui::InputFloat("##posY", &position.y);
 
     // Handle size
-    ImGui::Text("Scale");
+    ImGui::Text("Size");
     ImGui::SameLine();
     ImGui::Text("x: ");
     ImGui::SameLine();
@@ -356,6 +356,27 @@ void EngineHud::ComponentTreeNodeFactory::buildBoxColliderTreeNode(IComponent *c
     box->draw(draw);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildVelocityTreeNode(IComponent *c)
+{
+    auto velocity = dynamic_cast<Velocity *>(c);
+    auto vector = sf::Vector2<float>(velocity->getX(), velocity->getY());
+
+    // Handle position
+    ImGui::Text("Value");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &vector.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &vector.y);
+
+    velocity->setX(vector.x);
+    velocity->setY(vector.y);
+}
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
