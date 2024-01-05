@@ -16,6 +16,11 @@ public:
     void play();
     void stop();
 
+    void setName(const std::string& name)
+    {
+        _name = name;
+    }
+
     Sound *setLoop(bool loop);
     Sound *setVolume(const float& volume);
     Sound *setBuffer(const sf::SoundBuffer& buffer);
