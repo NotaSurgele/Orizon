@@ -137,6 +137,9 @@ private:
 #define R_GET_MUSIC(name) \
         Core::RessourceManager().getMusic(name)
 
+#define R_GET_MUSICS() \
+        Core::RessourceManager().getMusics()
+
 #define R_GET_SCRIPT(path) \
         Core::RessourceManager().getScript(path)
 
