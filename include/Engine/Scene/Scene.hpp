@@ -110,7 +110,7 @@ public:
                     };
                     BoxCollider::Type type = types.at(type_string);
                     auto collider = e->addComponent<BoxCollider>(position, size, range);
-
+                    collider->setOffset(position);
                     collider->setType(type);
                     if (json.contains("isTrigger")) {
                         bool trigger = json["isTrigger"];
