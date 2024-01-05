@@ -14,7 +14,7 @@ void App::start()
 void App::render()
 {
     CoreClear(sf::Color::Black);
-    _sceneManager.update();
+    Core::render();
 }
 
 void App::destroy()

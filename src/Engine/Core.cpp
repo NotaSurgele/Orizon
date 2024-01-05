@@ -138,6 +138,8 @@ void Core::fpsCalculation()
 
 void Core::initGui()
 {
+    _baseView = new View(nullptr, 0, 0, 800, 600);
+    SET_VIEW(_baseView);
     if (ENGINE_MODE)
         ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
 }

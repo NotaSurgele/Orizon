@@ -86,6 +86,7 @@ private:
     sf::Font font;
     sf::Text fpsText;
     sf::View _hud;
+    View *_baseView;
     EngineHud _gui;
     float _fpsTime=1.0f;
     bool _mainViewSelected = true;
