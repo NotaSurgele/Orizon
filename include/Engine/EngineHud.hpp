@@ -151,12 +151,14 @@ private:
         static void buildTransformTreeNode(IComponent *c);
         static void buildTagTreeNode(IComponent *c);
         static void buildViewTreeNode(IComponent *c);
+        static void buildBoxColliderTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
             { "Transform2D", buildTransformTreeNode },
             { "Tag", buildTagTreeNode },
-            { "View", buildViewTreeNode }
+            { "View", buildViewTreeNode },
+            { "BoxCollider", buildBoxColliderTreeNode }
         };
     };
 

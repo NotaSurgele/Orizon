@@ -62,7 +62,6 @@ public:
         _isTrigger = isTrigger;
     }
 
-
     void setPosition(const float& x, const float& y)
     {
         float angle = 0;
@@ -73,6 +72,11 @@ public:
         _position.y = y;
     }
 
+    void setSize(const sf::Vector2<float>& size)
+    {
+        _size = size;
+    }
+
     Entity * collidingWithEntity();
     Entity * entity();
 
@@ -81,6 +85,11 @@ public:
     sf::Vector2<float> &getPosition();
 
     sf::Vector2<float> &getSize();
+
+    sf::Vector2<float>& getOffset()
+    {
+        return _offsetPosition;
+    }
 
     Type getType();
 
@@ -96,6 +105,11 @@ public:
         _shape.setOutlineColor(color);
     }
 
+    void draw(const bool& draw)
+    {
+        _draw = draw;
+    }
+
     void registerSide(const Side& side)
     {
         auto containType = hasSide(side);
@@ -103,6 +117,11 @@ public:
         if (containType)
             return;
         sides.push_back(side);
+    }
+
+    void setOffset(const sf::Vector2f& offset)
+    {
+        _offsetPosition = offset;
     }
 
     BoxCollider *onCollision(const std::function<void(BoxCollider *)>& system);
@@ -125,6 +144,11 @@ public:
         return _isTrigger;
     }
 
+    bool& shouldDraw()
+    {
+        return _draw;
+    }
+
     const std::vector<std::function<void(BoxCollider *)>>& getColliderSystem()
     {
         return _colliderSystem;
@@ -139,6 +163,7 @@ public:
     bool ___isSet = false;
 
 private:
+    sf::Vector2<float> _offsetPosition;
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
@@ -148,4 +173,5 @@ private:
     std::vector<std::function<void(BoxCollider *)>> _triggerSystem;
     int _range = 0;
     bool _isTrigger = false;
+    bool _draw = false;
 };

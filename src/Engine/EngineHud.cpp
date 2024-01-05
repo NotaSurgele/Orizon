@@ -316,6 +316,47 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     view->setViewBounds(bounds);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildBoxColliderTreeNode(IComponent *c)
+{
+    static bool draw = false;
+    auto box = dynamic_cast<BoxCollider *>(c);
+    auto& position = box->getOffset();
+    auto& size = box->getSize();
+
+    // Handle position
+    ImGui::Text("Position");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posX", &position.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##posY", &position.y);
+
+    // Handle size
+    ImGui::Text("Scale");
+    ImGui::SameLine();
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleX", &size.x);
+    ImGui::SameLine();
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(50);
+    ImGui::InputFloat("##scaleY", &size.y);
+
+    // Following Checkbox
+    box->setOffset(position);
+    box->setSize(size);
+    ImGui::Checkbox("Draw box", &draw);
+    box->draw(draw);
+}
+
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
