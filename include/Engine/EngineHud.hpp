@@ -33,7 +33,6 @@ public:
     void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
     void consoleWindow();
-    void scriptEditor(IComponent *component);
 
     static inline void registerSavedEntity(Entity *e)
     {
@@ -61,6 +60,9 @@ public:
 
 private:
     static inline std::string _msg;
+    static inline bool _scriptWindow = false;
+
+    static void scriptEditor(Script *component);
 
     template <typename T>
     static inline void writeConsole(const T& last)
@@ -156,6 +158,7 @@ private:
         static void buildSoundTreeNode(IComponent *c);
         static void buildLayerTreeNode(IComponent *c);
         static void buildOrizonMusicTreeNode(IComponent *c);
+        static void buildScriptTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -166,7 +169,8 @@ private:
             { "Velocity", buildVelocityTreeNode },
             { "Sound", buildSoundTreeNode },
             { "Layer", buildLayerTreeNode },
-            { "OrizonMusic", buildOrizonMusicTreeNode }
+            { "OrizonMusic", buildOrizonMusicTreeNode },
+            { "Script", buildScriptTreeNode }
         };
     };
 
@@ -184,8 +188,8 @@ private:
     bool _theme = false;
 
     // scripting
-    std::string _scriptContent;
-    Script *_lastScript = nullptr;
+    static inline std::string _scriptContent;
+    static inline Script *_lastScript = nullptr;
 
     std::string _consoleInputText;
 

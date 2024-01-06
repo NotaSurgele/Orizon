@@ -54,6 +54,7 @@ class RessourcesManager {
 
         RessourcesManager& loadScript(const std::string& filepath)
         {
+            if (_scriptMap.contains(filepath)) return *this;
             std::string content = Utils::readFile(filepath, true);
 
             _scriptMap.insert(std::pair<std::string, std::string>(filepath, content));
@@ -114,6 +115,11 @@ class RessourcesManager {
         std::string& getScript(const std::string& path)
         {
             return _scriptMap[path];
+        }
+
+        std::map<std::string, std::string> getScripts()
+        {
+            return _scriptMap;
         }
 
         std::map<std::string, std::size_t> getTags()

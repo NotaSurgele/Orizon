@@ -30,17 +30,19 @@ void loadScript(sol::state *state, const std::string& path)
 Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
                                                             _filepath(scriptPath)
 {
+    create(scriptPath);
+}
+
+void Script::create(const std::string& scriptPath, bool insert)
+{
     _state = new sol::state();
     _state->open_libraries(sol::lib::base
             , sol::lib::math, sol::lib::string, sol::lib::table,
-           sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
-
-    // register entity type inside lua script
+            sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
-    // registered attached entity
-    (*_state)["_self"] = e;
+    (*_state)["_self"] = _self;
     (*_state)["_state"] = _state;
     (*_state)["Utils"] = Utils();
     (*_state)["ResourceManager"] = Core::RessourceManager();
@@ -59,10 +61,18 @@ Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
         sol::error res = result;
         std::cerr << "Error executing lua script " << res.what() << std::endl;
     } else {
-        R_ADD_SCRIPT(scriptPath);
-        System::__registerScriptedEntity(e);
-        std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
+        if (insert) {
+            R_ADD_SCRIPT(scriptPath);
+            System::__registerScriptedEntity(_self);
+            std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
+        }
     }
+}
+
+void Script::setScript(const std::string& filePath)
+{
+    _filepath = filePath;
+    reload();
 }
 
 void Script::registerInputSystem()
@@ -633,7 +643,11 @@ void Script::registerEntityFunction()
 
 void Script::reload()
 {
-    _state->script_file(_filepath);
+    _state->collect_gc();
+    _state->collect_garbage();
+    _state->stack_clear();
+    delete _state;
+    create(_filepath, false);
     _start = false;
 }
 
