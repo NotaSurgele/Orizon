@@ -40,6 +40,10 @@
         {
             "type": "Entities",
             "path": "../assets/entities.json"
+        },
+        {
+            "type": "Script",
+            "path": "./assets/Scripting/debug.lua"
         }
     ],
     "entities": ["player", "MapManager"]

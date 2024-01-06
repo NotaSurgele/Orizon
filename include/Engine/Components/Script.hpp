@@ -40,7 +40,10 @@ public:
 
     void reload();
 
+    void setScript(const std::string& filePath);
+
 private:
+    void create(const std::string& path, bool insert=true);
 
     // System
     void registerInputSystem();
