@@ -66,5 +66,7 @@ void Scene::get_ressources(nlohmann::json const& ressources)
             R_ADD_MUSIC(name, path);
         else if (type.find("Entities") != std::string::npos)
             _entitiesPath = path;
+        else if (type.find("Script") != std::string::npos)
+            R_ADD_SCRIPT(path);
     }
 }

@@ -143,6 +143,9 @@ private:
 #define R_GET_SCRIPT(path) \
         Core::RessourceManager().getScript(path)
 
+#define R_GET_SCRIPTS() \
+        Core::RessourceManager().getScripts()
+
 #define SET_VIEW(view) \
         Core::instance->setView(view)
 

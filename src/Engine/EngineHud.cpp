@@ -461,6 +461,34 @@ void EngineHud::ComponentTreeNodeFactory::buildOrizonMusicTreeNode(IComponent *c
     music->setVolume(volume);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
+{
+    auto script = dynamic_cast<Script *>(c);
+    auto path = script->getFile();
+
+    ImGui::Text("Current script: ");
+    ImGui::SameLine();
+    if (ImGui::Button(path.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Script files");
+    }
+    if (ImGui::BeginPopup("Script files")) {
+        for (auto& it : R_GET_SCRIPTS()) {
+            auto& s = it.first;
+
+            if (s.find(path) != std::string::npos) continue;
+            if (ImGui::Selectable(s.data())) {
+                script->setScript(s);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("View")) _scriptWindow = true;
+    if (_scriptWindow) scriptEditor(script);
+}
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
@@ -591,8 +619,8 @@ void EngineHud::entityInformation()
             }
             i++;
         }
-        if (_selectedC)
-            scriptEditor(_selectedC);
+/*        if (_selectedC)
+            scriptEditor(_selectedC);*/
     }
     ImGui::End();
 }
@@ -616,13 +644,8 @@ void EngineHud::consoleWindow()
     ImGui::End();
 }
 
-void EngineHud::scriptEditor(IComponent *component)
+void EngineHud::scriptEditor(Script *script)
 {
-    std::string signature = component->getSignature();
-
-    if (signature.find("Script") == std::string::npos) return;
-
-    auto *script = dynamic_cast<Script *>(component);
     if (_lastScript != script) {
         _lastScript = script;
         _scriptContent = R_GET_SCRIPT(script->getFile());
@@ -630,8 +653,8 @@ void EngineHud::scriptEditor(IComponent *component)
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
     ImGui::Begin("File Editor");
     if (ImGui::Button("x")) {
+        _scriptWindow = false;
          ImGui::End();
-         _selectedC = nullptr;
          return;
     }
     if (ImGui::Button("Save File")) {
@@ -639,7 +662,7 @@ void EngineHud::scriptEditor(IComponent *component)
         script->reload();
     }
     ImGui::Separator();
-    ImGui::InputTextMultiline("##editor", _scriptContent.data(), _scriptContent.size(),
+    ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
       ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
 }
