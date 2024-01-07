@@ -22,6 +22,7 @@ public:
     static void addEntity(Entity *entity);
     static void pushEntity(Entity *entity);
     static void forceUpdate(Entity *e);
+    static void forceDestroy();
 
     static Entity *getEntity(std::size_t const& id)
     {
