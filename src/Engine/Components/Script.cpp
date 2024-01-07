@@ -643,6 +643,8 @@ void Script::registerEntityFunction()
 
 void Script::reload()
 {
+    destroyObjectInstance();
+    System::forceDestroy();
     _state->collect_gc();
     _state->collect_garbage();
     _state->stack_clear();
@@ -674,6 +676,14 @@ void Script::update()
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
+}
+
+void Script::destroyObjectInstance()
+{
+    try {
+        sol::function destroy = (*_state)["Destroy"];
+        destroy();
+    } catch (...) {}
 }
 
 void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, int i)

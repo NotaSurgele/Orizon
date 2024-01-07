@@ -38,6 +38,28 @@ void System::pushEntity(Entity *entity)
     }
 }
 
+void System::forceDestroy()
+{
+    for (auto& e : _to_destroy) {
+        _dynamic_collider.erase(std::remove(
+                                        _dynamic_collider.begin(),
+                                        _dynamic_collider.end(),
+                                        e),
+                                _dynamic_collider.end());
+        _hashGrid->remove(e);
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
+        for (auto& layer : _layers) {
+            if (layer->contain(e)) {
+                layer->removeEntity(e);
+            }
+        }
+        e->__destroyComponents();
+        // delete e; [TODO] Fix this
+        _registry_size--;
+    }
+    _to_destroy.clear();
+}
+
 void System::forceUpdate(Entity *e)
 {
     _forceUpdate.push_back(e);
@@ -502,18 +524,19 @@ bool System::isInView(TileMap *map)
 void System::destroy_entity()
 {
     for (auto e : _to_destroy) {
-        _registry.erase(std::remove(_registry.begin(), _registry.end(), e), _registry.end());
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
         _hashGrid->remove(e);
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
             }
         }
+        e->__destroyComponents();
         // delete e; [TODO] Fix this
         _registry_size--;
     }

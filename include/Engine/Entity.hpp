@@ -23,7 +23,9 @@ class Entity {
     public:
         Entity();
 
-        ~Entity();
+        ~Entity() = default;
+
+        void __destroyComponents();
 
         template <typename T, class... Args>
         T* addComponent(Args... args) {

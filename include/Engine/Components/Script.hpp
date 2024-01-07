@@ -30,6 +30,7 @@ public:
 
     void update();
     void start();
+    void destroyObjectInstance();
 
     void destroy() override {}
 
