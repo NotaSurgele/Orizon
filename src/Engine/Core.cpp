@@ -89,11 +89,13 @@ void Core::inputHandler(sf::Event& event)
     EngineHud::writeConsole<std::string, bool>("Main view is ", _mainViewSelected);
     EngineHud::writeConsole<std::string, int, std::string, int>("Mouse position ", mousePosition.x, " ", mousePosition.y);
     while (CoreEvent(event)) {
-        ImGui::SFML::ProcessEvent(event);
+        if (ENGINE_MODE) {
+            ImGui::SFML::ProcessEvent(event);
 
-        if (event.type == sf::Event::MouseButtonPressed && ENGINE_MODE) {
-            if (event.mouseButton.button == sf::Mouse::Left) {
-                _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
+                }
             }
         }
 

@@ -21,12 +21,26 @@ public:
         _size.y = h;
         if (ENGINE_MODE) {
             this->setSize(w * .5f, h * .5f);
-            this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
-                                            EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));
+/*            this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
+                                            EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));*/
         } else {
             this->setSize(w, h);
-            this->setViewport({x, y, 1.0f, 1.0f});
+            //this->setViewport({x, y, 1.0f, 1.0f});
         }
+    }
+
+    void setViewPort(const sf::FloatRect& viewport)
+    {
+        if (ENGINE_MODE) {
+            auto fixedViewport = sf::FloatRect { viewport.left * EDITOR_VIEW_SIZE_RATIO,
+                                                 viewport.top * EDITOR_VIEW_SIZE_RATIO,
+                                                 viewport.width,
+                                                 viewport.height  };
+            if (fixedViewport.left <= 0)
+                fixedViewport.left = EDITOR_VIEW_SIZE_RATIO;
+            return sf::View::setViewport(fixedViewport);
+        }
+        sf::View::setViewport(viewport);
     }
 
     bool& isFollowing() { return _follow; }
@@ -35,15 +49,19 @@ public:
 
     sf::FloatRect getViewBounds() const
     {
-        auto viewPos = getCenter() - (_size / 2.0f);
+        if (ENGINE_MODE) {
+            auto viewPos = getCenter() - (getSize() * .5f);
 
-        return {viewPos, _size };
+            return {viewPos, getSize() };
+        }
+        auto viewPos = getCenter() - (getSize());
+        return { viewPos, getSize() };
     }
 
     void setViewBounds(const sf::FloatRect& bounds)
     {
-        _size.x = bounds.width * 2;
-        _size.y = bounds.height * 2;
+        _size.x = bounds.width;
+        _size.y = bounds.height;
         setCenter(bounds.left, bounds.top);
         setSize(bounds.width, bounds.height);
     }

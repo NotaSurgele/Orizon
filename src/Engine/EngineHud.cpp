@@ -93,10 +93,12 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
 {
     auto view = dynamic_cast<View *>(c);
     nlohmann::json json;
-    auto viewPort = view->getViewBounds();
+    auto viewBounds = view->getViewBounds();
+    auto viewPort = view->getViewport();
 
     json["type"] = "View";
-    json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
+    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width, viewBounds.height };
+    json["viewport"] = { viewPort.width, viewPort.height };
     json["follow"] = view->isFollowing();
     return json;
 }
@@ -280,6 +282,7 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     auto bounds = view->getViewBounds();
     auto position = view->getCenter();
 
+    //std::cout << bounds.width << " " << bounds.height << std::endl;
     // Handle position
     ImGui::Text("Center position");
     ImGui::SameLine();
@@ -309,8 +312,6 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     // Following Checkbox
     ImGui::Checkbox("Follow entity", &view->isFollowing());
 
-    bounds.width *= .5f;
-    bounds.height *= .5f;
     bounds.left = position.x;
     bounds.top = position.y;
     view->setViewBounds(bounds);

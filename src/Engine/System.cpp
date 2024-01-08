@@ -5,6 +5,8 @@
 #include "RayCaster.hpp"
 #include "Script.hpp"
 
+std::counting_semaphore<1> semaphore(0);
+
 void System::addEntity(Entity *entity)
 {
     entity->addComponent<Id>(_id++);
@@ -184,7 +186,6 @@ void System::systems()
     // Go through layers
     for (auto& m : _layers) {
         if (!m->isRender() || !isInView(m)) continue;
-
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {

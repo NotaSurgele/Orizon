@@ -165,13 +165,23 @@ public:
 
                 static void create_view(Entity *e, nlohmann::json const& json)
                 {
-                    float x = json["viewport"][0];
-                    float y = json["viewport"][1];
-                    float w = json["viewport"][2];
-                    float h = json["viewport"][3];
+                    float x = json["view_bounds"][0];
+                    float y = json["view_bounds"][1];
+                    float w = json["view_bounds"][2];
+                    float h = json["view_bounds"][3];
                     bool follow = json["follow"];
 
-                    e->addComponent<View>(x, y, w, h, follow);
+                    auto view = e->addComponent<View>(x, y, w, h, follow);
+
+                    if (json.contains("viewport")) {
+                        float viewportPosX = json["viewport"][0];
+                        float viewportPosY = json["viewport"][1];
+                        float viewportWidth = json["viewport"][2];
+                        float viewportHeight = json["viewport"][3];
+
+                        view->setViewPort({ viewportPosX, viewportPosY,
+                                                viewportWidth, viewportHeight });
+                    }
                 }
 
                 static void create_sound(Entity *e, nlohmann::json const& json);
