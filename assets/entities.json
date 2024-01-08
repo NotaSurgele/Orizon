@@ -37,7 +37,8 @@
                 },
                 {
                     "type": "View",
-                    "viewport": [0, 0, 800, 600],
+                    "view_bounds": [0, 0, 800, 600],
+                    "viewport": [0, 0, 0.35, 0.35],
                     "follow": true
                 },
                 {
