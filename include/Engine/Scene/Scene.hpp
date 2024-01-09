@@ -38,7 +38,14 @@ public:
     int loadSceneFromFile(const std::string& filename)
     {
         std::string content = readConfigFile(filename);
-        _sceneContent = nlohmann::json::parse(content);
+
+        try {
+            _sceneContent = nlohmann::json::parse(content);
+
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_SCENE_FROM_FILE] " << msg.what() << std::endl;
+            return -1;
+        }
 
         get_ressources(_sceneContent["resources"]);
         parse_entities(_sceneContent["entities"]);
@@ -51,9 +58,17 @@ public:
     static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
-        nlohmann::json json_content = nlohmann::json::parse(content);
 
-        return get_entity(json_content["entities"], name);
+        try {
+            nlohmann::json json_content = nlohmann::json::parse(content);
+
+            return get_entity(json_content["entities"], name);
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_ENTITY_FROM_FILE] " << msg.what() <<
+                " entity file doesn't exist " << filename << std::endl;
+            return nullptr;
+        }
+
     }
 
     static inline Entity *loadEntityFromFile(const std::string& content, std::string const& name)
@@ -206,6 +221,7 @@ public:
             private:
                 static inline std::unordered_map<std::string,
                 std::function<void(Entity *e, nlohmann::json const&)>> _map = {
+                    { "Transform2D", create_transform },
                     { "Transform2D", create_transform },
                     { "BoxCollider", create_boxcollider },
                     { "Sprite" , create_sprite },
