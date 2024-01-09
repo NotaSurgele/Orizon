@@ -57,7 +57,9 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent
     auto sprite = dynamic_cast<Sprite *>(c);
     nlohmann::json json;
     json["type"] = "Sprite";
-    json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+
+    if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+    else json["texture_name"] = sprite->getTextureName();
     return json;
 }
 
@@ -522,9 +524,19 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
         }
         ImGui::EndPopup();
     }
-    ImGui::InputScalarN("Color: ", ImGuiDataType_U8, colorArr, 4);
+    ImGui::Text("Color: ");
+    ImGui::SameLine();
+    ImGui::InputScalarN("##SpriteColor", ImGuiDataType_U8, colorArr, 4);
     color = { colorArr[0], colorArr[1], colorArr[2], colorArr[3]};
     sprite->setColor(color);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildIdTreeNode(IComponent *c)
+{
+    auto id = dynamic_cast<Id *>(c);
+    std::string idStr = "Id: " + std::to_string(id->get_id());
+
+    ImGui::Text(idStr.data());
 }
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)

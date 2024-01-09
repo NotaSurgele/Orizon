@@ -10,7 +10,7 @@ class Sprite : public IComponent, public Drawable {
     public:
         Sprite(Entity *self, sf::Texture& texture,
             float const& width=1, float const& height=1);
-        Sprite(sf::Texture& texture);
+        explicit Sprite(sf::Texture& texture);
 /*        Sprite(Entity *self, std::string const& texturePath,
               float const& width=1, float const& height=1);*/
         Sprite(Entity *self, const std::string& textureName,
