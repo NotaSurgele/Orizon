@@ -96,9 +96,11 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
     auto viewBounds = view->getViewBounds();
     auto viewPort = view->getViewport();
 
+    viewPort.left = (viewPort.left - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.left - EDITOR_VIEW_SIZE_RATIO;
+    viewPort.top = (viewPort.top - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.top - EDITOR_VIEW_SIZE_RATIO;
     json["type"] = "View";
-    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width, viewBounds.height };
-    json["viewport"] = { viewPort.width, viewPort.height };
+    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width * 2, viewBounds.height * 2 };
+    json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
     json["follow"] = view->isFollowing();
     return json;
 }
@@ -491,6 +493,40 @@ void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
     if (_scriptWindow) scriptEditor(script);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
+{
+    auto sprite = dynamic_cast<Sprite *>(c);
+    auto sfSprite = sprite->getSprite();
+    auto color = sprite->getColor();
+    auto texture = sprite->getTexture();
+    uint8_t colorArr[4] = { color.r, color.g, color.b, color.a };
+    std::string& name = sprite->getTextureName();
+
+    if (name.empty()) name = RESOURCE_MANAGER().textureToName(texture);
+    ImGui::Text("Current texture: ");
+    ImGui::SameLine();
+    if (ImGui::Button(name.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Textures buffer");
+    }
+    if (ImGui::BeginPopup("Textures buffer")) {
+        for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                sprite->setTextureName(s);
+                sprite->setTexture(it.second);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::InputScalarN("Color: ", ImGuiDataType_U8, colorArr, 4);
+    color = { colorArr[0], colorArr[1], colorArr[2], colorArr[3]};
+    sprite->setColor(color);
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -507,7 +543,7 @@ void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 
 void EngineHud::saveScene()
 {
-    if (Input::isKeyDown("LControl") &&
+    if (Input::isKeyPressed("LControl") &&
         Input::isKeyDown("S")) {
         try {
 
