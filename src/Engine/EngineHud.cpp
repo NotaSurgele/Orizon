@@ -76,9 +76,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(ICompon
     nlohmann::json json;
 
     json["type"] = "Animator";
-    for (auto& it : animator->getAnimations()) {
-        auto& name = it.first;
-        auto animation = it.second;
+    for (auto& animation : animator->getAnimations()) {
+        auto name = animation.name();
         auto offset = animation.getOffsetRect();
 
         json["animations"].push_back({
@@ -539,6 +538,67 @@ void EngineHud::ComponentTreeNodeFactory::buildIdTreeNode(IComponent *c)
     ImGui::Text(idStr.data());
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildAnimatorTreeNode(IComponent *c)
+{
+    auto animator = dynamic_cast<Animator *>(c);
+
+    if (ImGui::SmallButton("+")) animator->newAnimation(0,
+                                                        {0, 0, 0, 0},
+                                                        0.0f,
+                                                        "new animation");
+    if (animator->empty()) {
+        ImGui::Text("No animation pushed");
+        return;
+    }
+    auto currentAnimation = animator->currentAnimation();
+    auto currentAnimationName = currentAnimation.name();
+
+    ImGui::Text("Current played animation: ");
+    ImGui::SameLine();
+    ImGui::Text(currentAnimationName.data());
+    // handles animations
+    if (ImGui::TreeNode("Animations")) {
+        // Parse all Animations
+        auto& animations = animator->getAnimations();
+
+        int labelIndex = 0;
+        for (auto& animation : animations) {
+            ImGui::Separator();
+
+            auto animationName = animation.name();
+            auto offsetRect =  animation.getOffsetRect();
+            float animationRect[4] = { offsetRect[0], offsetRect[1], offsetRect[2], offsetRect[3] };
+            std::size_t frameNumber = animation.getFramesNumber();
+            auto speed = animation.getSpeed();
+
+            std::string labelIndexStr = std::to_string(labelIndex);
+            ImGui::Text("Animation name: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputText(("##animationName" + labelIndexStr).data(), animationName.data(), 4096);
+            ImGui::SetNextItemWidth(300);
+            ImGui::Text("Rect");
+            ImGui::SameLine();
+            ImGui::InputFloat4(("##Rect" + labelIndexStr).data(), animationRect);
+            ImGui::SetNextItemWidth(100);
+            ImGui::Text("Frame number");
+            ImGui::SameLine();
+            ImGui::InputScalar(("##Frame number" + labelIndexStr).data(), ImGuiDataType_U64, &frameNumber);
+            ImGui::Text("Animation speed: ");
+            ImGui::InputFloat(("##AnimSpeed" + labelIndexStr).data(), &speed);
+            ImGui::Separator();
+
+            // set data
+            labelIndex++;
+            animation.setSpeed(speed);
+            animation.setName(animationName);
+            animation.setFramesNumber(frameNumber);
+            animation.setOffsetRect( { animationRect[0], animationRect[1], animationRect[2], animationRect[3] });
+        }
+        ImGui::TreePop();
+    }
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -650,6 +710,7 @@ void EngineHud::entityInformation()
     ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
                                     _width * GUI_ENTITIES_WIDTH_SIZE_RATIO));
     ImGui::Begin("Entity information");
+
     if (_selected) {
         auto components = _selected->getComponents();
         std::size_t i = 0;
