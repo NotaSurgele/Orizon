@@ -27,12 +27,7 @@
                 {
                     "type": "Animator",
                     "animations": [
-                        {
-                            "name": "idle",
-                            "frames_number": 4,
-                            "rect": [0, 0, 18, 18],
-                            "speed": 0.2
-                        }
+
                     ]
                 },
                 {
