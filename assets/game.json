@@ -39,7 +39,7 @@
         },
         {
             "type": "Entities",
-            "path": "../assets/entities.json1"
+            "path": "../assets/entities.json"
         },
         {
             "type": "Script",

@@ -162,6 +162,7 @@ private:
         static void buildSpriteTreeNode(IComponent *c);
         static void buildIdTreeNode(IComponent *c);
         static void buildAnimatorTreeNode(IComponent *c);
+        static void buildGravityTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -176,7 +177,8 @@ private:
             { "Script", buildScriptTreeNode },
             { "Sprite", buildSpriteTreeNode },
             { "Id", buildIdTreeNode },
-            { "Animator", buildAnimatorTreeNode }
+            { "Animator", buildAnimatorTreeNode },
+            { "Gravity", buildGravityTreeNode }
         };
     };
 

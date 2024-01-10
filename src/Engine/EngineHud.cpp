@@ -12,7 +12,8 @@ void EngineHud::setTheme()
     ImGuiStyle *style = &ImGui::GetStyle();
     ImVec4 *colors = style->Colors;
 
-    colors[ImGuiCol_WindowBg] = ImVec4(0.54, 0.56, 0.56, .5f);
+    colors[ImGuiCol_WindowBg] = ImVec4(0.05, 0.18, 0.18, .5f);
+    colors[ImGuiCol_Text] = ImVec4(0.61, 0.8, 0.57, 1.0);
     _theme = true;
 }
 
@@ -597,6 +598,15 @@ void EngineHud::ComponentTreeNodeFactory::buildAnimatorTreeNode(IComponent *c)
         }
         ImGui::TreePop();
     }
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildGravityTreeNode(IComponent *c)
+{
+    auto gravity = dynamic_cast<Gravity *>(c);
+
+    ImGui::Text("Value: ");
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputFloat("##gravityforce", &gravity->force);
 }
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
