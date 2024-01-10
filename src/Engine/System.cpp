@@ -269,7 +269,6 @@ void System::light_system(Entity *e)
 
     handle_sprite_lightning(sprite, light);
     if (!light) return;
-    if (!isInView(e)) return;
     if (light_layer_raycast(light, e))
         return;
     if (!light->isSpriteLoaded()) {

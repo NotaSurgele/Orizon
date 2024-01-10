@@ -498,26 +498,31 @@ void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
 void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
-    auto sfSprite = sprite->getSprite();
     auto color = sprite->getColor();
     auto texture = sprite->getTexture();
     uint8_t colorArr[4] = { color.r, color.g, color.b, color.a };
     std::string& name = sprite->getTextureName();
 
-    if (name.empty()) name = RESOURCE_MANAGER().textureToName(texture);
+    if (name.empty()) {
+        name = RESOURCE_MANAGER().textureToName(texture);
+        sprite->setTextureName(name);
+    }
     ImGui::Text("Current texture: ");
     ImGui::SameLine();
     if (ImGui::Button(name.data())) {
         ImGui::SameLine();
         ImGui::OpenPopup("Textures buffer");
     }
+    ImGui::SameLine();
+    ImGui::Image(*texture, sf::Vector2f(64, 64));
     if (ImGui::BeginPopup("Textures buffer")) {
         for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
+                auto size = it.second.getSize();
                 sprite->setTextureName(s);
-                sprite->setTexture(it.second);
+                sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();
                 break;
             }
@@ -528,6 +533,8 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     ImGui::SameLine();
     ImGui::InputScalarN("##SpriteColor", ImGuiDataType_U8, colorArr, 4);
     color = { colorArr[0], colorArr[1], colorArr[2], colorArr[3]};
+    ImGui::SameLine();
+    ImGui::Image(_colorSprite, sf::Vector2f(16, 16), color);
     sprite->setColor(color);
 }
 
@@ -607,6 +614,57 @@ void EngineHud::ComponentTreeNodeFactory::buildGravityTreeNode(IComponent *c)
     ImGui::Text("Value: ");
     ImGui::SetNextItemWidth(100);
     ImGui::InputFloat("##gravityforce", &gravity->force);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
+{
+    auto light = dynamic_cast<Light *>(c);
+    auto spriteLoaded = light->isSpriteLoaded();
+    auto sprite = light->getSprite();
+    auto emission = light->getEmission();
+    auto intensity = light->getIntensity();
+
+    ImGui::Text("Load a sprite?");
+    ImGui::SameLine();
+    ImGui::Checkbox("##Sprite", &spriteLoaded);
+    if (spriteLoaded) {
+        // create the sprite if it does not exist
+        if (!sprite) {
+            auto baseTextures = R_GET_RESSOURCES(sf::Texture);
+            auto *s = new Sprite(baseTextures.begin()->second);
+            s->setScale(2, 2);
+            s->setTextureName(baseTextures.begin()->first);
+            light->setSprite(s);
+            sprite = s;
+        }
+        auto scale = sprite->getScale();
+        if (ImGui::TreeNode(sprite->getTextureName().data())) {
+            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            ImGui::TreePop();
+
+            ImGui::Text("Light scale: x");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat("##lightSizex", &scale.x);
+            ImGui::SameLine();
+            ImGui::Text("y: ");
+            ImGui::SetNextItemWidth(100);
+            ImGui::SameLine();
+            ImGui::InputFloat("##lightSizey", &scale.y);
+            sprite->setScale(scale.x, scale.y);
+            light->setSprite(sprite);
+        }
+    }
+    ImGui::Text("Emission: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputFloat("##Emission", &emission);
+    ImGui::Text("Intensity: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputFloat("##Intensity", &intensity);
+    light->setEmission(emission);
+    light->setIntensity(intensity);
 }
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
