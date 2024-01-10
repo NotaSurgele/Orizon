@@ -38,7 +38,14 @@ public:
     int loadSceneFromFile(const std::string& filename)
     {
         std::string content = readConfigFile(filename);
-        _sceneContent = nlohmann::json::parse(content);
+
+        try {
+            _sceneContent = nlohmann::json::parse(content);
+
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_SCENE_FROM_FILE] " << msg.what() << std::endl;
+            return -1;
+        }
 
         get_ressources(_sceneContent["resources"]);
         parse_entities(_sceneContent["entities"]);
@@ -51,9 +58,17 @@ public:
     static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
-        nlohmann::json json_content = nlohmann::json::parse(content);
 
-        return get_entity(json_content["entities"], name);
+        try {
+            nlohmann::json json_content = nlohmann::json::parse(content);
+
+            return get_entity(json_content["entities"], name);
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_ENTITY_FROM_FILE] " << msg.what() <<
+                " entity file doesn't exist " << filename << std::endl;
+            return nullptr;
+        }
+
     }
 
     static inline Entity *loadEntityFromFile(const std::string& content, std::string const& name)
@@ -165,13 +180,23 @@ public:
 
                 static void create_view(Entity *e, nlohmann::json const& json)
                 {
-                    float x = json["viewport"][0];
-                    float y = json["viewport"][1];
-                    float w = json["viewport"][2];
-                    float h = json["viewport"][3];
+                    float x = json["view_bounds"][0];
+                    float y = json["view_bounds"][1];
+                    float w = json["view_bounds"][2];
+                    float h = json["view_bounds"][3];
                     bool follow = json["follow"];
 
-                    e->addComponent<View>(x, y, w, h, follow);
+                    auto view = e->addComponent<View>(x, y, w, h, follow);
+
+                    if (json.contains("viewport")) {
+                        float viewportPosX = json["viewport"][0];
+                        float viewportPosY = json["viewport"][1];
+                        float viewportWidth = json["viewport"][2];
+                        float viewportHeight = json["viewport"][3];
+
+                        view->setViewPort({ viewportPosX, viewportPosY,
+                                                viewportWidth, viewportHeight });
+                    }
                 }
 
                 static void create_sound(Entity *e, nlohmann::json const& json);
@@ -196,6 +221,7 @@ public:
             private:
                 static inline std::unordered_map<std::string,
                 std::function<void(Entity *e, nlohmann::json const&)>> _map = {
+                    { "Transform2D", create_transform },
                     { "Transform2D", create_transform },
                     { "BoxCollider", create_boxcollider },
                     { "Sprite" , create_sprite },

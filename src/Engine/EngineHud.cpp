@@ -57,7 +57,9 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent
     auto sprite = dynamic_cast<Sprite *>(c);
     nlohmann::json json;
     json["type"] = "Sprite";
-    json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+
+    if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+    else json["texture_name"] = sprite->getTextureName();
     return json;
 }
 
@@ -74,9 +76,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(ICompon
     nlohmann::json json;
 
     json["type"] = "Animator";
-    for (auto& it : animator->getAnimations()) {
-        auto& name = it.first;
-        auto animation = it.second;
+    for (auto& animation : animator->getAnimations()) {
+        auto name = animation.name();
         auto offset = animation.getOffsetRect();
 
         json["animations"].push_back({
@@ -93,9 +94,13 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
 {
     auto view = dynamic_cast<View *>(c);
     nlohmann::json json;
-    auto viewPort = view->getViewBounds();
+    auto viewBounds = view->getViewBounds();
+    auto viewPort = view->getViewport();
 
+    viewPort.left = (viewPort.left - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.left - EDITOR_VIEW_SIZE_RATIO;
+    viewPort.top = (viewPort.top - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.top - EDITOR_VIEW_SIZE_RATIO;
     json["type"] = "View";
+    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width * 2, viewBounds.height * 2 };
     json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
     json["follow"] = view->isFollowing();
     return json;
@@ -280,6 +285,7 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     auto bounds = view->getViewBounds();
     auto position = view->getCenter();
 
+    //std::cout << bounds.width << " " << bounds.height << std::endl;
     // Handle position
     ImGui::Text("Center position");
     ImGui::SameLine();
@@ -309,8 +315,6 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     // Following Checkbox
     ImGui::Checkbox("Follow entity", &view->isFollowing());
 
-    bounds.width *= .5f;
-    bounds.height *= .5f;
     bounds.left = position.x;
     bounds.top = position.y;
     view->setViewBounds(bounds);
@@ -490,6 +494,111 @@ void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
     if (_scriptWindow) scriptEditor(script);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
+{
+    auto sprite = dynamic_cast<Sprite *>(c);
+    auto sfSprite = sprite->getSprite();
+    auto color = sprite->getColor();
+    auto texture = sprite->getTexture();
+    uint8_t colorArr[4] = { color.r, color.g, color.b, color.a };
+    std::string& name = sprite->getTextureName();
+
+    if (name.empty()) name = RESOURCE_MANAGER().textureToName(texture);
+    ImGui::Text("Current texture: ");
+    ImGui::SameLine();
+    if (ImGui::Button(name.data())) {
+        ImGui::SameLine();
+        ImGui::OpenPopup("Textures buffer");
+    }
+    if (ImGui::BeginPopup("Textures buffer")) {
+        for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
+            auto& s = it.first;
+
+            if (ImGui::Selectable(s.data())) {
+                sprite->setTextureName(s);
+                sprite->setTexture(it.second);
+                ImGui::CloseCurrentPopup();
+                break;
+            }
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::Text("Color: ");
+    ImGui::SameLine();
+    ImGui::InputScalarN("##SpriteColor", ImGuiDataType_U8, colorArr, 4);
+    color = { colorArr[0], colorArr[1], colorArr[2], colorArr[3]};
+    sprite->setColor(color);
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildIdTreeNode(IComponent *c)
+{
+    auto id = dynamic_cast<Id *>(c);
+    std::string idStr = "Id: " + std::to_string(id->get_id());
+
+    ImGui::Text(idStr.data());
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildAnimatorTreeNode(IComponent *c)
+{
+    auto animator = dynamic_cast<Animator *>(c);
+
+    if (ImGui::SmallButton("+")) animator->newAnimation(0,
+                                                        {0, 0, 0, 0},
+                                                        0.0f,
+                                                        "new animation");
+    if (animator->empty()) {
+        ImGui::Text("No animation pushed");
+        return;
+    }
+    auto currentAnimation = animator->currentAnimation();
+    auto currentAnimationName = currentAnimation.name();
+
+    ImGui::Text("Current played animation: ");
+    ImGui::SameLine();
+    ImGui::Text(currentAnimationName.data());
+    // handles animations
+    if (ImGui::TreeNode("Animations")) {
+        // Parse all Animations
+        auto& animations = animator->getAnimations();
+
+        int labelIndex = 0;
+        for (auto& animation : animations) {
+            ImGui::Separator();
+
+            auto animationName = animation.name();
+            auto offsetRect =  animation.getOffsetRect();
+            float animationRect[4] = { offsetRect[0], offsetRect[1], offsetRect[2], offsetRect[3] };
+            std::size_t frameNumber = animation.getFramesNumber();
+            auto speed = animation.getSpeed();
+
+            std::string labelIndexStr = std::to_string(labelIndex);
+            ImGui::Text("Animation name: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputText(("##animationName" + labelIndexStr).data(), animationName.data(), 4096);
+            ImGui::SetNextItemWidth(300);
+            ImGui::Text("Rect");
+            ImGui::SameLine();
+            ImGui::InputFloat4(("##Rect" + labelIndexStr).data(), animationRect);
+            ImGui::SetNextItemWidth(100);
+            ImGui::Text("Frame number");
+            ImGui::SameLine();
+            ImGui::InputScalar(("##Frame number" + labelIndexStr).data(), ImGuiDataType_U64, &frameNumber);
+            ImGui::Text("Animation speed: ");
+            ImGui::InputFloat(("##AnimSpeed" + labelIndexStr).data(), &speed);
+            ImGui::Separator();
+
+            // set data
+            labelIndex++;
+            animation.setSpeed(speed);
+            animation.setName(animationName);
+            animation.setFramesNumber(frameNumber);
+            animation.setOffsetRect( { animationRect[0], animationRect[1], animationRect[2], animationRect[3] });
+        }
+        ImGui::TreePop();
+    }
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -506,7 +615,7 @@ void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 
 void EngineHud::saveScene()
 {
-    if (Input::isKeyDown("LControl") &&
+    if (Input::isKeyPressed("LControl") &&
         Input::isKeyDown("S")) {
         try {
 
@@ -601,6 +710,7 @@ void EngineHud::entityInformation()
     ImGui::SetNextWindowSize(ImVec2(_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO,
                                     _width * GUI_ENTITIES_WIDTH_SIZE_RATIO));
     ImGui::Begin("Entity information");
+
     if (_selected) {
         auto components = _selected->getComponents();
         std::size_t i = 0;

@@ -5,6 +5,8 @@
 #include "RayCaster.hpp"
 #include "Script.hpp"
 
+std::counting_semaphore<1> semaphore(0);
+
 void System::addEntity(Entity *entity)
 {
     entity->addComponent<Id>(_id++);
@@ -36,6 +38,28 @@ void System::pushEntity(Entity *entity)
         _registry.insert(_registry.begin() + position, entity);
         entity->__registryPosition = position;
     }
+}
+
+void System::forceDestroy()
+{
+    for (auto& e : _to_destroy) {
+        _dynamic_collider.erase(std::remove(
+                                        _dynamic_collider.begin(),
+                                        _dynamic_collider.end(),
+                                        e),
+                                _dynamic_collider.end());
+        _hashGrid->remove(e);
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
+        for (auto& layer : _layers) {
+            if (layer->contain(e)) {
+                layer->removeEntity(e);
+            }
+        }
+        e->__destroyComponents();
+        // delete e; [TODO] Fix this
+        _registry_size--;
+    }
+    _to_destroy.clear();
 }
 
 void System::forceUpdate(Entity *e)
@@ -162,7 +186,6 @@ void System::systems()
     // Go through layers
     for (auto& m : _layers) {
         if (!m->isRender() || !isInView(m)) continue;
-
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
@@ -502,18 +525,19 @@ bool System::isInView(TileMap *map)
 void System::destroy_entity()
 {
     for (auto e : _to_destroy) {
-        _registry.erase(std::remove(_registry.begin(), _registry.end(), e), _registry.end());
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
         _hashGrid->remove(e);
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
             }
         }
+        e->__destroyComponents();
         // delete e; [TODO] Fix this
         _registry_size--;
     }

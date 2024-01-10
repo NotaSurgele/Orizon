@@ -9,7 +9,7 @@ Entity::Entity()
     System::addEntity(this);
 }
 
-Entity::~Entity()
+void Entity::__destroyComponents()
 {
     for (auto &it : _component_map) {
         if (it.second) {

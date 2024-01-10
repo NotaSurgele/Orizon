@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <functional>
+#include <thread>
+#include <semaphore>
 
 // internal
 #include "Components/Velocity.hpp"
@@ -22,6 +24,7 @@ public:
     static void addEntity(Entity *entity);
     static void pushEntity(Entity *entity);
     static void forceUpdate(Entity *e);
+    static void forceDestroy();
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -212,6 +215,7 @@ private:
     // Destroy
     void destroy_entity();
 private:
+
     static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;

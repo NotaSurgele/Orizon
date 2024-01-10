@@ -39,12 +39,16 @@
         },
         {
             "type": "Entities",
-            "path": "../assets/entities.json"
+            "path": "../assets/entities.json1"
         },
         {
             "type": "Script",
             "path": "./assets/Scripting/debug.lua"
+        },
+        {
+            "type": "Script",
+            "path": "./assets/Scripting/toto.lua"
         }
     ],
-    "entities": ["player", "MapManager"]
+    "entities": ["MapManager", "player"]
 }
