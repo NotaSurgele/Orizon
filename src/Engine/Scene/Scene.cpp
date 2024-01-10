@@ -3,9 +3,10 @@
 
 void Scene::ComponentFactory::create_sprite(Entity *e, nlohmann::json const& json)
 {
-    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+    std::string textureName = json["texture_name"];
+    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, textureName);
 
-    e->addComponent<Sprite>(texture);
+    e->addComponent<Sprite>(texture)->setTextureName(textureName);
 }
 
 void Scene::ComponentFactory::create_music(Entity *e, nlohmann::json const& json)

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "Engine/Components/Animator.hpp"
 #include "Engine/Time.hpp"
 
@@ -9,14 +11,14 @@ Animator::Animation::Animation(Entity *e,
                     std::size_t const& nbFrame,
                     AnimatorRect const& anim_rect,
                     float const& animationSpeed,
-                    std::string const& name) :
+                    std::string  name) :
                     _animation_speed(animationSpeed),
                     _frames_nb(nbFrame),
                     _offset_x(anim_rect[0]),
                     _offset_y(anim_rect[1]),
                     _sizeWidth(anim_rect[2]),
                     _sizeHeight(anim_rect[3]),
-                    _name(name)
+                    _name(std::move(name))
 {
     _sprite = e->getComponent<Sprite>();
 /*    if (_sprite == nullptr) {
@@ -40,7 +42,7 @@ const std::vector<sf::IntRect>& Animator::Animation::getAnimationFrames()
     return _frames;
 }
 
-const std::string& Animator::Animation::name()
+std::string Animator::Animation::name()
 {
     return _name;
 }
@@ -48,7 +50,11 @@ const std::string& Animator::Animation::name()
 const std::vector<sf::IntRect>& Animator::getAnimationFrames(
                                         std::string const& name)
 {
-    return _animation_map[name].getAnimationFrames();
+    for (auto& it : _animations) {
+
+        if (it.name().find(name) != std::string::npos) return it.getAnimationFrames();
+    }
+    return _animations[0].getAnimationFrames();
 }
 
 void Animator::Animation::setSprite(Sprite *sprite)
@@ -85,8 +91,8 @@ Animator::Animation& Animator::newAnimation(std::size_t const& nbFrame,
                                                animRect,
                                                speed,
                                                name);
-    _animation_map.insert(std::pair<std::string, Animation>(name, anim));
-    return _animation_map[name];
+    _animations.push_back(anim);
+    return _animations.back();
 }
 
 void Animator::Animation::reset()
@@ -96,37 +102,44 @@ void Animator::Animation::reset()
 
 void Animator::playAnimation(std::string const& anim, const bool loop)
 {
-    try {
-        _animation_map[anim].setSprite(_e->getComponent<Sprite>());
-        _animation_map[anim].playAnimation(loop);
-        _currentAnimation = anim;
-    } catch(...) {
-        std::cerr << "Cannot play animation: " << anim
-            << " does not exist !" << std::endl;
+    for (auto& it : _animations) {
+        if (it.name().find(anim) != std::string::npos) {
+            it.setSprite(_e->getComponent<Sprite>());
+            it.playAnimation(loop);
+            _currentAnimation = it.name();
+            return;
+        }
     }
 }
 
 Animator::Animation& Animator::currentAnimation()
 {
-    return _animation_map[_currentAnimation];
+    for (auto& it : _animations) {
+        if (it.name().find(_currentAnimation) !=
+                std::string::npos) {
+            return it;
+        }
+    }
+    return _animations.back();
 }
 
 void Animator::resetCurrentAnimation()
 {
-    try {
-        _animation_map[_currentAnimation].reset();
-    } catch(...) {
-        std::cerr << "Cannot reset animation: no current animation"
-                  << " does not exist !" << std::endl;
+    for (auto& it : _animations) {
+        if (it.name().find(_currentAnimation) !=
+                std::string::npos) {
+            it.reset();
+            return;
+        }
     }
 }
 
 void Animator::reset(std::string const& anim)
 {
-    try {
-        _animation_map[anim].reset();
-    } catch (...) {
-        std::cerr << "Cannot reset animation: " << anim
-            << " does not exist !" << std::endl;
+    for (auto& it : _animations) {
+        if (it.name().find(anim) != std::string::npos) {
+            it.reset();
+            return;
+        }
     }
 }

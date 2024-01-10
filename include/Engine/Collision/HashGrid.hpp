@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "Entity.hpp"
 #include "Components/Sprite.hpp"
+#include "EngineHud.hpp"
 
 class HashGrid {
 public:
@@ -18,6 +19,7 @@ public:
     }
 
     void insert(Entity* entity) {
+        EngineHud::writeConsole<std::string, std::size_t>("Cell size ", _grid.size());
         std::vector<sf::Vector2i> cells = calculateCells(entity);
 
         for (const auto& cell : cells) {

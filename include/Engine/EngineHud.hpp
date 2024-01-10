@@ -126,7 +126,7 @@ private:
                 { "Music", serializeMusic },
                 { "Script", serializeScript },
                 { "Light", serializeLight },
-                { "Gravity", serializeGravity },
+                { "Gravity", serializeGravity }
         };
 
     };
@@ -159,6 +159,9 @@ private:
         static void buildLayerTreeNode(IComponent *c);
         static void buildOrizonMusicTreeNode(IComponent *c);
         static void buildScriptTreeNode(IComponent *c);
+        static void buildSpriteTreeNode(IComponent *c);
+        static void buildIdTreeNode(IComponent *c);
+        static void buildAnimatorTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -170,7 +173,10 @@ private:
             { "Sound", buildSoundTreeNode },
             { "Layer", buildLayerTreeNode },
             { "OrizonMusic", buildOrizonMusicTreeNode },
-            { "Script", buildScriptTreeNode }
+            { "Script", buildScriptTreeNode },
+            { "Sprite", buildSpriteTreeNode },
+            { "Id", buildIdTreeNode },
+            { "Animator", buildAnimatorTreeNode }
         };
     };
 
