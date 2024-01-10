@@ -21,7 +21,7 @@ class Sprite : public IComponent, public Drawable {
         sf::Sprite& getSprite();
         const sf::Texture* getTexture();
         Sprite& setSprite(sf::Sprite const& sprite);
-        Sprite& setTexture(sf::Texture& texture);
+        Sprite& setTexture(sf::Texture& texture, bool reset=false);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
         Sprite& setTransform(Transform2D *transform);

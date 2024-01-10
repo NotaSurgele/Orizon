@@ -38,6 +38,11 @@
             "path": "../assets/light_2.png"
         },
         {
+            "type": "Texture",
+            "name": "toto",
+            "path": "../assets/light.png"
+        },
+        {
             "type": "Entities",
             "path": "../assets/entities.json"
         },

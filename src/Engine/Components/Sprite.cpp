@@ -125,10 +125,10 @@ bool Sprite::isLightApply()
     return _light;
 }
 
-Sprite& Sprite::setTexture(sf::Texture& texture)
+Sprite& Sprite::setTexture(sf::Texture& texture, bool reset)
 {
     _texture = texture;
-    _sprite.setTexture(_texture);
+    _sprite.setTexture(_texture, reset);
     return *this;
 }
 
