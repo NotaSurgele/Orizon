@@ -10,7 +10,6 @@ public:
     HashGrid(float const& cellSize=100, int capacity=100) : _size(0),
                                                               _cellSize(cellSize),
                                                               _capacity(capacity) {
-        _grid.reserve(capacity);
     }
 
     ~HashGrid()
@@ -19,7 +18,7 @@ public:
     }
 
     void insert(Entity* entity) {
-        EngineHud::writeConsole<std::string, std::size_t>("Cell size ", _grid.size());
+        //EngineHud::writeConsole<std::string, std::size_t>("Cell size ", _grid.size());
         std::vector<sf::Vector2i> cells = calculateCells(entity);
 
         for (const auto& cell : cells) {
@@ -48,6 +47,8 @@ public:
 
     void clear()
     {
+/*        _capacity=100;
+        _grid.reserve(_capacity);*/
         _grid.clear();
     }
 
@@ -55,6 +56,7 @@ public:
         std::vector<sf::Vector2i> cells = calculateCells(e);
         std::vector<Entity *> result;
 
+        EngineHud::writeConsole<std::string, std::size_t>("Cells ", cells.size());
         for (const auto& cell : cells) {
             if (_grid.find(cell) != _grid.end()) {
                 result.insert(result.end(), _grid[cell].begin(), _grid[cell].end());
@@ -102,7 +104,6 @@ private:
 
     void resize() {
         _capacity *= 2;
-        _grid.reserve(_capacity);
     }
 
 
