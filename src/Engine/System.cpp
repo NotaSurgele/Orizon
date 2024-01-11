@@ -5,8 +5,6 @@
 #include "RayCaster.hpp"
 #include "Script.hpp"
 
-std::counting_semaphore<1> semaphore(0);
-
 void System::addEntity(Entity *entity)
 {
     entity->addComponent<Id>(_id++);
@@ -168,6 +166,7 @@ void System::script_system(Entity *e)
 
 void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
 {
+    //EngineHud::writeConsole<std::string, std::size_t>("Component cache size", componentCache.size());
     for (auto it : componentCache) {
         delete it;
         it = nullptr;
@@ -192,6 +191,8 @@ void System::systems()
             pushEntity(e);
         }
     }
+
+    //EngineHud::writeConsole<std::string, std::size_t>("Inside dynamic collider ", _dynamic_collider.size());
     // Handle hashGrid moving entity
     for (auto e : _dynamic_collider) {
         if (!e) continue;
@@ -207,7 +208,6 @@ void System::systems()
             !Light::set && sprite) {
             sprite->setColor(Light::darkColor);
         }
-
         update_custom_component(e);
         sprite_system(e, componentCache);
         light_system(e);
@@ -220,7 +220,7 @@ void System::systems()
     for (auto& e : _scripted_entity) {
         script_system(e);
     }
-    EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
+    //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
     clear_component_cache(componentCache);
     componentCache.clear();
     destroy_entity();
@@ -523,13 +523,16 @@ bool System::isInView(TileMap *map)
 
 void System::destroy_entity()
 {
-    for (auto e : _to_destroy) {
+    for (auto& e : _to_destroy) {
+        if (!e) continue;
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
+/*
         _hashGrid->remove(e);
+*/
         _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
@@ -537,7 +540,7 @@ void System::destroy_entity()
             }
         }
         e->__destroyComponents();
-        // delete e; [TODO] Fix this
+        //delete e; /*[TODO] Fix this*/
         _registry_size--;
     }
     _to_destroy.clear();

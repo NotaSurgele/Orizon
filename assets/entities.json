@@ -62,10 +62,6 @@
                 {
                     "type": "Script",
                     "path": "./assets/Scripting/Player.lua"
-                },
-                {
-                    "type": "Light",
-                    "emission": 0.10
                 }
             ]
         },

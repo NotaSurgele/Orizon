@@ -125,13 +125,7 @@ void Light::emit()
     auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
     _sprite->setPosition(fixedPositionX, fixedPositionY);
 
-    /// CAREFUL
-    //texture->setSmooth(true);
-/*
-    DRAW(_shape);
-*/
     DRAW_BLEND(_sprite, sf::BlendAdd);
-    //DRAW_BLEND(_sprite, sf::BlendAdd);
 }
 
 void Light::setSprite(Sprite *s)
@@ -157,7 +151,7 @@ void Light::setIntensity(const float &intensity)
 void Light::emit(const std::vector<Entity *>& entities)
 {
     // Handle threads if no sprite is loaded
-    std::vector<std::thread> threads;
+    /*std::vector<std::thread> threads;
     std::atomic<int> angleCounter(0);
 
     for (int i = 0; i < 20; ++i) {
@@ -167,7 +161,7 @@ void Light::emit(const std::vector<Entity *>& entities)
     }
     for (auto& thread : threads) {
         thread.join();
-    }
+    }*/
 
     // std::size_t counter = 0;
     // convex.setPointCount(points.size());

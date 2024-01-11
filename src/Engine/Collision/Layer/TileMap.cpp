@@ -83,8 +83,10 @@ bool TileMap::removeEntity(const int& x, const int& y)
 
 bool TileMap::removeEntity(Entity *e)
 {
-    auto position = e->getComponent<Transform2D>()->position;
+    auto transform = e->getComponent<Transform2D>();
 
+    if (!transform) return false;
+    auto position = transform->position;
     auto fixedPosition = sf::Vector2i((int)position.x / tileWidth, (int)position.y / tileHeight);
     removeEntity(fixedPosition.x, fixedPosition.y);
     return true;
@@ -97,7 +99,10 @@ bool TileMap::isRender()
 
 bool TileMap::contain(Entity *e)
 {
-    auto position = e->getComponent<Transform2D>()->position;
+    auto transform = e->getComponent<Transform2D>();
+
+    if (!transform) return false;
+    auto position = transform->position;
     sf::FloatRect bounds = { _x, _y, (float)w, (float)h };
     return bounds.contains(position.x, position.y);
 }
@@ -128,6 +133,7 @@ std::vector<Entity *> TileMap::getEntityInBounds(const sf::FloatRect& bounds)
     auto endPos = sf::Vector2i((bounds.left + bounds.width) / tileWidth,
                                (bounds.top + bounds.height) / tileHeight);
 
+    if (_entities.empty()) return arr;
     if (startPos.x < 0) startPos.x = _x;
     if (startPos.x > (_x + w)) startPos.x = _x + w;
     if (startPos.y < 0) startPos.y = _y;
