@@ -74,6 +74,7 @@ public:
 
     void setSize(const sf::Vector2<float>& size)
     {
+        _shape.setSize(size);
         _size = size;
     }
 
