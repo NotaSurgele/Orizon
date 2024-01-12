@@ -37,12 +37,12 @@ void GameScene::create()
     c.a = 40;
     //player->getComponent<Light>()->setColor(c);
     //player->getComponent<Sprite>()->setShadowIntensity(1);
-    tiledMap = new TiledMap();
+/*    tiledMap = new TiledMap();
     tiledMap->load("../assets/map_test.tmj");
     player->addCustomComponent<CharacterController>(tiledMap);
     player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
         other->entity()->destroy();
-    });
+    });*/
 }
 
 void GameScene::update()
