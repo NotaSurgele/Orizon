@@ -160,6 +160,11 @@ void TileMap::outputValues()
     }
 }
 
+void TileMap::destroy()
+{
+    System::DestroyTileMap(this);
+}
+
 void TileMap::render()
 {
     _isRender = true;

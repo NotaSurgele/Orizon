@@ -46,8 +46,6 @@ void System::forceDestroy()
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
-        _hashGrid->remove(e);
-        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
@@ -55,9 +53,16 @@ void System::forceDestroy()
         }
         e->__destroyComponents();
         // delete e; [TODO] Fix this
-        _registry_size--;
     }
+    for (auto& l : _destroy_tilemap) {
+        l->clear();
+
+        _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
+    }
+    _destroy_tilemap.clear();
     _to_destroy.clear();
+    _hashGrid->clear();
+    //_layers.clear(); // [FIXME] find a way to destroy layer from script
 }
 
 void System::forceUpdate(Entity *e)
@@ -386,9 +391,7 @@ void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
 {
     std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
 
-    for (size_t i = 0; i < dynamic_entity.size(); i++) {
-        auto d_e = dynamic_entity[i];
-
+    for (auto d_e : dynamic_entity) {
         if (d_e == e)
             continue;
         if (d_e == nullptr) {
@@ -543,6 +546,12 @@ void System::destroy_entity()
         //delete e; /*[TODO] Fix this*/
         _registry_size--;
     }
+    for (auto& l : _destroy_tilemap) {
+        l->clear();
+
+        _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
+    }
+    _destroy_tilemap.clear();
     _to_destroy.clear();
     _hashGrid->clear();
 }
