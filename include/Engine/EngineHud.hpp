@@ -21,6 +21,12 @@ class EngineHud {
 public:
     EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height)
     {
+        sf::Image img = sf::Image();
+        sf::Texture texture;
+
+        img.create(16, 16, sf::Color::White);
+        texture.loadFromImage(img);
+        _colorSprite.setTexture(texture);
     }
 
 
@@ -162,6 +168,8 @@ private:
         static void buildSpriteTreeNode(IComponent *c);
         static void buildIdTreeNode(IComponent *c);
         static void buildAnimatorTreeNode(IComponent *c);
+        static void buildGravityTreeNode(IComponent *c);
+        static void buildLightTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -176,7 +184,9 @@ private:
             { "Script", buildScriptTreeNode },
             { "Sprite", buildSpriteTreeNode },
             { "Id", buildIdTreeNode },
-            { "Animator", buildAnimatorTreeNode }
+            { "Animator", buildAnimatorTreeNode },
+            { "Gravity", buildGravityTreeNode },
+            { "Light", buildLightTreeNode  }
         };
     };
 
@@ -194,6 +204,7 @@ private:
     bool _theme = false;
 
     // scripting
+    static inline sf::Sprite _colorSprite;
     static inline std::string _scriptContent;
     static inline Script *_lastScript = nullptr;
 

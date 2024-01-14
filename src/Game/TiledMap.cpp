@@ -71,7 +71,7 @@ bool TiledMap::_loadTileMap()
                 e->addComponent<Transform2D>()->position = sf::Vector2f(posY, posX);
                 e->addComponent<Sprite>(texture);
                 e->addComponent<BoxCollider>(e->getComponent<Transform2D>()->position,
-                                             sf::Vector2f(16, 16))->setType(BoxCollider::STATIC);
+                                             sf::Vector2f(16, 16))->setType(BoxCollider::DYNAMIC);
                 tilemap->emplaceEntity(e);
             }
             posY += _tileWidth;
