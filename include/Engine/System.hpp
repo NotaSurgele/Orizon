@@ -97,6 +97,11 @@ public:
         return 0;
     }
 
+    static void DestroyTileMap(TileMap *map)
+    {
+        _destroy_tilemap.push_back(map);
+    }
+
     static void __registerScriptedEntity(Entity *e)
     {
         if (!e) return;
@@ -225,5 +230,6 @@ private:
     static inline std::vector<Entity *> _scripted_entity;
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
+    static inline std::vector<TileMap *> _destroy_tilemap;
     static inline std::vector<Entity *> _forceUpdate;
 };

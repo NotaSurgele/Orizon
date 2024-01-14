@@ -17,12 +17,17 @@ public:
     void emit(void);
     void setEmission(const float& emission);
 
+    void setSprite(Sprite *s);
+    void setIntensity(const float& intensity);
+
     void setColor(const sf::Color& color);
     float getEmission();
     float getIntensity();
     bool isSpriteLoaded();
 
     Sprite *getSprite() { return _sprite; }
+
+    Entity *getEntity() { return _e; }
 
     static inline sf::Color loadColorFromIntensity(const float& intensity, const sf::Color& color=sf::Color::White)
     {

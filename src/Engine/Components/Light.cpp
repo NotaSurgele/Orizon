@@ -1,7 +1,6 @@
 #include "Light.hpp"
 #include "System.hpp"
 #include "Core.hpp"
-#include <math.h>
 
 Light::Light(Entity *e, const float& emission, const float& intensity) : _e(e), _emission(emission), _intensity(intensity)
 {
@@ -118,23 +117,41 @@ void Light::emit()
     auto textureSize = texture->getSize();
     auto scale = _sprite->getScale();
 
+    if (!_transform) {
+        _isSpriteLoaded = true;
+        _transform = _e->getComponent<Transform2D>();
+    }
     auto fixedPositionX = _transform->position.x - ((textureSize.x * scale.x) / 2);
     auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
-
     _sprite->setPosition(fixedPositionX, fixedPositionY);
 
-    /// CAREFUL
-    //texture->setSmooth(true);
-/*
-    DRAW(_shape);
-*/
     DRAW_BLEND(_sprite, sf::BlendAdd);
+}
+
+void Light::setSprite(Sprite *s)
+{
+    _rayCaster.clear();
+    _isSpriteLoaded = true;
+    _sprite = s;
+}
+
+void Light::setIntensity(const float &intensity)
+{
+    _intensity = intensity;
+    auto color = sf::Color::White;
+    int newRed = static_cast<int>(color.r * _intensity);
+    int newGreen = static_cast<int>(color.g * _intensity);
+    int newBlue = static_cast<int>(color.b * _intensity);
+    Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
+    Light::set = false;
+    if (_sprite)
+        _sprite->setLightApply(false);
 }
 
 void Light::emit(const std::vector<Entity *>& entities)
 {
     // Handle threads if no sprite is loaded
-    std::vector<std::thread> threads;
+    /*std::vector<std::thread> threads;
     std::atomic<int> angleCounter(0);
 
     for (int i = 0; i < 20; ++i) {
@@ -144,7 +161,7 @@ void Light::emit(const std::vector<Entity *>& entities)
     }
     for (auto& thread : threads) {
         thread.join();
-    }
+    }*/
 
     // std::size_t counter = 0;
     // convex.setPointCount(points.size());

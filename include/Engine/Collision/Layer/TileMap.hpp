@@ -125,7 +125,7 @@ public:
         return arr;
     }
 
-    void destroy()
+    void clear()
     {
         for (auto cols : _layer) {
             for (auto cell : cols) {
@@ -136,6 +136,8 @@ public:
         _layer.clear();
         _entities.clear();
     }
+
+    void destroy();
 
     void outputValues();
 
