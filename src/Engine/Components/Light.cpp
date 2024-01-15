@@ -2,25 +2,9 @@
 #include "System.hpp"
 #include "Core.hpp"
 
-Light::Light(Entity *e, const float& emission, const float& intensity) : _e(e), _emission(emission), _intensity(intensity)
-{
-    for (double angle = 0; angle < 360; angle += 1) {
-        RayCaster ray(_e->getComponent<Transform2D>()->position, sf::Vector2f(1, 0), emission);
-        ray.rotate(angle);
-        _rayCaster.push_back(ray);
-    }
-    auto color = sf::Color::White;
-    int newRed = static_cast<int>(color.r * _intensity);
-    int newGreen = static_cast<int>(color.g * _intensity);
-    int newBlue = static_cast<int>(color.b * _intensity);
-    Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
-    System::lightSources += 1;
-}
-
-Light::Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity) : _sprite(sprite),
-                                                                                        _emission(emission),
-                                                                                        _e(e),
-                                                                                        _intensity(intensity)
+Light::Light(Entity *e, Sprite *sprite, const float& intensity) : _sprite(sprite),
+                                                                                _e(e),
+                                                                                _intensity(intensity)
 {
     _isSpriteLoaded = true;
     _transform = e->getComponent<Transform2D>();

@@ -20,19 +20,13 @@ void Scene::ComponentFactory::create_music(Entity *e, nlohmann::json const& json
 
 void Scene::ComponentFactory::create_light(Entity *e, nlohmann::json const& json)
 {
-    float emission = json["emission"];
     float intensity = .4f;
+    sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+    auto *sprite = new Sprite(lightTexture);
 
     if (json.contains("intensity"))
         intensity = json["intensity"];
-    if (json.contains("texture_name")) {
-        sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
-        Sprite *sprite = new Sprite(lightTexture);
-
-        e->addComponent<Light>(emission, sprite, intensity);
-        return;
-    }
-    e->addComponent<Light>(emission);
+    e->addComponent<Light>(sprite, intensity);
 }
 
 void Scene::ComponentFactory::create_sound(Entity *e, nlohmann::json const& json)

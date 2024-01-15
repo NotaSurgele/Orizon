@@ -8,8 +8,7 @@
 
 class Light : public IComponent {
 public:
-    Light(Entity *e, const float& emission, const float& intensity=.4f);
-    Light(Entity *e, const float& emission, Sprite *sprite, const float& intensity=.4f);
+    Light(Entity *e, Sprite *sprite, const float& intensity=.4f);
 
     void destroy() override final;
 
