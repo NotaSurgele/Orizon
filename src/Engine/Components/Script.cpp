@@ -358,10 +358,8 @@ void Script::registerLightComponent()
 {
     _state->new_usertype<Light>(
         "Light", sol::constructors<
-                Light(Entity *, float, float),
-                Light(Entity *, float, Sprite *, float),
-                Light(Entity *, float, Sprite *),
-                Light(Entity *, float)>(),
+                Light(Entity *, Sprite *),
+                Light(Entity *, Sprite *, float)>(),
         "setColor", &Light::setColor,
         "setEmission", &Light::setEmission,
         "getEmission", &Light::getEmission,
@@ -570,17 +568,11 @@ void Script::registerEntityFunction()
                     }
             ),
             "addComponentLight", sol::overload(
-                    [](Entity *entity, float emission, float intensity) {
-                        return entity->addComponent<Light>(emission, intensity);
+                    [](Entity *entity, Sprite *sprite, float intensity) {
+                        return entity->addComponent<Light>(sprite, intensity);
                     },
-                    [](Entity *entity, float emission, Sprite *sprite, float intensity) {
-                        return entity->addComponent<Light>(emission, sprite, intensity);
-                    },
-                    [](Entity *entity, float emission, Sprite *sprite) {
-                        return entity->addComponent<Light>(emission, sprite);
-                    },
-                    [](Entity *entity, float emission) {
-                        return entity->addComponent<Light>(emission);
+                    [](Entity *entity, Sprite *sprite) {
+                        return entity->addComponent<Light>(sprite);
                     }
             ),
             "addComponentOrizonMusic", sol::overload(

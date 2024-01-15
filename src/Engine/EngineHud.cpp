@@ -168,11 +168,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
     nlohmann::json json;
 
     json["type"] = "Light";
-    if (intensity != .4f)
-        json["intensity"] = intensity;
-    if (light->isSpriteLoaded())
-        json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
-    json["emission"] = emission;
+    json["intensity"] = intensity;
+    json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
     return json;
 }
 
@@ -619,51 +616,39 @@ void EngineHud::ComponentTreeNodeFactory::buildGravityTreeNode(IComponent *c)
 void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
 {
     auto light = dynamic_cast<Light *>(c);
-    auto spriteLoaded = light->isSpriteLoaded();
     auto sprite = light->getSprite();
-    auto emission = light->getEmission();
     auto intensity = light->getIntensity();
 
-    ImGui::Text("Load a sprite?");
-    ImGui::SameLine();
-    ImGui::Checkbox("##Sprite", &spriteLoaded);
-    if (spriteLoaded) {
-        // create the sprite if it does not exist
-        if (!sprite) {
-            auto baseTextures = R_GET_RESSOURCES(sf::Texture);
-            auto *s = new Sprite(baseTextures.begin()->second);
-            s->setScale(2, 2);
-            s->setTextureName(baseTextures.begin()->first);
-            light->setSprite(s);
-            sprite = s;
-        }
-        auto scale = sprite->getScale();
-        if (ImGui::TreeNode(sprite->getTextureName().data())) {
-            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
-            ImGui::TreePop();
-
-            ImGui::Text("Light scale: x");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat("##lightSizex", &scale.x);
-            ImGui::SameLine();
-            ImGui::Text("y: ");
-            ImGui::SetNextItemWidth(100);
-            ImGui::SameLine();
-            ImGui::InputFloat("##lightSizey", &scale.y);
-            sprite->setScale(scale.x, scale.y);
-            light->setSprite(sprite);
-        }
+    // create the sprite if it does not exist
+    if (!sprite) {
+        auto baseTextures = R_GET_RESSOURCES(sf::Texture);
+        auto *s = new Sprite(baseTextures.begin()->second);
+        s->setScale(2, 2);
+        s->setTextureName(baseTextures.begin()->first);
+        light->setSprite(s);
+        sprite = s;
     }
-    ImGui::Text("Emission: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(100);
-    ImGui::InputFloat("##Emission", &emission);
+    auto scale = sprite->getScale();
+    if (ImGui::TreeNode(sprite->getTextureName().data())) {
+        EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+        ImGui::TreePop();
+
+        ImGui::Text("Light scale: x");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputFloat("##lightSizex", &scale.x);
+        ImGui::SameLine();
+        ImGui::Text("y: ");
+        ImGui::SetNextItemWidth(100);
+        ImGui::SameLine();
+        ImGui::InputFloat("##lightSizey", &scale.y);
+        sprite->setScale(scale.x, scale.y);
+        light->setSprite(sprite);
+    }
     ImGui::Text("Intensity: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(100);
     ImGui::InputFloat("##Intensity", &intensity);
-    light->setEmission(emission);
     light->setIntensity(intensity);
 }
 
