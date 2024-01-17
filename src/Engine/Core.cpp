@@ -7,7 +7,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _input(),
                                                 _gui(width, height)
 {
-    _r_manager = RessourcesManager();
+    _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
     font.loadFromFile("../assets/LEMONMILK-Regular.otf"); // Load a font
@@ -159,6 +159,7 @@ void Core::updateGUI()
             _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
             _gui.entityInformation();
             _gui.consoleWindow();
+            _gui.resourceManager();
             _gui.saveScene();
         });
         if (_guiThread.joinable()) _guiThread.join();

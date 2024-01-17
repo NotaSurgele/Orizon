@@ -45,7 +45,7 @@ void Script::create(const std::string& scriptPath, bool insert)
     (*_state)["_self"] = _self;
     (*_state)["_state"] = _state;
     (*_state)["Utils"] = Utils();
-    (*_state)["ResourceManager"] = Core::RessourceManager();
+    (*_state)["ResourceManager"] = Core::resourceManager();
     (*_state)["DRAW"] = sol::overload(
             [](Core* core, Drawable *drawable) {
                 return core->CoreDraw(drawable);
@@ -243,14 +243,14 @@ void Script::registerUtilsType()
 
 void Script::registerResourceManager()
 {
-    _state->new_usertype<RessourcesManager>(
+    _state->new_usertype<ResourcesManager>(
         "ResourceManager",
-        "R_ADD_TILE", &RessourcesManager::loadTileFromSpriteSheet,
+        "R_ADD_TILE", &ResourcesManager::loadTileFromSpriteSheet,
         "R_GET_RESSOURCE", sol::overload(
-            [] (RessourcesManager& rm, const std::string& resourceName) {
+            [] (ResourcesManager& rm, const std::string& resourceName) {
                 return rm.getRessource<sf::Texture>(resourceName);
             },
-            [] (RessourcesManager& rm, const std::string& resourceName) {
+            [] (ResourcesManager& rm, const std::string& resourceName) {
                 return rm.getRessource<sf::SoundBuffer>(resourceName);
             }
         )
@@ -358,10 +358,8 @@ void Script::registerLightComponent()
 {
     _state->new_usertype<Light>(
         "Light", sol::constructors<
-                Light(Entity *, float, float),
-                Light(Entity *, float, Sprite *, float),
-                Light(Entity *, float, Sprite *),
-                Light(Entity *, float)>(),
+                Light(Entity *, Sprite *),
+                Light(Entity *, Sprite *, float)>(),
         "setColor", &Light::setColor,
         "setEmission", &Light::setEmission,
         "getEmission", &Light::getEmission,
@@ -570,17 +568,11 @@ void Script::registerEntityFunction()
                     }
             ),
             "addComponentLight", sol::overload(
-                    [](Entity *entity, float emission, float intensity) {
-                        return entity->addComponent<Light>(emission, intensity);
+                    [](Entity *entity, Sprite *sprite, float intensity) {
+                        return entity->addComponent<Light>(sprite, intensity);
                     },
-                    [](Entity *entity, float emission, Sprite *sprite, float intensity) {
-                        return entity->addComponent<Light>(emission, sprite, intensity);
-                    },
-                    [](Entity *entity, float emission, Sprite *sprite) {
-                        return entity->addComponent<Light>(emission, sprite);
-                    },
-                    [](Entity *entity, float emission) {
-                        return entity->addComponent<Light>(emission);
+                    [](Entity *entity, Sprite *sprite) {
+                        return entity->addComponent<Light>(sprite);
                     }
             ),
             "addComponentOrizonMusic", sol::overload(

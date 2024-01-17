@@ -39,6 +39,7 @@ public:
     void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
     void consoleWindow();
+    void resourceManager();
 
     static inline void registerSavedEntity(Entity *e)
     {
@@ -78,14 +79,19 @@ private:
         insert(_msg);
     }
 
+    template <typename T = std::string>
     static inline void writeConsole(const std::string& last)
     {
         _msg += last;
         insert(_msg);
     }
 
+    template <typename T>
+    void resourceManagerResourceTreeNodeContent(std::map<std::string, T>& resource);
+
     std::unordered_map<std::string, Entity *> getEntitiesNameToSave(const nlohmann::json& entitiesJson);
     void componentSerializer(nlohmann::json& entityJson, Entity *e);
+
 
     class ComponentSerializerFactory {
     public:

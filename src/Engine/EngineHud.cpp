@@ -163,16 +163,12 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
 {
     auto light = dynamic_cast<Light *>(c);
     float intensity = light->getIntensity();
-    float emission = light->getEmission();
     Sprite *sprite = light->getSprite();
     nlohmann::json json;
 
     json["type"] = "Light";
-    if (intensity != .4f)
-        json["intensity"] = intensity;
-    if (light->isSpriteLoaded())
-        json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
-    json["emission"] = emission;
+    json["intensity"] = intensity;
+    json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
     return json;
 }
 
@@ -619,51 +615,39 @@ void EngineHud::ComponentTreeNodeFactory::buildGravityTreeNode(IComponent *c)
 void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
 {
     auto light = dynamic_cast<Light *>(c);
-    auto spriteLoaded = light->isSpriteLoaded();
     auto sprite = light->getSprite();
-    auto emission = light->getEmission();
     auto intensity = light->getIntensity();
 
-    ImGui::Text("Load a sprite?");
-    ImGui::SameLine();
-    ImGui::Checkbox("##Sprite", &spriteLoaded);
-    if (spriteLoaded) {
-        // create the sprite if it does not exist
-        if (!sprite) {
-            auto baseTextures = R_GET_RESSOURCES(sf::Texture);
-            auto *s = new Sprite(baseTextures.begin()->second);
-            s->setScale(2, 2);
-            s->setTextureName(baseTextures.begin()->first);
-            light->setSprite(s);
-            sprite = s;
-        }
-        auto scale = sprite->getScale();
-        if (ImGui::TreeNode(sprite->getTextureName().data())) {
-            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
-            ImGui::TreePop();
-
-            ImGui::Text("Light scale: x");
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat("##lightSizex", &scale.x);
-            ImGui::SameLine();
-            ImGui::Text("y: ");
-            ImGui::SetNextItemWidth(100);
-            ImGui::SameLine();
-            ImGui::InputFloat("##lightSizey", &scale.y);
-            sprite->setScale(scale.x, scale.y);
-            light->setSprite(sprite);
-        }
+    // create the sprite if it does not exist
+    if (!sprite) {
+        auto baseTextures = R_GET_RESSOURCES(sf::Texture);
+        auto *s = new Sprite(baseTextures.begin()->second);
+        s->setScale(2, 2);
+        s->setTextureName(baseTextures.begin()->first);
+        light->setSprite(s);
+        sprite = s;
     }
-    ImGui::Text("Emission: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(100);
-    ImGui::InputFloat("##Emission", &emission);
+    auto scale = sprite->getScale();
+    if (ImGui::TreeNode(sprite->getTextureName().data())) {
+        EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+        ImGui::TreePop();
+
+        ImGui::Text("Light scale: x");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputFloat("##lightSizex", &scale.x);
+        ImGui::SameLine();
+        ImGui::Text("y: ");
+        ImGui::SetNextItemWidth(100);
+        ImGui::SameLine();
+        ImGui::InputFloat("##lightSizey", &scale.y);
+        sprite->setScale(scale.x, scale.y);
+        light->setSprite(sprite);
+    }
     ImGui::Text("Intensity: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(100);
     ImGui::InputFloat("##Intensity", &intensity);
-    light->setEmission(emission);
     light->setIntensity(intensity);
 }
 
@@ -843,4 +827,52 @@ void EngineHud::scriptEditor(Script *script)
     ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
       ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
+}
+
+void EngineHud::resourceManager()
+{
+    ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Resource Manager");
+
+    if (ImGui::TreeNode("Textures")) {
+        auto& resource = R_GET_RESSOURCES(sf::Texture);
+        resourceManagerResourceTreeNodeContent<sf::Texture>(resource);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Music")) {
+        auto& resource = R_GET_MUSICS();
+        resourceManagerResourceTreeNodeContent<sf::Music *>(resource);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Sound")) {
+        auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
+        resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
+        ImGui::TreePop();
+    }
+    ImGui::End();
+}
+
+template <typename T>
+void EngineHud::resourceManagerResourceTreeNodeContent(std::map<std::string, T> &resource)
+{
+    for (auto& it : resource) {
+        auto& name = it.first;
+        auto path = R_PATH_FROM_NAME(name);
+
+        ImGui::Separator();
+        ImGui::Text(name.data());
+        ImGui::SameLine();
+        ImGui::Text("path: ");
+        ImGui::SameLine();
+        ImGui::Text(path.data());
+        ImGui::SameLine();
+        if (ImGui::SmallButton("x")) {
+            auto f = resource.find(it.first);
+            resource.erase(f);
+            return;
+        }
+        ImGui::Separator();
+    }
 }
