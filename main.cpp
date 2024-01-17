@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "Components/Sprite.hpp"
-#include "RessourcesManager.hpp"
+#include "ResourcesManager.hpp"
 #include "Engine/Entity.hpp"
 #include "Engine/Core.hpp"
 #include "Engine/RenderWindow.hpp"

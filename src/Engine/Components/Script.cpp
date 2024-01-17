@@ -45,7 +45,7 @@ void Script::create(const std::string& scriptPath, bool insert)
     (*_state)["_self"] = _self;
     (*_state)["_state"] = _state;
     (*_state)["Utils"] = Utils();
-    (*_state)["ResourceManager"] = Core::RessourceManager();
+    (*_state)["ResourceManager"] = Core::resourceManager();
     (*_state)["DRAW"] = sol::overload(
             [](Core* core, Drawable *drawable) {
                 return core->CoreDraw(drawable);
@@ -243,14 +243,14 @@ void Script::registerUtilsType()
 
 void Script::registerResourceManager()
 {
-    _state->new_usertype<RessourcesManager>(
+    _state->new_usertype<ResourcesManager>(
         "ResourceManager",
-        "R_ADD_TILE", &RessourcesManager::loadTileFromSpriteSheet,
+        "R_ADD_TILE", &ResourcesManager::loadTileFromSpriteSheet,
         "R_GET_RESSOURCE", sol::overload(
-            [] (RessourcesManager& rm, const std::string& resourceName) {
+            [] (ResourcesManager& rm, const std::string& resourceName) {
                 return rm.getRessource<sf::Texture>(resourceName);
             },
-            [] (RessourcesManager& rm, const std::string& resourceName) {
+            [] (ResourcesManager& rm, const std::string& resourceName) {
                 return rm.getRessource<sf::SoundBuffer>(resourceName);
             }
         )

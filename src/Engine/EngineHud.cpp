@@ -163,7 +163,6 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
 {
     auto light = dynamic_cast<Light *>(c);
     float intensity = light->getIntensity();
-    float emission = light->getEmission();
     Sprite *sprite = light->getSprite();
     nlohmann::json json;
 
@@ -828,4 +827,52 @@ void EngineHud::scriptEditor(Script *script)
     ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
       ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
+}
+
+void EngineHud::resourceManager()
+{
+    ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Resource Manager");
+
+    if (ImGui::TreeNode("Textures")) {
+        auto& resource = R_GET_RESSOURCES(sf::Texture);
+        resourceManagerResourceTreeNodeContent<sf::Texture>(resource);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Music")) {
+        auto& resource = R_GET_MUSICS();
+        resourceManagerResourceTreeNodeContent<sf::Music *>(resource);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Sound")) {
+        auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
+        resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
+        ImGui::TreePop();
+    }
+    ImGui::End();
+}
+
+template <typename T>
+void EngineHud::resourceManagerResourceTreeNodeContent(std::map<std::string, T> &resource)
+{
+    for (auto& it : resource) {
+        auto& name = it.first;
+        auto path = R_PATH_FROM_NAME(name);
+
+        ImGui::Separator();
+        ImGui::Text(name.data());
+        ImGui::SameLine();
+        ImGui::Text("path: ");
+        ImGui::SameLine();
+        ImGui::Text(path.data());
+        ImGui::SameLine();
+        if (ImGui::SmallButton("x")) {
+            auto f = resource.find(it.first);
+            resource.erase(f);
+            return;
+        }
+        ImGui::Separator();
+    }
 }

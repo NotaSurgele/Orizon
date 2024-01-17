@@ -51,7 +51,7 @@
                 },
                 {
                     "type": "Sound",
-                    "sound_name": "toto",
+                    "sound_name": "titi",
                     "loop": true
                 },
                 {
@@ -65,8 +65,7 @@
                 },
                 {
                     "type": "Light",
-                    "texture_name": "light_texture",
-                    "emission": 0.01
+                    "texture_name": "light_texture"
                 }
             ]
         },
