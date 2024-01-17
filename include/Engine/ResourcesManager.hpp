@@ -8,18 +8,19 @@
 #include"OrizonMusic.hpp"
 #include "Utils.hpp"
 
-class RessourcesManager {
+class ResourcesManager {
     public:
-        RessourcesManager() = default;
-        ~RessourcesManager() = default;
+        ResourcesManager() = default;
+        ~ResourcesManager() = default;
 
         template<typename T>
-        RessourcesManager& addRessource(std::string const& ressourceName,
-                                std::string const& filePath)
+        ResourcesManager& addRessource(std::string const& ressourceName,
+                                       std::string const& filePath)
         {
             T ressource = T();
 
             ressource.loadFromFile(filePath);
+            _pathMap.insert(std::pair<std::string, std::string>(ressourceName, filePath));
             if constexpr (std::is_same_v<T, sf::SoundBuffer>) {
                 _soundMap.insert(std::pair<std::string, sf::SoundBuffer>(ressourceName, ressource));
                 return *this;
@@ -28,19 +29,20 @@ class RessourcesManager {
             return *this;
         }
 
-        RessourcesManager& loadMusic(const std::string& ressourceName,
+        ResourcesManager& loadMusic(const std::string& ressourceName,
                                     const std::string& filePath)
         {
             sf::Music *music = new sf::Music();
 
             music->openFromFile(filePath);
             // music->load(filePath);
+            _pathMap.insert(std::pair<std::string, std::string>(ressourceName, filePath));
             _musicMap.insert(std::pair<std::string, sf::Music *>(ressourceName, music));
             return *this;
         }
 
-        RessourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
-                std::string const& filepath, int x, int y, int w, int h)
+        ResourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
+                                                  std::string const& filepath, int x, int y, int w, int h)
         {
             sf::Texture tile = sf::Texture();
             if (!tile.loadFromFile(filepath,
@@ -48,11 +50,12 @@ class RessourcesManager {
                 std::cerr << "[ResourceManager] ERROR cannot load Tile " << filepath << " at position "
                     << x << " " << y << std::endl;
             }
+            _pathMap.insert(std::pair<std::string, std::string>(tilename, filepath));
             _map.insert(std::pair<std::string, sf::Texture>(tilename, tile));
             return *this;
         }
 
-        RessourcesManager& loadScript(const std::string& filepath)
+        ResourcesManager& loadScript(const std::string& filepath)
         {
             if (_scriptMap.contains(filepath)) return *this;
             std::string content = Utils::readFile(filepath, true);
@@ -62,7 +65,7 @@ class RessourcesManager {
             return *this;
         }
 
-        RessourcesManager& addTag(const std::string& tag)
+        ResourcesManager& addTag(const std::string& tag)
         {
             _tagArray[tag] = 0;
             return *this;
@@ -84,6 +87,16 @@ class RessourcesManager {
             return -1;
         }
 
+        std::string pathFromName(const std::string& name)
+        {
+            for (auto& it : _pathMap) {
+                if (it.first.find(name) != std::string::npos) {
+                    return it.second;
+                }
+            }
+            return "";
+        }
+
         template<typename T>
         T& getRessource(std::string const &ressourceName)
         {
@@ -94,7 +107,7 @@ class RessourcesManager {
         }
 
         template<typename T>
-        std::map<std::string, T> getRessources()
+        std::map<std::string, T>& getRessources()
         {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return _soundMap;
@@ -107,7 +120,7 @@ class RessourcesManager {
             return _musicMap[ressourceName];
         }
 
-        std::map<std::string, sf::Music *> getMusics()
+        std::map<std::string, sf::Music *>& getMusics()
         {
             return _musicMap;
         }
@@ -117,7 +130,7 @@ class RessourcesManager {
             return _scriptMap[path];
         }
 
-        std::map<std::string, std::string> getScripts()
+        std::map<std::string, std::string>& getScripts()
         {
             return _scriptMap;
         }
@@ -164,6 +177,7 @@ class RessourcesManager {
         }
 
     private:
+        std::unordered_map<std::string, std::string> _pathMap;
         std::map<std::string, sf::Texture> _map;
         std::map<std::string, sf::SoundBuffer> _soundMap;
         std::map<std::string, sf::Music *> _musicMap;

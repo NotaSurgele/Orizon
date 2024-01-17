@@ -19,7 +19,7 @@ function Start()
     collider = _self:getComponentBoxCollider()
     --displayTable(table)
     --printHello()
-    --collider:onCollision(handleCollisionCallback)
+    collider:onCollision(handleCollisionCallback)
     print(animator, transform, collider)
 end
 
