@@ -833,6 +833,7 @@ void EngineHud::resourceManager()
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin("Resource Manager");
+    static std::string selected;
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
@@ -851,6 +852,30 @@ void EngineHud::resourceManager()
         resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
         ImGui::TreePop();
     }
+    if (ImGui::Button("ADD resource")) {
+        ImGui::OpenPopup("Resource type");
+    }
+
+    if (ImGui::BeginPopup("Resource type")) {
+        std::string types[] = {
+        "Sound",
+        "Music",
+        "Texture",
+        "Tile"
+        };
+
+        for (auto &it : types) {
+            if (ImGui::Selectable(it.data())) {
+                selected = it;
+            }
+        }
+        ImGui::EndPopup();
+    }
+
+    if (!selected.empty()) {
+
+    }
+
     ImGui::End();
 }
 
