@@ -97,7 +97,8 @@ private:
         SoundR,
         MusicR,
         TextureR,
-        TileR
+        TileR,
+        ScriptR
     };
 
     class ComponentSerializerFactory {
@@ -225,7 +226,8 @@ private:
             { "Sound", ResourceType::SoundR },
             { "Music", ResourceType::MusicR },
             { "Texture", ResourceType::TextureR },
-            { "Tile", ResourceType::TileR }
+            { "Tile", ResourceType::TileR },
+            { "Script", ResourceType::ScriptR }
     };
 
     // scripting
