@@ -829,10 +829,36 @@ void EngineHud::scriptEditor(Script *script)
     ImGui::End();
 }
 
+void EngineHud::baseResourceForm(const std::string& type, bool showName)
+{
+    std::string typeText = "Type: " + type;
+
+    ImGui::Separator();
+    ImGui::Text(typeText.data());
+    ImGui::SetNextItemWidth(500);
+    if (_inputPath.size() != 4096) _inputPath.reserve(4096);
+    if (showName) {
+        ImGui::Text("Name: ");
+        ImGui::SameLine();
+        ImGui::InputText("##inputName", _inputName.data(), 4096);
+    }
+    ImGui::Text("Path: ");
+    ImGui::SameLine();
+    ImGui::InputText("##inputPath", _inputPath.data(), 4096);
+}
+
 void EngineHud::resourceManager()
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin("Resource Manager");
+    static std::string selected;
+    std::string types[] = {
+            "Sound",
+            "Music",
+            "Texture",
+            "Tile",
+            "Script"
+    };
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
@@ -851,6 +877,81 @@ void EngineHud::resourceManager()
         resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
         ImGui::TreePop();
     }
+
+    if (ImGui::TreeNode("Script")) {
+        auto& resource = R_GET_SCRIPTS();
+        resourceManagerResourceTreeNodeContent<std::string>(resource);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::Button("ADD resource")) {
+        ImGui::OpenPopup("Resource type");
+    }
+
+    if (ImGui::BeginPopup("Resource type")) {
+
+        for (auto &it : types) {
+            if (ImGui::Selectable(it.data())) {
+                selected = it;
+            }
+        }
+        ImGui::EndPopup();
+    }
+
+    if (!selected.empty()) {
+        ResourceType& type = _typeMap[selected];
+
+        switch (type) {
+            case SoundR:
+                baseResourceForm(selected, true);
+                break;
+            case MusicR:
+                baseResourceForm(selected, true);
+                break;
+            case TextureR:
+                baseResourceForm(selected, true);
+                break;
+            case ScriptR:
+                baseResourceForm(selected);
+            case TileR:
+                baseResourceForm(selected, true);
+                // tile info
+                ImGui::Text("Tile Informations: ");
+                ImGui::InputFloat4("##tileInfo", _tileInfo);
+                break;
+            default: break;
+        }
+
+        if (ImGui::SmallButton("+")) {
+            switch (type) {
+                case SoundR:
+                    R_ADD_RESSOURCE(sf::SoundBuffer, _inputName.c_str(), _inputPath.c_str());
+                    break;
+                case MusicR:
+                    R_ADD_MUSIC(_inputName.c_str(), _inputPath.c_str());
+                    break;
+                case TextureR:
+                    R_ADD_RESSOURCE(sf::Texture, _inputName.c_str(), _inputPath.c_str());
+                    break;
+                case TileR:
+                    R_ADD_TILE(_inputName.c_str(), _inputPath.c_str(), _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
+                    break;
+                case ScriptR:
+                    R_ADD_SCRIPT(_inputPath.c_str());
+                default: break;
+            }
+            // reset all values
+            _tileInfo[0] = 0.0f;
+            _tileInfo[1] = 0.0f;
+            _tileInfo[2] = 0.0f;
+            _tileInfo[3] = 0.0f;
+            _inputPath.clear();
+            _inputName.clear();
+            selected.clear();
+        }
+
+    }
+
     ImGui::End();
 }
 
