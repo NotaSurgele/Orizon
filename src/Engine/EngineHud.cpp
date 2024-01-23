@@ -856,7 +856,8 @@ void EngineHud::resourceManager()
             "Sound",
             "Music",
             "Texture",
-            "Tile"
+            "Tile",
+            "Script"
     };
 
     if (ImGui::TreeNode("Textures")) {
@@ -876,6 +877,13 @@ void EngineHud::resourceManager()
         resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
         ImGui::TreePop();
     }
+
+    if (ImGui::TreeNode("Script")) {
+        auto& resource = R_GET_SCRIPTS();
+        resourceManagerResourceTreeNodeContent<std::string>(resource);
+        ImGui::TreePop();
+    }
+
     if (ImGui::Button("ADD resource")) {
         ImGui::OpenPopup("Resource type");
     }
@@ -903,6 +911,8 @@ void EngineHud::resourceManager()
             case TextureR:
                 baseResourceForm(selected, true);
                 break;
+            case ScriptR:
+                baseResourceForm(selected);
             case TileR:
                 baseResourceForm(selected, true);
                 // tile info
@@ -913,20 +923,21 @@ void EngineHud::resourceManager()
         }
 
         if (ImGui::SmallButton("+")) {
-            std::cout << "it should " << _inputName.data() << " " << _inputName << std::endl;
             switch (type) {
                 case SoundR:
-                    R_ADD_RESSOURCE(sf::SoundBuffer, _inputName.c_str(), _inputPath);
+                    R_ADD_RESSOURCE(sf::SoundBuffer, _inputName.c_str(), _inputPath.c_str());
                     break;
                 case MusicR:
-                    R_ADD_MUSIC(_inputName, _inputPath.c_str());
+                    R_ADD_MUSIC(_inputName.c_str(), _inputPath.c_str());
                     break;
                 case TextureR:
-                    R_ADD_RESSOURCE(sf::Texture, _inputName.c_str(), _inputPath);
+                    R_ADD_RESSOURCE(sf::Texture, _inputName.c_str(), _inputPath.c_str());
                     break;
                 case TileR:
-                    R_ADD_TILE(_inputName.c_str(), _inputPath, _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
+                    R_ADD_TILE(_inputName.c_str(), _inputPath.c_str(), _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
                     break;
+                case ScriptR:
+                    R_ADD_SCRIPT(_inputPath.c_str());
                 default: break;
             }
             // reset all values

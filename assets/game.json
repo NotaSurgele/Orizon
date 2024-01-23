@@ -48,10 +48,6 @@
         },
         {
             "type": "Script",
-            "path": "./assets/Scripting/debug.lua"
-        },
-        {
-            "type": "Script",
             "path": "./assets/Scripting/toto.lua"
         }
     ],
