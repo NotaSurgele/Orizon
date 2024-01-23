@@ -829,11 +829,35 @@ void EngineHud::scriptEditor(Script *script)
     ImGui::End();
 }
 
+void EngineHud::baseResourceForm(const std::string& type, bool showName)
+{
+    std::string typeText = "Type: " + type;
+
+    ImGui::Separator();
+    ImGui::Text(typeText.data());
+    ImGui::SetNextItemWidth(500);
+    if (_inputPath.size() != 4096) _inputPath.reserve(4096);
+    if (showName) {
+        ImGui::Text("Name: ");
+        ImGui::SameLine();
+        ImGui::InputText("##inputName", _inputName.data(), 4096);
+    }
+    ImGui::Text("Path: ");
+    ImGui::SameLine();
+    ImGui::InputText("##inputPath", _inputPath.data(), 4096);
+}
+
 void EngineHud::resourceManager()
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin("Resource Manager");
     static std::string selected;
+    std::string types[] = {
+            "Sound",
+            "Music",
+            "Texture",
+            "Tile"
+    };
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
@@ -857,12 +881,6 @@ void EngineHud::resourceManager()
     }
 
     if (ImGui::BeginPopup("Resource type")) {
-        std::string types[] = {
-        "Sound",
-        "Music",
-        "Texture",
-        "Tile"
-        };
 
         for (auto &it : types) {
             if (ImGui::Selectable(it.data())) {
@@ -873,6 +891,53 @@ void EngineHud::resourceManager()
     }
 
     if (!selected.empty()) {
+        ResourceType& type = _typeMap[selected];
+
+        switch (type) {
+            case SoundR:
+                baseResourceForm(selected, true);
+                break;
+            case MusicR:
+                baseResourceForm(selected, true);
+                break;
+            case TextureR:
+                baseResourceForm(selected, true);
+                break;
+            case TileR:
+                baseResourceForm(selected, true);
+                // tile info
+                ImGui::Text("Tile Informations: ");
+                ImGui::InputFloat4("##tileInfo", _tileInfo);
+                break;
+            default: break;
+        }
+
+        if (ImGui::SmallButton("+")) {
+            std::cout << "it should " << _inputName.data() << " " << _inputName << std::endl;
+            switch (type) {
+                case SoundR:
+                    R_ADD_RESSOURCE(sf::SoundBuffer, _inputName.c_str(), _inputPath);
+                    break;
+                case MusicR:
+                    R_ADD_MUSIC(_inputName, _inputPath.c_str());
+                    break;
+                case TextureR:
+                    R_ADD_RESSOURCE(sf::Texture, _inputName.c_str(), _inputPath);
+                    break;
+                case TileR:
+                    R_ADD_TILE(_inputName.c_str(), _inputPath, _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
+                    break;
+                default: break;
+            }
+            // reset all values
+            _tileInfo[0] = 0.0f;
+            _tileInfo[1] = 0.0f;
+            _tileInfo[2] = 0.0f;
+            _tileInfo[3] = 0.0f;
+            _inputPath.clear();
+            _inputName.clear();
+            selected.clear();
+        }
 
     }
 

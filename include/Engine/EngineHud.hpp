@@ -91,7 +91,14 @@ private:
 
     std::unordered_map<std::string, Entity *> getEntitiesNameToSave(const nlohmann::json& entitiesJson);
     void componentSerializer(nlohmann::json& entityJson, Entity *e);
+    void baseResourceForm(const std::string& type, bool showName=false);
 
+    enum ResourceType {
+        SoundR,
+        MusicR,
+        TextureR,
+        TileR
+    };
 
     class ComponentSerializerFactory {
     public:
@@ -208,6 +215,18 @@ private:
     std::size_t _width;
     std::size_t _height;
     bool _theme = false;
+
+    // form information
+    std::string _inputPath;
+    std::string _inputName;
+    float _tileInfo[4] = {};
+
+    std::unordered_map<std::string, ResourceType> _typeMap = {
+            { "Sound", ResourceType::SoundR },
+            { "Music", ResourceType::MusicR },
+            { "Texture", ResourceType::TextureR },
+            { "Tile", ResourceType::TileR }
+    };
 
     // scripting
     static inline sf::Sprite _colorSprite;
