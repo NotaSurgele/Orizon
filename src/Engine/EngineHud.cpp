@@ -834,6 +834,26 @@ void EngineHud::destroyEntity(Entity *e, const std::string& name)
             _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
             System::RemoveEntity(e);
             _selected = nullptr;
+            std::cout << "[GUI] Destroy an entity " << name << std::endl;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
+{
+    auto popUpName = name + " Layer actions";
+
+    if (ImGui::IsItemHovered()) {
+        if (ImGui::IsMouseDown(1)) {
+            ImGui::OpenPopup(popUpName.data());
+        }
+    }
+    if (ImGui::BeginPopup(popUpName.data())) {
+        if (ImGui::Selectable("Destroy")) {
+            tilemap->destroy();
+            std::cout << "[GUI] Destroy a layer " << name << std::endl;
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
@@ -898,6 +918,7 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
             }
             ImGui::TreePop();
         }
+        destroyTilemap(layer, layerName);
         layerIndex++;
     }
 }
