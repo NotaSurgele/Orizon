@@ -1,0 +1,250 @@
+{
+    "entities": [
+        {
+            "components": [
+                {
+                    "intensity": 0.4000000059604645,
+                    "texture_name": "light_texture",
+                    "type": "Light"
+                },
+                {
+                    "path": "./assets/Scripting/Player.lua",
+                    "type": "Script"
+                },
+                {
+                    "loop": true,
+                    "music_name": "tata",
+                    "type": "Music"
+                },
+                {
+                    "loop": true,
+                    "sound_name": "titi",
+                    "type": "Sound"
+                },
+                {
+                    "tag": "player",
+                    "type": "Tag"
+                },
+                {
+                    "follow": true,
+                    "type": "View",
+                    "view_bounds": [
+                        300.0,
+                        -150.0,
+                        800.0,
+                        600.0
+                    ],
+                    "viewport": [
+                        0.0,
+                        0.0,
+                        0.3499999940395355,
+                        0.3499999940395355
+                    ]
+                },
+                {
+                    "animations": [
+                        {
+                            "frames_number": 4,
+                            "name": "idle",
+                            "rect": [
+                                0.0,
+                                0.0,
+                                18.0,
+                                18.0
+                            ],
+                            "speed": 0.20000000298023224
+                        }
+                    ],
+                    "type": "Animator"
+                },
+                {
+                    "type": "Velocity"
+                },
+                {
+                    "collision_type": "Dynamic",
+                    "position": [
+                        500.0,
+                        0.0
+                    ],
+                    "range": 10,
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "hobbit",
+                    "type": "Sprite"
+                },
+                {
+                    "position": [
+                        500.0,
+                        1.4131999015808105
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "type": "Layer",
+                    "value": 1
+                }
+            ],
+            "name": "player"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        500,
+                        0
+                    ],
+                    "rotation": 0,
+                    "scale": [
+                        1,
+                        1
+                    ],
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "collision_type": "Static",
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "range": 1,
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "block",
+                    "type": "Sprite"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "block"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        500,
+                        0
+                    ],
+                    "rotation": 0,
+                    "scale": [
+                        1,
+                        1
+                    ],
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "collision_type": "Dynamic",
+                    "position": [
+                        0,
+                        0
+                    ],
+                    "range": 0,
+                    "size": [
+                        16,
+                        16
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "grass",
+                    "type": "Sprite"
+                },
+                {
+                    "type": "Layer",
+                    "value": 1
+                }
+            ],
+            "name": "grass"
+        },
+        {
+            "components": [
+                {
+                    "path": "./assets/Scripting/MapManager.lua",
+                    "type": "Script"
+                },
+                {
+                    "tag": "MapManager",
+                    "type": "Tag"
+                },
+                {
+                    "position": [
+                        500.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "MapManager"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "tag": "mabite",
+                    "type": "Tag"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "mabite"
+        }
+    ]
+}
