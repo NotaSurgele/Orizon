@@ -64,6 +64,7 @@ public:
     }
 
     void saveScene();
+    void saveResource(nlohmann::json& json, const std::string& entityPath);
 
 private:
     static inline std::string _msg;
