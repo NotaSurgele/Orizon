@@ -912,7 +912,8 @@ void EngineHud::resourceManager()
                 baseResourceForm(selected, true);
                 break;
             case ScriptR:
-                baseResourceForm(selected);
+                baseResourceForm(selected, false);
+                break;
             case TileR:
                 baseResourceForm(selected, true);
                 // tile info
