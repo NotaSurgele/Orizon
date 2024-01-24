@@ -760,6 +760,12 @@ void EngineHud::saveScene()
                     }
                 }
             }
+            _currentSceneContent["entities"].clear();
+            for (auto& e : _toSave) {
+                auto& name = e->getComponent<Tag>()->value();
+
+                _currentSceneContent["entities"].push_back(name);
+            }
             std::string content = entitiesContentJson.dump(4);
             Utils::writeFile(entitiesPath + std::to_string(1), content);
         } catch (std::exception& msg) {
