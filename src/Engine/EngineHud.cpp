@@ -733,12 +733,24 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     Utils::writeFile(_currentSceneFilepath + std::to_string(1), content);
 }
 
+void EngineHud::saveEntity(nlohmann::json &json)
+{
+    json["entities"].clear();
+    for (auto& e : _toSave) {
+        auto& name = e->getComponent<Tag>()->value();
+
+        json["entities"].push_back(name);
+    }
+    auto c = json["entities"].dump(4);
+    std::cout << c << std::endl;
+}
+
 void EngineHud::saveScene()
 {
     if (Input::isKeyPressed("LControl") &&
         Input::isKeyDown("S")) {
         try {
-
+            saveEntity(_currentSceneContent);
             std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
                                                                         _currentSceneContent["entities"]);
             std::string entitiesPath;
@@ -752,25 +764,65 @@ void EngineHud::saveScene()
             for (auto &it : toSaves) {
                 auto& name = it.first;
                 auto *e = it.second;
+                bool find = false;
 
                 for (auto& json : entitiesContentJson["entities"]) {
                     auto entityName = json["name"];
                     if (entityName.get<std::string>().find(name) != std::string::npos) {
                         componentSerializer(json, e);
+                        find = true;
+                        break;
                     }
                 }
+
+                // if entity not found create it
+                if (!find) {
+                    auto newEntity = nlohmann::json();
+                    newEntity["name"] = name;
+                    newEntity["components"] = {};
+
+                    componentSerializer(newEntity, e);
+                    entitiesContentJson["entities"].push_back(newEntity);
+                }
             }
-            _currentSceneContent["entities"].clear();
+/*            _currentSceneContent["entities"].clear();
             for (auto& e : _toSave) {
                 auto& name = e->getComponent<Tag>()->value();
 
                 _currentSceneContent["entities"].push_back(name);
-            }
+            }*/
             std::string content = entitiesContentJson.dump(4);
             Utils::writeFile(entitiesPath + std::to_string(1), content);
         } catch (std::exception& msg) {
             std::cerr << msg.what() << std::endl;
         }
+    }
+}
+
+void EngineHud::addEntity()
+{
+    static std::string entityName;
+    static bool show = false;
+
+    ImGui::SetCursorPosX(((_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO) / 2) / 2);
+    if (ImGui::Button("New entity")) {
+        show = true;
+    }
+
+    if (!show) return;
+    ImGui::InputText("name", entityName.data(), 256);
+
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))) {
+        if (std::string(entityName.data()).empty()) return;
+        auto *e = new Entity();
+
+        e->addComponent<Tag>(entityName.data());
+        e->addComponent<Transform2D>(0, 0);
+        _toSave.push_back(e);
+        System::forceUpdate(e);
+        show = false;
+        entityName.clear();
+        std::cout << "[GUI] Creating a new entity" << std::endl;
     }
 }
 
@@ -806,6 +858,9 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
     }
     /* Handle tiles */
     layersEntity(index, tileMap);
+
+    // Add entity Button
+    addEntity();
     ImGui::End();
 }
 
