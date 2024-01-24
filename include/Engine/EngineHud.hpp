@@ -68,6 +68,7 @@ public:
     void saveEntity(nlohmann::json& json);
     void createEntity();
     void destroyEntity(Entity *e, const std::string& name);
+    void destroyTilemap(TileMap *tilemap, const std::string& name);
 
 private:
     static inline std::string _msg;
