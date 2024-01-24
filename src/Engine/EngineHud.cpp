@@ -665,19 +665,88 @@ void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
     }
 }
 
+void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath)
+{
+    json["resources"].clear();
+    auto textures = R_GET_RESSOURCES(sf::Texture);
+    auto sounds = R_GET_RESSOURCES(sf::SoundBuffer);
+    auto scripts = R_GET_SCRIPTS();
+    auto musics = R_GET_MUSICS();
+
+    // handle texture saving
+    for (auto& it : textures) {
+        auto& name = it.first;
+        auto path = R_PATH_FROM_NAME(name);
+        auto type = "Texture";
+        auto textureJson = nlohmann::json();
+
+        textureJson["path"] = path;
+        textureJson["name"] = name;
+        textureJson["type"] = type;
+        json["resources"].push_back(textureJson);
+    }
+
+    // handle sounds saving
+    for (auto& it : sounds) {
+        auto& name = it.first;
+        auto path = R_PATH_FROM_NAME(name);
+        auto type = "Sound";
+        auto soundJson = nlohmann::json();
+
+        soundJson["path"] = path;
+        soundJson["name"] = name;
+        soundJson["type"] = type;
+        json["resources"].push_back(soundJson);
+    }
+
+    // handle scripts saving
+    for (auto& it : scripts) {
+        auto& path = it.first;
+        auto type = "Script";
+        auto scriptJson = nlohmann::json();
+
+        scriptJson["path"] = path;
+        scriptJson["type"] = type;
+        json["resources"].push_back(scriptJson);
+    }
+
+    // handle musics saving
+    for (auto& it : musics) {
+        auto& name = it.first;
+        auto path = R_PATH_FROM_NAME(name);
+        auto type = "Music";
+        auto musicJson = nlohmann::json();
+
+        musicJson["path"] = path;
+        musicJson["name"] = name;
+        musicJson["type"] = type;
+        json["resources"].push_back(musicJson);
+    }
+
+    // handle entity path
+    nlohmann::json entityPathJson = nlohmann::json();
+    entityPathJson["type"] = "Entities";
+    entityPathJson["path"] = entityPath;
+    json["resources"].push_back(entityPathJson);
+
+    auto content = json.dump(4);
+    Utils::writeFile(_currentSceneFilepath + std::to_string(1), content);
+}
+
 void EngineHud::saveScene()
 {
     if (Input::isKeyPressed("LControl") &&
         Input::isKeyDown("S")) {
         try {
 
-            std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(_currentSceneContent["entities"]);
+            std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
+                                                                        _currentSceneContent["entities"]);
             std::string entitiesPath;
-
             for (auto& r : _currentSceneContent["resources"]) {
                 if (r["type"].get<std::string>().find("Entities") != std::string::npos)
                     entitiesPath = r["path"];
             }
+            saveResource(_currentSceneContent, entitiesPath);
             auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
 
             for (auto &it : toSaves) {
