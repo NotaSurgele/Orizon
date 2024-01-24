@@ -785,12 +785,6 @@ void EngineHud::saveScene()
                     entitiesContentJson["entities"].push_back(newEntity);
                 }
             }
-/*            _currentSceneContent["entities"].clear();
-            for (auto& e : _toSave) {
-                auto& name = e->getComponent<Tag>()->value();
-
-                _currentSceneContent["entities"].push_back(name);
-            }*/
             std::string content = entitiesContentJson.dump(4);
             Utils::writeFile(entitiesPath + std::to_string(1), content);
         } catch (std::exception& msg) {
@@ -799,7 +793,7 @@ void EngineHud::saveScene()
     }
 }
 
-void EngineHud::addEntity()
+void EngineHud::createEntity()
 {
     static std::string entityName;
     static bool show = false;
@@ -822,7 +816,27 @@ void EngineHud::addEntity()
         System::forceUpdate(e);
         show = false;
         entityName.clear();
-        std::cout << "[GUI] Creating a new entity" << std::endl;
+        std::cout << "[GUI] Creating a new entity " << entityName.data() << std::endl;
+    }
+}
+
+void EngineHud::destroyEntity(Entity *e, const std::string& name)
+{
+    auto popUpName = name + " Entity actions";
+
+    if (ImGui::IsItemHovered()) {
+        if (ImGui::IsMouseDown(1)) {
+            ImGui::OpenPopup(popUpName.data());
+        }
+    }
+    if (ImGui::BeginPopup(popUpName.data())) {
+        if (ImGui::Selectable("Destroy")) {
+            _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
+            System::RemoveEntity(e);
+            _selected = nullptr;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 }
 
@@ -854,13 +868,14 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
         if (ImGui::Selectable(name.c_str())) {
             _selected = e;
         }
+        destroyEntity(e, name);
         index++;
     }
     /* Handle tiles */
     layersEntity(index, tileMap);
 
     // Add entity Button
-    addEntity();
+    createEntity();
     ImGui::End();
 }
 
@@ -878,6 +893,7 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
                 if (ImGui::Selectable(name.c_str())) {
                     _selected = e;
                 }
+                destroyEntity(e, name);
                 index++;
             }
             ImGui::TreePop();
