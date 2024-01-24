@@ -733,12 +733,24 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     Utils::writeFile(_currentSceneFilepath + std::to_string(1), content);
 }
 
+void EngineHud::saveEntity(nlohmann::json &json)
+{
+    json["entities"].clear();
+    for (auto& e : _toSave) {
+        auto& name = e->getComponent<Tag>()->value();
+
+        json["entities"].push_back(name);
+    }
+    auto c = json["entities"].dump(4);
+    std::cout << c << std::endl;
+}
+
 void EngineHud::saveScene()
 {
     if (Input::isKeyPressed("LControl") &&
         Input::isKeyDown("S")) {
         try {
-
+            saveEntity(_currentSceneContent);
             std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
                                                                         _currentSceneContent["entities"]);
             std::string entitiesPath;
@@ -752,25 +764,99 @@ void EngineHud::saveScene()
             for (auto &it : toSaves) {
                 auto& name = it.first;
                 auto *e = it.second;
+                bool find = false;
 
                 for (auto& json : entitiesContentJson["entities"]) {
                     auto entityName = json["name"];
                     if (entityName.get<std::string>().find(name) != std::string::npos) {
                         componentSerializer(json, e);
+                        find = true;
+                        break;
                     }
                 }
-            }
-            _currentSceneContent["entities"].clear();
-            for (auto& e : _toSave) {
-                auto& name = e->getComponent<Tag>()->value();
 
-                _currentSceneContent["entities"].push_back(name);
+                // if entity not found create it
+                if (!find) {
+                    auto newEntity = nlohmann::json();
+                    newEntity["name"] = name;
+                    newEntity["components"] = {};
+
+                    componentSerializer(newEntity, e);
+                    entitiesContentJson["entities"].push_back(newEntity);
+                }
             }
             std::string content = entitiesContentJson.dump(4);
             Utils::writeFile(entitiesPath + std::to_string(1), content);
         } catch (std::exception& msg) {
             std::cerr << msg.what() << std::endl;
         }
+    }
+}
+
+void EngineHud::createEntity()
+{
+    static std::string entityName;
+    static bool show = false;
+
+    ImGui::SetCursorPosX(((_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO) / 2) / 2);
+    if (ImGui::Button("New entity")) {
+        show = true;
+    }
+
+    if (!show) return;
+    ImGui::InputText("name", entityName.data(), 256);
+
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))) {
+        if (std::string(entityName.data()).empty()) return;
+        auto *e = new Entity();
+
+        e->addComponent<Tag>(entityName.data());
+        e->addComponent<Transform2D>(0, 0);
+        _toSave.push_back(e);
+        System::forceUpdate(e);
+        show = false;
+        entityName.clear();
+        std::cout << "[GUI] Creating a new entity " << entityName.data() << std::endl;
+    }
+}
+
+void EngineHud::destroyEntity(Entity *e, const std::string& name)
+{
+    auto popUpName = name + " Entity actions";
+
+    if (ImGui::IsItemHovered()) {
+        if (ImGui::IsMouseDown(1)) {
+            ImGui::OpenPopup(popUpName.data());
+        }
+    }
+    if (ImGui::BeginPopup(popUpName.data())) {
+        if (ImGui::Selectable("Destroy")) {
+            _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
+            System::RemoveEntity(e);
+            _selected = nullptr;
+            std::cout << "[GUI] Destroy an entity " << name << std::endl;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
+{
+    auto popUpName = name + " Layer actions";
+
+    if (ImGui::IsItemHovered()) {
+        if (ImGui::IsMouseDown(1)) {
+            ImGui::OpenPopup(popUpName.data());
+        }
+    }
+    if (ImGui::BeginPopup(popUpName.data())) {
+        if (ImGui::Selectable("Destroy")) {
+            tilemap->destroy();
+            std::cout << "[GUI] Destroy a layer " << name << std::endl;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 }
 
@@ -802,10 +888,14 @@ void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::
         if (ImGui::Selectable(name.c_str())) {
             _selected = e;
         }
+        destroyEntity(e, name);
         index++;
     }
     /* Handle tiles */
     layersEntity(index, tileMap);
+
+    // Add entity Button
+    createEntity();
     ImGui::End();
 }
 
@@ -823,10 +913,12 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
                 if (ImGui::Selectable(name.c_str())) {
                     _selected = e;
                 }
+                destroyEntity(e, name);
                 index++;
             }
             ImGui::TreePop();
         }
+        destroyTilemap(layer, layerName);
         layerIndex++;
     }
 }
