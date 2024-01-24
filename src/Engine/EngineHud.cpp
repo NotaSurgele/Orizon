@@ -14,6 +14,7 @@ void EngineHud::setTheme()
 
     colors[ImGuiCol_WindowBg] = ImVec4(0.05, 0.18, 0.18, .5f);
     colors[ImGuiCol_Text] = ImVec4(0.61, 0.8, 0.57, 1.0);
+    colors[ImGuiCol_FrameBg] = ImVec4(0.3, 0.3, 0.3, 1.0);
     _theme = true;
 }
 
@@ -807,7 +808,10 @@ void EngineHud::createEntity()
     ImGui::InputText("name", entityName.data(), 256);
 
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))) {
-        if (std::string(entityName.data()).empty()) return;
+        if (std::string(entityName.data()).empty()) {
+            show = false;
+            return;
+        }
         auto *e = new Entity();
 
         e->addComponent<Tag>(entityName.data());
