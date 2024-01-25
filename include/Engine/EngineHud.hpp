@@ -70,6 +70,7 @@ public:
     void createComponent();
     void destroyEntity(Entity *e, const std::string& name);
     void destroyTilemap(TileMap *tilemap, const std::string& name);
+    void destroyComponent(IComponent *c, const std::string& name);
 
 private:
     static inline std::string _msg;

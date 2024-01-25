@@ -1064,6 +1064,29 @@ void EngineHud::createComponent()
     }
 }
 
+void EngineHud::destroyComponent(IComponent *c, const std::string& name)
+{
+    auto popUpName = name + " Components actions";
+
+    if (name.find("Transform2D") != std::string::npos ||
+        name.find("Layer") != std::string::npos ||
+        name.find("Id") != std::string::npos) return;
+    if (ImGui::IsItemHovered()) {
+        if (ImGui::IsMouseDown(1)) {
+            ImGui::OpenPopup(popUpName.data());
+        }
+    }
+    if (ImGui::BeginPopup(popUpName.data())) {
+        if (ImGui::Selectable("Destroy")) {
+            _selected->removeComponent(c);
+            delete c;
+            std::cout << "[GUI] Destroy an entity component " << name << std::endl;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
 void EngineHud::entityInformation()
 {
     ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO), 0));
@@ -1087,6 +1110,7 @@ void EngineHud::entityInformation()
                 ComponentTreeNodeFactory::create(elem.second);
                 ImGui::TreePop();
             }
+            destroyComponent(elem.second, updated);
             i++;
         }
         createComponent();
