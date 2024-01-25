@@ -93,7 +93,7 @@ function tiledMap.loadTileMap()
                 transform = e:addComponentTransform2D(posY, posX)
                 e:addComponentSprite(texture)
                 e:addComponentBoxCollider(transform.position,
-                        Vector2f.new(tileSize.x, tileSize.y))
+                        Vector2f.new(tileSize.x, tileSize.y)):setType(BoxCollider.STATIC)
                 tilemap:emplaceEntity(e)
             end
             poxY = posY + tileSize.x

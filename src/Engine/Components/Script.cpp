@@ -55,17 +55,22 @@ void Script::create(const std::string& scriptPath, bool insert)
             }
     );
     _state->set_function("Import", &loadScript);
-    auto result = _state->script_file(scriptPath);
 
-    if (!result.valid()) {
-        sol::error res = result;
-        std::cerr << "Error executing lua script " << res.what() << std::endl;
-    } else {
-        if (insert) {
-            R_ADD_SCRIPT(scriptPath);
-            System::__registerScriptedEntity(_self);
-            std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
+    try {
+        auto result = _state->script_file(scriptPath);
+
+        if (!result.valid()) {
+            sol::error res = result;
+            std::cerr << "Error executing lua script " << res.what() << std::endl;
+        } else {
+            if (insert) {
+                R_ADD_SCRIPT(scriptPath);
+                System::__registerScriptedEntity(_self);
+                std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
+            }
         }
+    } catch (std::exception& err) {
+        std::cerr << err.what() << std::endl;
     }
 }
 
