@@ -67,6 +67,7 @@ public:
     void saveResource(nlohmann::json& json, const std::string& entityPath);
     void saveEntity(nlohmann::json& json);
     void createEntity();
+    void createComponent();
     void destroyEntity(Entity *e, const std::string& name);
     void destroyTilemap(TileMap *tilemap, const std::string& name);
 
@@ -104,6 +105,50 @@ private:
         TextureR,
         TileR,
         ScriptR
+    };
+
+    class ComponentCreationFactory {
+    public:
+        ComponentCreationFactory() = default;
+        ~ComponentCreationFactory() = default;
+
+        static inline void create(const std::string& name, Entity *e)
+        {
+            _map[name](e);
+        }
+
+    private:
+        static void createTransform2D(Entity *e);
+
+        static void createBoxCollider(Entity *e);
+        static void createSprite(Entity *e);
+        static void createVelocity(Entity *e);
+        static void createAnimator(Entity *e);
+        static void createView(Entity *e);
+        static void createTag(Entity *e);
+        static void createLayer(Entity *e);
+        static void createSound(Entity *e);
+        static void createMusic(Entity *e);
+        static void createScript(Entity *e);
+        static void createLight(Entity *e);
+        static void createGravity(Entity *e);
+
+    private:
+        static inline std::unordered_map<std::string, std::function<void(Entity *)>> _map = {
+                { "Transform2D", createTransform2D },
+                { "BoxCollider", createBoxCollider },
+                { "Sprite", createSprite },
+                { "Velocity", createVelocity },
+                { "Animator", createAnimator },
+                { "View", createView },
+                { "Tag", createTag },
+                { "Layer", createLayer },
+                { "Sound", createSound },
+                { "Music", createMusic },
+                { "Script", createScript },
+                { "Light", createLight },
+                { "Gravity", createGravity }
+        };
     };
 
     class ComponentSerializerFactory {
