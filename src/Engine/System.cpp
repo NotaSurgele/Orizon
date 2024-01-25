@@ -269,18 +269,20 @@ bool System::light_layer_raycast(Light *light, Entity *e)
 
 void System::light_system(Entity *e)
 {
-    auto light = e->getComponent<Light>();
-    auto sprite = e->getComponent<Sprite>();
+    auto arr = e->getComponents<Light>();
+    for (auto& light : arr) {
+        auto sprite = e->getComponent<Sprite>();
 
-    handle_sprite_lightning(sprite, light);
-    if (!light) return;
-    if (light_layer_raycast(light, e))
-        return;
-    if (!light->isSpriteLoaded()) {
-        light->emit(_registry);
-        return;
+        handle_sprite_lightning(sprite, light);
+        if (!light) return;
+        if (light_layer_raycast(light, e))
+            return;
+        if (!light->isSpriteLoaded()) {
+            light->emit(_registry);
+            return;
+        }
+        light->emit();
     }
-    light->emit();
 }
 
 void System::gravity_system(Entity *e)
@@ -410,27 +412,30 @@ void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
 
 void System::collider_system(Entity *e)
 {
-    auto box = e->getComponent<BoxCollider>();
-    int range = 0;
+    auto arr = e->getComponents<BoxCollider>();
 
-    if (box == nullptr)
-        return;
-    if (box->getType() == BoxCollider::Type::STATIC)
-        return;
-    if (!box->___isSet) {
-        _dynamic_collider.push_back(e);
-        box->___isSet = true;
+    for (auto& box : arr) {
+        int range = 0;
+
+        if (box == nullptr)
+            return;
+        if (box->getType() == BoxCollider::Type::STATIC)
+            return;
+        if (!box->___isSet) {
+            _dynamic_collider.push_back(e);
+            box->___isSet = true;
+        }
+        box->isColliding = false;
+        box->collidingWith = nullptr;
+        range = box->getRange();
+        if (range == 0)
+            return;
+        // check collision with layers
+        handle_layer_collision(box, range, e);
+
+        // check collision with other dynamic entity
+        handle_dynamic_entity_collision(e, box);
     }
-    box->isColliding = false;
-    box->collidingWith = nullptr;
-    range = box->getRange();
-    if (range == 0)
-        return;
-    // check collision with layers
-    handle_layer_collision(box, range, e);
-
-    // check collision with other dynamic entity
-    handle_dynamic_entity_collision(e, box);
 }
 
 void System::camera_system(Entity *e) {
@@ -458,25 +463,28 @@ void System::BoxSystem(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
     auto velocity = e->getComponent<Velocity>();
-    auto box = e->getComponent<BoxCollider>();
-    bool d_v = false;
+    auto arr = e->getComponents<BoxCollider>();
 
-    if (!box)
-        return;
-    if (!velocity) {
-        velocity = Velocity::zero(),
-        d_v = true;
+    for (auto& box : arr) {
+        bool d_v = false;
+
+        if (!box)
+            return;
+        if (!velocity) {
+            velocity = Velocity::zero(),
+            d_v = true;
+        }
+        float velX = velocity->getX();
+        float velY = velocity->getY();
+        float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
+        float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
+        auto offset = box->getOffset();
+
+        box->setPosition((transform->position.x + offset.x) + x,
+                        (transform->position.y + offset.y) + y);
+        if (box->shouldDraw()) DRAW(box);
+        if (d_v) delete velocity;
     }
-    float velX = velocity->getX();
-    float velY = velocity->getY();
-    float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
-    float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
-    auto offset = box->getOffset();
-
-    box->setPosition((transform->position.x + offset.x) + x,
-                    (transform->position.y + offset.y) + y);
-    if (box->shouldDraw()) DRAW(box);
-    if (d_v) delete velocity;
 }
 
 void System::merge()
