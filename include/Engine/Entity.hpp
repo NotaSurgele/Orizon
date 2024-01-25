@@ -114,7 +114,7 @@ class Entity {
 
         bool removeComponent(IComponent *c)
         {
-            for (auto& it : _component_map) {
+            for (auto it : _component_map) {
                 if (it.second == c) {
                     _component_map.erase(it.first);
                     return true;
