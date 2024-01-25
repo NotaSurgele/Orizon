@@ -28,6 +28,108 @@ void EngineHud::currentSceneContent(const nlohmann::json &sceneContent)
     _currentSceneContent = sceneContent;
 }
 
+void EngineHud::ComponentCreationFactory::createTransform2D(Entity *e)
+{
+    auto transform = e->getComponent<Transform2D>();
+
+    if (transform) return;
+    e->addComponent<Transform2D>();
+}
+
+void EngineHud::ComponentCreationFactory::createBoxCollider(Entity *e)
+{
+    auto transform = e->getComponent<Transform2D>();
+    e->addComponent<BoxCollider>(transform->position, transform->size, 1);
+}
+
+void EngineHud::ComponentCreationFactory::createSprite(Entity *e)
+{
+    auto sprite = e->getComponent<Sprite>();
+
+    if (sprite) return;
+    sf::Image blankImage;
+    blankImage.create(16, 16, sf::Color::White);
+
+    sf::Texture texture;
+    texture.loadFromImage(blankImage);
+    e->addComponent<Sprite>(texture, 1, 1)->setTextureName("Default");
+}
+
+void EngineHud::ComponentCreationFactory::createVelocity(Entity *e)
+{
+    auto velocity = e->getComponent<Velocity>();
+
+    if (velocity) return;
+    e->addComponent<Velocity>();
+}
+
+void EngineHud::ComponentCreationFactory::createAnimator(Entity *e)
+{
+    auto animator = e->getComponent<Animator>();
+
+    if (animator) return;
+    e->addComponent<Animator>();
+}
+
+void EngineHud::ComponentCreationFactory::createView(Entity *e)
+{
+    auto view = e->getComponent<View>();
+
+    if (view) return;
+    e->addComponent<View>(0, 0, 400, 300);
+}
+
+void EngineHud::ComponentCreationFactory::createTag(Entity *e)
+{
+    auto tag = e->getComponent<Tag>();
+
+    if (tag) return;
+    e->addComponent<Tag>("entity " + std::to_string(e->get_id()));
+}
+
+void EngineHud::ComponentCreationFactory::createLayer(Entity *e)
+{
+    auto layer = e->getComponent<Layer>();
+
+    if (layer) return;
+    e->addComponent<Layer>(0);
+}
+
+void EngineHud::ComponentCreationFactory::createSound(Entity *e)
+{
+    e->addComponent<Sound>("");
+}
+
+void EngineHud::ComponentCreationFactory::createMusic(Entity *e)
+{
+    e->addComponent<OrizonMusic>("");
+}
+
+void EngineHud::ComponentCreationFactory::createScript(Entity *e)
+{
+    e->addComponent<Script>("");
+}
+
+void EngineHud::ComponentCreationFactory::createLight(Entity *e)
+{
+    sf::Image blankImage;
+    blankImage.create(16, 16, sf::Color::White);
+
+    sf::Texture texture;
+    texture.loadFromImage(blankImage);
+    auto *s  = new Sprite(texture);
+    s->setTextureName("Default");
+    e->addComponent<Light>(s);
+}
+
+void EngineHud::ComponentCreationFactory::createGravity(Entity *e)
+{
+    auto gravity = e->getComponent<Gravity>();
+
+    if (gravity) return;
+    e->addComponent<Gravity>(0.0f);
+}
+
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
 {
     auto transform = dynamic_cast<Transform2D *>(c);
@@ -283,7 +385,6 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
     auto bounds = view->getViewBounds();
     auto position = view->getCenter();
 
-    //std::cout << bounds.width << " " << bounds.height << std::endl;
     // Handle position
     ImGui::Text("Center position");
     ImGui::SameLine();
@@ -320,10 +421,10 @@ void EngineHud::ComponentTreeNodeFactory::buildViewTreeNode(IComponent *c)
 
 void EngineHud::ComponentTreeNodeFactory::buildBoxColliderTreeNode(IComponent *c)
 {
-    static bool draw = false;
     auto box = dynamic_cast<BoxCollider *>(c);
     auto& position = box->getOffset();
     auto& size = box->getSize();
+    bool draw = box->shouldDraw();
 
     // Handle position
     ImGui::Text("Position");
@@ -387,6 +488,7 @@ void EngineHud::ComponentTreeNodeFactory::buildSoundTreeNode(IComponent *c)
     std::string name = sound->name();
     bool loop = sound->isLoop();
 
+    if (name.empty()) name = "Default";
     ImGui::InputFloat("Volume", &volume);
     ImGui::Text("Sound buffer");
     ImGui::SameLine();
@@ -433,6 +535,7 @@ void EngineHud::ComponentTreeNodeFactory::buildOrizonMusicTreeNode(IComponent *c
     std::string name = music->name();
     bool loop = music->isLoop();
 
+    if (name.empty()) name = "Default";
     ImGui::InputFloat("Volume", &volume);
     ImGui::Text("Music buffer");
     ImGui::SameLine();
@@ -468,6 +571,7 @@ void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
     auto script = dynamic_cast<Script *>(c);
     auto path = script->getFile();
 
+    if (path.empty()) path = "Default";
     ImGui::Text("Current script: ");
     ImGui::SameLine();
     if (ImGui::Button(path.data())) {
@@ -476,7 +580,7 @@ void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
     }
     if (ImGui::BeginPopup("Script files")) {
         for (auto& it : R_GET_SCRIPTS()) {
-            auto& s = it.first;
+            auto s = it.first;
 
             if (s.find(path) != std::string::npos) continue;
             if (ImGui::Selectable(s.data())) {
@@ -507,7 +611,6 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     ImGui::Text("Current texture: ");
     ImGui::SameLine();
     if (ImGui::Button(name.data())) {
-        ImGui::SameLine();
         ImGui::OpenPopup("Textures buffer");
     }
     ImGui::SameLine();
@@ -927,6 +1030,40 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
     }
 }
 
+void EngineHud::createComponent()
+{
+    ImGui::SetCursorPosX(((_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO) / 2) / 2);
+    std::array<std::string, 13> componentList = {
+            "Transform2D",
+            "BoxCollider",
+            "Sprite",
+            "Velocity",
+            "Animator",
+            "View",
+            "Tag",
+            "Layer",
+            "Sound",
+            "Music",
+            "Script",
+            "Light",
+            "Gravity"
+    };
+
+    if (ImGui::Button("Add Component")) {
+        ImGui::OpenPopup("components creation");
+    }
+
+    if (ImGui::BeginPopup("components creation")) {
+        for (auto& component : componentList) {
+            if (ImGui::Selectable(component.data())) {
+                ComponentCreationFactory::create(component, _selected);
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndPopup();
+    }
+}
+
 void EngineHud::entityInformation()
 {
     ImGui::SetNextWindowPos(ImVec2(_width - (_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO), 0));
@@ -952,8 +1089,7 @@ void EngineHud::entityInformation()
             }
             i++;
         }
-/*        if (_selectedC)
-            scriptEditor(_selectedC);*/
+        createComponent();
     }
     ImGui::End();
 }
