@@ -250,8 +250,8 @@ void Script::registerResourceManager()
 {
     _state->new_usertype<ResourcesManager>(
         "ResourceManager",
-        "R_ADD_TILE", &ResourcesManager::loadTileFromSpriteSheet,
-        "R_GET_RESSOURCE", sol::overload(
+        "addTile", &ResourcesManager::loadTileFromSpriteSheet,
+            "getResource", sol::overload(
             [] (ResourcesManager& rm, const std::string& resourceName) {
                 return rm.getRessource<sf::Texture>(resourceName);
             },

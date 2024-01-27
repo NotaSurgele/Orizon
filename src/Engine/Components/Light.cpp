@@ -18,6 +18,7 @@ Light::Light(Entity *e, Sprite *sprite, const float& intensity) : _sprite(sprite
     Light::darkColor = sf::Color(newRed, newGreen, newBlue, color.a);
     _sprite->setScale(2, 2);
     System::lightSources += 1;
+    System::__addLightSource(e);
 }
 
 sf::Color Light::applyLightEffect(const float& attenuation)
@@ -161,5 +162,6 @@ void Light::emit(const std::vector<Entity *>& entities)
 void Light::destroy()
 {
     System::lightSources -= 1;
+    System::__removeLightSource(_e);
     _rayCaster.clear();
 }

@@ -74,29 +74,28 @@ public:
 private:
     struct VectorHash {
         std::size_t operator()(const sf::Vector2i& v) const {
-            // You can customize the hash function based on your needs
             return std::hash<float>()(v.x) ^ std::hash<float>()(v.y);
         }
     };
 
     std::vector<sf::Vector2i> calculateCells(Entity *e) {
-        if (!e)
-            return {};
-        auto transform = e->getComponent<Transform2D>();
-        auto sprite = e->getComponent<Sprite>();
-
-        if (!transform || !sprite)
-            return {};
-        int cell_x = static_cast<int>(transform->position.x / _cellSize);
-        int cell_y = static_cast<int>(transform->position.y / _cellSize);
-
-        int cell_width = static_cast<int>(sprite->getTexture()->getSize().x / _cellSize ) + 1;
-        int cell_height = static_cast<int>(sprite->getTexture()->getSize().y / _cellSize ) + 1;
-
+        if (!e) return {};
+        auto boxArray = e->getComponents<BoxCollider>();
         std::vector<sf::Vector2i> cells;
-        for (int x = cell_x; x < cell_x + cell_width; x++) {
-            for (int y = cell_y; y < cell_y + cell_height; y++) {
-                cells.emplace_back(x, y);
+
+        for (auto& box : boxArray) {
+            if (!box)
+                return {};
+            int cell_x = static_cast<int>(box->getPosition().x / _cellSize);
+            int cell_y = static_cast<int>(box->getPosition().y / _cellSize);
+
+            int cell_width = static_cast<int>(box->getSize().x / _cellSize ) + 1;
+            int cell_height = static_cast<int>(box->getSize().y / _cellSize ) + 1;
+
+            for (int x = cell_x; x < cell_x + cell_width; x++) {
+                for (int y = cell_y; y < cell_y + cell_height; y++) {
+                    cells.emplace_back(x, y);
+                }
             }
         }
         return cells;
