@@ -43,7 +43,7 @@ public:
 
     ~BoxCollider() = default;
 
-    void destroy() override final { _colliderSystem.clear(); }
+    void destroy() override final;
 
     bool overlap(BoxCollider *collider);
     bool overlap(BoxCollider *collider, Velocity *velocity);

@@ -114,9 +114,11 @@ class Entity {
 
         bool removeComponent(IComponent *c)
         {
-            for (auto it : _component_map) {
-                if (it.second == c) {
-                    _component_map.erase(it.first);
+            std::size_t index = 0;
+
+            for (auto it = _component_map.begin() ; it != _component_map.end(); it++) {
+                if (it->second == c) {
+                    _component_map.erase(it);
                     return true;
                 }
             }
@@ -128,15 +130,16 @@ class Entity {
         {
             std::size_t removedValue = 0;
 
-            for (auto& it : _component_map) {
-                std::string componentSignature = it.first;
+            for (auto it = _component_map.begin(); it != _component_map.end(); ) {
+                std::string componentSignature = it->first;
                 if (componentSignature.find(SIGNATURE(T))
                     != std::string::npos) {
-                    removedValue = _component_map.erase(it.first);
+                    _component_map.erase(it);
                     break;
                 }
+                ++it;
             }
-            return removedValue > 0;
+            return true;
         }
 
 

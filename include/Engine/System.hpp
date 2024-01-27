@@ -113,7 +113,21 @@ public:
 
     static void __registerDynamicCollider(Entity *other)
     {
-        _dynamic_collider.push_back(other);
+        auto collider = other->getComponent<BoxCollider>();
+
+        if (!collider->___isSet) {
+            auto find = std::find(_dynamic_collider.begin(), _dynamic_collider.end(), other);
+            if (find != _dynamic_collider.end()) {
+                return;
+            }
+            _dynamic_collider.push_back(other);
+        }
+    }
+
+    static void __removeDynamicCollider(Entity *e)
+    {
+        _dynamic_collider.erase(std::remove(_dynamic_collider.begin(),
+                                    _dynamic_collider.end(), e), _dynamic_collider.end());
     }
 
     static void __addLightSource(Entity *e)

@@ -67,8 +67,8 @@ Entity * BoxCollider::entity()
 void BoxCollider::setType(const BoxCollider::Type &type)
 {
     if (type == Type::DYNAMIC) {
-        ___isSet = true;
         System::__registerDynamicCollider(this->entity());
+        ___isSet = true;
     }
     _type = type;
 }
@@ -155,4 +155,13 @@ bool BoxCollider::overlap(BoxCollider *collider, Velocity *velocity)
     if (isColliding)
         collidingWith = box->entity();
     return isColliding;
+}
+
+void BoxCollider::destroy()
+{
+    auto arr = _e->getComponents<BoxCollider>();
+
+    if (_type == DYNAMIC && arr.empty())
+        System::__removeDynamicCollider(_e);
+    _colliderSystem.clear();
 }
