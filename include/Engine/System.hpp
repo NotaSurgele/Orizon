@@ -116,6 +116,16 @@ public:
         _dynamic_collider.push_back(other);
     }
 
+    static void __addLightSource(Entity *e)
+    {
+        _lightSource.push_back(e);
+    }
+
+    static void __removeLightSource(Entity *e)
+    {
+        _lightSource.erase(std::remove(_lightSource.begin(), _lightSource.end(), e), _lightSource.end());
+    }
+
     static void ___insert_entity_at_location(Entity *e)
     {
         auto value = e->getComponent<Layer>()->value();
@@ -164,33 +174,6 @@ public:
 
     std::vector<TileMap *> getTileMaps() {  return _layers; }
 
-    bool isInView(Entity *e);
-    bool isInView(TileMap *map);
-
-    void init();
-
-    void merge();
-
-    void velocity_system(Entity *e);
-
-    void BoxSystem(Entity *e);
-
-    void collider_system(Entity *e);
-
-    void collision_resolution(BoxCollider *box, BoxCollider *collider);
-
-    void gravity_system(Entity *e);
-
-    void update_custom_component(Entity *e);
-
-    void camera_system(Entity *e);
-
-    void light_system(Entity *e);
-
-    void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
-
-    void script_system(Entity *e);
-
     void systems();
 
 public:
@@ -199,26 +182,53 @@ public:
 private:
     static void sort();
 
+    bool isInView(Entity *e);
+    bool isInView(TileMap *map);
+
+    void merge();
+
+    void velocitySystem(Entity *e);
+
+    void BoxSystem(Entity *e);
+
+    void colliderSystem(Entity *e);
+
+    void collisionResolution(BoxCollider *box, BoxCollider *collider);
+
+    void gravitySystem(Entity *e);
+
+    void updateCustomComponent(Entity *e);
+
+    void cameraSystem(Entity *e);
+
+    void lightSystem(Entity *e);
+
+    void spriteSystem(Entity *e, std::vector<IComponent *> componentCache);
+
+    void scriptSystem(Entity *e);
+
     //Component
 
     // Light
-    void handle_sprite_lightning(Sprite *sprite, Light *light);
-    bool light_layer_raycast(Light *light, Entity *e);
+    void handleSpriteLightning(Sprite *sprite, Light *light);
+    bool lightLayerRaycast(Light *light, Entity *e);
+    void setSpriteShadow(Entity *e);
 
-    void clear_component_cache(const std::vector<IComponent *> &componentCache);
+
+    void clearComponentCache(const std::vector<IComponent *> &componentCache);
 
     // Collider
-    void handle_layer_collision(BoxCollider *box, int range, Entity *e);
-    void handle_dynamic_entity_collision(Entity *e, BoxCollider *box);
+    void handleLayerCollision(BoxCollider *box, int range, Entity *e);
+    void handleDynamicEntityCollision(Entity *e, BoxCollider *box);
 
     //Collision
-    bool resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
+    bool resolutionCalculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
 
     // Velocity
-    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity);
+    void handleVelocityCollidingSides(BoxCollider *box, Transform2D *transform, Velocity *velocity);
 
     // Destroy
-    void destroy_entity();
+    void destroyEntity();
 private:
 
     static inline HashGrid *_hashGrid = new HashGrid();
@@ -231,5 +241,6 @@ private:
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
     static inline std::vector<TileMap *> _destroy_tilemap;
+    static inline std::vector<Entity *> _lightSource;
     static inline std::vector<Entity *> _forceUpdate;
 };

@@ -41,6 +41,8 @@ void System::pushEntity(Entity *entity)
 void System::forceDestroy()
 {
     for (auto& e : _to_destroy) {
+        if (!e) continue;
+        if (e->hasComponents<Light>()) __removeLightSource(e);
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
@@ -62,7 +64,6 @@ void System::forceDestroy()
     _destroy_tilemap.clear();
     _to_destroy.clear();
     _hashGrid->clear();
-    //_layers.clear(); // [FIXME] find a way to destroy layer from script
 }
 
 void System::forceUpdate(Entity *e)
@@ -70,7 +71,7 @@ void System::forceUpdate(Entity *e)
     _forceUpdate.push_back(e);
 }
 
-void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
+void System::handleVelocityCollidingSides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
 {
     if (box->collide) {
         auto values = velocity->values();
@@ -111,7 +112,7 @@ void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *tran
     }
 }
 
-void System::velocity_system(Entity *e)
+void System::velocitySystem(Entity *e)
 {
     auto velocity = e->getComponent<Velocity>();
     auto transform = e->getComponent<Transform2D>();
@@ -120,7 +121,7 @@ void System::velocity_system(Entity *e)
     if (!velocity || !transform)
         return;
     if (box != nullptr) {
-        handle_velocity_colliding_sides(box, transform, velocity);
+        handleVelocityCollidingSides(box, transform, velocity);
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
@@ -143,7 +144,7 @@ void System::sort()
     );
 }
 
-void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
+void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
 {
     auto sprite = e->getComponent<Sprite>();
     auto transform = e->getComponent<Transform2D>();
@@ -159,7 +160,7 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
-void System::script_system(Entity *e)
+void System::scriptSystem(Entity *e)
 {
     std::vector<Script *> scriptArray = e->getComponents<Script>();
 
@@ -169,7 +170,7 @@ void System::script_system(Entity *e)
     }
 }
 
-void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
+void System::clearComponentCache(const std::vector<IComponent *> &componentCache)
 {
     //EngineHud::writeConsole<std::string, std::size_t>("Component cache size", componentCache.size());
     for (auto it : componentCache) {
@@ -199,6 +200,7 @@ void System::systems()
 
     //EngineHud::writeConsole<std::string, std::size_t>("Inside dynamic collider ", _dynamic_collider.size());
     // Handle hashGrid moving entity
+    EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
     for (auto e : _dynamic_collider) {
         if (!e) continue;
         _hashGrid->insert(e);
@@ -206,35 +208,36 @@ void System::systems()
 
     for (auto e : _registry) {
         if (!e) continue;
-        camera_system(e);
-        auto sprite = e->getComponent<Sprite>();
 
-        if (System::lightSources > 0 &&
-            !Light::set && sprite) {
-            sprite->setColor(Light::darkColor);
-        }
-        update_custom_component(e);
-        sprite_system(e, componentCache);
-        light_system(e);
-        gravity_system(e);
+        cameraSystem(e);
+        setSpriteShadow(e);
+        updateCustomComponent(e);
+        spriteSystem(e, componentCache);
+        gravitySystem(e);
         BoxSystem(e);
-        collider_system(e);
-        velocity_system(e);
+        colliderSystem(e);
+        velocitySystem(e);
     }
+
+    // Light source system
+    for (auto& e : _lightSource) {
+        lightSystem(e);
+    }
+
     // Handle entity with script
     for (auto& e : _scripted_entity) {
-        script_system(e);
+        scriptSystem(e);
     }
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
-    clear_component_cache(componentCache);
+    clearComponentCache(componentCache);
     componentCache.clear();
-    destroy_entity();
+    destroyEntity();
     _registry.clear();
     _orders_values.clear();
     Light::set = true;
 }
 
-void System::handle_sprite_lightning(Sprite *sprite, Light *light)
+void System::handleSpriteLightning(Sprite *sprite, Light *light)
 {
     if (sprite && !sprite->isLightApply() && lightSources > 0) {
         auto color = Light::darkColor;
@@ -248,7 +251,7 @@ void System::handle_sprite_lightning(Sprite *sprite, Light *light)
     }
 }
 
-bool System::light_layer_raycast(Light *light, Entity *e)
+bool System::lightLayerRaycast(Light *light, Entity *e)
 {
     if (_layers.size() > 0) {
         for (auto layer : _layers) {
@@ -267,15 +270,27 @@ bool System::light_layer_raycast(Light *light, Entity *e)
     return false;
 }
 
-void System::light_system(Entity *e)
+void System::setSpriteShadow(Entity *e)
+{
+    auto sprite = e->getComponent<Sprite>();
+
+    if (!sprite) return;
+    if (lightSources <= 0) {
+        sprite->setColor(sf::Color::White);
+        return;
+    }
+    sprite->setColor(Light::darkColor);
+}
+
+void System::lightSystem(Entity *e)
 {
     auto arr = e->getComponents<Light>();
     for (auto& light : arr) {
         auto sprite = e->getComponent<Sprite>();
 
-        handle_sprite_lightning(sprite, light);
+        handleSpriteLightning(sprite, light);
         if (!light) return;
-        if (light_layer_raycast(light, e))
+        if (lightLayerRaycast(light, e))
             return;
         if (!light->isSpriteLoaded()) {
             light->emit(_registry);
@@ -285,7 +300,7 @@ void System::light_system(Entity *e)
     }
 }
 
-void System::gravity_system(Entity *e)
+void System::gravitySystem(Entity *e)
 {
     auto velocity = e->getComponent<Velocity>();
     auto gravity = e->getComponent<Gravity>();
@@ -304,7 +319,7 @@ void System::gravity_system(Entity *e)
     velocity->setY(gravity->force);
 }
 
-void System::update_custom_component(Entity *e)
+void System::updateCustomComponent(Entity *e)
 {
     auto map = e->getCustomComponents();
 
@@ -315,7 +330,7 @@ void System::update_custom_component(Entity *e)
     }
 }
 
-bool System::resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity)
+bool System::resolutionCalculation(BoxCollider *box, BoxCollider *collider, Entity *entity)
 {
     box->isColliding = true;
     box->collidingWith = entity;
@@ -349,14 +364,14 @@ bool System::resolution_calculation(BoxCollider *box, BoxCollider *collider, Ent
     return true;
 }
 
-void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
+void System::collisionResolution(BoxCollider *box, BoxCollider *collider)
 {
     auto entity = collider->entity();
 
     box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     // Resolve collision
     if (box->collide) {
-        if (!resolution_calculation(box, collider, entity))
+        if (!resolutionCalculation(box, collider, entity))
             return;
 
         // Call Collider Systems
@@ -368,7 +383,7 @@ void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
     }
 }
 
-void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
+void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
 {
     box->setColor(sf::Color::Green);
     box->sides.clear();
@@ -383,13 +398,13 @@ void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-            collision_resolution(box, collider);
+            collisionResolution(box, collider);
         }
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
-void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
+void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 {
     std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
 
@@ -405,12 +420,12 @@ void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
 
         }
         auto other = d_e->getComponent<BoxCollider>();
-        collision_resolution(box, other);
+        collisionResolution(box, other);
         box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
-void System::collider_system(Entity *e)
+void System::colliderSystem(Entity *e)
 {
     auto arr = e->getComponents<BoxCollider>();
 
@@ -428,17 +443,16 @@ void System::collider_system(Entity *e)
         box->isColliding = false;
         box->collidingWith = nullptr;
         range = box->getRange();
-        if (range == 0)
-            return;
+        if (range == 0) return;
         // check collision with layers
-        handle_layer_collision(box, range, e);
+        handleLayerCollision(box, range, e);
 
         // check collision with other dynamic entity
-        handle_dynamic_entity_collision(e, box);
+        handleDynamicEntityCollision(e, box);
     }
 }
 
-void System::camera_system(Entity *e) {
+void System::cameraSystem(Entity *e) {
     auto view = e->getComponent<View>();
     auto transform = e->getComponent<Transform2D>();
     bool destroy = false;
@@ -532,18 +546,17 @@ bool System::isInView(TileMap *map)
     return view->getViewBounds().intersects(mapBounds);
 }
 
-void System::destroy_entity()
+void System::destroyEntity()
 {
     for (auto& e : _to_destroy) {
         if (!e) continue;
+        if (e->hasComponents<Light>()) __removeLightSource(e);
+
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
-/*
-        _hashGrid->remove(e);
-*/
         _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {

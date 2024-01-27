@@ -39,7 +39,7 @@ void EngineHud::ComponentCreationFactory::createTransform2D(Entity *e)
 void EngineHud::ComponentCreationFactory::createBoxCollider(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
-    e->addComponent<BoxCollider>(transform->position, transform->size, 1);
+    e->addComponent<BoxCollider>(sf::Vector2f(0, 0), transform->size, 1)->setType(BoxCollider::DYNAMIC);
 }
 
 void EngineHud::ComponentCreationFactory::createSprite(Entity *e)
@@ -108,6 +108,7 @@ void EngineHud::ComponentCreationFactory::createMusic(Entity *e)
 void EngineHud::ComponentCreationFactory::createScript(Entity *e)
 {
     e->addComponent<Script>("");
+    System::__registerScriptedEntity(e);
 }
 
 void EngineHud::ComponentCreationFactory::createLight(Entity *e)
@@ -1079,7 +1080,7 @@ void EngineHud::destroyComponent(IComponent *c, const std::string& name)
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             _selected->removeComponent(c);
-            delete c;
+            c->destroy();
             std::cout << "[GUI] Destroy an entity component " << name << std::endl;
             ImGui::CloseCurrentPopup();
         }
