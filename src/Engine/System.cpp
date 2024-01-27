@@ -288,8 +288,8 @@ void System::lightSystem(Entity *e)
     for (auto& light : arr) {
         auto sprite = e->getComponent<Sprite>();
 
-        handleSpriteLightning(sprite, light);
         if (!light) return;
+        handleSpriteLightning(sprite, light);
         if (lightLayerRaycast(light, e))
             return;
         if (!light->isSpriteLoaded()) {
@@ -400,7 +400,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
             collisionResolution(box, collider);
         }
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
@@ -419,9 +419,12 @@ void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
             continue;
 
         }
-        auto other = d_e->getComponent<BoxCollider>();
-        collisionResolution(box, other);
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        auto arr = d_e->getComponents<BoxCollider>();
+
+        for (auto& other : arr) {
+            collisionResolution(box, other);
+            box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        }
     }
 }
 
@@ -436,10 +439,10 @@ void System::colliderSystem(Entity *e)
             return;
         if (box->getType() == BoxCollider::Type::STATIC)
             return;
-        if (!box->___isSet) {
+        /*if (!box->___isSet) {
             _dynamic_collider.push_back(e);
             box->___isSet = true;
-        }
+        }*/
         box->isColliding = false;
         box->collidingWith = nullptr;
         range = box->getRange();
