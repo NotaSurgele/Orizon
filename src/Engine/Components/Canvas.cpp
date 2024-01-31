@@ -1,5 +1,6 @@
 #include "Canvas.hpp"
 #include "System.hpp"
+#include "Core.hpp"
 
 Canvas::Canvas(Entity *e) : _e(e)
 {
@@ -7,29 +8,25 @@ Canvas::Canvas(Entity *e) : _e(e)
     _font.loadFromFile("../assets/LEMONMILK-Regular.otf");
 }
 
-void Canvas::addText(const std::string &content, const sf::Vector2f &pos, const std::size_t &size,
-                                    const sf::Color& color)
+Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const std::size_t &size,
+                                                                            const sf::Color& color)
 {
-    sf::Text *newText = new sf::Text;
+    auto *newText = new Text;
 
     newText->setFillColor(color);
     newText->setString(content);
     newText->setCharacterSize(size);
     newText->setPosition(pos);
     newText->setFont(_font);
-    _text.push_back(newText);
-}
-
-void Canvas::addText(sf::Text *text)
-{
-    _text.push_back(text);
+    _text.emplace(newText, pos);
+    return newText;
 }
 
 void Canvas::destroy()
 {
     System::__removeCanvas(_e);
     for (auto& t : _text) {
-        delete t;
+        delete t.first;
     }
     _text.clear();
 }

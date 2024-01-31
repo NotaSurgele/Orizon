@@ -166,7 +166,17 @@ void System::canvasSystem(Entity *e)
     auto canvas = e->getComponent<Canvas>();
     auto texts = canvas->getTexts();
 
-    for (auto& t : texts) {
+    for (auto& it : texts) {
+        auto& t = it.first;
+        auto& offset = it.second;
+
+        if (t->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            sf::FloatRect textBounds = t->getLocalBounds();
+
+            t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
+        } else t->setPosition(offset);
         DRAW(*t);
     }
 }

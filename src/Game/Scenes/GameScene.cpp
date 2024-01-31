@@ -27,7 +27,7 @@ void GameScene::create()
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
     auto canvas = player->addComponent<Canvas>();
-    canvas->addText("Coucou", {0, 0}, 16);
+    canvas->addText("Coucou", {50, 50}, 16)->type = Text::WORLD;
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
