@@ -6,6 +6,7 @@
 #include "Script.hpp"
 #include "Utils.hpp"
 #include "sol/sol.hpp"
+#include "Canvas.hpp"
 
 #include <random>
 #include <math.h>
@@ -25,6 +26,8 @@ void GameScene::create()
     script();*/
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
+    auto canvas = player->addComponent<Canvas>();
+    canvas->addText("Coucou", {0, 0}, 16);
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
