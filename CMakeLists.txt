@@ -51,6 +51,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 add_definitions(-DDEBUG_MESSAGE=0)
 add_definitions(-DENGINE_MODE=1)
+add_definitions(-DENGINE_GUI)
 file(GLOB_RECURSE SRC
     ${PROJECT_SOURCE_DIR}/src/*.cpp
     ${PROJECT_SOURCE_DIR}/src/*.c

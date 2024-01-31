@@ -89,21 +89,21 @@ void Core::inputHandler(sf::Event& event)
 /*    EngineHud::writeConsole<std::string, bool>("Main view is ", _mainViewSelected);
     EngineHud::writeConsole<std::string, int, std::string, int>("Mouse position ", mousePosition.x, " ", mousePosition.y);*/
     while (CoreEvent(event)) {
-        if (ENGINE_MODE) {
-            ImGui::SFML::ProcessEvent(event);
 
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
-                }
+#ifdef ENGINE_GUI
+        ImGui::SFML::ProcessEvent(event);
+
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.mouseButton.button == sf::Mouse::Left) {
+                _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
             }
         }
-
+#endif
         if (event.type == sf::Event::Closed)
             CoreClose();
-        if (ENGINE_MODE && !_mainViewSelected) {
-            return;
-        }
+#ifdef ENGINE_GUI
+        if (!_mainViewSelected) return;
+#endif
         if (event.type == sf::Event::KeyPressed)
             _input.___push_key(event.key.code);
         if (event.type == sf::Event::KeyReleased)
@@ -142,35 +142,37 @@ void Core::initGui()
 {
     _baseView = new View(nullptr, 0, 0, 800, 600);
     SET_VIEW(_baseView);
-    if (ENGINE_MODE)
-        ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
+#ifdef ENGINE_GUI
+    ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
+#endif
 }
 
 void Core::updateGUI()
 {
-    if (ENGINE_MODE) {
-        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        _guiThread = std::thread([&] () {
-            auto currentScene = _sceneManager.getScene();
+#ifdef ENGINE_GUI
+    ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+    _guiThread = std::thread([&] () {
+        auto currentScene = _sceneManager.getScene();
 
-            _gui.setTheme();
-            _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
-            _gui.currentSceneContent(currentScene->getSceneContent());
-            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
-            _gui.entityInformation();
-            _gui.consoleWindow();
-            _gui.resourceManager();
-            _gui.saveScene();
-        });
-        if (_guiThread.joinable()) _guiThread.join();
-        ImGui::SFML::Render(_window.getSFMLRenderWindow());
-    }
+        _gui.setTheme();
+        _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
+        _gui.currentSceneContent(currentScene->getSceneContent());
+        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+        _gui.entityInformation();
+        _gui.consoleWindow();
+        _gui.resourceManager();
+        _gui.saveScene();
+    });
+    if (_guiThread.joinable()) _guiThread.join();
+    ImGui::SFML::Render(_window.getSFMLRenderWindow());
+#endif
 }
 
 void Core::destroyGUI()
 {
-    if (ENGINE_MODE)
-        ImGui::SFML::Shutdown();
+#ifdef ENGINE_GUI
+    ImGui::SFML::Shutdown();
+#endif
     delete _baseView;
 }
 
