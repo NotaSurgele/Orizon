@@ -4,6 +4,7 @@
 #include "Core.hpp"
 #include "RayCaster.hpp"
 #include "Script.hpp"
+#include "Canvas.hpp"
 
 void System::addEntity(Entity *entity)
 {
@@ -160,6 +161,16 @@ void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
+void System::canvasSystem(Entity *e)
+{
+    auto canvas = e->getComponent<Canvas>();
+    auto texts = canvas->getTexts();
+
+    for (auto& t : texts) {
+        DRAW(*t);
+    }
+}
+
 void System::scriptSystem(Entity *e)
 {
     std::vector<Script *> scriptArray = e->getComponents<Script>();
@@ -222,6 +233,10 @@ void System::systems()
     // Light source system
     for (auto& e : _lightSource) {
         lightSystem(e);
+    }
+
+    for (auto& e : _canvas) {
+        canvasSystem(e);
     }
 
     // Handle entity with script
