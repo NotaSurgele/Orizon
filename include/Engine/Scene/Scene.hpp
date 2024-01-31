@@ -286,7 +286,9 @@ public:
                 System::pushEntity(e);
                 System::forceUpdate(e);
 
-                if (ENGINE_MODE) EngineHud::registerSavedEntity(e);
+        #ifdef ENGINE_GUI
+                EngineHud::registerSavedEntity(e);
+        #endif
             }
         }
 
@@ -314,7 +316,9 @@ public:
                 }
                 System::pushEntity(e);
                 System::forceUpdate(e);
-                if (ENGINE_MODE) EngineHud::registerSavedEntity(e);
+            #ifdef ENGINE_GUI
+                EngineHud::registerSavedEntity(e);
+            #endif
                 return e;
             }
             return nullptr;
