@@ -130,6 +130,16 @@ public:
                                     _dynamic_collider.end(), e), _dynamic_collider.end());
     }
 
+    static void __addCanvas(Entity *e)
+    {
+        _canvas.push_back(e);
+    }
+
+    static void __removeCanvas(Entity *e)
+    {
+        _canvas.erase(std::remove(_canvas.begin(), _canvas.end(), e), _canvas.end());
+    }
+
     static void __addLightSource(Entity *e)
     {
         _lightSource.push_back(e);
@@ -219,6 +229,8 @@ private:
 
     void spriteSystem(Entity *e, std::vector<IComponent *> componentCache);
 
+    void canvasSystem(Entity *e);
+
     void scriptSystem(Entity *e);
 
     //Component
@@ -252,6 +264,7 @@ private:
     static inline std::vector<TileMap *> _layers;
     static inline std::vector<Entity *> _dynamic_collider;
     static inline std::vector<Entity *> _scripted_entity;
+    static inline std::vector<Entity *> _canvas;
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
     static inline std::vector<TileMap *> _destroy_tilemap;
