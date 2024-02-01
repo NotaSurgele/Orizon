@@ -17,7 +17,6 @@ public:
 
 public:
     CoordType type = LOCAL;
-
 };
 
 class Text : public sf::Text, public CanvasObject {
@@ -27,6 +26,57 @@ public:
     Text(const std::string& content, const sf::Font& font, const std::size_t& size) : sf::Text(content, font, size)
     {
     }
+};
+
+class Image : public Drawable, public CanvasObject {
+public:
+    explicit Image(sf::Texture& texture, const sf::Vector2f& position, const sf::Vector2f& scale,
+                        const sf::Color& color=sf::Color::White) : _image(new Sprite(texture))
+    {
+        _image->setScale(scale.x, scale.y);
+        _image->setPosition(position);
+        _image->setColor(color);
+    }
+
+    ~Image() = default;
+
+    void setPosition(const sf::Vector2f& position)
+    {
+        _image->setPosition(position);
+    }
+
+    void setPosition(const float& x, const float& y)
+    {
+        _image->setPosition(x, y);
+    }
+
+    sf::Vector2f getPosition()
+    {
+        return _image->getPosition();
+    }
+
+    sf::Vector2u getTextureSize()
+    {
+        return _image->getTexture()->getSize();
+    }
+
+    void setSize(const sf::Vector2f& size)
+    {
+        _image->setScale(size.x, size.y);
+    }
+
+    Sprite *getImage()
+    {
+        return _image;
+    }
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override
+    {
+        _image->draw(target, states);
+    }
+
+private:
+    Sprite *_image;
 };
 
 class Button : public Drawable, public CanvasObject {
@@ -71,6 +121,8 @@ public:
         }
 
         text = new Text(content, _font, fontSize);
+
+        text->setFillColor(color);
         auto spriteBounds = _sprite->getGlobalBounds();
         auto textBounds = text->getGlobalBounds();
 
@@ -151,6 +203,16 @@ public:
 
     Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture& texture);
 
+
+    Image *addImage(sf::Texture& texture, const sf::Vector2f& position,
+                     const sf::Vector2f& scale, const sf::Color& color=sf::Color::White)
+    {
+        auto img = new Image(texture, position, scale, color);
+
+        _image.emplace(img, position);
+        return img;
+    }
+
     template <typename T>
     void removeObject(const T& obj)
     {
@@ -162,9 +224,14 @@ public:
         return _text;
     }
 
-    std::unordered_map<Button *, sf::Vector2f> getButtons()
+    std::unordered_map<Button *, sf::Vector2f>& getButtons()
     {
         return _button;
+    }
+
+    std::unordered_map<Image *, sf::Vector2f>& getImages()
+    {
+        return _image;
     }
 
     void destroy() final;
@@ -178,9 +245,26 @@ private:
         _text.erase(find);
     }
 
+    template <typename T = Button>
+    void remove(Button *button)
+    {
+        auto find = _button.find(button);
+
+        _button.erase(find);
+    }
+
+    template <typename T = Image>
+    void remove(Image *img)
+    {
+        auto find = _image.find(img);
+
+        _image.erase(find);
+    }
+
 private:
     sf::Font _font;
     std::unordered_map<Text *, sf::Vector2f> _text;
     std::unordered_map<Button *, sf::Vector2f> _button;
+    std::unordered_map<Image *, sf::Vector2f> _image;
     Entity *_e = nullptr;
 };

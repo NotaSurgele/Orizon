@@ -214,6 +214,24 @@ void System::canvasSystem(Entity *e)
             DRAW(*text);
         }
     }
+
+    auto images = canvas->getImages();
+
+    // Images system
+    for (auto& it : images) {
+        auto& i = it.first;
+        auto& offset = it.second;
+
+        if (i->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = i->getTextureSize();
+
+            i->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                           (offset.y + center.y) - ((float)size.y / 2));
+        } else i->setPosition(offset);
+        DRAW(i);
+    }
 }
 
 void System::scriptSystem(Entity *e)
