@@ -81,7 +81,7 @@ private:
 
 class Button : public Drawable, public CanvasObject {
 public:
-    Button(const sf::Vector2f& position, const sf::Vector2f& size, sf::Texture& texture);
+    Button(const sf::Vector2f& position, const sf::Vector2f& size, sf::Texture texture);
     ~Button() override = default;
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override
@@ -198,20 +198,20 @@ public:
     explicit Canvas(Entity *e);
     ~Canvas() = default;
 
-    Text *addText(const std::string& content, const sf::Vector2f& pos, const std::size_t& size,
-                                                        const sf::Color& color=sf::Color::White);
+    Text *addText(const std::string& content, const sf::Vector2f& pos, const std::size_t& size);
 
-    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture& texture);
+    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture);
 
 
-    Image *addImage(sf::Texture& texture, const sf::Vector2f& position,
-                     const sf::Vector2f& scale, const sf::Color& color=sf::Color::White)
+    Image *addImage(sf::Texture texture, const sf::Vector2f& position,
+                     const sf::Vector2f& scale)
     {
-        auto img = new Image(texture, position, scale, color);
+        auto img = new Image(texture, position, scale);
 
         _image.emplace(img, position);
         return img;
     }
+
 
     template <typename T>
     void removeObject(const T& obj)
