@@ -27,7 +27,11 @@ void GameScene::create()
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
     auto canvas = player->addComponent<Canvas>();
-    canvas->addText("Coucou", {50, 50}, 16)->type = Text::WORLD;
+    auto button = canvas->addButton({ 0, 0 }, { 1.5, 1.5 }, R_GET_RESSOURCE(sf::Texture, "block"));
+
+    button->setCallback([]() {
+        std::cout << "IsClicked" << std::endl;
+    });
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
