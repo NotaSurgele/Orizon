@@ -17,6 +17,7 @@
 #include "Input.hpp"
 #include "Time.hpp"
 #include "System.hpp"
+#include "Canvas.hpp"
 #include <unordered_map>
 #include <string>
 
@@ -59,6 +60,7 @@ private:
     void registerResourceManager();
     void registerDrawableType();
     void registerCoreType();
+    void registerCanvasTypes();
     void registerBaseTypes();
 
     // register component
@@ -75,6 +77,7 @@ private:
     void registerTagComponent();
     void registerViewComponent();
     void registerScriptComponent();
+    void registerCanvasComponent();
     void registerComponentsType();
 
     void registerEntityFunction();
@@ -131,6 +134,7 @@ private:
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<Tag *>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<View *>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<Script *>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<Canvas *>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::Vector2f>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::Vector2i>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::Vector2u>(ud); }},
