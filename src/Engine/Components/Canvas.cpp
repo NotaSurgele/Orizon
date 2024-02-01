@@ -22,6 +22,15 @@ Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const
     return newText;
 }
 
+Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture& texture)
+{
+    auto *button = new Button(position, scale, texture);
+
+    button->setTexture(texture);
+    _button.emplace(button, position);
+    return button;
+}
+
 void Canvas::destroy()
 {
     System::__removeCanvas(_e);
@@ -29,4 +38,29 @@ void Canvas::destroy()
         delete t.first;
     }
     _text.clear();
+}
+
+// Button definitions
+Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, sf::Texture& texture) :
+                                                                        _position(position),
+                                                                        _size(size),
+                                                                        _sprite()
+{
+    _sprite = new Sprite(texture);
+
+    _sprite->setPosition(position);
+    _sprite->setScale(_size.x, _size.y);
+}
+
+bool Button::isHovered()
+{
+    auto mousePos = WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow()));
+    auto bounds = _sprite->getGlobalBounds();
+
+    return bounds.contains((float)mousePos.x, (float)mousePos.y);
+}
+
+bool Button::isClicked()
+{
+    return isHovered() && Input::isButtonDown("Left");
 }

@@ -166,6 +166,7 @@ void System::canvasSystem(Entity *e)
     auto canvas = e->getComponent<Canvas>();
     auto texts = canvas->getTexts();
 
+    // Text system
     for (auto& it : texts) {
         auto& t = it.first;
         auto& offset = it.second;
@@ -178,6 +179,31 @@ void System::canvasSystem(Entity *e)
             t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
         } else t->setPosition(offset);
         DRAW(*t);
+    }
+
+    // Button system
+    auto buttons = canvas->getButtons();
+
+    for (auto& it : buttons) {
+        auto& b = it.first;
+        auto& offset = it.second;
+
+        if (b->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = b->getTextureSize();
+
+            b->setPosition((offset.x + center.x) - (size.x / 2), (offset.y + center.y) - (size.y / 2));
+        } else b->setPosition(offset);
+        if (b->isHovered()) {
+            b->state = Button::HOVERED;
+
+            if (b->isClicked()) {
+                b->state = Button::PRESSED;
+                b->call();
+            }
+        } else b->state = Button::NOTHING;
+        DRAW(b);
     }
 }
 
