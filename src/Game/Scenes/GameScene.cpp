@@ -26,9 +26,7 @@ void GameScene::create()
     script();*/
     loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
-    auto canvas = player->addComponent<Canvas>();
-    canvas->addImage(R_GET_RESSOURCE(sf::Texture, "block"), { 50, 50 }, { 1.5, 1.5 })->type = CanvasObject::WORLD;
-    /*    toto = new Entity();
+/*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
     player->getComponent<OrizonMusic>();
