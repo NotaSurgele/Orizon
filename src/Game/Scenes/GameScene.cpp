@@ -32,6 +32,7 @@ void GameScene::create()
     button->setCallback([]() {
         std::cout << "IsClicked" << std::endl;
     });
+    button->setText("Ceci est un bouton", 16);
     /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*

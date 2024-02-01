@@ -187,13 +187,15 @@ void System::canvasSystem(Entity *e)
     for (auto& it : buttons) {
         auto& b = it.first;
         auto& offset = it.second;
+        auto& text = b->text;
 
         if (b->type == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = b->getTextureSize();
 
-            b->setPosition((offset.x + center.x) - (size.x / 2), (offset.y + center.y) - (size.y / 2));
+            b->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                            (offset.y + center.y) - ((float)size.y / 2));
         } else b->setPosition(offset);
         if (b->isHovered()) {
             b->state = Button::HOVERED;
@@ -204,6 +206,13 @@ void System::canvasSystem(Entity *e)
             }
         } else b->state = Button::NOTHING;
         DRAW(b);
+
+        //Handle button text
+        if (text != nullptr) {
+            auto spriteBounds = b->getSprite()->getGlobalBounds();
+            text->setPosition(spriteBounds.left, spriteBounds.top);
+            DRAW(*text);
+        }
     }
 }
 
