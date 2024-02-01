@@ -35,6 +35,16 @@ class Sprite : public IComponent, public Drawable {
             return *this;
         }
 
+        sf::FloatRect getGlobalBounds()
+        {
+            return _sprite.getGlobalBounds();
+        }
+
+        sf::FloatRect getLocalBounds()
+        {
+            return _sprite.getLocalBounds();
+        }
+
         void setPosition(const sf::Vector2f& position);
         void setPosition(const float& x, const float& y);
 

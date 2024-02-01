@@ -166,8 +166,71 @@ void System::canvasSystem(Entity *e)
     auto canvas = e->getComponent<Canvas>();
     auto texts = canvas->getTexts();
 
-    for (auto& t : texts) {
+    // Text system
+    for (auto& it : texts) {
+        auto& t = it.first;
+        auto& offset = it.second;
+
+        if (t->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            sf::FloatRect textBounds = t->getLocalBounds();
+
+            t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
+        } else t->setPosition(offset);
         DRAW(*t);
+    }
+
+    // Button system
+    auto buttons = canvas->getButtons();
+
+    for (auto& it : buttons) {
+        auto& b = it.first;
+        auto& offset = it.second;
+        auto& text = b->text;
+
+        if (b->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = b->getTextureSize();
+
+            b->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                            (offset.y + center.y) - ((float)size.y / 2));
+        } else b->setPosition(offset);
+        if (b->isHovered()) {
+            b->state = Button::HOVERED;
+
+            if (b->isClicked()) {
+                b->state = Button::PRESSED;
+                b->call();
+            }
+        } else b->state = Button::NOTHING;
+        DRAW(b);
+
+        //Handle button text
+        if (text != nullptr) {
+            auto spriteBounds = b->getSprite()->getGlobalBounds();
+            text->setPosition(spriteBounds.left, spriteBounds.top);
+            DRAW(*text);
+        }
+    }
+
+    auto images = canvas->getImages();
+
+    // Images system
+    for (auto& it : images) {
+        auto& i = it.first;
+        auto& offset = it.second;
+
+        if (i->type == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = i->getTextureSize();
+
+            i->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                           (offset.y + center.y) - ((float)size.y / 2));
+        } else i->setPosition(offset);
+        DRAW(i);
     }
 }
 
