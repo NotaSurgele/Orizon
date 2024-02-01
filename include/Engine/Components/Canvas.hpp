@@ -23,6 +23,10 @@ public:
 class Text : public sf::Text, public CanvasObject {
 public:
     Text() = default;
+
+    Text(const std::string& content, const sf::Font& font, const std::size_t& size) : sf::Text(content, font, size)
+    {
+    }
 };
 
 class Button : public Drawable, public CanvasObject {
@@ -40,6 +44,11 @@ public:
         _sprite->setTexture(texture);
     }
 
+    Sprite* getSprite()
+    {
+        return _sprite;
+    }
+
     void setTexture(sf::Texture& texture, const std::string& name)
     {
         _sprite->setTexture(texture);
@@ -49,6 +58,26 @@ public:
     void setCallback(const std::function<void()>& callback)
     {
         _callback = callback;
+    }
+
+    void setText(const std::string& content, const std::size_t& fontSize, const sf::Color& color=sf::Color::White)
+    {
+        _font = sf::Font();
+        float padding = 50.0f;
+
+        if (!_font.loadFromFile("../assets/LEMONMILK-Regular.otf")) {
+            std::cout << "[BUTTON] Cannot load font " << std::endl;
+            return;
+        }
+
+        text = new Text(content, _font, fontSize);
+        auto spriteBounds = _sprite->getGlobalBounds();
+        auto textBounds = text->getGlobalBounds();
+
+        float scaleX = (textBounds.width + padding) / spriteBounds.width;
+        float scaleY = (textBounds.height + padding) / spriteBounds.height;
+
+        _sprite->setScale(scaleX, scaleY);
     }
 
     void call()
@@ -65,7 +94,6 @@ public:
         _position.x = x;
         _position.y = y;
         _sprite->setPosition(x, y);
-        sf::RectangleShape shape = sf::RectangleShape();
     }
 
     void setPosition(const sf::Vector2f& position)
@@ -103,8 +131,10 @@ public:
 
 public:
     States state = NOTHING;
+    Text *text = nullptr;
 
 private:
+    sf::Font _font;
     Sprite *_sprite;
     sf::Vector2f _position;
     sf::Vector2f _size;
