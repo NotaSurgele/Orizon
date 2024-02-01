@@ -37,6 +37,11 @@ void Canvas::destroy()
     for (auto& t : _text) {
         delete t.first;
     }
+
+    for (auto& b : _button) {
+        delete b.first;
+    }
+    _button.clear();
     _text.clear();
 }
 
