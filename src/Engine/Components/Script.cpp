@@ -8,6 +8,7 @@
 #include "OrizonMusic.hpp"
 #include "Sound.hpp"
 #include "Sprite.hpp"
+#include "Canvas.hpp"
 #include "Tag.hpp"
 #include "Velocity.hpp"
 #include "View.hpp"
@@ -284,6 +285,69 @@ void Script::registerCoreType()
     (*_state)["Core"] = Core::instance;
 }
 
+void Script::registerCanvasTypes()
+{
+    _state->new_enum("CoordType",
+                     "WORLD", CanvasObject::CoordType::WORLD,
+                     "LOCAL", CanvasObject::CoordType::LOCAL);
+    _state->new_usertype<CanvasObject>(
+        "CanvasObject",
+        "type", &CanvasObject::type
+    );
+
+    _state->new_usertype<Text>(
+        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>()
+    );
+
+    _state->new_usertype<Image>(
+        "Image", sol::constructors<Image(sf::Texture&, const sf::Vector2f&,
+                                         const sf::Vector2f& scale, const sf::Color& color)>(),
+        "setPosition", sol::overload(
+            [](Image *img, const float& x, const float& y) {
+                return img->setPosition(x, y);
+            },
+            [](Image *img, const sf::Vector2f& position) {
+                return img->setPosition(position);
+            }
+        ),
+        "getPosition", &Image::getPosition,
+        "getTextureSize", &Image::getTextureSize,
+        "setSize", &Image::setSize,
+        "getImage", &Image::getImage
+    );
+
+    _state->new_enum("States",
+        "HOVERED", Button::States::HOVERED,
+        "PRESSED", Button::States::PRESSED,
+        "NOTHING", Button::States::NOTHING
+    );
+    _state->new_usertype<Button>(
+        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture&)>(),
+        "getSprite", &Button::getSprite,
+        "setTexture", sol::overload(
+            [](Button *button, sf::Texture& texture) {
+                return button->setTexture(texture);
+            },
+            [](Button *button, sf::Texture& texture, const std::string& name) {
+                return button->setTexture(texture, name);
+            }
+        ),
+        "setCallback", &Button::setCallback,
+        "setText", &Button::setText,
+        "setPosition", sol::overload(
+            [](Button *button, const float& x, const float& y) {
+                return button->setPosition(x, y);
+            },
+            [](Button *button, const sf::Vector2f& position) {
+                return button->setPosition(position);
+            }
+        ),
+        "getPosition", &Button::getPosition,
+        "getSize", &Button::getSize,
+        "getTextureSize", &Button::getTextureSize
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -295,6 +359,7 @@ void Script::registerBaseTypes()
     registerResourceManager();
     registerSystemType();
     registerDrawableType();
+    registerCanvasTypes();
     registerCoreType();
 }
 
@@ -519,6 +584,23 @@ void Script::registerScriptComponent()
     );
 }
 
+void Script::registerCanvasComponent()
+{
+    _state->new_usertype<Canvas>(
+        "Canvas", sol::constructors<Canvas(Entity *)>(),
+        "addText", &Canvas::addText,
+        "addButton", &Canvas::addButton,
+        "addImage", &Canvas::addImage,
+        "removeObject", sol::overload(
+                &Canvas::removeObject<Text *>,
+                &Canvas::removeObject<Button *>,
+                &Canvas::removeObject<Image *>),
+        "getTexts", &Canvas::getTexts,
+        "getButtons", &Canvas::getButtons,
+        "getImages", &Canvas::getImages
+    );
+}
+
 void Script::registerComponentsType()
 {
     registerTransform2DComponent();
@@ -533,6 +615,7 @@ void Script::registerComponentsType()
     registerVelocityComponent();
     registerTagComponent();
     registerScriptComponent();
+    registerCanvasComponent();
     registerViewComponent();
 }
 
@@ -621,6 +704,11 @@ void Script::registerEntityFunction()
                         return e->addComponent<Script>(path);
                     }
             ),
+            "addComponentCanvas", sol::overload(
+                [](Entity *e) {
+                    return e->addComponent<Canvas>();
+                }
+            ),
             "destroy", &Entity::destroy
     );
     entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
@@ -636,6 +724,7 @@ void Script::registerEntityFunction()
     entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
     entityType["getComponentView"] = &Entity::getComponent<View>;
     entityType["getComponentScript"] = &Entity::getComponent<Script>;
+    entityType["getComponentCanvas"] = &Entity::getComponent<Canvas>;
 }
 
 void Script::reload()
