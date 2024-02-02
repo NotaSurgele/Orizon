@@ -296,7 +296,8 @@ void Script::registerCanvasTypes()
     );
 
     _state->new_usertype<Text>(
-        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>()
+        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
+            "type", &Text::type
     );
 
     _state->new_usertype<Image>(
@@ -313,7 +314,8 @@ void Script::registerCanvasTypes()
         "getPosition", &Image::getPosition,
         "getTextureSize", &Image::getTextureSize,
         "setSize", &Image::setSize,
-        "getImage", &Image::getImage
+        "getImage", &Image::getImage,
+        "type", &Image::type
     );
 
     _state->new_enum("States",
@@ -344,7 +346,8 @@ void Script::registerCanvasTypes()
         ),
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
-        "getTextureSize", &Button::getTextureSize
+        "getTextureSize", &Button::getTextureSize,
+        "type", &Button::type
     );
 }
 
