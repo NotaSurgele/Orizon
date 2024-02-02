@@ -292,11 +292,12 @@ void Script::registerCanvasTypes()
                      "LOCAL", CanvasObject::CoordType::LOCAL);
     _state->new_usertype<CanvasObject>(
         "CanvasObject",
-        "type", &CanvasObject::type
+        "coordType", &CanvasObject::coordType
     );
 
     _state->new_usertype<Text>(
-        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>()
+        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
+            "coordType", &Text::coordType
     );
 
     _state->new_usertype<Image>(
@@ -313,7 +314,8 @@ void Script::registerCanvasTypes()
         "getPosition", &Image::getPosition,
         "getTextureSize", &Image::getTextureSize,
         "setSize", &Image::setSize,
-        "getImage", &Image::getImage
+        "getImage", &Image::getImage,
+        "coordType", &Image::coordType
     );
 
     _state->new_enum("States",
@@ -333,7 +335,14 @@ void Script::registerCanvasTypes()
             }
         ),
         "setCallback", &Button::setCallback,
-        "setText", &Button::setText,
+        "setText", sol::overload(
+            [](Button *button, const std::string& content, const std::size_t& size) {
+                return button->setText(content, size);
+            },
+            [](Button button, const std::string& content, const std::size_t& size, const sf::Color& color) {
+                return button.setText(content, size, color);
+            }
+        ),
         "setPosition", sol::overload(
             [](Button *button, const float& x, const float& y) {
                 return button->setPosition(x, y);
@@ -344,7 +353,8 @@ void Script::registerCanvasTypes()
         ),
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
-        "getTextureSize", &Button::getTextureSize
+        "getTextureSize", &Button::getTextureSize,
+        "coordType", &Button::coordType
     );
 }
 
