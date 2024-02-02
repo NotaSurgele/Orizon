@@ -62,6 +62,27 @@
                 {
                     "type": "Script",
                     "path": "./assets/Scripting/Player.lua"
+                },
+                {
+                    "type": "Canvas",
+                    "canvas_objects": [
+                        {
+                            "type": "Button",
+                            "position": [50, 50],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "content": "Coucou",
+                            "coord_type": 0
+                        },
+                        {
+                            "type": "Button",
+                            "position": [10, 20],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "content": "Toto",
+                            "coord_type": 0
+                        }
+                    ]
                 }
             ]
         },

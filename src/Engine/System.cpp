@@ -171,7 +171,7 @@ void System::canvasSystem(Entity *e)
         auto& t = it.first;
         auto& offset = it.second;
 
-        if (t->type == Text::LOCAL) {
+        if (t->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             sf::FloatRect textBounds = t->getLocalBounds();
@@ -189,7 +189,7 @@ void System::canvasSystem(Entity *e)
         auto& offset = it.second;
         auto& text = b->text;
 
-        if (b->type == Text::LOCAL) {
+        if (b->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = b->getTextureSize();
@@ -222,7 +222,7 @@ void System::canvasSystem(Entity *e)
         auto& i = it.first;
         auto& offset = it.second;
 
-        if (i->type == Text::LOCAL) {
+        if (i->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = i->getTextureSize();
@@ -363,6 +363,7 @@ void System::setSpriteShadow(Entity *e)
 void System::lightSystem(Entity *e)
 {
     auto arr = e->getComponents<Light>();
+
     for (auto& light : arr) {
         auto sprite = e->getComponent<Sprite>();
 
