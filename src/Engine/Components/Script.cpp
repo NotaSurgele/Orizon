@@ -292,12 +292,12 @@ void Script::registerCanvasTypes()
                      "LOCAL", CanvasObject::CoordType::LOCAL);
     _state->new_usertype<CanvasObject>(
         "CanvasObject",
-        "type", &CanvasObject::type
+        "coordType", &CanvasObject::coordType
     );
 
     _state->new_usertype<Text>(
         "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
-            "type", &Text::type
+            "coordType", &Text::coordType
     );
 
     _state->new_usertype<Image>(
@@ -315,7 +315,7 @@ void Script::registerCanvasTypes()
         "getTextureSize", &Image::getTextureSize,
         "setSize", &Image::setSize,
         "getImage", &Image::getImage,
-        "type", &Image::type
+        "coordType", &Image::coordType
     );
 
     _state->new_enum("States",
@@ -347,7 +347,7 @@ void Script::registerCanvasTypes()
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
         "getTextureSize", &Button::getTextureSize,
-        "type", &Button::type
+        "coordType", &Button::coordType
     );
 }
 
