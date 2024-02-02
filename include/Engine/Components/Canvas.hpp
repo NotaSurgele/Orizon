@@ -16,7 +16,7 @@ public:
     };
 
 public:
-    CoordType type = LOCAL;
+    CoordType coordType = LOCAL;
 };
 
 class Text : public sf::Text, public CanvasObject {

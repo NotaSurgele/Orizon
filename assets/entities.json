@@ -62,6 +62,10 @@
                 {
                     "type": "Script",
                     "path": "./assets/Scripting/Player.lua"
+                },
+                {
+                    "type": "Canvas",
+                    "canvasObjects": []
                 }
             ]
         },
