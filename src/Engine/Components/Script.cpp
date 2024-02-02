@@ -335,7 +335,14 @@ void Script::registerCanvasTypes()
             }
         ),
         "setCallback", &Button::setCallback,
-        "setText", &Button::setText,
+        "setText", sol::overload(
+            [](Button *button, const std::string& content, const std::size_t& size) {
+                return button->setText(content, size);
+            },
+            [](Button button, const std::string& content, const std::size_t& size, const sf::Color& color) {
+                return button.setText(content, size, color);
+            }
+        ),
         "setPosition", sol::overload(
             [](Button *button, const float& x, const float& y) {
                 return button->setPosition(x, y);

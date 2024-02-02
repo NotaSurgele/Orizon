@@ -11,8 +11,8 @@ public:
     ~CanvasObject() = default;
 
     enum CoordType {
-        WORLD,
-        LOCAL
+        LOCAL,
+        WORLD
     };
 
 public:
