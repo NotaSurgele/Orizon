@@ -181,6 +181,7 @@ private:
         static nlohmann::json serializeScript(IComponent *c);
         static nlohmann::json serializeLight(IComponent *c);
         static nlohmann::json serializeGravity(IComponent *c);
+        static nlohmann::json serializeCanvas(IComponent *c);
 
 
     private:
@@ -197,7 +198,8 @@ private:
                 { "Music", serializeMusic },
                 { "Script", serializeScript },
                 { "Light", serializeLight },
-                { "Gravity", serializeGravity }
+                { "Gravity", serializeGravity },
+                { "Canvas",  serializeCanvas }
         };
 
     };

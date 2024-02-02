@@ -286,6 +286,69 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponen
     return json;
 }
 
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent *c)
+{
+    auto canvas = dynamic_cast<Canvas *>(c);
+    auto buttons = canvas->getButtons();
+    auto texts = canvas->getTexts();
+    auto images = canvas->getImages();
+    nlohmann::json json;
+
+    json["type"] = "Canvas";
+    json["canvas_objects"] = nlohmann::json::array();
+    for (auto &it : buttons) {
+        auto& b = it.first;
+        auto& offset = it.second;
+        auto sprite = b->getSprite();
+        auto size = b->getSize();
+        auto content = b->getTextContent();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = b->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Button" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &it : texts) {
+        auto& t = it.first;
+        auto& offset = it.second;
+        auto size = t->getCharacterSize();
+        auto content = t->getString();
+        auto coordType = t->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Text" },
+            { "position", { offset.x, offset.y } },
+            { "font_size", size },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &it : images) {
+        auto& i = it.first;
+        auto& offset = it.second;
+        auto sprite = i->getImage();
+        auto size = sprite->getScale();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = i->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Image" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "coord_type", coordType }
+        });
+    }
+    return json;
+}
 
 std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const nlohmann::json &entitiesJson)
 {
