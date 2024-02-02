@@ -154,6 +154,14 @@ public:
         _sprite->setPosition(position);
     }
 
+    std::string getTextContent()
+    {
+        if (text) {
+            return text->getString();
+        }
+        return "";
+    }
+
     sf::Vector2f getPosition()
     {
         return _position;
