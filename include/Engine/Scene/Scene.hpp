@@ -212,6 +212,8 @@ public:
                     e->addComponent<Script>(path);
                 }
 
+                static void create_canvas(Entity *e, const nlohmann::json& json);
+
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
                 {
@@ -234,7 +236,8 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
-                    { "Script", create_script }
+                    { "Script", create_script },
+                    { "Canvas", create_canvas }
                 };
         };
 

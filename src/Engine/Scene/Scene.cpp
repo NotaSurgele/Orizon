@@ -38,6 +38,52 @@ void Scene::ComponentFactory::create_sound(Entity *e, nlohmann::json const& json
                             ->setLoop(loop);
 }
 
+void Scene::ComponentFactory::create_canvas(Entity *e, const nlohmann::json &json)
+{
+    auto canvas = e->addComponent<Canvas>();
+    auto canvasObjects = json["canvas_objects"];
+
+    for (auto& obj : canvasObjects) {
+        std::string type = obj["type"];
+
+        auto position = sf::Vector2f(obj["position"][0], obj["position"][1]);
+        auto coordType = obj["coord_type"];
+
+        if (type.find("Button") != std::string::npos) {
+            try {
+                auto texture = R_GET_RESSOURCE(sf::Texture, obj["texture_name"]);
+                auto size = sf::Vector2f(obj["size"][0], obj["size"][1]);
+
+                canvas->addButton(position, size, texture)->coordType = coordType;
+            } catch (std::exception& err) {
+                std::cerr << "[SCENE] CANVAS Creating Button error " << err.what() << std::endl;
+            }
+        } else if (type.find("Text") != std::string::npos) {
+            try {
+                std::string content = obj["content"];
+                std::size_t size = obj["font_size"];
+
+                canvas->addText(content, position, size)->coordType = coordType;
+            } catch (std::exception& err) {
+                std::cerr << "[SCENE] CANVAS Creating Text error " << err.what() << std::endl;
+            }
+        } else if (type.find("Image") != std::string::npos) {
+            try {
+                auto texture = R_GET_RESSOURCE(sf::Texture, obj["texture_name"]);
+                auto size = sf::Vector2f(obj["size"][0], obj["size"][1]);
+
+                canvas->addImage(texture, position, size)->coordType = coordType;
+            } catch (std::exception& err) {
+                std::cerr << "[SCENE] CANVAS Creating Text error " << err.what() << std::endl;
+            }
+        } else {
+            std::cerr << "[SCENE CREATE COMPONENT] canvasObject type "
+                    << type << " does not exist !" << std::endl;
+            continue;
+        }
+    }
+}
+
 void Scene::get_ressources(nlohmann::json const& ressources)
 {
     for (auto& ressource : ressources) {

@@ -131,6 +131,11 @@ void EngineHud::ComponentCreationFactory::createGravity(Entity *e)
     e->addComponent<Gravity>(0.0f);
 }
 
+void EngineHud::ComponentCreationFactory::createCanvas(Entity *e)
+{
+    e->getComponent<Canvas>();
+}
+
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
 {
     auto transform = dynamic_cast<Transform2D *>(c);
@@ -286,6 +291,69 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponen
     return json;
 }
 
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent *c)
+{
+    auto canvas = dynamic_cast<Canvas *>(c);
+    auto buttons = canvas->getButtons();
+    auto texts = canvas->getTexts();
+    auto images = canvas->getImages();
+    nlohmann::json json;
+
+    json["type"] = "Canvas";
+    json["canvas_objects"] = nlohmann::json::array();
+    for (auto &it : buttons) {
+        auto& b = it.first;
+        auto& offset = it.second;
+        auto sprite = b->getSprite();
+        auto size = b->getSize();
+        auto content = b->getTextContent();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = b->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Button" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &it : texts) {
+        auto& t = it.first;
+        auto& offset = it.second;
+        auto size = t->getCharacterSize();
+        auto content = t->getString();
+        auto coordType = t->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Text" },
+            { "position", { offset.x, offset.y } },
+            { "font_size", size },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &it : images) {
+        auto& i = it.first;
+        auto& offset = it.second;
+        auto sprite = i->getImage();
+        auto size = sprite->getScale();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = i->coordType;
+
+        json["canvas_objects"].push_back({
+            { "type", "Image" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "coord_type", coordType }
+        });
+    }
+    return json;
+}
 
 std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const nlohmann::json &entitiesJson)
 {
@@ -756,6 +824,67 @@ void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
     light->setIntensity(intensity);
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
+{
+    auto canvas = dynamic_cast<Canvas *>(c);
+    auto& buttons = canvas->getButtons();
+    auto& texts = canvas->getTexts();
+    auto& images = canvas->getImages();
+    std::size_t id = 0;
+    static std::map<std::string, CanvasObject::CoordType> typeMap = {
+        { "Local", CanvasObject::CoordType::LOCAL },
+        { "World", CanvasObject::CoordType::WORLD },
+    };
+
+    if (ImGui::TreeNode("Buttons")) {
+        for (auto& it : buttons) {
+            auto& button = it.first;
+            auto& offset = it.second;
+            auto sprite = button->getSprite();
+            std::string label = "##button" + std::to_string(id);
+            int selectedOption = button->coordType;
+
+            ImGui::Separator();
+            ImGui::Text("position");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "positionX").data(), &offset.x);
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "positionY").data(), &offset.y);
+            ImGui::Text("Coordinate type");
+            ImGui::SameLine();
+
+            for (auto& type : typeMap) {
+                auto name = type.first;
+                auto index = type.second;
+
+                bool selected = (selectedOption == index);
+                if (ImGui::RadioButton((name + label).data(), selected)) {
+                    selectedOption = index;
+                    button->coordType = index;
+                }
+                if (name.find("Local") != std::string::npos) ImGui::SameLine();
+            }
+            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            id++;
+        }
+        ImGui::Separator();
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Texts")) {
+
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Images")) {
+        ImGui::TreePop();
+    }
+
+
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -1034,7 +1163,7 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
 void EngineHud::createComponent()
 {
     ImGui::SetCursorPosX(((_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO) / 2) / 2);
-    std::array<std::string, 13> componentList = {
+    std::array<std::string, 14> componentList = {
             "Transform2D",
             "BoxCollider",
             "Sprite",
@@ -1047,7 +1176,8 @@ void EngineHud::createComponent()
             "Music",
             "Script",
             "Light",
-            "Gravity"
+            "Gravity",
+            "Canvas"
     };
 
     if (ImGui::Button("Add Component")) {
