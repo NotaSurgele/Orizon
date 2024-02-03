@@ -5,6 +5,8 @@
 #define GUI
 #include "Script.hpp"
 
+static int id = 0;
+
 void EngineHud::setTheme()
 {
     if (_theme)
@@ -679,11 +681,13 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     }
     ImGui::Text("Current texture: ");
     ImGui::SameLine();
+    ImGui::PushID(id++);
     if (ImGui::Button(name.data())) {
         ImGui::OpenPopup("Textures buffer");
     }
     ImGui::SameLine();
-    ImGui::Image(*texture, sf::Vector2f(64, 64));
+    if (ImGui::ImageButton(*texture, sf::Vector2f(64, 64))) _imgWindow = true;
+    if (_imgWindow) imageViewer(texture);
     if (ImGui::BeginPopup("Textures buffer")) {
         for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
             auto& s = it.first;
@@ -705,6 +709,7 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     ImGui::SameLine();
     ImGui::Image(_colorSprite, sf::Vector2f(16, 16), color);
     sprite->setColor(color);
+    ImGui::PopID();
 }
 
 void EngineHud::ComponentTreeNodeFactory::buildIdTreeNode(IComponent *c)
@@ -838,7 +843,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 
     if (ImGui::TreeNode("Buttons")) {
         for (auto& it : buttons) {
-            auto& button = it.first;
+            auto button = it.first;
             auto& offset = it.second;
             auto sprite = button->getSprite();
             std::string label = "##button" + std::to_string(id);
@@ -867,6 +872,12 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
                 if (name.find("Local") != std::string::npos) ImGui::SameLine();
             }
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            auto pos = ImGui::GetCursorPosX();
+            ImGui::SetCursorPosX(pos + 150);
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Button>(button);
+                continue;
+            }
             id++;
         }
         ImGui::Separator();
@@ -1246,6 +1257,7 @@ void EngineHud::entityInformation()
         }
         createComponent();
     }
+    id = 0;
     ImGui::End();
 }
 
@@ -1274,12 +1286,14 @@ void EngineHud::scriptEditor(Script *script)
         _lastScript = script;
         _scriptContent = R_GET_SCRIPT(script->getFile());
     }
+    static bool open = true;
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
-    ImGui::Begin("File Editor");
-    if (ImGui::Button("x")) {
+    ImGui::Begin("File Editor", &open);
+    if (!open) {
         _scriptWindow = false;
-         ImGui::End();
-         return;
+        open = true;
+        ImGui::End();
+        return;
     }
     if (ImGui::Button("Save File")) {
         Utils::writeFile(script->getFile(), _scriptContent);
@@ -1415,6 +1429,22 @@ void EngineHud::resourceManager()
 
     }
 
+    ImGui::End();
+}
+
+void EngineHud::imageViewer(const sf::Texture *texture)
+{
+    static bool open = true;
+
+    ImGui::SetNextWindowSize(ImVec2(800, 800));
+    ImGui::Begin("Image Viewer", &open);
+    if (!open) {
+        _imgWindow = false;
+        open = true;
+        ImGui::End();
+        return;
+    }
+    ImGui::Image(*texture, sf::Vector2f(texture->getSize().x, texture->getSize().y));
     ImGui::End();
 }
 

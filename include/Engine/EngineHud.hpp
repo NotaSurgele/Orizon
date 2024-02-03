@@ -75,7 +75,9 @@ public:
 private:
     static inline std::string _msg;
     static inline bool _scriptWindow = false;
+    static inline bool _imgWindow = false;
 
+    static void imageViewer(const sf::Texture *sprite);
     static void scriptEditor(Script *component);
 
     template <typename T>
