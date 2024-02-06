@@ -81,6 +81,13 @@
                             "texture_name": "grass",
                             "content": "Toto",
                             "coord_type": 0
+                        },
+                        {
+                            "type": "Text",
+                            "position": [10, 30],
+                            "content": "Je sais pas",
+                            "font_size": 16,
+                            "coord_type": 0
                         }
                     ]
                 }
