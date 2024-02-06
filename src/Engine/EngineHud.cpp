@@ -889,11 +889,10 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::PushID(id);
             auto& text = it.first;
             auto& offset = it.second;
-            auto string = text->getString();
-            static std::string content;
+            std::string content = text->getString();
             auto size = text->getCharacterSize();
 
-            content.reserve(4096);
+            ImGui::Separator();
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
             ImGui::InputFloat("x", &offset.x);
@@ -902,12 +901,15 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::InputFloat("y", &offset.y);
             ImGui::SetNextItemWidth(300);
             ImGui::InputText("Content", content.data(), 4096);
+            ImGui::SetNextItemWidth(100);
             ImGui::InputInt("Character size", (int *)(&size));
 
             text->setString(content.data());
             text->setCharacterSize(size);
             id++;
+            ImGui::PopID();
         }
+        ImGui::Separator();
         ImGui::TreePop();
     }
 
