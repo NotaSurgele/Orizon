@@ -829,6 +829,26 @@ void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
     light->setIntensity(intensity);
 }
 
+void EngineHud::canvasRadioButton(CanvasObject::CoordType& selectedOption, CanvasObject *obj)
+{
+    static std::map<std::string, CanvasObject::CoordType> typeMap = {
+            { "Local", CanvasObject::CoordType::LOCAL },
+            { "World", CanvasObject::CoordType::WORLD },
+    };
+
+    for (auto& type : typeMap) {
+        auto name = type.first;
+        auto index = type.second;
+
+        bool selected = (selectedOption == index);
+        if (ImGui::RadioButton(name.data(), selected)) {
+            selectedOption = index;
+            obj->coordType = index;
+        }
+        if (name.find("Local") != std::string::npos) ImGui::SameLine();
+    }
+}
+
 void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 {
     auto canvas = dynamic_cast<Canvas *>(c);
@@ -836,10 +856,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
     auto& texts = canvas->getTexts();
     auto& images = canvas->getImages();
     std::size_t id = 0;
-    static std::map<std::string, CanvasObject::CoordType> typeMap = {
-        { "Local", CanvasObject::CoordType::LOCAL },
-        { "World", CanvasObject::CoordType::WORLD },
-    };
 
     if (ImGui::TreeNode("Buttons")) {
         for (auto& it : buttons) {
@@ -847,7 +863,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             auto& offset = it.second;
             auto sprite = button->getSprite();
             std::string label = "##button" + std::to_string(id);
-            int selectedOption = button->coordType;
+            CanvasObject::CoordType selectedOption = button->coordType;
 
             ImGui::Separator();
             ImGui::Text("position");
@@ -860,22 +876,13 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::Text("Coordinate type");
             ImGui::SameLine();
 
-            for (auto& type : typeMap) {
-                auto name = type.first;
-                auto index = type.second;
-
-                bool selected = (selectedOption == index);
-                if (ImGui::RadioButton((name + label).data(), selected)) {
-                    selectedOption = index;
-                    button->coordType = index;
-                }
-                if (name.find("Local") != std::string::npos) ImGui::SameLine();
-            }
+            canvasRadioButton(selectedOption, button);
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             auto pos = ImGui::GetCursorPosX();
             ImGui::SetCursorPosX(pos + 150);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Button>(button);
+                buttons.erase(button);
                 continue;
             }
             id++;
@@ -886,38 +893,64 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 
     if (ImGui::TreeNode("Texts")) {
         for (auto &it : texts) {
-            ImGui::PushID(id);
             auto& text = it.first;
             auto& offset = it.second;
             std::string content = text->getString();
+            std::string label = "##texts" + std::to_string(id);
             auto size = text->getCharacterSize();
+            CanvasObject::CoordType selectedOption = text->coordType;
 
             ImGui::Separator();
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat("x", &offset.x);
+            ImGui::InputFloat((label + "x").data(), &offset.x);
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat("y", &offset.y);
+            ImGui::InputFloat((label + "y").data(), &offset.y);
             ImGui::SetNextItemWidth(300);
-            ImGui::InputText("Content", content.data(), 4096);
+            ImGui::InputText((label + "Content").data(), content.data(), 4096);
             ImGui::SetNextItemWidth(100);
-            ImGui::InputInt("Character size", (int *)(&size));
+            ImGui::InputInt((label + "Character size").data(), (int *)(&size));
+            canvasRadioButton(selectedOption, text);
 
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Text>(text);
+                texts.erase(text);
+                continue;
+            }
             text->setString(content.data());
             text->setCharacterSize(size);
             id++;
-            ImGui::PopID();
         }
         ImGui::Separator();
         ImGui::TreePop();
     }
-
     if (ImGui::TreeNode("Images")) {
+        for (auto& it : images) {
+            std::string label = "##toto" + std::to_string(id);
+            auto& image = it.first;
+            auto& offset = it.second;
+            auto sprite = image->getImage();
+            CanvasObject::CoordType selectedOption = image->coordType;
+
+            ImGui::Separator();
+            ImGui::Text("Position");
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "x").data(), &offset.x);
+            ImGui::SameLine();
+            ImGui::InputFloat((label + "y").data(), &offset.y);
+            canvasRadioButton(selectedOption, image);
+            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Image>(image);
+                images.erase(image);
+                continue;
+            }
+            id++;
+        }
+        ImGui::Separator();
         ImGui::TreePop();
     }
-
-
 }
 
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)

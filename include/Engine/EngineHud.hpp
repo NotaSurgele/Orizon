@@ -2,6 +2,7 @@
 #include "Entity.hpp"
 #include "TileMap.hpp"
 #include "json.hpp"
+#include "Canvas.hpp"
 #include <vector>
 #include <thread>
 #include <queue>
@@ -109,6 +110,8 @@ private:
         TileR,
         ScriptR
     };
+
+    static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
 
     class ComponentCreationFactory {
     public:
