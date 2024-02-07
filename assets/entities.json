@@ -75,33 +75,10 @@
                             "coord_type": 0
                         },
                         {
-                            "type": "Button",
-                            "position": [10, 20],
+                            "type": "Image",
+                            "position": [50, 50],
                             "size": [1, 1],
                             "texture_name": "grass",
-                            "content": "Toto",
-                            "coord_type": 0
-                        },
-                        {
-                            "type": "Button",
-                            "position": [40, 20],
-                            "size": [1, 1],
-                            "texture_name": "block",
-                            "content": "Toto",
-                            "coord_type": 0
-                        },
-                        {
-                            "type": "Text",
-                            "position": [10, 30],
-                            "content": "Je sais pas",
-                            "font_size": 16,
-                            "coord_type": 0
-                        },
-                        {
-                            "type": "Text",
-                            "position": [10, 80],
-                            "content": "Veux tu voir mon zizi",
-                            "font_size": 16,
                             "coord_type": 0
                         }
                     ]
