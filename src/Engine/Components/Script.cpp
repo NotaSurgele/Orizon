@@ -202,8 +202,16 @@ void Script::registerRectType()
 void Script::registerSystemType()
 {
     _state->new_usertype<System>(
-            "System", sol::constructors<System()>(),
-            "pushEntity", &System::forceUpdate
+        "System", sol::constructors<System()>(),
+        "pushEntity", &System::forceUpdate,
+        "getEntity", sol::overload(
+            [](const std::string& signature) {
+                return System::getEntity(signature);
+            },
+            [] (const std::size_t& id) {
+                return System::getEntity(id);
+            }
+        )
     );
     (*_state)["system"] = System();
 }

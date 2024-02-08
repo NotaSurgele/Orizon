@@ -113,7 +113,7 @@
             ]
         },
         {
-            "name": "grass",
+            "name": "enemy_follower",
             "components": [
                 {
                     "type": "Transform2D",
