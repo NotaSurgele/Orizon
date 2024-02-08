@@ -890,7 +890,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         ImGui::Separator();
         ImGui::TreePop();
     }
-
     if (ImGui::TreeNode("Texts")) {
         for (auto &it : texts) {
             auto& text = it.first;
