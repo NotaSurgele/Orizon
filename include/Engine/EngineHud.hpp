@@ -2,6 +2,7 @@
 #include "Entity.hpp"
 #include "TileMap.hpp"
 #include "json.hpp"
+#include "Canvas.hpp"
 #include <vector>
 #include <thread>
 #include <queue>
@@ -75,7 +76,9 @@ public:
 private:
     static inline std::string _msg;
     static inline bool _scriptWindow = false;
+    static inline bool _imgWindow = false;
 
+    static void imageViewer(const sf::Texture *sprite);
     static void scriptEditor(Script *component);
 
     template <typename T>
@@ -107,6 +110,8 @@ private:
         TileR,
         ScriptR
     };
+
+    static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
 
     class ComponentCreationFactory {
     public:
