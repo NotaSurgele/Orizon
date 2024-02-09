@@ -65,7 +65,23 @@
                 },
                 {
                     "type": "Canvas",
-                    "canvasObjects": []
+                    "canvas_objects": [
+                        {
+                            "type": "Button",
+                            "position": [50, 50],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "content": "Coucou",
+                            "coord_type": 0
+                        },
+                        {
+                            "type": "Image",
+                            "position": [50, 50],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "coord_type": 0
+                        }
+                    ]
                 }
             ]
         },
@@ -97,7 +113,7 @@
             ]
         },
         {
-            "name": "grass",
+            "name": "enemy_follower",
             "components": [
                 {
                     "type": "Transform2D",

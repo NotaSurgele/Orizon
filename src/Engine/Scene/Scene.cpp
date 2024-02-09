@@ -41,7 +41,7 @@ void Scene::ComponentFactory::create_sound(Entity *e, nlohmann::json const& json
 void Scene::ComponentFactory::create_canvas(Entity *e, const nlohmann::json &json)
 {
     auto canvas = e->addComponent<Canvas>();
-    auto canvasObjects = json["canvasObjects"];
+    auto canvasObjects = json["canvas_objects"];
 
     for (auto& obj : canvasObjects) {
         std::string type = obj["type"];
