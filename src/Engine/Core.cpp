@@ -187,10 +187,12 @@ void Core::run()
         inputHandler(event);
         render();
         _system_handler.systems();
+#ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
         WindowInstance.getSFMLRenderWindow().setView(_hud);
         updateGUI();
         if (old) WindowInstance.setView(old);
+#endif
         _window.draw(fpsText);
         CoreDisplay();
         _time.end();

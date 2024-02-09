@@ -44,7 +44,7 @@
         },
         {
             "type": "Entities",
-            "path": "../assets/entities.json1"
+            "path": "../assets/entities.json"
         },
         {
             "type": "Script",
@@ -55,5 +55,5 @@
             "type": "Script"
         }
     ],
-    "entities": ["MapManager", "player", "enemy"]
+    "entities": ["MapManager", "player"]
 }
