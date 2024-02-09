@@ -3,6 +3,8 @@
 #include "Components/Light.hpp"
 #include "Core.hpp"
 #include "RayCaster.hpp"
+#include "Script.hpp"
+#include "Canvas.hpp"
 
 void System::addEntity(Entity *entity)
 {
@@ -13,14 +15,64 @@ void System::addEntity(Entity *entity)
 
 void System::pushEntity(Entity *entity)
 {
-    int index = _orders_values[entity->getComponent<Layer>()->value()];
+    if (!entity) {
+        std::cerr << "[SYSTEM] Cannot push entity because entity is NULL" << std::endl;
+        return;
+    }
+    auto l = entity->getComponent<Layer>();
 
-    if (index > _registry_size) _registry.push_back(entity);
-    else _registry.insert(_registry.begin() + index, entity);
-    _registry_size++;
+    if (!l) {
+        std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
+        return;
+    }
+    _registry_size = _registry.size();
+    ___insert_entity_at_location(entity);
+    auto value = l->value();
+    auto position = _orders_values[value];
+    if (position >= _registry_size) {
+        _registry.push_back(entity);
+        entity->__registryPosition = _registry_size + 1;
+    }
+    else {
+        _registry.insert(_registry.begin() + position, entity);
+        entity->__registryPosition = position;
+    }
 }
 
-void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity)
+void System::forceDestroy()
+{
+    for (auto& e : _to_destroy) {
+        if (!e) continue;
+        if (e->hasComponents<Light>()) __removeLightSource(e);
+        _dynamic_collider.erase(std::remove(
+                                        _dynamic_collider.begin(),
+                                        _dynamic_collider.end(),
+                                        e),
+                                _dynamic_collider.end());
+        for (auto& layer : _layers) {
+            if (layer->contain(e)) {
+                layer->removeEntity(e);
+            }
+        }
+        e->__destroyComponents();
+        // delete e; [TODO] Fix this
+    }
+    for (auto& l : _destroy_tilemap) {
+        l->clear();
+
+        _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
+    }
+    _destroy_tilemap.clear();
+    _to_destroy.clear();
+    _hashGrid->clear();
+}
+
+void System::forceUpdate(Entity *e)
+{
+    _forceUpdate.push_back(e);
+}
+
+void System::handleVelocityCollidingSides(BoxCollider *box, Transform2D *transform, Velocity *velocity)
 {
     if (box->collide) {
         auto values = velocity->values();
@@ -61,16 +113,18 @@ void System::handle_velocity_colliding_sides(BoxCollider *box, Transform2D *tran
     }
 }
 
-void System::velocity_system(Entity *e)
+void System::velocitySystem(Entity *e)
 {
-    auto velocity = e->getComponent<Velocity<float>>();
+    auto velocity = e->getComponent<Velocity>();
     auto transform = e->getComponent<Transform2D>();
-    auto box = e->getComponent<BoxCollider>();
+    auto boxes = e->getComponents<BoxCollider>();
 
     if (!velocity || !transform)
         return;
-    if (box != nullptr) {
-        handle_velocity_colliding_sides(box, transform, velocity);
+    for (auto& box : boxes) {
+        if (box != nullptr) {
+            handleVelocityCollidingSides(box, transform, velocity);
+        }
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
@@ -93,7 +147,7 @@ void System::sort()
     );
 }
 
-void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
+void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
 {
     auto sprite = e->getComponent<Sprite>();
     auto transform = e->getComponent<Transform2D>();
@@ -109,8 +163,92 @@ void System::sprite_system(Entity *e, std::vector<IComponent *> componentCache)
     DRAW(sprite);
 }
 
-void System::clear_component_cache(const std::vector<IComponent *> &componentCache)
+void System::canvasSystem(Entity *e)
 {
+    auto canvas = e->getComponent<Canvas>();
+    auto texts = canvas->getTexts();
+
+    // Text system
+    for (auto& it : texts) {
+        auto& t = it.first;
+        auto& offset = it.second;
+
+        if (t->coordType == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            sf::FloatRect textBounds = t->getLocalBounds();
+
+            t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
+        } else t->setPosition(offset);
+        DRAW(*t);
+    }
+
+    // Button system
+    auto buttons = canvas->getButtons();
+
+    for (auto& it : buttons) {
+        auto& b = it.first;
+        auto& offset = it.second;
+        auto& text = b->text;
+
+        if (b->coordType == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = b->getTextureSize();
+
+            b->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                            (offset.y + center.y) - ((float)size.y / 2));
+        } else b->setPosition(offset);
+        if (b->isHovered()) {
+            b->state = Button::HOVERED;
+
+            if (b->isClicked()) {
+                b->state = Button::PRESSED;
+                b->call();
+            }
+        } else b->state = Button::NOTHING;
+        DRAW(b);
+
+        //Handle button text
+        if (text != nullptr) {
+            auto spriteBounds = b->getSprite()->getGlobalBounds();
+            text->setPosition(spriteBounds.left, spriteBounds.top);
+            DRAW(*text);
+        }
+    }
+
+    auto images = canvas->getImages();
+
+    // Images system
+    for (auto& it : images) {
+        auto& i = it.first;
+        auto& offset = it.second;
+
+        if (i->coordType == Text::LOCAL) {
+            auto v = WindowInstance.getView();
+            auto center = v->getCenter();
+            auto size = i->getTextureSize();
+
+            i->setPosition((offset.x + center.x) - ((float)size.x / 2),
+                           (offset.y + center.y) - ((float)size.y / 2));
+        } else i->setPosition(offset);
+        DRAW(i);
+    }
+}
+
+void System::scriptSystem(Entity *e)
+{
+    std::vector<Script *> scriptArray = e->getComponents<Script>();
+
+    for (auto& s : scriptArray) {
+        s->start();
+        s->update();
+    }
+}
+
+void System::clearComponentCache(const std::vector<IComponent *> &componentCache)
+{
+    //EngineHud::writeConsole<std::string, std::size_t>("Component cache size", componentCache.size());
     for (auto it : componentCache) {
         delete it;
         it = nullptr;
@@ -121,39 +259,65 @@ void System::systems()
 {
     std::vector<IComponent *> componentCache;
 
+    // Handle force update entity
+    for (auto& e : _forceUpdate) {
+        pushEntity(e);
+    }
+
+    // Go through layers
+    for (auto& m : _layers) {
+        if (!m->isRender() || !isInView(m)) continue;
+        auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
+
+        for (auto& e : entities) {
+            pushEntity(e);
+        }
+    }
+
+    //EngineHud::writeConsole<std::string, std::size_t>("Inside dynamic collider ", _dynamic_collider.size());
     // Handle hashGrid moving entity
+    EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
     for (auto e : _dynamic_collider) {
+        if (!e) continue;
         _hashGrid->insert(e);
     }
+
     for (auto e : _registry) {
-        camera_system(e);
-        auto sprite = e->getComponent<Sprite>();
+        if (!e) continue;
 
-        if (System::lightSources > 0 && !Light::set && sprite) {
-            sprite->setColor(Light::darkColor);
-        }
-        if (!isInView(e))
-            continue;
-        _inView.push_back(e);
-
-        // Test
-        update_custom_component(e);
-        sprite_system(e, componentCache);
-        light_system(e);
-        gravity_system(e);
+        cameraSystem(e);
+        setSpriteShadow(e);
+        updateCustomComponent(e);
+        spriteSystem(e, componentCache);
+        gravitySystem(e);
         BoxSystem(e);
-        collider_system(e);
-        velocity_system(e);
+        colliderSystem(e);
+        velocitySystem(e);
     }
-    clear_component_cache(componentCache);
-    componentCache.clear();
 
-    // Destroy entities
-    destroy_entity();
+    // Light source system
+    for (auto& e : _lightSource) {
+        lightSystem(e);
+    }
+
+    for (auto& e : _canvas) {
+        canvasSystem(e);
+    }
+
+    // Handle entity with script
+    for (auto& e : _scripted_entity) {
+        scriptSystem(e);
+    }
+    //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
+    clearComponentCache(componentCache);
+    componentCache.clear();
+    destroyEntity();
+    _registry.clear();
+    _orders_values.clear();
     Light::set = true;
 }
 
-void System::handle_sprite_lightning(Sprite *sprite, Light *light)
+void System::handleSpriteLightning(Sprite *sprite, Light *light)
 {
     if (sprite && !sprite->isLightApply() && lightSources > 0) {
         auto color = Light::darkColor;
@@ -167,7 +331,7 @@ void System::handle_sprite_lightning(Sprite *sprite, Light *light)
     }
 }
 
-bool System::light_layer_raycast(Light *light, Entity *e)
+bool System::lightLayerRaycast(Light *light, Entity *e)
 {
     if (_layers.size() > 0) {
         for (auto layer : _layers) {
@@ -186,26 +350,40 @@ bool System::light_layer_raycast(Light *light, Entity *e)
     return false;
 }
 
-void System::light_system(Entity *e)
+void System::setSpriteShadow(Entity *e)
 {
-    auto light = e->getComponent<Light>();
     auto sprite = e->getComponent<Sprite>();
 
-    handle_sprite_lightning(sprite, light);
-    if (!light) return;
-    if (!isInView(e)) return;
-    if (light_layer_raycast(light, e))
-        return;
-    if (!light->isSpriteLoaded()) {
-        light->emit(_registry);
+    if (!sprite) return;
+    if (lightSources <= 0) {
+        sprite->setColor(sf::Color::White);
         return;
     }
-    light->emit();
+    sprite->setColor(Light::darkColor);
 }
 
-void System::gravity_system(Entity *e)
+void System::lightSystem(Entity *e)
 {
-    auto velocity = e->getComponent<Velocity<float>>();
+    auto arr = e->getComponents<Light>();
+
+    for (auto& light : arr) {
+        auto sprite = e->getComponent<Sprite>();
+
+        if (!light) return;
+        handleSpriteLightning(sprite, light);
+        if (lightLayerRaycast(light, e))
+            return;
+        if (!light->isSpriteLoaded()) {
+            light->emit(_registry);
+            return;
+        }
+        light->emit();
+    }
+}
+
+void System::gravitySystem(Entity *e)
+{
+    auto velocity = e->getComponent<Velocity>();
     auto gravity = e->getComponent<Gravity>();
     auto collider = e->getComponent<BoxCollider>();
 
@@ -222,7 +400,7 @@ void System::gravity_system(Entity *e)
     velocity->setY(gravity->force);
 }
 
-void System::update_custom_component(Entity *e)
+void System::updateCustomComponent(Entity *e)
 {
     auto map = e->getCustomComponents();
 
@@ -233,7 +411,7 @@ void System::update_custom_component(Entity *e)
     }
 }
 
-bool System::resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity)
+bool System::resolutionCalculation(BoxCollider *box, BoxCollider *collider, Entity *entity)
 {
     box->isColliding = true;
     box->collidingWith = entity;
@@ -267,14 +445,14 @@ bool System::resolution_calculation(BoxCollider *box, BoxCollider *collider, Ent
     return true;
 }
 
-void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
+void System::collisionResolution(BoxCollider *box, BoxCollider *collider)
 {
     auto entity = collider->entity();
 
     box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     // Resolve collision
     if (box->collide) {
-        if (!resolution_calculation(box, collider, entity))
+        if (!resolutionCalculation(box, collider, entity))
             return;
 
         // Call Collider Systems
@@ -286,7 +464,7 @@ void System::collision_resolution(BoxCollider *box, BoxCollider *collider)
     }
 }
 
-void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
+void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
 {
     box->setColor(sf::Color::Green);
     box->sides.clear();
@@ -301,19 +479,17 @@ void System::handle_layer_collision(BoxCollider *box, int range, Entity *e)
         std::vector<Entity *> arr = layer->checkAround<BoxCollider>(e, range);
         for (auto entity : arr) {
             auto collider = entity->getComponent<BoxCollider>();
-            collision_resolution(box, collider);
+            collisionResolution(box, collider);
         }
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
     }
 }
 
-void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
+void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 {
     std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
 
-    for (size_t i = 0; i < dynamic_entity.size(); i++) {
-        auto d_e = dynamic_entity[i];
-
+    for (auto d_e : dynamic_entity) {
         if (d_e == e)
             continue;
         if (d_e == nullptr) {
@@ -324,38 +500,43 @@ void System::handle_dynamic_entity_collision(Entity *e, BoxCollider *box)
             continue;
 
         }
-        auto other = d_e->getComponent<BoxCollider>();
-        collision_resolution(box, other);
-        box->collide = (box->getSides().size() > 0) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        auto arr = d_e->getComponents<BoxCollider>();
+
+        for (auto& other : arr) {
+            collisionResolution(box, other);
+            box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        }
     }
 }
 
-void System::collider_system(Entity *e)
+void System::colliderSystem(Entity *e)
 {
-    auto box = e->getComponent<BoxCollider>();
-    int range = 0;
+    auto arr = e->getComponents<BoxCollider>();
 
-    if (box == nullptr)
-        return;
-    if (box->getType() == BoxCollider::Type::STATIC)
-        return;
-    if (!box->___isSet) {
-        _dynamic_collider.push_back(e);
-        box->___isSet = true;
+    for (auto& box : arr) {
+        int range = 0;
+
+        if (box == nullptr)
+            return;
+        if (box->getType() == BoxCollider::Type::STATIC)
+            return;
+        /*if (!box->___isSet) {
+            _dynamic_collider.push_back(e);
+            box->___isSet = true;
+        }*/
+        box->isColliding = false;
+        box->collidingWith = nullptr;
+        range = box->getRange();
+        if (range == 0) return;
+        // check collision with layers
+        handleLayerCollision(box, range, e);
+
+        // check collision with other dynamic entity
+        handleDynamicEntityCollision(e, box);
     }
-    box->isColliding = false;
-    box->collidingWith = nullptr;
-    range = box->getRange();
-    if (range == 0)
-        return;
-    // check collision with layers
-    handle_layer_collision(box, range, e);
-
-    // check collision with other dynamic entity
-    handle_dynamic_entity_collision(e, box);
 }
 
-void System::camera_system(Entity *e) {
+void System::cameraSystem(Entity *e) {
     auto view = e->getComponent<View>();
     auto transform = e->getComponent<Transform2D>();
     bool destroy = false;
@@ -379,25 +560,29 @@ void System::camera_system(Entity *e) {
 void System::BoxSystem(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
-    auto velocity = e->getComponent<Velocity<float>>();
-    auto box = e->getComponent<BoxCollider>();
-    bool d_v = false;
+    auto velocity = e->getComponent<Velocity>();
+    auto arr = e->getComponents<BoxCollider>();
 
-    if (!box)
-        return;
-    if (!velocity) {
-        velocity = Velocity<float>::zero(),
-        d_v = true;
+    for (auto& box : arr) {
+        bool d_v = false;
+
+        if (!box)
+            return;
+        if (!velocity) {
+            velocity = Velocity::zero(),
+            d_v = true;
+        }
+        float velX = velocity->getX();
+        float velY = velocity->getY();
+        float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
+        float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
+        auto offset = box->getOffset();
+
+        box->setPosition((transform->position.x + offset.x) + x,
+                        (transform->position.y + offset.y) + y);
+        if (box->shouldDraw()) DRAW(box);
+        if (d_v) delete velocity;
     }
-    float velX = velocity->getX();
-    float velY = velocity->getY();
-    float x = (velX > 0) ? 2 : (velX < 0) ? -2 : 0;
-    float y = (velY > 0) ? 2 : (velY < 0) ? -2 : 0;
-
-    box->setPosition(transform->position.x + x,
-                    transform->position.y + y);
-    if (d_v)
-        delete velocity;
 }
 
 void System::merge()
@@ -409,14 +594,14 @@ void System::merge()
 bool System::isInView(Entity *e)
 {
     auto transform = e->getComponent<Transform2D>();
-    auto currentView = Window.getView();
+    auto currentView = WindowInstance.getView();
 
     if (!transform)
         transform = Transform2D::zero();
     if (currentView != nullptr) {
         sf::Vector2f padding(0, 0);
 
-        if (_layers.size() > 0) {
+        if (!_layers.empty()) {
             padding.x = _layers[0]->tileWidth;
             padding.y = _layers[0]->tileHeight;
         }
@@ -435,27 +620,43 @@ bool System::isInView(Entity *e)
     return true;
 }
 
-void System::destroy_entity()
+bool System::isInView(TileMap *map)
 {
-/*    std::cout << "Registry size " << _registry.size() << std::endl;
-    std::cout << "toDestroy size " << _to_destroy.size() << std::endl;
-    std::cout << "_dynamic_collider_size " << _dynamic_collider.size() << std::endl;*/
+    auto mapPosition = map->getPosition();
+    auto mapSize = map->getSize();
+    sf::FloatRect mapBounds = sf::FloatRect(mapPosition, mapSize);
+    auto view = WindowInstance.getView();
+
+    return view->getViewBounds().intersects(mapBounds);
+}
+
+void System::destroyEntity()
+{
     for (auto& e : _to_destroy) {
-        _registry.erase(std::remove(_registry.begin(), _registry.end(), e));
+        if (!e) continue;
+        if (e->hasComponents<Light>()) __removeLightSource(e);
+
         _dynamic_collider.erase(std::remove(
                                         _dynamic_collider.begin(),
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
-        _hashGrid->remove(e);
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
             }
         }
-        delete e;
+        e->__destroyComponents();
+        //delete e; /*[TODO] Fix this*/
         _registry_size--;
     }
+    for (auto& l : _destroy_tilemap) {
+        l->clear();
+
+        _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
+    }
+    _destroy_tilemap.clear();
     _to_destroy.clear();
     _hashGrid->clear();
 }

@@ -24,7 +24,7 @@
         },
         {
             "type": "Sound",
-            "name": "toto",
+            "name": "titi",
             "path": "../assets/slash.mp3"
         },
         {
@@ -38,9 +38,22 @@
             "path": "../assets/light_2.png"
         },
         {
+            "type": "Texture",
+            "name": "toto",
+            "path": "../assets/light.png"
+        },
+        {
             "type": "Entities",
             "path": "../assets/entities.json"
+        },
+        {
+            "type": "Script",
+            "path": "./assets/Scripting/toto.lua"
+        },
+        {
+            "path": "./assets/Scripting/toto.lua",
+            "type": "Script"
         }
     ],
-    "entities": ["player"]
+    "entities": ["MapManager", "player"]
 }

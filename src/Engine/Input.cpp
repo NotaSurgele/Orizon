@@ -31,12 +31,12 @@ bool Input::isButtonReleased(std::string const& key)
     return false;
 }
 
-bool Input::isKeyPressed()
+bool Input::isAnyKeyPressed()
 {
     return ___key_down.size() > 0;
 }
 
-bool Input::isButtonPressed()
+bool Input::isAnyButtonPressed()
 {
     return ___button_down.size() > 0;
 }
@@ -138,7 +138,7 @@ bool Input::isButtonPressed(const std::string &key)
     return std::find(___buttonArray.begin(), ___buttonArray.end(), key) != ___buttonArray.end();
 }
 
-bool Input::isActionPressed(std::string const& action)
+bool Input::isActionKeyPressed(std::string const& action)
 {
     std::string key_related = "";
 

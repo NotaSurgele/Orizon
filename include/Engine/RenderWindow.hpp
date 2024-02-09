@@ -16,6 +16,8 @@ class RenderWindow {
         RenderWindow() = default;
         ~RenderWindow() = default;
 
+        sf::Vector2f mapPixelToCoords(const sf::Vector2i& point);
+        sf::Vector2i mapCoordsToPixel(const sf::Vector2f& point);
         void clear(sf::Color color);
         bool isOpen();
         bool pollEvent(sf::Event& event);
@@ -27,7 +29,7 @@ class RenderWindow {
         void close();
         void setView(View *view);
         void setActive(bool active);
-        
+
         View *getView();
         sf::RenderWindow& getSFMLRenderWindow();
         // void setView(const &)

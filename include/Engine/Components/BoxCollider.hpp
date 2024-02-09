@@ -43,10 +43,10 @@ public:
 
     ~BoxCollider() = default;
 
-    void destroy() override final { _colliderSystem.clear(); }
+    void destroy() override final;
 
     bool overlap(BoxCollider *collider);
-    bool overlap(BoxCollider *collider, Velocity<float> *velocity);
+    bool overlap(BoxCollider *collider, Velocity *velocity);
     bool intersect(BoxCollider *collider, BoxCollider& intersections);
 
     void setPosition(sf::Vector2<float> const& pos)
@@ -62,20 +62,20 @@ public:
         _isTrigger = isTrigger;
     }
 
-
     void setPosition(const float& x, const float& y)
     {
         float angle = 0;
         sf::Vector2f position = sf::Vector2f(x, y);
 
-        for (std::size_t i = 0; i < _rays.size(); i++) {
-            _rays[i].setPosition(position);
-            _rays[i].rotate(angle += 45);
-            // _rays[i].show(2.0f);
-        }
         _shape.setPosition(x, y);
         _position.x = x;
         _position.y = y;
+    }
+
+    void setSize(const sf::Vector2<float>& size)
+    {
+        _shape.setSize(size);
+        _size = size;
     }
 
     Entity * collidingWithEntity();
@@ -86,6 +86,11 @@ public:
     sf::Vector2<float> &getPosition();
 
     sf::Vector2<float> &getSize();
+
+    sf::Vector2<float>& getOffset()
+    {
+        return _offsetPosition;
+    }
 
     Type getType();
 
@@ -101,6 +106,11 @@ public:
         _shape.setOutlineColor(color);
     }
 
+    void draw(const bool& draw)
+    {
+        _draw = draw;
+    }
+
     void registerSide(const Side& side)
     {
         auto containType = hasSide(side);
@@ -108,6 +118,11 @@ public:
         if (containType)
             return;
         sides.push_back(side);
+    }
+
+    void setOffset(const sf::Vector2f& offset)
+    {
+        _offsetPosition = offset;
     }
 
     BoxCollider *onCollision(const std::function<void(BoxCollider *)>& system);
@@ -130,6 +145,11 @@ public:
         return _isTrigger;
     }
 
+    bool& shouldDraw()
+    {
+        return _draw;
+    }
+
     const std::vector<std::function<void(BoxCollider *)>>& getColliderSystem()
     {
         return _colliderSystem;
@@ -144,14 +164,15 @@ public:
     bool ___isSet = false;
 
 private:
+    sf::Vector2<float> _offsetPosition;
     sf::Vector2<float> _position;
     sf::Vector2<float> _size;
     sf::RectangleShape _shape;
-    std::vector<RayCaster> _rays;
     Type _type = Type::NUL;
     Entity *_e = nullptr;
     std::vector<std::function<void(BoxCollider *)>> _colliderSystem;
     std::vector<std::function<void(BoxCollider *)>> _triggerSystem;
     int _range = 0;
     bool _isTrigger = false;
+    bool _draw = false;
 };

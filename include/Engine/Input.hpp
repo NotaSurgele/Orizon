@@ -23,14 +23,14 @@ public:
     static bool isButtonReleased(std::string const& key);
     static bool isKeyDown(std::string const& key);
     static bool isButtonDown(std::string const& key);
-    static bool isActionPressed(std::string const& action);
+    static bool isActionKeyPressed(std::string const& action);
     static bool isActionButtonPressed(std::string const& action);
     static bool isActionKeyDown(std::string const& action);
     static bool isActionButtonDown(std::string const& action);
     static bool isActionKeyReleased(std::string const& action);
     static bool isActionButtonReleased(std::string const& action);
-    static bool isKeyPressed(void);
-    static bool isButtonPressed(void);
+    static bool isAnyKeyPressed(void);
+    static bool isAnyButtonPressed(void);
     void loadFromFile(std::string const& file);
     void ___push_key(sf::Keyboard::Key key);
     void ___push_button(sf::Mouse::Button button);
