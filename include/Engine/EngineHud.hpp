@@ -2,6 +2,7 @@
 #include "Entity.hpp"
 #include "TileMap.hpp"
 #include "json.hpp"
+#include "Canvas.hpp"
 #include <vector>
 #include <thread>
 #include <queue>
@@ -75,7 +76,9 @@ public:
 private:
     static inline std::string _msg;
     static inline bool _scriptWindow = false;
+    static inline bool _imgWindow = false;
 
+    static void imageViewer(const sf::Texture *sprite);
     static void scriptEditor(Script *component);
 
     template <typename T>
@@ -108,6 +111,8 @@ private:
         ScriptR
     };
 
+    static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
+
     class ComponentCreationFactory {
     public:
         ComponentCreationFactory() = default;
@@ -133,6 +138,7 @@ private:
         static void createScript(Entity *e);
         static void createLight(Entity *e);
         static void createGravity(Entity *e);
+        static void createCanvas(Entity *e);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(Entity *)>> _map = {
@@ -148,7 +154,8 @@ private:
                 { "Music", createMusic },
                 { "Script", createScript },
                 { "Light", createLight },
-                { "Gravity", createGravity }
+                { "Gravity", createGravity },
+                { "Canvas", createCanvas }
         };
     };
 
@@ -181,6 +188,7 @@ private:
         static nlohmann::json serializeScript(IComponent *c);
         static nlohmann::json serializeLight(IComponent *c);
         static nlohmann::json serializeGravity(IComponent *c);
+        static nlohmann::json serializeCanvas(IComponent *c);
 
 
     private:
@@ -197,7 +205,8 @@ private:
                 { "Music", serializeMusic },
                 { "Script", serializeScript },
                 { "Light", serializeLight },
-                { "Gravity", serializeGravity }
+                { "Gravity", serializeGravity },
+                { "Canvas",  serializeCanvas }
         };
 
     };
@@ -235,6 +244,7 @@ private:
         static void buildAnimatorTreeNode(IComponent *c);
         static void buildGravityTreeNode(IComponent *c);
         static void buildLightTreeNode(IComponent *c);
+        static void buildCanvasTreeNode(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -251,7 +261,8 @@ private:
             { "Id", buildIdTreeNode },
             { "Animator", buildAnimatorTreeNode },
             { "Gravity", buildGravityTreeNode },
-            { "Light", buildLightTreeNode  }
+            { "Light", buildLightTreeNode  },
+            { "Canvas", buildCanvasTreeNode }
         };
     };
 

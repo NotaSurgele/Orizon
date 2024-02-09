@@ -363,6 +363,7 @@ void System::setSpriteShadow(Entity *e)
 void System::lightSystem(Entity *e)
 {
     auto arr = e->getComponents<Light>();
+
     for (auto& light : arr) {
         auto sprite = e->getComponent<Sprite>();
 

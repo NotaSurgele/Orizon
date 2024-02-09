@@ -26,7 +26,7 @@ public:
 #else
             this->setSize(w, h);
 #endif
-            //this->setViewport({x, y, 1.0f, 1.0f});
+        this->setViewport({x, y, 1.0f, 1.0f});
     }
 
     void setViewPort(const sf::FloatRect& viewport)

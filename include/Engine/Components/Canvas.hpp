@@ -154,6 +154,14 @@ public:
         _sprite->setPosition(position);
     }
 
+    std::string getTextContent()
+    {
+        if (text) {
+            return text->getString();
+        }
+        return "";
+    }
+
     sf::Vector2f getPosition()
     {
         return _position;
@@ -214,7 +222,7 @@ public:
 
 
     template <typename T>
-    void removeObject(const T& obj)
+    void removeObject(T *obj)
     {
         remove<T>(obj);
     }
@@ -238,28 +246,30 @@ public:
 
 private:
 
-    template <typename T = Text>
-    void remove(Text *text)
+    template <typename T>
+    void remove(T *obj);
+/*    template <>
+    void remove<Text>(Text *text)
     {
         auto find = _text.find(text);
         _text.erase(find);
     }
 
-    template <typename T = Button>
-    void remove(Button *button)
+    template <>
+    void remove<Button>(Button *button)
     {
         auto find = _button.find(button);
 
         _button.erase(find);
     }
 
-    template <typename T = Image>
-    void remove(Image *img)
+    template <>
+    void remove<Image>(Image *img)
     {
         auto find = _image.find(img);
 
         _image.erase(find);
-    }
+    }*/
 
 private:
     sf::Font _font;
@@ -268,3 +278,33 @@ private:
     std::unordered_map<Image *, sf::Vector2f> _image;
     Entity *_e = nullptr;
 };
+
+template <>
+inline void Canvas::remove<Text>(Text *text) {
+    auto find = _text.find(text);
+    if (find != _text.end()) {
+        _text.erase(find);
+    }
+}
+
+template <>
+inline void Canvas::remove<Button>(Button *button) {
+    auto find = _button.find(button);
+    if (find != _button.end()) {
+        _button.erase(find);
+    }
+}
+
+template <>
+inline void Canvas::remove<Image>(Image *img) {
+    auto find = _image.find(img);
+    if (find != _image.end()) {
+        _image.erase(find);
+    }
+}
+
+template <typename T>
+inline void Canvas::remove(T *obj) {
+    remove<T>(obj);
+}
+
