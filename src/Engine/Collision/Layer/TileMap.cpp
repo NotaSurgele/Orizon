@@ -83,8 +83,10 @@ bool TileMap::removeEntity(const int& x, const int& y)
 
 bool TileMap::removeEntity(Entity *e)
 {
-    auto position = e->getComponent<Transform2D>()->position;
+    auto transform = e->getComponent<Transform2D>();
 
+    if (!transform) return false;
+    auto position = transform->position;
     auto fixedPosition = sf::Vector2i((int)position.x / tileWidth, (int)position.y / tileHeight);
     removeEntity(fixedPosition.x, fixedPosition.y);
     return true;
@@ -97,7 +99,10 @@ bool TileMap::isRender()
 
 bool TileMap::contain(Entity *e)
 {
-    auto position = e->getComponent<Transform2D>()->position;
+    auto transform = e->getComponent<Transform2D>();
+
+    if (!transform) return false;
+    auto position = transform->position;
     sf::FloatRect bounds = { _x, _y, (float)w, (float)h };
     return bounds.contains(position.x, position.y);
 }
@@ -106,6 +111,43 @@ bool TileMap::contain(const float& x, const float& y)
 {
     sf::FloatRect bounds = { this->_x, this->_y, (float)this->w, (float)this->h };
     return bounds.contains(x, y);
+}
+
+bool TileMap::isInside(Entity *e)
+{
+    auto position = e->getComponent<Transform2D>()->position;
+    auto fixedPosition = sf::Vector2i((int)position.x / tileWidth, (int)position.y / tileHeight);
+
+    if (fixedPosition.x < 0 ||
+        fixedPosition.x > w ||
+        fixedPosition.y < 0 ||
+        fixedPosition.y > h)
+        return false;
+    return e == _layer[fixedPosition.x][fixedPosition.y];
+}
+
+std::vector<Entity *> TileMap::getEntityInBounds(const sf::FloatRect& bounds)
+{
+    std::vector<Entity *> arr;
+    auto startPos = sf::Vector2i((bounds.left / tileWidth) - 1, (bounds.top / tileHeight) - 1);
+    auto endPos = sf::Vector2i((bounds.left + bounds.width) / tileWidth,
+                               (bounds.top + bounds.height) / tileHeight);
+
+    if (_entities.empty()) return arr;
+    if (startPos.x < 0) startPos.x = _x;
+    if (startPos.x > (_x + w)) startPos.x = _x + w;
+    if (startPos.y < 0) startPos.y = _y;
+    if (startPos.y > (_y + h)) startPos.y = _y + h;
+
+    for (int x = startPos.x; x <= endPos.x; x++) {
+        for (int y = startPos.y; y <= endPos.y; y++) {
+            auto& e = _layer[x][y];
+
+            if (e != nullptr)
+                arr.push_back(e);
+        }
+    }
+    return arr;
 }
 
 void TileMap::outputValues()
@@ -118,18 +160,23 @@ void TileMap::outputValues()
     }
 }
 
+void TileMap::destroy()
+{
+    System::DestroyTileMap(this);
+}
+
 void TileMap::render()
 {
     _isRender = true;
-    for (auto& e : _entities) {
+    /*for (auto e : _entities) {
         System::pushEntity(e);
-    }
+    }*/
 }
 
 void TileMap::hide()
 {
     _isRender = false;
-    for (auto& e : _entities) {
+    for (auto e : _entities) {
         System::RemoveEntity(e);
     }
 }

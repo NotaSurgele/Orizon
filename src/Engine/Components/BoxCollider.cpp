@@ -13,14 +13,6 @@ BoxCollider::BoxCollider(   Entity *e,
                             _range(checkRange),
                             _e(e)
 {
-    float angle = 0;
-
-    for (std::size_t i = 0; i < 4; i++) {
-        RayCaster ray = RayCaster(e->getComponent<Transform2D>()->position,
-                                    sf::Vector2f(1, 0), 100.0f);
-        ray.rotate(angle += 45);
-        _rays.push_back(ray);
-    }
     _shape = sf::RectangleShape();
     _shape.setSize(size);
     _shape.setFillColor(sf::Color::Transparent);
@@ -75,8 +67,8 @@ Entity * BoxCollider::entity()
 void BoxCollider::setType(const BoxCollider::Type &type)
 {
     if (type == Type::DYNAMIC) {
-        ___isSet = true;
         System::__registerDynamicCollider(this->entity());
+        ___isSet = true;
     }
     _type = type;
 }
@@ -139,7 +131,7 @@ BoxCollider* BoxCollider::onTrigger(const std::function<void(BoxCollider *)> &sy
     return this;
 }
 
-bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
+bool BoxCollider::overlap(BoxCollider *collider, Velocity *velocity)
 {
     auto box = collider;
     if (!box)
@@ -163,4 +155,13 @@ bool BoxCollider::overlap(BoxCollider *collider, Velocity<float> *velocity)
     if (isColliding)
         collidingWith = box->entity();
     return isColliding;
+}
+
+void BoxCollider::destroy()
+{
+    auto arr = _e->getComponents<BoxCollider>();
+
+    if (_type == DYNAMIC && arr.empty())
+        System::__removeDynamicCollider(_e);
+    _colliderSystem.clear();
 }

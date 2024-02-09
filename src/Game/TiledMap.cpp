@@ -11,7 +11,7 @@ bool TiledMap::load(const std::string &filePath)
 
     if (fileContent.size() <= 0)
         return false;
-    _mapContent = Utils::fileToJson(fileContent);
+    _mapContent = Utils::fileContentToJson(fileContent);
     _loadTileSet();
     _loadTileMap();
     return true;
@@ -43,7 +43,6 @@ bool TiledMap::_loadTileMap()
 {
     auto layers = _mapContent["layers"];
 
-    int draw = 0;
     for (auto layer : layers) {
         int height = layer["height"];
         int width = layer["width"];
@@ -56,7 +55,7 @@ bool TiledMap::_loadTileMap()
         int index = 0;
         float posX = 0;
         float posY = 0;
-        std::cout << "DRAW " << draw << std::endl;
+
         for (auto cell : cells) {
             int cellId = cell;
             if (index >= height) {
@@ -68,18 +67,18 @@ bool TiledMap::_loadTileMap()
                 sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
                 Entity *e = new Entity();
 
-                e->getComponent<Layer>()->set(draw);
+                e->getComponent<Layer>()->set(0);
                 e->addComponent<Transform2D>()->position = sf::Vector2f(posY, posX);
                 e->addComponent<Sprite>(texture);
                 e->addComponent<BoxCollider>(e->getComponent<Transform2D>()->position,
-                                             sf::Vector2f(16, 16))->setType(BoxCollider::STATIC);
+                                             sf::Vector2f(16, 16))->setType(BoxCollider::DYNAMIC);
                 tilemap->emplaceEntity(e);
             }
             posY += _tileWidth;
             index++;
         }
+        //tilemap->render();
         _tileMaps.push_back(tilemap);
-        draw += 2;
     }
     return true;
 }
@@ -92,7 +91,7 @@ void TiledMap::_loadTileSet()
 
         // Handle tileset parsing
         std::string tilesetInfoStr = Utils::readFile("../assets/" + source);
-        nlohmann::json tilesetInfo = Utils::fileToJson(tilesetInfoStr);
+        nlohmann::json tilesetInfo = Utils::fileContentToJson(tilesetInfoStr);
 
         int imgHeight = tilesetInfo["imageheight"];
         int imgWidth = tilesetInfo["imagewidth"];

@@ -5,7 +5,8 @@
 
 class Tag : public IComponent {
 public:
-    Tag(Entity *e, std::string const& value) : _signature(value) {};
+    Tag(Entity *e, std::string const& value);
+
     ~Tag() = default;
 
     std::string const& value() const { return _signature; }
@@ -15,8 +16,10 @@ public:
         return val.find(_signature) != std::string::npos;
     }
 
+    void setValue(const std::string& v);
+
     void destroy() override final {};
 
 private:
-    const std::string _signature;
+    std::string _signature;
 };

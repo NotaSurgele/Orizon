@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "Entity.hpp"
 #include "Components/Sprite.hpp"
+#include "EngineHud.hpp"
 
 class HashGrid {
 public:
@@ -9,7 +10,6 @@ public:
     HashGrid(float const& cellSize=100, int capacity=100) : _size(0),
                                                               _cellSize(cellSize),
                                                               _capacity(capacity) {
-        _grid.reserve(capacity);
     }
 
     ~HashGrid()
@@ -18,6 +18,7 @@ public:
     }
 
     void insert(Entity* entity) {
+        //EngineHud::writeConsole<std::string, std::size_t>("Cell size ", _grid.size());
         std::vector<sf::Vector2i> cells = calculateCells(entity);
 
         for (const auto& cell : cells) {
@@ -46,6 +47,8 @@ public:
 
     void clear()
     {
+/*        _capacity=100;
+        _grid.reserve(_capacity);*/
         _grid.clear();
     }
 
@@ -53,6 +56,7 @@ public:
         std::vector<sf::Vector2i> cells = calculateCells(e);
         std::vector<Entity *> result;
 
+        EngineHud::writeConsole<std::string, std::size_t>("Cells ", cells.size());
         for (const auto& cell : cells) {
             if (_grid.find(cell) != _grid.end()) {
                 result.insert(result.end(), _grid[cell].begin(), _grid[cell].end());
@@ -70,29 +74,28 @@ public:
 private:
     struct VectorHash {
         std::size_t operator()(const sf::Vector2i& v) const {
-            // You can customize the hash function based on your needs
             return std::hash<float>()(v.x) ^ std::hash<float>()(v.y);
         }
     };
 
     std::vector<sf::Vector2i> calculateCells(Entity *e) {
-        if (!e)
-            return std::vector<sf::Vector2i>();
-        auto transform = e->getComponent<Transform2D>();
-        auto sprite = e->getComponent<Sprite>();
-
-        if (!transform || !sprite)
-            return std::vector<sf::Vector2i>();
-        int cell_x = static_cast<int>(transform->position.x / _cellSize);
-        int cell_y = static_cast<int>(transform->position.y / _cellSize);
-
-        int cell_width = static_cast<int>(sprite->getTexture()->getSize().x / _cellSize ) + 1;
-        int cell_height = static_cast<int>(sprite->getTexture()->getSize().y / _cellSize ) + 1;
-
+        if (!e) return {};
+        auto boxArray = e->getComponents<BoxCollider>();
         std::vector<sf::Vector2i> cells;
-        for (int x = cell_x; x < cell_x + cell_width; x++) {
-            for (int y = cell_y; y < cell_y + cell_height; y++) {
-                cells.emplace_back(x, y);
+
+        for (auto& box : boxArray) {
+            if (!box)
+                return {};
+            int cell_x = static_cast<int>(box->getPosition().x / _cellSize);
+            int cell_y = static_cast<int>(box->getPosition().y / _cellSize);
+
+            int cell_width = static_cast<int>(box->getSize().x / _cellSize ) + 1;
+            int cell_height = static_cast<int>(box->getSize().y / _cellSize ) + 1;
+
+            for (int x = cell_x; x < cell_x + cell_width; x++) {
+                for (int y = cell_y; y < cell_y + cell_height; y++) {
+                    cells.emplace_back(x, y);
+                }
             }
         }
         return cells;
@@ -100,13 +103,6 @@ private:
 
     void resize() {
         _capacity *= 2;
-        std::unordered_map<sf::Vector2i, std::vector<Entity *>, VectorHash> newGrid;
-        for (auto& entry : _grid) {
-            for (Entity *entity : entry.second) {
-                insert(entity);
-            }
-        }
-        _grid = newGrid;
     }
 
 

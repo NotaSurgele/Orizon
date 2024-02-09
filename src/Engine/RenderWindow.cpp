@@ -1,6 +1,8 @@
 #include "Engine/RenderWindow.hpp"
 #include "config.hpp"
 #include "Components/View.hpp"
+#include <imgui.h>
+#include <imgui-SFML.h>
 
 RenderWindow::RenderWindow(std::string const& windowName,
                             std::size_t width,
@@ -9,6 +11,17 @@ RenderWindow::RenderWindow(std::string const& windowName,
                             _height(height),
                             _window(sf::VideoMode(width, height), windowName)
 {
+    _window.setFramerateLimit(144);
+}
+
+sf::Vector2f RenderWindow::mapPixelToCoords(const sf::Vector2i &point)
+{
+    return _window.mapPixelToCoords(point);
+}
+
+sf::Vector2i RenderWindow::mapCoordsToPixel(const sf::Vector2f &point)
+{
+    return _window.mapCoordsToPixel(point);
 }
 
 void RenderWindow::clear(sf::Color color)

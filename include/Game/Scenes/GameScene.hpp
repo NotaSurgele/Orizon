@@ -11,12 +11,11 @@
 
 class GameScene : public Scene {
 public:
-    void create() override final;
-    void update() override final;
-    void destroy() override final;
+    void create() final;
+    void update() final;
+    void destroy() final;
 
 private:
-    void loadTiledMap(const std::string& filePath);
 
 private:
     Entity *player = nullptr;
@@ -31,4 +30,5 @@ private:
     std::vector<RayCaster> _rayCaster;
     OrizonMusic *_music = nullptr;
     TiledMap *tiledMap = new TiledMap();
+    Entity *toto = nullptr;
 };

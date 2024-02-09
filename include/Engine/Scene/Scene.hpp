@@ -1,11 +1,12 @@
 #pragma once
-
-#include "Engine/Scene/IScene.hpp"
+#include "EngineHud.hpp"
 #include "Engine/System.hpp"
-#include "Engine/Core.hpp"
+#include "Engine/Scene/IScene.hpp"
 #include "Components/Animator.hpp"
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
+#include "Components/Script.hpp"
+#include "json.hpp"
 #include <fstream>
 
 class Scene : public IScene {
@@ -37,19 +38,37 @@ public:
     int loadSceneFromFile(const std::string& filename)
     {
         std::string content = readConfigFile(filename);
-        nlohmann::json json_content = nlohmann::json::parse(content);
 
-        get_ressources(json_content["resources"]);
-        parse_entities(json_content["entities"]);
+        try {
+            _sceneContent = nlohmann::json::parse(content);
+
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_SCENE_FROM_FILE] " << msg.what() << std::endl;
+            return -1;
+        }
+
+        get_ressources(_sceneContent["resources"]);
+        parse_entities(_sceneContent["entities"]);
+        _sceneFile = filename;
         return 0;
     }
 
+    const std::string& getSceneFilepath() const { return _sceneFile; }
+    nlohmann::json& getSceneContent() { return _sceneContent; }
     static inline Entity *loadEntityFromFilepath(const std::string& filename, std::string const& name)
     {
         std::string content = readConfigFile(filename);
-        nlohmann::json json_content = nlohmann::json::parse(content);
 
-        return get_entity(json_content["entities"], name);
+        try {
+            nlohmann::json json_content = nlohmann::json::parse(content);
+
+            return get_entity(json_content["entities"], name);
+        } catch (std::exception& msg) {
+            std::cerr << "[LOAD_ENTITY_FROM_FILE] " << msg.what() <<
+                " entity file doesn't exist " << filename << std::endl;
+            return nullptr;
+        }
+
     }
 
     static inline Entity *loadEntityFromFile(const std::string& content, std::string const& name)
@@ -81,12 +100,7 @@ public:
                 }
 
             private:
-                static void create_sprite(Entity *e, nlohmann::json const& json)
-                {
-                    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
-
-                    e->addComponent<Sprite>(texture);
-                }
+                static void create_sprite(Entity *e, nlohmann::json const& json);
 
                 static void create_transform(Entity *e, nlohmann::json const& json)
                 {
@@ -111,7 +125,7 @@ public:
                     };
                     BoxCollider::Type type = types.at(type_string);
                     auto collider = e->addComponent<BoxCollider>(position, size, range);
-
+                    collider->setOffset(position);
                     collider->setType(type);
                     if (json.contains("isTrigger")) {
                         bool trigger = json["isTrigger"];
@@ -129,14 +143,7 @@ public:
 
                 static void create_velocity(Entity *e, nlohmann::json const& json)
                 {
-                    std::string type = json["value_type"];
-
-                    if (type.find("float") != std::string::npos)
-                        e->addComponent<Velocity<float>>();
-                    if (type.find("int") != std::string::npos)
-                        e->addComponent<Velocity<int>>();
-                    if (type.find("double") != std::string::npos)
-                        e->addComponent<Velocity<double>>();
+                    e->addComponent<Velocity>();
                 }
 
                 static void create_animator(Entity *e, nlohmann::json const& json)
@@ -173,49 +180,39 @@ public:
 
                 static void create_view(Entity *e, nlohmann::json const& json)
                 {
-                    float x = json["viewport"][0];
-                    float y = json["viewport"][1];
-                    float w = json["viewport"][2];
-                    float h = json["viewport"][3];
+                    float x = json["view_bounds"][0];
+                    float y = json["view_bounds"][1];
+                    float w = json["view_bounds"][2];
+                    float h = json["view_bounds"][3];
                     bool follow = json["follow"];
 
-                    e->addComponent<View>(x, y, w, h, follow);
-                }
+                    auto view = e->addComponent<View>(x, y, w, h, follow);
 
-                static void create_sound(Entity *e, nlohmann::json const& json)
-                {
-                    sf::SoundBuffer buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
-                    bool loop = json["loop"];
+                    if (json.contains("viewport")) {
+                        float viewportPosX = json["viewport"][0];
+                        float viewportPosY = json["viewport"][1];
+                        float viewportWidth = json["viewport"][2];
+                        float viewportHeight = json["viewport"][3];
 
-                    e->addComponent<Sound>()->setBuffer(buffer)
-                                            ->setLoop(loop);
-                }
-
-                static void create_music(Entity *e, nlohmann::json const& json)
-                {
-                    sf::Music *buffer = R_GET_MUSIC(json["music_name"]);
-                    bool loop = json["loop"];
-
-                    e->addComponent<OrizonMusic>()->setMusic(buffer)
-                                            ->setLoop(loop);
-                }
-
-                static void create_light(Entity *e, nlohmann::json const& json)
-                {
-                    float emission = json["emission"];
-                    float intensity = .4f;
-
-                    if (json.contains("intensity"))
-                        intensity = json["intensity"];
-                    if (json.contains("texture_name")) {
-                        sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
-                        Sprite *sprite = new Sprite(lightTexture);
-
-                        e->addComponent<Light>(emission, sprite, intensity);
-                        return;
+                        view->setViewPort({ viewportPosX, viewportPosY,
+                                                viewportWidth, viewportHeight });
                     }
-                    e->addComponent<Light>(emission);
                 }
+
+                static void create_sound(Entity *e, nlohmann::json const& json);
+
+                static void create_music(Entity *e, nlohmann::json const& json);
+
+                static void create_light(Entity *e, nlohmann::json const& json);
+
+                static void create_script(Entity *e, const nlohmann::json& json)
+                {
+                    std::string path = json["path"];
+
+                    e->addComponent<Script>(path);
+                }
+
+                static void create_canvas(Entity *e, const nlohmann::json& json);
 
             public:
                 static void addComponentConstruction(std::string const& type, std::function<void(Entity *e, nlohmann::json const&)> const& constructor)
@@ -226,6 +223,7 @@ public:
             private:
                 static inline std::unordered_map<std::string,
                 std::function<void(Entity *e, nlohmann::json const&)>> _map = {
+                    { "Transform2D", create_transform },
                     { "Transform2D", create_transform },
                     { "BoxCollider", create_boxcollider },
                     { "Sprite" , create_sprite },
@@ -238,22 +236,24 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
+                    { "Script", create_script },
+                    { "Canvas", create_canvas }
                 };
         };
 
     private:
         static inline std::string readConfigFile(std::string const& filename)
         {
-            std::string file_content = "";
+            std::string file_content;
             try {
                 std::fstream file(filename);
-                std::string buff = "";
+                std::string buff;
 
                 if (file.is_open()) {
                     while (std::getline(file, buff))
                         file_content.append(buff);
                     file.close();
-                };
+                }
             } catch(std::exception &e) {
                 std::cerr << e.what() << std::endl;
                 throw e;
@@ -261,31 +261,7 @@ public:
             return file_content;
         }
 
-        void get_ressources(nlohmann::json const& ressources)
-        {
-            for (auto& ressource : ressources) {
-                std::string type = ressource["type"];
-                std::string path = ressource["path"];
-                std::string name = "";
-
-                if (ressource.contains("name"))
-                    name = ressource["name"];
-                if (type.find("Texture") != std::string::npos)
-                    R_ADD_RESSOURCE(sf::Texture, name, path);
-                else if (type.find("Tile") != std::string::npos) {
-                    float x = ressource["tile_info"][0];
-                    float y = ressource["tile_info"][1];
-                    float w = ressource["tile_info"][2];
-                    float h = ressource["tile_info"][3];
-                    R_ADD_TILE(name, path, x, y, w, h);
-                } else if (type.find("Sound") != std::string::npos)
-                    R_ADD_RESSOURCE(sf::SoundBuffer, name, path);
-                else if (type.find("Music") != std::string::npos)
-                    R_ADD_MUSIC(name, path);
-                else if (type.find("Entities") != std::string::npos)
-                    _entitiesPath = path;
-            }
-        }
+        void get_ressources(nlohmann::json const& ressources);
 
         void parse_entities(nlohmann::json const& entities)
         {
@@ -294,11 +270,28 @@ public:
                     loadEntityFromFilepath(_entitiesPath, entity);
                     continue;
                 }
-                Entity *e = new Entity();
+                auto *e = new Entity();
+                std::vector<nlohmann::json> scripts;
 
-                for (auto& component : entity["components"])
+
+                for (auto& component : entity["components"]) {
+                    auto type = component["type"];
+
+                    if (type.get<std::string>().find("Script") != std::string::npos) {
+                        scripts.push_back(component);
+                        continue;
+                    }
                     ComponentFactory::link_component(e, component);
+                }
+                for (auto& script : scripts) {
+                    ComponentFactory::link_component(e, script);
+                }
                 System::pushEntity(e);
+                System::forceUpdate(e);
+
+        #ifdef ENGINE_GUI
+                EngineHud::registerSavedEntity(e);
+        #endif
             }
         }
 
@@ -309,11 +302,26 @@ public:
 
                 if (e_name.find(name) == std::string::npos)
                     continue;
-                Entity *e = new Entity();
+                auto *e = new Entity();
+                std::vector<nlohmann::json> scripts;
 
-                for (auto& component : entity["components"])
+                for (auto& component : entity["components"]) {
+                    auto type = component["type"];
+
+                    if (type.get<std::string>().find("Script") != std::string::npos) {
+                        scripts.push_back(component);
+                        continue;
+                    }
                     ComponentFactory::link_component(e, component);
+                }
+                for (auto& script : scripts) {
+                    ComponentFactory::link_component(e, script);
+                }
                 System::pushEntity(e);
+                System::forceUpdate(e);
+            #ifdef ENGINE_GUI
+                EngineHud::registerSavedEntity(e);
+            #endif
                 return e;
             }
             return nullptr;
@@ -327,5 +335,7 @@ public:
         }
 
 private:
-    std::string _entitiesPath = "";
+    std::string _sceneFile;
+    std::string _entitiesPath;
+    nlohmann::json _sceneContent;
 };

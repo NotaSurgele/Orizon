@@ -13,38 +13,39 @@ public:
     bool emplaceEntity(Entity *e);
     bool contain(Entity *e);
     bool contain(const float& x, const float& y);
+    bool isInside(Entity *e);
     bool removeEntity(const int& x, const int& y);
     bool removeEntity(Entity *e);
     bool isRender();
     void render();
     void hide();
 
+    sf::Vector2f getPosition() const
+    {
+        return {_x, _y};
+    }
+
+    sf::Vector2f getSize() const
+    {
+        return {w, h};
+    }
+
+    sf::Vector2i getTileSize() const
+    {
+        return {tileWidth, tileHeight};
+    }
+
     sf::Vector2f emptySpot(int range);
     std::vector<Entity *> getAllEntities();
 
     std::vector<Entity *> checkAround(Entity *e, int range);
 
-    template<typename T>
-    std::vector<std::vector<T>> getLayerInfo()
-    {
-        std::vector<T> arr;
-
-        for (std::size_t i = 0; i < _layer.size(); i++) {
-            std::vector<T> lines;
-
-            for (std::size_t j = 0; j < _layer[i].size(); j++) {
-                lines.push_back(_layer[i][j] != nullptr);
-            }
-            arr.push_back(lines);
-            lines.clear();
-        }
-        return arr;
-    }
-
     std::vector<std::vector<Entity *>> getLayerInfo()
     {
         return _layer;
     }
+
+    std::vector<Entity *> getEntityInBounds(const sf::FloatRect& bounds);
 
     template <typename... Others>
     std::vector<Entity *> checkEdges(Entity *e, int range)
@@ -124,7 +125,7 @@ public:
         return arr;
     }
 
-    void destroy()
+    void clear()
     {
         for (auto cols : _layer) {
             for (auto cell : cols) {
@@ -136,11 +137,13 @@ public:
         _entities.clear();
     }
 
+    void destroy();
+
     void outputValues();
 
 public:
-    int w = 0;
-    int h = 0;
+    float w = 0;
+    float h = 0;
     int tileWidth = 0;
     int tileHeight = 0;
     float _x = 0;

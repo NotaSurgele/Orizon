@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <functional>
+#include <thread>
+#include <semaphore>
 
 // internal
 #include "Components/Velocity.hpp"
@@ -21,6 +23,8 @@ public:
 
     static void addEntity(Entity *entity);
     static void pushEntity(Entity *entity);
+    static void forceUpdate(Entity *e);
+    static void forceDestroy();
 
     static Entity *getEntity(std::size_t const& id)
     {
@@ -93,71 +97,96 @@ public:
         return 0;
     }
 
+    static void DestroyTileMap(TileMap *map)
+    {
+        _destroy_tilemap.push_back(map);
+    }
 
-#ifdef SYSTEM_CALLER
+    static void __registerScriptedEntity(Entity *e)
+    {
+        if (!e) return;
+        _scripted_entity.push_back(e);
+    }
+
+
+//#ifdef SYSTEM_CALLER
 
     static void __registerDynamicCollider(Entity *other)
     {
-        _dynamic_collider.push_back(other);
+        auto collider = other->getComponent<BoxCollider>();
+
+        if (!collider->___isSet) {
+            auto find = std::find(_dynamic_collider.begin(), _dynamic_collider.end(), other);
+            if (find != _dynamic_collider.end()) {
+                return;
+            }
+            _dynamic_collider.push_back(other);
+        }
     }
 
+    static void __removeDynamicCollider(Entity *e)
+    {
+        _dynamic_collider.erase(std::remove(_dynamic_collider.begin(),
+                                    _dynamic_collider.end(), e), _dynamic_collider.end());
+    }
+
+    static void __addCanvas(Entity *e)
+    {
+        _canvas.push_back(e);
+    }
+
+    static void __removeCanvas(Entity *e)
+    {
+        _canvas.erase(std::remove(_canvas.begin(), _canvas.end(), e), _canvas.end());
+    }
+
+    static void __addLightSource(Entity *e)
+    {
+        _lightSource.push_back(e);
+    }
+
+    static void __removeLightSource(Entity *e)
+    {
+        _lightSource.erase(std::remove(_lightSource.begin(), _lightSource.end(), e), _lightSource.end());
+    }
 
     static void ___insert_entity_at_location(Entity *e)
     {
-        auto layerValue = e->getComponent<Layer>()->value();
+        auto value = e->getComponent<Layer>()->value();
+        int oldPosition = -1;
 
-        // Remove entity from registry
-        //_registry.erase(std::remove(_registry.begin(), _registry.end(), e));
-
-        // check if layerValue exist in map
-        if (_orders_values.contains(layerValue)) {
-            auto& position = _orders_values[layerValue];
-            auto it = _registry.begin();
-
-            //_registry.insert(it + position, e);
-            int i = 0;
-            position += 1;
-            for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
-                 it != _orders_values.end(); it++) {
-                if (i > position) {
-                    it->second += 1;
+        // if the layer value already exist
+        if (_orders_values.contains(value)) {
+            for (auto& v : _orders_values) {
+                if (v.first >= value) {
+                    v.second++;
                 }
-                i++;
             }
             return;
         }
+        // Find the correct position to insert the Entity
+        for (auto& values : _orders_values) {
+            auto layer = values.first;
+            auto position = values.second;
 
-        int index = 0;
-        // find position
-        int incr = 0;
-        for (auto &pair : _orders_values) {
-            auto value = pair.first;
-            auto position = pair.second;
+            if (value < layer) {
+                _orders_values.insert(std::pair<std::size_t, int>(value, position));
 
-            if (value > layerValue) {
-                _orders_values.insert(std::pair<std::size_t, int>(layerValue, incr));
-                auto it = _registry.begin();
-
-                //_registry.insert(it + position, e);
-                // update position
-                int i = 0;
-                for (std::map<std::size_t, int>::iterator it = _orders_values.begin();
-                    it != _orders_values.end(); it++) {
-                    if (i > index) {
-                        it->second += 1;
+                // Update greater values
+                for (auto& v : _orders_values) {
+                    if (v.first > value) {
+                        v.second++;
                     }
-                    i++;
                 }
                 return;
             }
-            incr += position;
-            index++;
+            oldPosition = position;
         }
-        _orders_values.insert(std::pair<std::size_t, int>(layerValue, _registry_size));
-        //_registry.push_back(e);
+        // if value is greater than everything in the array then insert at the end
+        _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition + 1));
     }
 
-#endif // SYSTEM_CALLER
+//#endif // SYSTEM_CALLER
 
 
     static void addTileMap(TileMap *layer)
@@ -165,29 +194,9 @@ public:
         _layers.push_back(layer);
     }
 
-    bool isInView(Entity *e);
+    std::vector<Entity *> getRegistry() { return _forceUpdate; }
 
-    void init();
-
-    void merge();
-
-    void velocity_system(Entity *e);
-
-    void BoxSystem(Entity *e);
-
-    void collider_system(Entity *e);
-
-    void collision_resolution(BoxCollider *box, BoxCollider *collider);
-
-    void gravity_system(Entity *e);
-
-    void update_custom_component(Entity *e);
-
-    void camera_system(Entity *e);
-
-    void light_system(Entity *e);
-
-    void sprite_system(Entity *e, std::vector<IComponent *> componentCache);
+    std::vector<TileMap *> getTileMaps() {  return _layers; }
 
     void systems();
 
@@ -197,34 +206,68 @@ public:
 private:
     static void sort();
 
+    bool isInView(Entity *e);
+    bool isInView(TileMap *map);
+
+    void merge();
+
+    void velocitySystem(Entity *e);
+
+    void BoxSystem(Entity *e);
+
+    void colliderSystem(Entity *e);
+
+    void collisionResolution(BoxCollider *box, BoxCollider *collider);
+
+    void gravitySystem(Entity *e);
+
+    void updateCustomComponent(Entity *e);
+
+    void cameraSystem(Entity *e);
+
+    void lightSystem(Entity *e);
+
+    void spriteSystem(Entity *e, std::vector<IComponent *> componentCache);
+
+    void canvasSystem(Entity *e);
+
+    void scriptSystem(Entity *e);
+
     //Component
 
     // Light
-    void handle_sprite_lightning(Sprite *sprite, Light *light);
-    bool light_layer_raycast(Light *light, Entity *e);
+    void handleSpriteLightning(Sprite *sprite, Light *light);
+    bool lightLayerRaycast(Light *light, Entity *e);
+    void setSpriteShadow(Entity *e);
 
-    void clear_component_cache(const std::vector<IComponent *> &componentCache);
+
+    void clearComponentCache(const std::vector<IComponent *> &componentCache);
 
     // Collider
-    void handle_layer_collision(BoxCollider *box, int range, Entity *e);
-    void handle_dynamic_entity_collision(Entity *e, BoxCollider *box);
+    void handleLayerCollision(BoxCollider *box, int range, Entity *e);
+    void handleDynamicEntityCollision(Entity *e, BoxCollider *box);
 
     //Collision
-    bool resolution_calculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
+    bool resolutionCalculation(BoxCollider *box, BoxCollider *collider, Entity *entity);
 
     // Velocity
-    void handle_velocity_colliding_sides(BoxCollider *box, Transform2D *transform, Velocity<float> *velocity);
+    void handleVelocityCollidingSides(BoxCollider *box, Transform2D *transform, Velocity *velocity);
 
     // Destroy
-    void destroy_entity();
+    void destroyEntity();
 private:
-    std::vector<Entity *> _inView;
+
     static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::size_t _id = 0;
     static inline std::vector<Entity *> _registry;
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
     static inline std::vector<Entity *> _dynamic_collider;
+    static inline std::vector<Entity *> _scripted_entity;
+    static inline std::vector<Entity *> _canvas;
     static inline std::map<std::size_t, int> _orders_values;
     static inline std::vector<Entity *> _to_destroy;
+    static inline std::vector<TileMap *> _destroy_tilemap;
+    static inline std::vector<Entity *> _lightSource;
+    static inline std::vector<Entity *> _forceUpdate;
 };

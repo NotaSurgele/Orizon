@@ -22,8 +22,7 @@
                     "texture_name": "hobbit"
                 },
                 {
-                    "type": "Velocity",
-                    "value_type": "float"
+                    "type": "Velocity"
                 },
                 {
                     "type": "Animator",
@@ -38,7 +37,8 @@
                 },
                 {
                     "type": "View",
-                    "viewport": [0, 0, 800, 600],
+                    "view_bounds": [0, 0, 800, 600],
+                    "viewport": [0, 0, 0.35, 0.35],
                     "follow": true
                 },
                 {
@@ -46,22 +46,42 @@
                     "tag": "player"
                 },
                 {
-                    "type": "CharacterController",
-                    "speed": 200
-                },
-                {
                     "type": "Layer",
-                    "value": 10
+                    "value": 1
                 },
                 {
                     "type": "Sound",
-                    "sound_name": "toto",
+                    "sound_name": "titi",
                     "loop": true
                 },
                 {
                     "type": "Music",
                     "music_name": "tata",
                     "loop": true
+                },
+                {
+                    "type": "Script",
+                    "path": "./assets/Scripting/Player.lua"
+                },
+                {
+                    "type": "Canvas",
+                    "canvas_objects": [
+                        {
+                            "type": "Button",
+                            "position": [50, 50],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "content": "Coucou",
+                            "coord_type": 0
+                        },
+                        {
+                            "type": "Image",
+                            "position": [50, 50],
+                            "size": [1, 1],
+                            "texture_name": "grass",
+                            "coord_type": 0
+                        }
+                    ]
                 }
             ]
         },
@@ -70,7 +90,7 @@
             "components": [
                 {
                     "type": "Transform2D",
-                    "position": [0, 0],
+                    "position": [500, 0],
                     "rotation": 0,
                     "scale": [1, 1],
                     "size": [16, 16]
@@ -93,11 +113,11 @@
             ]
         },
         {
-            "name": "grass",
+            "name": "enemy_follower",
             "components": [
                 {
                     "type": "Transform2D",
-                    "position": [0, 0],
+                    "position": [500, 0],
                     "rotation": 0,
                     "scale": [1, 1],
                     "size": [16, 16]
@@ -115,7 +135,27 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 9
+                    "value": 1
+                }
+            ]
+        },
+        {
+            "name": "MapManager",
+            "components": [
+                {
+                    "type": "Transform2D",
+                    "position": [500, 0],
+                    "rotation": 0,
+                    "scale": [1, 1],
+                    "size": [1, 1]
+                },
+                {
+                    "type": "Script",
+                    "path": "./assets/Scripting/MapManager.lua"
+                },
+                {
+                    "type": "Tag",
+                    "tag": "MapManager"
                 }
             ]
         }
