@@ -117,12 +117,14 @@ void System::velocitySystem(Entity *e)
 {
     auto velocity = e->getComponent<Velocity>();
     auto transform = e->getComponent<Transform2D>();
-    auto box = e->getComponent<BoxCollider>();
+    auto boxes = e->getComponents<BoxCollider>();
 
     if (!velocity || !transform)
         return;
-    if (box != nullptr) {
-        handleVelocityCollidingSides(box, transform, velocity);
+    for (auto& box : boxes) {
+        if (box != nullptr) {
+            handleVelocityCollidingSides(box, transform, velocity);
+        }
     }
     transform->position.x += velocity->getX() * Time::deltaTime;
     transform->position.y += velocity->getY() * Time::deltaTime;
