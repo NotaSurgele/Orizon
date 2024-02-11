@@ -411,7 +411,7 @@ void EngineHud::ComponentTreeNodeFactory::buildTransformTreeNode(IComponent *c)
     //Handle rotation
     ImGui::Text("Rotation");
     ImGui::SameLine();
-    ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
+    ImGui::SliderFloat("##Rotation", &transform->rotation, -360, 360, "%2f");
 }
 
 void EngineHud::ComponentTreeNodeFactory::buildTagTreeNode(IComponent *c)
