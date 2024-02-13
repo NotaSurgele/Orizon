@@ -57,10 +57,7 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, sf::Textu
 
 bool Button::isHovered()
 {
-    auto mousePos = WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow()));
-    auto bounds = _sprite->getGlobalBounds();
-
-    return bounds.contains((float)mousePos.x, (float)mousePos.y);
+    return state == Button::States::HOVERED;
 }
 
 bool Button::isClicked()

@@ -3,44 +3,44 @@
         {
             "type": "Texture",
             "name": "hobbit",
-            "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+            "path": "./assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
         },
         {
             "type": "Texture",
             "name": "block",
-            "path": "../assets/generic-rpg-tile02.png"
+            "path": "./assets/generic-rpg-tile02.png"
         },
         {
             "type": "Tile",
             "name": "grass",
             "tile_info": [16, 16, 16, 16],
-            "path": "../assets/tileset.png"
+            "path": "./assets/tileset.png"
         },
         {
             "type": "Tile",
             "name": "test",
             "tile_info": [48, 48, 16, 16],
-            "path": "../assets/tileset.png"
+            "path": "./assets/tileset.png"
         },
         {
             "type": "Sound",
             "name": "titi",
-            "path": "../assets/slash.mp3"
+            "path": "./assets/slash.mp3"
         },
         {
             "type": "Music",
             "name": "tata",
-            "path": "../assets/Freedom.wav"
+            "path": "./assets/Freedom.wav"
         },
         {
             "type": "Texture",
             "name": "light_texture",
-            "path": "../assets/light_2.png"
+            "path": "./assets/light_2.png"
         },
         {
             "type": "Texture",
-            "name": "toto",
-            "path": "../assets/light.png"
+            "name": "background",
+            "path": "./assets/background.png"
         },
         {
             "type": "Entities",
@@ -55,5 +55,5 @@
             "type": "Script"
         }
     ],
-    "entities": ["MapManager", "player"]
+    "entities": ["MapManager", "player", "Camera", "Hud"]
 }

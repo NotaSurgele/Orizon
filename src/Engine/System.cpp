@@ -185,6 +185,8 @@ void System::canvasSystem(Entity *e)
 
     // Button system
     auto buttons = canvas->getButtons();
+    bool isHovered = false;
+    int index = 0;
 
     for (auto& it : buttons) {
         auto& b = it.first;
@@ -199,13 +201,28 @@ void System::canvasSystem(Entity *e)
             b->setPosition((offset.x + center.x) - ((float)size.x / 2),
                             (offset.y + center.y) - ((float)size.y / 2));
         } else b->setPosition(offset);
-        if (b->isHovered()) {
-            b->state = Button::HOVERED;
 
-            if (b->isClicked()) {
-                b->state = Button::PRESSED;
-                b->call();
-            }
+        if (!isHovered) {
+            auto mousePos = WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow()));
+            auto bounds = b->getSprite()->getGlobalBounds();
+            sf::RectangleShape shape;
+
+            shape.setSize({ bounds.width, bounds.height });
+            shape.setPosition({ bounds.left, bounds.top });
+            shape.setOutlineColor(sf::Color::Green);
+            shape.setFillColor(sf::Color::Transparent);
+            shape.setOutlineThickness(5);
+            DRAW(shape);
+
+            if (bounds.contains((float)mousePos.x, (float)mousePos.y)) {
+                isHovered = true;
+                b->state = Button::HOVERED;
+
+                if (b->isClicked()) {
+                    b->state = Button::PRESSED;
+                    b->call();
+                }
+            } else b->state = Button::NOTHING;
         } else b->state = Button::NOTHING;
         DRAW(b);
 
@@ -215,6 +232,7 @@ void System::canvasSystem(Entity *e)
             text->setPosition(spriteBounds.left, spriteBounds.top);
             DRAW(*text);
         }
+        ++index;
     }
 
     auto images = canvas->getImages();
@@ -543,6 +561,7 @@ void System::cameraSystem(Entity *e) {
 
     if (!view)
         return;
+    SET_VIEW(view);
     if (!view->isFollowing())
         return;
     if (!transform) {
@@ -550,7 +569,6 @@ void System::cameraSystem(Entity *e) {
         transform = Transform2D::zero();
     }
     view->setCenter(transform->position);
-    SET_VIEW(view);
     if (destroy) {
         transform->destroy();
         destroy = false;

@@ -20,7 +20,7 @@ public:
         _size.x = w;
         _size.y = h;
 #ifdef ENGINE_GUI
-            this->setSize(w * .5f, h * .5f);
+            this->setSize(w, h);
 /*            this->setViewport(sf::FloatRect(EDITOR_VIEW_SIZE_RATIO, 0,
                                            EDITOR_VIEW_SIZE_RATIO, EDITOR_VIEW_SIZE_RATIO));*/
 #else
@@ -32,12 +32,12 @@ public:
     void setViewPort(const sf::FloatRect& viewport)
     {
 #ifdef ENGINE_GUI
-        auto fixedViewport = sf::FloatRect { viewport.left * EDITOR_VIEW_SIZE_RATIO,
-                                             viewport.top * EDITOR_VIEW_SIZE_RATIO,
+        auto fixedViewport = sf::FloatRect { viewport.left,
+                                             viewport.top,
                                              viewport.width,
                                              viewport.height  };
-        if (fixedViewport.left <= 0)
-            fixedViewport.left = EDITOR_VIEW_SIZE_RATIO;
+        /*if (fixedViewport.left <= 0)
+            fixedViewport.left = EDITOR_VIEW_SIZE_RATIO;*/
         return sf::View::setViewport(fixedViewport);
 #else
         sf::View::setViewport(viewport);
