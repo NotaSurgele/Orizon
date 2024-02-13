@@ -1087,7 +1087,7 @@ void EngineHud::saveScene()
                 }
             }
             std::string content = entitiesContentJson.dump(4);
-            Utils::writeFile(entitiesPath + std::to_string(1), content);
+            Utils::writeFile(entitiesPath, content);
         } catch (std::exception& msg) {
             std::cerr << msg.what() << std::endl;
         }

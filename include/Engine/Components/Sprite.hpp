@@ -34,6 +34,16 @@ class Sprite : public IComponent, public Drawable {
             _textureName = name;
             return *this;
         }
+        Sprite& rotate(const float& angle)
+        {
+            _sprite.rotate(angle);
+            return *this;
+        }
+
+        float getRotation()
+        {
+            return _sprite.getRotation();
+        }
 
         sf::FloatRect getGlobalBounds()
         {

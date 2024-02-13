@@ -2,6 +2,10 @@
 #include <imgui-SFML.h>
 #include "Engine/Core.hpp"
 
+#ifdef ENGINE_GUI
+    static std::atomic<bool> show = true;
+#endif
+
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _window(name, width, height),
                                                 _input(),
@@ -154,13 +158,16 @@ void Core::updateGUI()
     _guiThread = std::thread([&] () {
         auto currentScene = _sceneManager.getScene();
 
-        _gui.setTheme();
-        _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
-        _gui.currentSceneContent(currentScene->getSceneContent());
-        _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
-        _gui.entityInformation();
-        _gui.consoleWindow();
-        _gui.resourceManager();
+        if (Input::isKeyDown("F1")) show = !show;
+        if (show) {
+            _gui.setTheme();
+            _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
+            _gui.currentSceneContent(currentScene->getSceneContent());
+            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+            _gui.entityInformation();
+            _gui.consoleWindow();
+            _gui.resourceManager();
+        }
         _gui.saveScene();
     });
     if (_guiThread.joinable()) _guiThread.join();

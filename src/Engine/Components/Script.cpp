@@ -359,10 +359,13 @@ void Script::registerCanvasTypes()
                 return button->setPosition(position);
             }
         ),
+        "isHovered", &Button::isHovered,
+        "isClicked", &Button::isClicked,
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
         "getTextureSize", &Button::getTextureSize,
-        "coordType", &Button::coordType
+        "coordType", &Button::coordType,
+        "text", &Button::text
     );
 }
 
@@ -525,7 +528,10 @@ void Script::registerSpriteComponent()
         "getTexture", &Sprite::getTexture,
         "getScale", &Sprite::getScale,
         "getColor", &Sprite::getColor,
+        "getRotation", &Sprite::getRotation,
         "getSprite", &Sprite::getSprite,
+        "getGlobalBounds", &Sprite::getGlobalBounds,
+        "rotate", &Sprite::rotate,
         "destroy", &Sprite::destroy
     );
 }

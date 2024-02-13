@@ -248,28 +248,6 @@ private:
 
     template <typename T>
     void remove(T *obj);
-/*    template <>
-    void remove<Text>(Text *text)
-    {
-        auto find = _text.find(text);
-        _text.erase(find);
-    }
-
-    template <>
-    void remove<Button>(Button *button)
-    {
-        auto find = _button.find(button);
-
-        _button.erase(find);
-    }
-
-    template <>
-    void remove<Image>(Image *img)
-    {
-        auto find = _image.find(img);
-
-        _image.erase(find);
-    }*/
 
 private:
     sf::Font _font;
