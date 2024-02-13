@@ -62,5 +62,5 @@ bool Button::isHovered()
 
 bool Button::isClicked()
 {
-    return isHovered() && Input::isButtonDown("Left");
+    return isHovered() && Input::isButtonReleased("Left");
 }
