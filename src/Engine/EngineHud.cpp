@@ -860,7 +860,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
     if (ImGui::TreeNode("Buttons")) {
         for (auto& it : buttons) {
             auto button = it.first;
-            auto& offset = it.second;
+            auto& position = it.second;
+            auto& offset = button->getOffset();
             auto sprite = button->getSprite();
             std::string label = "##button" + std::to_string(id);
             CanvasObject::CoordType selectedOption = button->coordType;
@@ -869,10 +870,10 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::Text("position");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat((label + "positionX").data(), &offset.x);
+            ImGui::InputFloat((label + "positionX").data(), &position.x);
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat((label + "positionY").data(), &offset.y);
+            ImGui::InputFloat((label + "positionY").data(), &position.y);
             ImGui::Text("Coordinate type");
             ImGui::SameLine();
 
@@ -880,6 +881,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             auto pos = ImGui::GetCursorPosX();
             ImGui::SetCursorPosX(pos + 150);
+            button->setOffset(offset);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Button>(button);
                 buttons.erase(button);
@@ -893,7 +895,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
     if (ImGui::TreeNode("Texts")) {
         for (auto &it : texts) {
             auto& text = it.first;
-            auto& offset = it.second;
+            auto& position = it.second;
+            auto& offset = text->getOffset();
             std::string content = text->getString();
             std::string label = "##texts" + std::to_string(id);
             auto size = text->getCharacterSize();
@@ -902,16 +905,17 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::Separator();
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat((label + "x").data(), &offset.x);
+            ImGui::InputFloat((label + "x").data(), &position.x);
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat((label + "y").data(), &offset.y);
+            ImGui::InputFloat((label + "y").data(), &position.y);
             ImGui::SetNextItemWidth(300);
             ImGui::InputText((label + "Content").data(), content.data(), 4096);
             ImGui::SetNextItemWidth(100);
             ImGui::InputInt((label + "Character size").data(), (int *)(&size));
             canvasRadioButton(selectedOption, text);
 
+            text->setOffset(offset);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Text>(text);
                 texts.erase(text);
@@ -928,17 +932,20 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         for (auto& it : images) {
             std::string label = "##toto" + std::to_string(id);
             auto& image = it.first;
-            auto& offset = it.second;
+            auto& position = it.second;
+            auto& offset = image->getOffset();
             auto sprite = image->getImage();
             CanvasObject::CoordType selectedOption = image->coordType;
 
             ImGui::Separator();
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
-            ImGui::InputFloat((label + "x").data(), &offset.x);
+            ImGui::InputFloat((label + "x").data(), &position.x);
             ImGui::SameLine();
-            ImGui::InputFloat((label + "y").data(), &offset.y);
+            ImGui::InputFloat((label + "y").data(), &position.y);
             canvasRadioButton(selectedOption, image);
+
+            image->setOffset(offset);
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Image>(image);
