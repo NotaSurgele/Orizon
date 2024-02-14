@@ -31,12 +31,12 @@ class RenderWindow {
         void setActive(bool active);
 
         View *getView();
-        sf::RenderWindow& getSFMLRenderWindow();
+        sf::RenderWindow *getSFMLRenderWindow();
         // void setView(const &)
 
     private:
         View *_view = nullptr;
-        sf::RenderWindow _window;
+        sf::RenderWindow *_window;
         std::size_t _width;
         std::size_t _height;
 };

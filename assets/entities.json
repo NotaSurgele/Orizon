@@ -5,7 +5,7 @@
             "components": [
                 {
                     "type": "Transform2D",
-                    "position": [500, 0],
+                    "position": [500, 500],
                     "rotation": 0,
                     "scale": [1, 1],
                     "size": [16, 16]
@@ -36,12 +36,6 @@
                     ]
                 },
                 {
-                    "type": "View",
-                    "view_bounds": [0, 0, 800, 600],
-                    "viewport": [0, 0, 0.35, 0.35],
-                    "follow": true
-                },
-                {
                     "type": "Tag",
                     "tag": "player"
                 },
@@ -62,7 +56,34 @@
                 {
                     "type": "Script",
                     "path": "./assets/Scripting/Player.lua"
+                }
+            ]
+        },
+        {
+            "name": "Camera",
+            "components": [
+                {
+                    "type": "Transform2D",
+                    "position": [500, 500],
+                    "rotation": 0,
+                    "scale": [1, 1],
+                    "size": [1, 1]
                 },
+                {
+                    "type": "View",
+                    "view_bounds": [0, 0, 800, 600],
+                    "viewport": [0, 0, 0.35, 0.35],
+                    "follow": true
+                },
+                {
+                    "type": "Tag",
+                    "tag": "Camera"
+                }
+            ]
+        },
+        {
+            "name": "Hud",
+            "components": [
                 {
                     "type": "Canvas",
                     "canvas_objects": [
@@ -82,60 +103,10 @@
                             "coord_type": 0
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "name": "block",
-            "components": [
-                {
-                    "type": "Transform2D",
-                    "position": [500, 0],
-                    "rotation": 0,
-                    "scale": [1, 1],
-                    "size": [16, 16]
                 },
                 {
-                    "type": "BoxCollider",
-                    "position": [0, 0],
-                    "size": [16, 16],
-                    "range": 1,
-                    "collision_type": "Static"
-                },
-                {
-                    "type": "Sprite",
-                    "texture_name": "block"
-                },
-                {
-                    "type": "Layer",
-                    "value": 0
-                }
-            ]
-        },
-        {
-            "name": "enemy_follower",
-            "components": [
-                {
-                    "type": "Transform2D",
-                    "position": [500, 0],
-                    "rotation": 0,
-                    "scale": [1, 1],
-                    "size": [16, 16]
-                },
-                {
-                    "type": "BoxCollider",
-                    "position": [0, 0],
-                    "size": [16, 16],
-                    "range": 0,
-                    "collision_type": "Dynamic"
-                },
-                {
-                    "type": "Sprite",
-                    "texture_name": "grass"
-                },
-                {
-                    "type": "Layer",
-                    "value": 1
+                    "type": "Tag",
+                    "tag": "Hud"
                 }
             ]
         },
@@ -144,7 +115,7 @@
             "components": [
                 {
                     "type": "Transform2D",
-                    "position": [500, 0],
+                    "position": [0, 0],
                     "rotation": 0,
                     "scale": [1, 1],
                     "size": [1, 1]
@@ -156,6 +127,10 @@
                 {
                     "type": "Tag",
                     "tag": "MapManager"
+                },
+                {
+                    "type": "Sprite",
+                    "texture_name": "background"
                 }
             ]
         }

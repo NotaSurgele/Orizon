@@ -171,41 +171,54 @@ void System::canvasSystem(Entity *e)
     // Text system
     for (auto& it : texts) {
         auto& t = it.first;
-        auto& offset = it.second;
+        auto& position = it.second;
+        auto& offset = t->getOffset();
 
+        t->setBasePosition(position);
         if (t->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             sf::FloatRect textBounds = t->getLocalBounds();
 
-            t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
-        } else t->setPosition(offset);
+            t->setPosition(((position.x + offset.x) + center.x) - (textBounds.width / 2),
+                           ((position.y + offset.y) + center.y) - (textBounds.height / 2));
+        } else t->setPosition(position.x + offset.x, position.y + offset.y);
         DRAW(*t);
     }
 
     // Button system
     auto buttons = canvas->getButtons();
+    bool isHovered = false;
 
     for (auto& it : buttons) {
         auto& b = it.first;
-        auto& offset = it.second;
+        auto& position = it.second;
+        auto& offset = b->getOffset();
         auto& text = b->text;
 
+        b->setBasePosition(position);
         if (b->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = b->getTextureSize();
 
-            b->setPosition((offset.x + center.x) - ((float)size.x / 2),
-                            (offset.y + center.y) - ((float)size.y / 2));
-        } else b->setPosition(offset);
-        if (b->isHovered()) {
-            b->state = Button::HOVERED;
+            b->setPosition(((position.x + offset.x) + center.x) - ((float)size.x / 2),
+                            ((position.y + offset.y) + center.y) - ((float)size.y / 2));
+        } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
-            if (b->isClicked()) {
-                b->state = Button::PRESSED;
-                b->call();
-            }
+        if (!isHovered) {
+            auto mousePos = getLocalMousePosition();
+            auto bounds = b->getSprite()->getGlobalBounds();
+
+            if (bounds.contains((float)mousePos.x, (float)mousePos.y)) {
+                isHovered = true;
+                b->state = Button::HOVERED;
+
+                if (b->isClicked()) {
+                    b->state = Button::PRESSED;
+                    b->call();
+                }
+            } else b->state = Button::NOTHING;
         } else b->state = Button::NOTHING;
         DRAW(b);
 
@@ -222,16 +235,18 @@ void System::canvasSystem(Entity *e)
     // Images system
     for (auto& it : images) {
         auto& i = it.first;
-        auto& offset = it.second;
+        auto& position = it.second;
+        auto& offset = i->getOffset();
 
+        i->setBasePosition(position);
         if (i->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = i->getTextureSize();
 
-            i->setPosition((offset.x + center.x) - ((float)size.x / 2),
-                           (offset.y + center.y) - ((float)size.y / 2));
-        } else i->setPosition(offset);
+            i->setPosition(((position.x + offset.x) + center.x) - ((float)size.x / 2),
+                           ((position.y + offset.y) + center.y) - ((float)size.y / 2));
+        } else i->setPosition(position.x + offset.x, position.y + offset.y);
         DRAW(i);
     }
 }
@@ -253,6 +268,17 @@ void System::clearComponentCache(const std::vector<IComponent *> &componentCache
         delete it;
         it = nullptr;
     }
+}
+
+sf::Vector2f System::getLocalMousePosition()
+{
+    return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+}
+
+sf::Vector2f System::getGlobalMousePosition()
+{
+    auto pos = sf::Mouse::getPosition();
+    return {(float)pos.x, (float)pos.y};
 }
 
 void System::systems()
@@ -543,6 +569,7 @@ void System::cameraSystem(Entity *e) {
 
     if (!view)
         return;
+    SET_VIEW(view);
     if (!view->isFollowing())
         return;
     if (!transform) {
@@ -550,7 +577,6 @@ void System::cameraSystem(Entity *e) {
         transform = Transform2D::zero();
     }
     view->setCenter(transform->position);
-    SET_VIEW(view);
     if (destroy) {
         transform->destroy();
         destroy = false;
