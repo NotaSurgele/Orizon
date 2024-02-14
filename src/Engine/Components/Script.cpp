@@ -211,7 +211,9 @@ void Script::registerSystemType()
             [] (const std::size_t& id) {
                 return System::getEntity(id);
             }
-        )
+        ),
+        "getLocalMousePosition", &System::getLocalMousePosition,
+        "getGlobalMousePosition", &System::getGlobalMousePosition
     );
     (*_state)["system"] = System();
 }
@@ -300,12 +302,32 @@ void Script::registerCanvasTypes()
                      "LOCAL", CanvasObject::CoordType::LOCAL);
     _state->new_usertype<CanvasObject>(
         "CanvasObject",
-        "coordType", &CanvasObject::coordType
+        "coordType", &CanvasObject::coordType,
+        "getOffset", &CanvasObject::getOffset,
+        "setOffset", sol::overload(
+            [] (CanvasObject *obj, const sf::Vector2f& offset) {
+                return obj->setOffset(offset);
+            },
+            [] (CanvasObject *obj, const float& x, const float& y) {
+                return obj->setOffset(x, y);
+            }
+        ),
+        "getBasePosition", &CanvasObject::getBasePosition
     );
 
     _state->new_usertype<Text>(
-        "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
-            "coordType", &Text::coordType
+    "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
+        "coordType", &Text::coordType,
+        "getOffset", &Text::getOffset,
+        "setOffset", sol::overload(
+            [] (Text *obj, const sf::Vector2f& offset) {
+                return obj->setOffset(offset);
+            },
+            [] (Text *obj, const float& x, const float& y) {
+                return obj->setOffset(x, y);
+            }
+        ),
+        "getBasePosition", &Text::getBasePosition
     );
 
     _state->new_usertype<Image>(
@@ -323,6 +345,16 @@ void Script::registerCanvasTypes()
         "getTextureSize", &Image::getTextureSize,
         "setSize", &Image::setSize,
         "getImage", &Image::getImage,
+        "getOffset", &Image::getOffset,
+        "setOffset", sol::overload(
+            [] (Image *obj, const sf::Vector2f& offset) {
+                return obj->setOffset(offset);
+            },
+            [] (Image *obj, const float& x, const float& y) {
+                return obj->setOffset(x, y);
+            }
+        ),
+        "getBasePosition", &Image::getBasePosition,
         "coordType", &Image::coordType
     );
 
@@ -365,7 +397,17 @@ void Script::registerCanvasTypes()
         "getSize", &Button::getSize,
         "getTextureSize", &Button::getTextureSize,
         "coordType", &Button::coordType,
-        "text", &Button::text
+        "getOffset", &Button::getOffset,
+        "setOffset", sol::overload(
+            [] (Button *obj, const sf::Vector2f& offset) {
+                return obj->setOffset(offset);
+            },
+            [] (Button *obj, const float& x, const float& y) {
+                return obj->setOffset(x, y);
+            }
+        ),
+        "text", &Button::text,
+        "getBasePosition", &Button::getBasePosition
     );
 }
 

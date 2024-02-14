@@ -108,7 +108,6 @@ public:
         _scripted_entity.push_back(e);
     }
 
-
 //#ifdef SYSTEM_CALLER
 
     static void __registerDynamicCollider(Entity *other)
@@ -193,6 +192,9 @@ public:
     {
         _layers.push_back(layer);
     }
+
+    static sf::Vector2f getLocalMousePosition();
+    static sf::Vector2f getGlobalMousePosition();
 
     std::vector<Entity *> getRegistry() { return _forceUpdate; }
 

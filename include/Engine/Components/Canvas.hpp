@@ -10,6 +10,38 @@ public:
     CanvasObject() = default;
     ~CanvasObject() = default;
 
+    void setOffset(const float& x, const float& y)
+    {
+        _offset.x = x;
+        _offset.y = y;
+    }
+
+    void setOffset(const sf::Vector2f& offset)
+    {
+        _offset = offset;
+    }
+
+    sf::Vector2f& getOffset()
+    {
+        return _offset;
+    }
+
+    void setBasePosition(const float& x, const float& y)
+    {
+        _basePosition.x = x;
+        _basePosition.y = y;
+    }
+
+    void setBasePosition(const sf::Vector2f& base)
+    {
+        _basePosition = base;
+    }
+
+    sf::Vector2f& getBasePosition()
+    {
+        return _basePosition;
+    }
+
     enum CoordType {
         LOCAL,
         WORLD
@@ -17,6 +49,10 @@ public:
 
 public:
     CoordType coordType = LOCAL;
+
+protected:
+    sf::Vector2f _offset = {0, 0};
+    sf::Vector2f _basePosition = {0, 0};
 };
 
 class Text : public sf::Text, public CanvasObject {
