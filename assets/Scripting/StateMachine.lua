@@ -24,4 +24,8 @@ function StateMachine:play(name, ...)
     end
 end
 
+function StateMachine:getCurrentState()
+    return self.currentState
+end
+
 return StateMachine
