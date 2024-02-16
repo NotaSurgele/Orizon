@@ -13,12 +13,12 @@ function StateMachine:insert(name, callback)
     self.states[name] = callback
 end
 
-function StateMachine:play(name)
+function StateMachine:play(name, ...)
     local state = self.states[name]
 
     if state then
         self.currentState = name
-        state()
+        state(...)
     else
         print("State", name, "Does not exist !")
     end
