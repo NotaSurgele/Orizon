@@ -1,26 +1,41 @@
-transform = nil
-animator = nil
-collider = nil
+local Card = require 'assets.Scripting.Card'
+local Utils = require 'assets.Scripting.Utils'
 
--- Callback function to handle collisions
-function handleCollisionCallback(otherCollider)
-    otherCollider:entity():destroy()
-end
+-- Camera
+local hud = nil
+local camera = nil
+local cameraCenter = nil
 
-function displayTable(tbl)
-    for key, value in pairs(tbl) do
-        print(key, value)
-    end
-end
+-- Cards
+cards = {}
+
+local save = {}
 
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
-    collider = _self:getComponentBoxCollider()
-    --displayTable(table)
-    --printHello()
-    collider:onCollision(handleCollisionCallback)
-    print(animator, transform, collider)
+    hud = System.getEntity("Hud"):getComponentCanvas()
+    camera = System.getEntity("Camera"):getComponentView()
+
+    cards_init()
+    print(animator, transform)
+end
+
+function cards_init()
+    cameraCenter = camera:getCenter()
+    position = Vector2f.new(-200, 300)
+    scale = Vector2f.new(1, 1)
+    angle = -5
+
+    for i=1, 4 do
+        card = Card.new(hud, position, scale, camera)
+
+        card:rotate(angle)
+        card:setCallback(function() print(hud) end)
+        table.insert(cards, card)
+        position.x = position.x + 120
+        angle = angle + 4
+    end
 end
 
 function handleAnimation()
@@ -29,20 +44,14 @@ end
 
 function Update()
     handleAnimation()
-    if (Input.isActionKeyPressed("MoveUp")) then
-        transform.position.y = transform.position.y - (200 * deltaTime);
-    end
 
-    if (Input.isActionKeyPressed("MoveDown")) then
-        transform.position.y = transform.position.y + (200 * deltaTime);
+    for v, card in ipairs(cards) do
+        card:update()
     end
+end
 
-    if (Input.isActionKeyPressed("MoveLeft")) then
-        transform.position.x = transform.position.x - (200 * deltaTime);
+function Destroy()
+    for _, card in ipairs(cards) do
+        hud:removeObject(card)
     end
-
-    if (Input.isActionKeyPressed("MoveRight")) then
-        transform.position.x = transform.position.x + (200 * deltaTime);
-    end
---    print(test2.position.x, test.position.y)
 end
