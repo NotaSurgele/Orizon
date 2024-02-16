@@ -1,0 +1,1 @@
+xcopy .\assets .\cmake-build-debug\assets /E/H/C/I/Y

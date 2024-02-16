@@ -4,6 +4,9 @@ local tileMap = {}
 local json = require "json"
 local mapJson = nil
 
+local saveEntity = {}
+local saveMap = {}
+
 local tileSize = {
     x=0,
     y=0
@@ -49,7 +52,7 @@ function tiledMap.loadTileSet()
         local id = 1
         for y=0, imgHeight - 1, tileSize.y do
             for x=0, imgWidth - 1, tileSize.x do
-                ResourceManager:R_ADD_TILE(tostring(id), imagePath, x, y, tileSize.x, tileSize.y)
+                ResourceManager:addTile(tostring(id), imagePath, x, y, tileSize.x, tileSize.y)
                 id = id + 1
             end
         end
@@ -60,8 +63,7 @@ end
 function tiledMap.loadTileMap()
     local layers = mapJson["layers"]
 
-    draw = 10
-
+    layerIndex = 0
     for x, layer in pairs(layers) do
         height = layer["height"]
         width = layer["width"]
@@ -71,7 +73,6 @@ function tiledMap.loadTileMap()
 
         tilemap = TileMap.new(x, y, width * tileSize.x,
                 height * tileSize.y, tileSize.x, tileSize.y)
-        print("tilemap addre", tilemap)
         index = 0
         posX = 0.0
         posY = 0.0
@@ -82,25 +83,28 @@ function tiledMap.loadTileMap()
             if index >= height then
                 index = 0
                 posY = 0
-                posX = posX + tileSize.x
+                posX = posX + tileSize.y
             end
-
             if cellId > 0 then
-                texture = ResourceManager:R_GET_RESSOURCE(tostring(cellId))
+                texture = ResourceManager:getResource(tostring(cellId))
                 e = Entity.new()
 
-                e:getComponentLayer():set(draw)
+                e:getComponentLayer():set(layerIndex)
                 transform = e:addComponentTransform2D(posY, posX)
                 e:addComponentSprite(texture)
-                e:addComponentBoxCollider(transform.position,
-                        Vector2f.new(tileSize.x, tileSize.y)):setType(BoxCollider.STATIC)
+                if layerIndex >= 1 then
+                    e:addComponentBoxCollider(transform.position,
+                            Vector2f.new(tileSize.x, tileSize.y)):setType(BoxColliderType.DYNAMIC)
+                end
                 tilemap:emplaceEntity(e)
+                table.insert(saveEntity, e)
             end
-            poxY = posY + tileSize.x
+            posY = posY + tileSize.x
             index = index + 1
         end
+        table.insert(saveMap, tilemap)
         tilemap:render()
-        draw = draw + 2
+        layerIndex = layerIndex + 3
     end
 end
 
@@ -116,9 +120,22 @@ function tiledMap.render()
     end
 end
 
+function tiledMap.drawBox()
+    for k, e in pairs(saveEntity) do
+        collider = e:getComponentBoxCollider()
+        if collider ~= nil then
+            Core:draw(collider)
+        end
+    end
+end
+
 function tiledMap.destroy()
-    for k,v in pairs(tileMap) do
-        tileMap[k]:destroy()
+    for k,v in pairs(saveMap) do
+        v:destroy()
+    end
+
+    for k,v in pairs(saveEntity) do
+        v:destroy()
     end
 end
 
