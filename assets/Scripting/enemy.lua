@@ -27,8 +27,6 @@ function Update()
         elseif dirY >= 0 then
             playerLayer:set(selfLayerValue + 1)
         end
-
-
     end
 
 end

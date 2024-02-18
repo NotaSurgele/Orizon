@@ -391,6 +391,14 @@ void Script::registerCanvasTypes()
                 return button->setPosition(position);
             }
         ),
+        "setScale", sol::overload(
+            [](Button *button, const sf::Vector2f& size) {
+                return button->setScale(size);
+            },
+            [](Button *button, const float& x, const float& y) {
+                return button->setScale(x, y);
+            }
+        ),
         "isHovered", &Button::isHovered,
         "isClicked", &Button::isClicked,
         "getPosition", &Button::getPosition,
@@ -654,9 +662,21 @@ void Script::registerCanvasComponent()
 {
     _state->new_usertype<Canvas>(
         "Canvas", sol::constructors<Canvas(Entity *)>(),
-        "addText", &Canvas::addText,
-        "addButton", &Canvas::addButton,
-        "addImage", &Canvas::addImage,
+        "addText", sol::overload(
+            [] (Canvas *canvas, const std::string& content, const sf::Vector2f& pos, const std::size_t& size) {
+                return canvas->addText(content, pos, size, false);
+            }
+        ),
+        "addButton", sol::overload(
+            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, const sf::Texture& text) {
+                return canvas->addButton(pos, scale, text, false);
+            }
+        ),
+        "addImage", sol::overload(
+            [] (Canvas *canvas, sf::Texture texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
+                return canvas->addImage(texture, position, scale, false);
+            }
+        ),
         "removeObject", sol::overload(
                 &Canvas::removeObject<Text *>,
                 &Canvas::removeObject<Button *>,

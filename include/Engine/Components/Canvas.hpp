@@ -32,6 +32,16 @@ public:
         _basePosition.y = y;
     }
 
+    void setSave(const bool& save)
+    {
+        _save = save;
+    }
+
+    bool shouldSave()
+    {
+        return _save;
+    }
+
     void setBasePosition(const sf::Vector2f& base)
     {
         _basePosition = base;
@@ -51,6 +61,7 @@ public:
     CoordType coordType = LOCAL;
 
 protected:
+    bool _save = true;
     sf::Vector2f _offset = {0, 0};
     sf::Vector2f _basePosition = {0, 0};
 };
@@ -159,13 +170,13 @@ public:
         text = new Text(content, _font, fontSize);
 
         text->setFillColor(color);
-        auto spriteBounds = _sprite->getGlobalBounds();
+/*        auto spriteBounds = _sprite->getGlobalBounds();
         auto textBounds = text->getGlobalBounds();
 
         float scaleX = (textBounds.width + padding) / spriteBounds.width;
         float scaleY = (textBounds.height + padding) / spriteBounds.height;
 
-        _sprite->setScale(scaleX, scaleY);
+        _sprite->setScale(scaleX, scaleY);*/
     }
 
     void call()
@@ -175,6 +186,19 @@ public:
         } catch (std::exception& err) {
             std::cerr << "[CANVAS] Callback method is not defined " << err.what() << std::endl;
         }
+    }
+
+    void setScale(const float& x, const float& y)
+    {
+        _size.x = x;
+        _size.y = y;
+        _sprite->setScale(x,y);
+    }
+
+    void setScale(const sf::Vector2f& size)
+    {
+        _size = size;
+        _sprite->setScale(_size.x, _size.y);
     }
 
     void setPosition(const float& x, const float& y)
@@ -242,16 +266,17 @@ public:
     explicit Canvas(Entity *e);
     ~Canvas() = default;
 
-    Text *addText(const std::string& content, const sf::Vector2f& pos, const std::size_t& size);
+    Text *addText(const std::string& content, const sf::Vector2f& pos, const std::size_t& size, bool save=true);
 
-    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture);
+    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture, bool save=true);
 
 
     Image *addImage(sf::Texture texture, const sf::Vector2f& position,
-                     const sf::Vector2f& scale)
+                     const sf::Vector2f& scale, bool save=true)
     {
         auto img = new Image(texture, position, scale);
 
+        img->setSave(save);
         _image.emplace(img, position);
         return img;
     }

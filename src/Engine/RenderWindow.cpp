@@ -12,9 +12,10 @@ RenderWindow::RenderWindow(std::string const& windowName,
 
 {
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 8.0;
+    settings.antialiasingLevel = 8;
 
-    _window = new sf::RenderWindow(sf::VideoMode(width, height), windowName, sf::Style::Close, settings);
+    _window = new sf::RenderWindow(sf::VideoMode(width, height), windowName,
+                                   sf::Style::Default, settings);
     _window->setFramerateLimit(144);
 }
 
