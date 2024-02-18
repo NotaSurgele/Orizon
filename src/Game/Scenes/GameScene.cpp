@@ -24,7 +24,7 @@ void GameScene::create()
     sol::usertype<game> gameType = lua.new_usertype<game>("game",sol::constructors<game(int)>());
     gameType.set("isOdd", &game::isOdd);
     script();*/
-    loadSceneFromFile("./assets/game.json");
+    loadSceneFromFile("../assets/game.json");
     player = getEntity("player");
 /*    toto = new Entity();
     System::pushEntity(toto);*/

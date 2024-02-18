@@ -163,7 +163,8 @@ void Core::updateGUI()
             _gui.setTheme();
             _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
             _gui.currentSceneContent(currentScene->getSceneContent());
-            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+            _gui.entityWindow(_system_handler.
+            getRegistry(), _system_handler.getTileMaps());
             _gui.entityInformation();
             _gui.consoleWindow();
             _gui.resourceManager();

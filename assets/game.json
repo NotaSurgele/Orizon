@@ -1,69 +1,71 @@
 {
+    "entities": [
+        "MapManager",
+        "player",
+        "Camera",
+        "Hud"
+    ],
     "resources": [
         {
-            "type": "Texture",
-            "name": "hobbit",
-            "path": "./assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
-        },
-        {
-            "type": "Texture",
-            "name": "block",
-            "path": "./assets/generic-rpg-tile02.png"
-        },
-        {
-            "type": "Tile",
-            "name": "grass",
-            "tile_info": [16, 16, 16, 16],
-            "path": "./assets/tileset.png"
-        },
-        {
-            "type": "Tile",
-            "name": "test",
-            "tile_info": [48, 48, 16, 16],
-            "path": "./assets/tileset.png"
-        },
-        {
-            "type": "Sound",
-            "name": "titi",
-            "path": "./assets/slash.mp3"
-        },
-        {
-            "type": "Texture",
-            "name": "card",
-            "path": "./assets/card_template.png"
-        },
-        {
-            "type": "Music",
-            "name": "tata",
-            "path": "./assets/Freedom.wav"
-        },
-        {
-            "type": "Texture",
-            "name": "light_texture",
-            "path": "./assets/light_2.png"
-        },
-        {
-            "type": "Texture",
-            "name": "card",
-            "path": "./assets/card_template.png"
-        },
-        {
-            "type": "Texture",
             "name": "background",
-            "path": "./assets/background.png"
+            "path": "./assets/background.png",
+            "type": "Texture"
         },
         {
-            "type": "Entities",
-            "path": "./assets/entities.json"
+            "name": "block",
+            "path": "./assets/generic-rpg-tile02.png",
+            "type": "Texture"
         },
         {
-            "type": "Script",
-            "path": "./assets/Scripting/toto.lua"
+            "name": "card",
+            "path": "./assets/card_template.png",
+            "type": "Texture"
+        },
+        {
+            "name": "grass",
+            "path": "./assets/tileset.png",
+            "type": "Texture"
+        },
+        {
+            "name": "hobbit",
+            "path": "./assets/Hobbit/pngs/hobbit_idle_spritesheet.png",
+            "type": "Texture"
+        },
+        {
+            "name": "light_texture",
+            "path": "./assets/light_2.png",
+            "type": "Texture"
+        },
+        {
+            "name": "test",
+            "path": "./assets/tileset.png",
+            "type": "Texture"
+        },
+        {
+            "name": "titi",
+            "path": "./assets/slash.mp3",
+            "type": "Sound"
+        },
+        {
+            "path": "./assets/Scripting/MapManager.lua",
+            "type": "Script"
+        },
+        {
+            "path": "./assets/Scripting/Player.lua",
+            "type": "Script"
         },
         {
             "path": "./assets/Scripting/toto.lua",
             "type": "Script"
+        },
+        {
+            "name": "tata",
+            "path": "./assets/Freedom.wav",
+            "type": "Music"
+        },
+        {
+            "path": "../assets/entities.json",
+            "type": "Entities"
         }
-    ],
-    "entities": ["MapManager", "player", "Camera", "Hud"]
+    ]
 }

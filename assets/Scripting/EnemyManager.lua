@@ -1,10 +1,10 @@
 function Start()
-	print("hello world")
+    print("Coucou")
 end
 
 function Update()
+
 end
 
 function Destroy()
-
 end

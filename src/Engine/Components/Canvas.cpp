@@ -8,7 +8,7 @@ Canvas::Canvas(Entity *e) : _e(e)
     _font.loadFromFile("../assets/LEMONMILK-Regular.otf");
 }
 
-Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const std::size_t &size)
+Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const std::size_t &size, bool save)
 {
     auto *newText = new Text;
 
@@ -16,15 +16,18 @@ Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const
     newText->setCharacterSize(size);
     newText->setPosition(pos);
     newText->setFont(_font);
+    newText->setSave(save);
+
     _text.emplace(newText, pos);
     return newText;
 }
 
-Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture)
+Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture, bool save)
 {
     auto *button = new Button(position, scale, texture);
 
     button->setTexture(texture);
+    button->setSave(save);
     _button.emplace(button, position);
     return button;
 }

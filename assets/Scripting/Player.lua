@@ -27,7 +27,7 @@ function cards_init()
     scale = Vector2f.new(1, 1)
     angle = -5
 
-    for i=1, 4 do
+    for i=1, 1 do
         card = Card.new(hud, position, scale, camera)
 
         card:rotate(angle)
