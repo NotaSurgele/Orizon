@@ -174,7 +174,7 @@ void Script::registerRectType()
             "getSize", &sf::FloatRect::getSize
     );
     _state->new_usertype<sf::IntRect>(
-            "FloatRect", sol::constructors<sf::IntRect(),
+            "IntRect", sol::constructors<sf::IntRect(),
                     sf::IntRect(int, int, int, int),
                     sf::IntRect(sf::Vector2i, sf::Vector2i)>(),
             "x", &sf::IntRect::left,
@@ -645,18 +645,7 @@ void Script::registerScriptComponent()
 {
     _state->new_usertype<Script>(
             "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "call", sol::overload(&Script::call<Entity *>,
-                                  &Script::call<int>,
-                                  &Script::call<std::string>,
-                                  &Script::call<float>,
-                                  &Script::call<double>,
-                                  &Script::call<bool>,
-                                  &Script::call<sf::Vector2f>,
-                                  &Script::call<sf::Vector2i>,
-                                  &Script::call<sf::Vector2u>,
-                                  &Script::call<sf::Color>,
-                                  &Script::call<sf::FloatRect>,
-                                  &Script::call<sf::IntRect>)
+            "call", &Script::call
     );
 }
 

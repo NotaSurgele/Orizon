@@ -19,6 +19,7 @@
 #include "System.hpp"
 #include "Canvas.hpp"
 #include <unordered_map>
+#include <variant>
 #include <string>
 
 typedef unsigned int uint;
@@ -33,7 +34,9 @@ public:
     void start();
     void destroyObjectInstance();
 
-    void destroy() override {}
+    void destroy() override {
+        this->destroyObjectInstance();
+    }
 
     const std::string& getFile() const
     {
@@ -93,15 +96,18 @@ private:
         return sol::nil;
     }
 
-    template <typename T>
-    T call(const std::string& function, sol::variadic_args args)
+    std::variant<Entity *, sf::FloatRect,
+                sf::Vector2f, sf::Vector2i,
+                sf::Vector2u, sf::IntRect,
+                sf::Color, sol::nil_t, sol::table,
+                Script *,
+    sol::object> call(const std::string& function, sol::variadic_args args)
     {
         try {
             sol::function f = (*_state)[function];
             if (!f.valid()) {
                 std::cerr << "Not a valid function name " << function << std::endl;
             }
-            // Convert userdata arguments to Entity* if applicable
             std::vector<sol::object> modifiedArgs(args.begin(), args.end());
             for (size_t i = 0; i < modifiedArgs.size(); ++i) {
                 handleTypeTransformation(modifiedArgs, i);
@@ -109,13 +115,31 @@ private:
             sol::object res = f(sol::as_args(modifiedArgs));
 
             if (res.is<sol::nil_t>()) {
-                return T();
+                return res.as<sol::nil_t>();
+            } else if (res.is<sf::FloatRect>()) {
+                return res.as<sf::FloatRect>();
+            } else if (res.is<Entity *>()) {
+                return res.as<Entity *>();
+            } else if (res.is<sf::IntRect>()) {
+                return res.as<sf::IntRect>();
+            } else if (res.is<sf::Color>()) {
+                return res.as<sf::Color>();
+            } else if (res.is<sf::Vector2f>()) {
+                return res.as<sf::Vector2f>();
+            } else if (res.is<sf::Vector2i>()) {
+                return res.as<sf::Vector2i>();
+            } else if (res.is<sf::Vector2u>()) {
+                return res.as<sf::Vector2u>();
+            } else if (res.is<sol::table>()) {
+                return res.as<sol::table>();
+            } else if (res.is<Script *>()) {
+                return res.as<Script *>();
             }
-            return res.as<T>();
+            return res;
         } catch (sol::error& error) {
             std::cerr << error.what() << std::endl;
         }
-        return T();
+        return sol::nil_t();
     }
 
 private:
@@ -141,6 +165,10 @@ private:
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::Color>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::FloatRect>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::IntRect>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<std::string>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<int>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<float>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<sol::table>(ud); }}
     };
 
 protected:

@@ -34,7 +34,16 @@ function cards_init()
         card = Card.new(hud, position, scale, camera)
 
         card:rotate(angle)
-        card:setCallback(function() print(hud) end)
+        card:setCallback(function()
+            local script = manager:getComponentScript()
+            local bounds = card:getBounds()
+            local enemy = script:call("contain", bounds)
+
+            if enemy == nil then
+                return
+            end
+            enemy:getComponentScript():call("takeDamage", 100)
+        end)
         table.insert(cards, card)
         position.x = position.x + 120
         angle = angle + 4
