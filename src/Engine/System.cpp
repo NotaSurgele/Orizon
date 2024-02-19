@@ -49,12 +49,14 @@ void System::forceDestroy()
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
             }
         }
         e->__destroyComponents();
+        e = nullptr;
         // delete e; [TODO] Fix this
     }
     for (auto& l : _destroy_tilemap) {

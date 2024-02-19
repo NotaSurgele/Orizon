@@ -70,6 +70,10 @@ function Card.new(hud, position, scale, camera)
     return self
 end
 
+function Card:getBounds()
+    return self.button:getSprite():getGlobalBounds()
+end
+
 function Card:rotate(angle)
     self.button:getSprite():rotate(angle)
 end
