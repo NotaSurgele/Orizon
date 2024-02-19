@@ -3,17 +3,45 @@
         {
             "components": [
                 {
+                    "position": [
+                        350.0,
+                        500.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
                     "loop": true,
-                    "music_name": "tata",
-                    "type": "Music"
+                    "sound_name": "titi",
+                    "type": "Sound"
                 },
                 {
-                    "path": "./assets/Scripting/Player.lua",
-                    "type": "Script"
+                    "collision_type": "Dynamic",
+                    "position": [
+                        2100.0,
+                        3000.0
+                    ],
+                    "range": 10,
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "BoxCollider"
                 },
                 {
-                    "tag": "player",
-                    "type": "Tag"
+                    "texture_name": "hobbit",
+                    "type": "Sprite"
+                },
+                {
+                    "type": "Velocity"
                 },
                 {
                     "animations": [
@@ -32,45 +60,17 @@
                     "type": "Animator"
                 },
                 {
-                    "type": "Velocity"
+                    "path": "./assets/Scripting/Player.lua",
+                    "type": "Script"
                 },
                 {
-                    "texture_name": "hobbit",
-                    "type": "Sprite"
-                },
-                {
-                    "collision_type": "Dynamic",
-                    "position": [
-                        1750.0,
-                        2500.0
-                    ],
-                    "range": 10,
-                    "size": [
-                        16.0,
-                        16.0
-                    ],
-                    "type": "BoxCollider"
+                    "tag": "player",
+                    "type": "Tag"
                 },
                 {
                     "loop": true,
-                    "sound_name": "titi",
-                    "type": "Sound"
-                },
-                {
-                    "position": [
-                        350.0,
-                        500.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        16.0,
-                        16.0
-                    ],
-                    "type": "Transform2D"
+                    "music_name": "tata",
+                    "type": "Music"
                 },
                 {
                     "type": "Layer",
@@ -82,8 +82,20 @@
         {
             "components": [
                 {
-                    "tag": "Camera",
-                    "type": "Tag"
+                    "position": [
+                        800.0,
+                        500.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
                 },
                 {
                     "follow": true,
@@ -102,20 +114,8 @@
                     ]
                 },
                 {
-                    "position": [
-                        800.0,
-                        500.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        1.0,
-                        1.0
-                    ],
-                    "type": "Transform2D"
+                    "tag": "Camera",
+                    "type": "Tag"
                 },
                 {
                     "type": "Layer",
@@ -126,10 +126,6 @@
         },
         {
             "components": [
-                {
-                    "tag": "Hud",
-                    "type": "Tag"
-                },
                 {
                     "position": [
                         0.0,
@@ -145,6 +141,10 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "tag": "Hud",
+                    "type": "Tag"
                 },
                 {
                     "type": "Layer",
@@ -160,18 +160,6 @@
         {
             "components": [
                 {
-                    "texture_name": "background",
-                    "type": "Sprite"
-                },
-                {
-                    "path": "./assets/Scripting/MapManager.lua",
-                    "type": "Script"
-                },
-                {
-                    "tag": "MapManager",
-                    "type": "Tag"
-                },
-                {
                     "position": [
                         0.0,
                         0.0
@@ -186,6 +174,18 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "path": "./assets/Scripting/MapManager.lua",
+                    "type": "Script"
+                },
+                {
+                    "tag": "MapManager",
+                    "type": "Tag"
+                },
+                {
+                    "texture_name": "background",
+                    "type": "Sprite"
                 },
                 {
                     "type": "Layer",
@@ -222,6 +222,39 @@
                 }
             ],
             "name": "coucuo"
+        },
+        {
+            "components": [
+                {
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "path": "./assets/Scripting/EnemyManager.lua",
+                    "type": "Script"
+                },
+                {
+                    "tag": "EnemyManager",
+                    "type": "Tag"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "EnemyManager"
         }
     ]
 }

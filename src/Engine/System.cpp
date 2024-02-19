@@ -172,7 +172,7 @@ void System::canvasSystem(Entity *e)
     for (auto& it : texts) {
         auto& t = it.first;
         auto& position = it.second;
-        auto& offset = t->getOffset();
+        auto offset = t->getOffset();
 
         t->setBasePosition(position);
         if (t->coordType == Text::LOCAL) {
@@ -193,7 +193,7 @@ void System::canvasSystem(Entity *e)
     for (auto& it : buttons) {
         auto& b = it.first;
         auto& position = it.second;
-        auto& offset = b->getOffset();
+        auto offset = b->getOffset();
         auto& text = b->text;
 
         b->setBasePosition(position);
@@ -202,12 +202,12 @@ void System::canvasSystem(Entity *e)
             auto center = v->getCenter();
             auto size = b->getTextureSize();
 
-            b->setPosition(((position.x + offset.x) + center.x) - ((float)size.x / 2),
-                            ((position.y + offset.y) + center.y) - ((float)size.y / 2));
+            b->setPosition(((position.x + offset.x) + center.x),
+                            ((position.y + offset.y) + center.y));
         } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
         if (!isHovered) {
-            auto mousePos = getLocalMousePosition();
+            auto mousePos = getGlobalMousePosition();
             auto bounds = b->getSprite()->getGlobalBounds();
 
             if (bounds.contains((float)mousePos.x, (float)mousePos.y)) {
@@ -236,7 +236,7 @@ void System::canvasSystem(Entity *e)
     for (auto& it : images) {
         auto& i = it.first;
         auto& position = it.second;
-        auto& offset = i->getOffset();
+        auto offset = i->getOffset();
 
         i->setBasePosition(position);
         if (i->coordType == Text::LOCAL) {
@@ -272,13 +272,23 @@ void System::clearComponentCache(const std::vector<IComponent *> &componentCache
 
 sf::Vector2f System::getLocalMousePosition()
 {
-    return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+    auto pos = sf::Mouse::getPosition();
+    return {(float)pos.x, (float)pos.y};
 }
 
 sf::Vector2f System::getGlobalMousePosition()
 {
-    auto pos = sf::Mouse::getPosition();
-    return {(float)pos.x, (float)pos.y};
+    return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+}
+
+sf::Vector2f System::localToGlobalCoordinate(const sf::Vector2f& local)
+{
+    return WindowInstance.mapPixelToCoords((sf::Vector2i)local);
+}
+
+sf::Vector2f System::globalToLocalCoordinate(const sf::Vector2f &global)
+{
+    return (sf::Vector2f)WindowInstance.mapCoordsToPixel(global);
 }
 
 void System::systems()

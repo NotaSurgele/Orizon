@@ -3,7 +3,8 @@
         "MapManager",
         "player",
         "Camera",
-        "Hud"
+        "Hud",
+        "EnemyManager"
     ],
     "resources": [
         {
@@ -19,6 +20,11 @@
         {
             "name": "card",
             "path": "./assets/card_template.png",
+            "type": "Texture"
+        },
+        {
+            "name": "cross",
+            "path": "./assets/cross.png",
             "type": "Texture"
         },
         {
@@ -45,6 +51,10 @@
             "name": "titi",
             "path": "./assets/slash.mp3",
             "type": "Sound"
+        },
+        {
+            "path": "./assets/Scripting/EnemyManager.lua",
+            "type": "Script"
         },
         {
             "path": "./assets/Scripting/MapManager.lua",

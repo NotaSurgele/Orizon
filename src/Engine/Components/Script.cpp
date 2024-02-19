@@ -213,7 +213,9 @@ void Script::registerSystemType()
             }
         ),
         "getLocalMousePosition", &System::getLocalMousePosition,
-        "getGlobalMousePosition", &System::getGlobalMousePosition
+        "getGlobalMousePosition", &System::getGlobalMousePosition,
+        "localToGlobalCoordinate", &System::localToGlobalCoordinate,
+        "globalToLocalCoordinate", &System::globalToLocalCoordinate
     );
     (*_state)["system"] = System();
 }
