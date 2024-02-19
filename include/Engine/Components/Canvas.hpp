@@ -21,7 +21,7 @@ public:
         _offset = offset;
     }
 
-    sf::Vector2f& getOffset()
+    sf::Vector2f getOffset()
     {
         return _offset;
     }

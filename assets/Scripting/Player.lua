@@ -1,6 +1,8 @@
 local Card = require 'assets.Scripting.Card'
 local Utils = require 'assets.Scripting.Utils'
 
+local manager = nil
+
 -- Camera
 local hud = nil
 local camera = nil
@@ -14,6 +16,7 @@ local save = {}
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
+    manager = System.getEntity("EnemyManager")
     hud = System.getEntity("Hud"):getComponentCanvas()
     camera = System.getEntity("Camera"):getComponentView()
 
