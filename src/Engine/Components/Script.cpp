@@ -841,6 +841,71 @@ void Script::update()
     }
 }
 
+std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
+sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::metatable,sol::object>
+Script::getTableValue(const sol::object& res)
+{
+    auto ud = res.as<sol::userdata>();
+
+    for (auto& func : typesArray) {
+        auto res = func(ud);
+        if (res != sol::nil) {
+            return res;
+        }
+    }
+    return res;
+}
+
+sol::metatable Script::deserializeTable(const sol::metatable &table)
+{
+    sol::metatable newTable = _state->create_table();
+
+    newTable[sol::metatable_key] = table[sol::metatable_key];
+    table.for_each([&](const sol::object& key, const sol::object& value) {
+        if (value.is<sol::userdata>()) {
+            newTable[key.as<std::string>()] = getTableValue(value);
+            return;
+        }
+
+        if (value.is<sol::metatable>()) {
+            newTable[key.as<std::string>()] = deserializeTable(value.as<sol::metatable>());
+            return;
+        }
+        newTable[key.as<std::string>()] = value;
+    });
+    return newTable;
+}
+
+std::variant<Script *, Entity *, sf::FloatRect, sf::Vector2f,
+sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::metatable, sol::object>
+Script::call(const std::string &function, sol::variadic_args args)
+{
+    {
+        try {
+            sol::function f = (*_state)[function];
+            if (!f.valid()) {
+                std::cerr << "Not a valid function name " << function << std::endl;
+            }
+            std::vector<sol::object> modifiedArgs(args.begin(), args.end());
+            for (size_t i = 0; i < modifiedArgs.size(); ++i) {
+                handleTypeTransformation(modifiedArgs, i);
+            }
+            auto res = f(sol::as_args(modifiedArgs));
+            sol::object obj = res;
+
+            if (obj.is<sol::table>() && !obj.is<sol::userdata>()) {
+                return deserializeTable(obj.as<sol::table>());
+            }
+            return res;
+            //return objectToVariant(res);
+        } catch (sol::error& error) {
+            std::cerr << error.what() << std::endl;
+        }
+        return sol::nil_t();
+    }
+
+}
+
 void Script::destroyObjectInstance()
 {
     try {

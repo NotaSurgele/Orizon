@@ -42,7 +42,13 @@ function cards_init()
             if enemy == nil then
                 return
             end
-            enemy:getComponentScript():call("takeDamage", 100)
+            for k, v in pairs(enemy) do
+                print(k, v)
+            end
+            print("tptp", rawget(enemy, "entity"))
+            --enemy:call("takeDamage", 100)
+            --print("coucou", enemy.mainScript)
+            --enemy:call("takeDamage", 100)
         end)
         table.insert(cards, card)
         position.x = position.x + 120

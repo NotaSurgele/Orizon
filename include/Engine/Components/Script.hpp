@@ -20,6 +20,7 @@
 #include "Canvas.hpp"
 #include <unordered_map>
 #include <variant>
+
 #include <string>
 
 typedef unsigned int uint;
@@ -96,51 +97,19 @@ private:
         return sol::nil;
     }
 
-    std::variant<Entity *, sf::FloatRect,
-                sf::Vector2f, sf::Vector2i,
-                sf::Vector2u, sf::IntRect,
-                sf::Color, sol::nil_t, sol::table,
-                Script *,
-    sol::object> call(const std::string& function, sol::variadic_args args)
-    {
-        try {
-            sol::function f = (*_state)[function];
-            if (!f.valid()) {
-                std::cerr << "Not a valid function name " << function << std::endl;
-            }
-            std::vector<sol::object> modifiedArgs(args.begin(), args.end());
-            for (size_t i = 0; i < modifiedArgs.size(); ++i) {
-                handleTypeTransformation(modifiedArgs, i);
-            }
-            sol::object res = f(sol::as_args(modifiedArgs));
+    std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
+    sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color,
+    sol::nil_t, sol::metatable,sol::object>getTableValue(const sol::object& res);
 
-            if (res.is<sol::nil_t>()) {
-                return res.as<sol::nil_t>();
-            } else if (res.is<sf::FloatRect>()) {
-                return res.as<sf::FloatRect>();
-            } else if (res.is<Entity *>()) {
-                return res.as<Entity *>();
-            } else if (res.is<sf::IntRect>()) {
-                return res.as<sf::IntRect>();
-            } else if (res.is<sf::Color>()) {
-                return res.as<sf::Color>();
-            } else if (res.is<sf::Vector2f>()) {
-                return res.as<sf::Vector2f>();
-            } else if (res.is<sf::Vector2i>()) {
-                return res.as<sf::Vector2i>();
-            } else if (res.is<sf::Vector2u>()) {
-                return res.as<sf::Vector2u>();
-            } else if (res.is<sol::table>()) {
-                return res.as<sol::table>();
-            } else if (res.is<Script *>()) {
-                return res.as<Script *>();
-            }
-            return res;
-        } catch (sol::error& error) {
-            std::cerr << error.what() << std::endl;
-        }
-        return sol::nil_t();
-    }
+    sol::metatable deserializeTable(const sol::metatable& table);
+
+    std::variant<
+    Script *,
+    Entity *, sf::FloatRect,
+    sf::Vector2f, sf::Vector2i,
+    sf::Vector2u, sf::IntRect,
+    sf::Color, sol::nil_t, sol::metatable,
+    sol::object> call(const std::string& function, sol::variadic_args args);
 
 private:
     std::vector<std::function<sol::object(sol::userdata&)>> typesArray = {
