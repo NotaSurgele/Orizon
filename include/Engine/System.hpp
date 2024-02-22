@@ -196,6 +196,9 @@ public:
     static sf::Vector2f getLocalMousePosition();
     static sf::Vector2f getGlobalMousePosition();
 
+    static sf::Vector2f localToGlobalCoordinate(const sf::Vector2f& local);
+    static sf::Vector2f globalToLocalCoordinate(const sf::Vector2f& global);
+
     std::vector<Entity *> getRegistry() { return _forceUpdate; }
 
     std::vector<TileMap *> getTileMaps() {  return _layers; }

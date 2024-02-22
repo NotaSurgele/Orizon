@@ -8,32 +8,37 @@ Card.__index = Card
 local function initState(card)
     card.stateMachine:insert("onHover", function(sprite, animation)
         local offset = card.button:getOffset()
-        local fix = Utils:lerp(offset.y, animation.offsetY, 10 * deltaTime)
-        animation.offsetY = -100
-        sprite:setColor(Color.new(255, 0, 0, 255))
+        local fix = Utils.lerp(offset.y, animation.offsetY,  10 * deltaTime)
 
+        sprite:setColor(Color.new(255, 0, 0, 255))
+        animation.offsetY = -200
         if Input.isButtonPressed("Left") then
-            card.stateMachine:play("onDrag")
-        else
-            card.button:setOffset(offset.x, fix)
+            return card.stateMachine:play("onDrag", sprite)
         end
+        card.button:setOffset(0, fix)
     end)
 
     card.stateMachine:insert("onNothing", function(sprite, animation)
         local offset = card.button:getOffset()
-        local fix = Utils:lerp(offset.y, animation.offsetY, 10 * deltaTime)
-        animation.offsetY = 0
+        local scale = Utils.lerp(card.button:getSize().x, 1, 10 * deltaTime)
+        local fix = Utils.lerp(offset.y, animation.offsetY, 10 * deltaTime)
 
+        animation.offsetY = -100
         sprite:setColor(Color.new(255, 255, 255, 255))
+        card.button:setScale(scale, scale)
         card.button:setOffset(0, fix)
     end)
 
-    card.stateMachine:insert("onDrag", function()
-        local mouse = System.getLocalMousePosition()
-        mouse.x = (mouse.x - card.camera:getCenter().x) - card.button:getBasePosition().x
-        mouse.y = (mouse.y - card.camera:getCenter().y) - card.button:getBasePosition().y
+    card.stateMachine:insert("onDrag", function(sprite)
+        local mouse = System.getGlobalMousePosition()
+        local scale = Utils.lerp(card.button:getSize().x, 0.3, 10 * deltaTime)
+        local bounds = sprite:getGlobalBounds()
 
-        card.button:setOffset(mouse.x, mouse.y)
+        --print("Bounds", bounds.x, bounds.y)
+        mouse.x = ((mouse.x - card.camera:getCenter().x) - card.button:getBasePosition().x)
+        mouse.y = ((mouse.y - card.camera:getCenter().y) - card.button:getBasePosition().y)
+        card.button:setScale(scale, scale)
+        card.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
     end)
 end
 
@@ -57,11 +62,17 @@ function Card.new(hud, position, scale, camera)
     self.button = button
     self.camera = camera
     self.animation = {
-        offsetY = 0
+        offsetY = -200,
+        scale = Vector2f.new(1, 1)
     }
     self.stateMachine = StateMachine.new()
     initState(self)
     return self
+end
+
+function Card:getBounds()
+    print(self.button:getSprite():getGlobalBounds())
+    return self.button:getSprite():getGlobalBounds()
 end
 
 function Card:rotate(angle)
@@ -69,6 +80,7 @@ function Card:rotate(angle)
 end
 
 function Card:setCallback(callback)
+    print(self.button)
     self.button:setCallback(callback)
 end
 

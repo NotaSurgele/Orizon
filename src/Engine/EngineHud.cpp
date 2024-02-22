@@ -209,10 +209,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
     auto viewBounds = view->getViewBounds();
     auto viewPort = view->getViewport();
 
-    viewPort.left = (viewPort.left - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.left - EDITOR_VIEW_SIZE_RATIO;
-    viewPort.top = (viewPort.top - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.top - EDITOR_VIEW_SIZE_RATIO;
     json["type"] = "View";
-    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width * 2, viewBounds.height * 2 };
+    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width, viewBounds.height };
     json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
     json["follow"] = view->isFollowing();
     return json;
@@ -312,6 +310,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
         std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
         auto coordType = b->coordType;
 
+        if (!b->shouldSave()) continue;
+
         json["canvas_objects"].push_back({
             { "type", "Button" },
             { "position", { offset.x, offset.y } },
@@ -329,6 +329,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
         auto content = t->getString();
         auto coordType = t->coordType;
 
+        if (!t->shouldSave()) continue;
+
         json["canvas_objects"].push_back({
             { "type", "Text" },
             { "position", { offset.x, offset.y } },
@@ -345,6 +347,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
         auto size = sprite->getScale();
         std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
         auto coordType = i->coordType;
+
+        if (!i->shouldSave()) continue;
 
         json["canvas_objects"].push_back({
             { "type", "Image" },
@@ -861,7 +865,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         for (auto& it : buttons) {
             auto button = it.first;
             auto& position = it.second;
-            auto& offset = button->getOffset();
             auto sprite = button->getSprite();
             std::string label = "##button" + std::to_string(id);
             CanvasObject::CoordType selectedOption = button->coordType;
@@ -881,7 +884,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             auto pos = ImGui::GetCursorPosX();
             ImGui::SetCursorPosX(pos + 150);
-            button->setOffset(offset);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Button>(button);
                 buttons.erase(button);
@@ -896,7 +898,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         for (auto &it : texts) {
             auto& text = it.first;
             auto& position = it.second;
-            auto& offset = text->getOffset();
             std::string content = text->getString();
             std::string label = "##texts" + std::to_string(id);
             auto size = text->getCharacterSize();
@@ -915,7 +916,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::InputInt((label + "Character size").data(), (int *)(&size));
             canvasRadioButton(selectedOption, text);
 
-            text->setOffset(offset);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Text>(text);
                 texts.erase(text);
@@ -933,7 +933,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             std::string label = "##toto" + std::to_string(id);
             auto& image = it.first;
             auto& position = it.second;
-            auto& offset = image->getOffset();
             auto sprite = image->getImage();
             CanvasObject::CoordType selectedOption = image->coordType;
 
@@ -945,7 +944,6 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             ImGui::InputFloat((label + "y").data(), &position.y);
             canvasRadioButton(selectedOption, image);
 
-            image->setOffset(offset);
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             if (ImGui::Button("x", ImVec2(20, 20))) {
                 canvas->removeObject<Image>(image);
@@ -1038,7 +1036,7 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     json["resources"].push_back(entityPathJson);
 
     auto content = json.dump(4);
-    Utils::writeFile(_currentSceneFilepath + std::to_string(1), content);
+    Utils::writeFile(_currentSceneFilepath, content);
 }
 
 void EngineHud::saveEntity(nlohmann::json &json)

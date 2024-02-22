@@ -174,7 +174,7 @@ void Script::registerRectType()
             "getSize", &sf::FloatRect::getSize
     );
     _state->new_usertype<sf::IntRect>(
-            "FloatRect", sol::constructors<sf::IntRect(),
+            "IntRect", sol::constructors<sf::IntRect(),
                     sf::IntRect(int, int, int, int),
                     sf::IntRect(sf::Vector2i, sf::Vector2i)>(),
             "x", &sf::IntRect::left,
@@ -213,7 +213,9 @@ void Script::registerSystemType()
             }
         ),
         "getLocalMousePosition", &System::getLocalMousePosition,
-        "getGlobalMousePosition", &System::getGlobalMousePosition
+        "getGlobalMousePosition", &System::getGlobalMousePosition,
+        "localToGlobalCoordinate", &System::localToGlobalCoordinate,
+        "globalToLocalCoordinate", &System::globalToLocalCoordinate
     );
     (*_state)["system"] = System();
 }
@@ -389,6 +391,14 @@ void Script::registerCanvasTypes()
             },
             [](Button *button, const sf::Vector2f& position) {
                 return button->setPosition(position);
+            }
+        ),
+        "setScale", sol::overload(
+            [](Button *button, const sf::Vector2f& size) {
+                return button->setScale(size);
+            },
+            [](Button *button, const float& x, const float& y) {
+                return button->setScale(x, y);
             }
         ),
         "isHovered", &Button::isHovered,
@@ -635,18 +645,7 @@ void Script::registerScriptComponent()
 {
     _state->new_usertype<Script>(
             "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "call", sol::overload(&Script::call<Entity *>,
-                                  &Script::call<int>,
-                                  &Script::call<std::string>,
-                                  &Script::call<float>,
-                                  &Script::call<double>,
-                                  &Script::call<bool>,
-                                  &Script::call<sf::Vector2f>,
-                                  &Script::call<sf::Vector2i>,
-                                  &Script::call<sf::Vector2u>,
-                                  &Script::call<sf::Color>,
-                                  &Script::call<sf::FloatRect>,
-                                  &Script::call<sf::IntRect>)
+            "call", &Script::call
     );
 }
 
@@ -654,9 +653,21 @@ void Script::registerCanvasComponent()
 {
     _state->new_usertype<Canvas>(
         "Canvas", sol::constructors<Canvas(Entity *)>(),
-        "addText", &Canvas::addText,
-        "addButton", &Canvas::addButton,
-        "addImage", &Canvas::addImage,
+        "addText", sol::overload(
+            [] (Canvas *canvas, const std::string& content, const sf::Vector2f& pos, const std::size_t& size) {
+                return canvas->addText(content, pos, size, false);
+            }
+        ),
+        "addButton", sol::overload(
+            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, const sf::Texture& text) {
+                return canvas->addButton(pos, scale, text, false);
+            }
+        ),
+        "addImage", sol::overload(
+            [] (Canvas *canvas, sf::Texture texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
+                return canvas->addImage(texture, position, scale, false);
+            }
+        ),
         "removeObject", sol::overload(
                 &Canvas::removeObject<Text *>,
                 &Canvas::removeObject<Button *>,
@@ -828,6 +839,71 @@ void Script::update()
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
+}
+
+std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
+sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::metatable,sol::object>
+Script::getTableValue(const sol::object& res)
+{
+    auto ud = res.as<sol::userdata>();
+
+    for (auto& func : typesArray) {
+        auto res = func(ud);
+        if (res != sol::nil) {
+            return res;
+        }
+    }
+    return res;
+}
+
+sol::metatable Script::deserializeTable(const sol::metatable &table)
+{
+    sol::metatable newTable = _state->create_table();
+
+    newTable[sol::metatable_key] = table[sol::metatable_key];
+    table.for_each([&](const sol::object& key, const sol::object& value) {
+        if (value.is<sol::userdata>()) {
+            newTable[key.as<std::string>()] = getTableValue(value);
+            return;
+        }
+
+        if (value.is<sol::metatable>()) {
+            newTable[key.as<std::string>()] = deserializeTable(value.as<sol::metatable>());
+            return;
+        }
+        newTable[key.as<std::string>()] = value;
+    });
+    return newTable;
+}
+
+std::variant<Script *, Entity *, sf::FloatRect, sf::Vector2f,
+sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::metatable, sol::object>
+Script::call(const std::string &function, sol::variadic_args args)
+{
+    {
+        try {
+            sol::function f = (*_state)[function];
+            if (!f.valid()) {
+                std::cerr << "Not a valid function name " << function << std::endl;
+            }
+            std::vector<sol::object> modifiedArgs(args.begin(), args.end());
+            for (size_t i = 0; i < modifiedArgs.size(); ++i) {
+                handleTypeTransformation(modifiedArgs, i);
+            }
+            auto res = f(sol::as_args(modifiedArgs));
+            sol::object obj = res;
+
+            if (obj.is<sol::table>() && !obj.is<sol::userdata>()) {
+                return deserializeTable(obj.as<sol::table>());
+            }
+            return res;
+            //return objectToVariant(res);
+        } catch (sol::error& error) {
+            std::cerr << error.what() << std::endl;
+        }
+        return sol::nil_t();
+    }
+
 }
 
 void Script::destroyObjectInstance()

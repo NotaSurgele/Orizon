@@ -19,6 +19,8 @@
 #include "System.hpp"
 #include "Canvas.hpp"
 #include <unordered_map>
+#include <variant>
+
 #include <string>
 
 typedef unsigned int uint;
@@ -33,7 +35,9 @@ public:
     void start();
     void destroyObjectInstance();
 
-    void destroy() override {}
+    void destroy() override {
+        this->destroyObjectInstance();
+    }
 
     const std::string& getFile() const
     {
@@ -93,30 +97,19 @@ private:
         return sol::nil;
     }
 
-    template <typename T>
-    T call(const std::string& function, sol::variadic_args args)
-    {
-        try {
-            sol::function f = (*_state)[function];
-            if (!f.valid()) {
-                std::cerr << "Not a valid function name " << function << std::endl;
-            }
-            // Convert userdata arguments to Entity* if applicable
-            std::vector<sol::object> modifiedArgs(args.begin(), args.end());
-            for (size_t i = 0; i < modifiedArgs.size(); ++i) {
-                handleTypeTransformation(modifiedArgs, i);
-            }
-            sol::object res = f(sol::as_args(modifiedArgs));
+    std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
+    sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color,
+    sol::nil_t, sol::metatable,sol::object>getTableValue(const sol::object& res);
 
-            if (res.is<sol::nil_t>()) {
-                return T();
-            }
-            return res.as<T>();
-        } catch (sol::error& error) {
-            std::cerr << error.what() << std::endl;
-        }
-        return T();
-    }
+    sol::metatable deserializeTable(const sol::metatable& table);
+
+    std::variant<
+    Script *,
+    Entity *, sf::FloatRect,
+    sf::Vector2f, sf::Vector2i,
+    sf::Vector2u, sf::IntRect,
+    sf::Color, sol::nil_t, sol::metatable,
+    sol::object> call(const std::string& function, sol::variadic_args args);
 
 private:
     std::vector<std::function<sol::object(sol::userdata&)>> typesArray = {
@@ -141,6 +134,10 @@ private:
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::Color>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::FloatRect>(ud); }},
             { [&](const sol::userdata& ud) { return convertUserDataToTypes<sf::IntRect>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<std::string>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<int>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<float>(ud); }},
+            { [&](const sol::userdata& ud) { return convertUserDataToTypes<sol::table>(ud); }}
     };
 
 protected:

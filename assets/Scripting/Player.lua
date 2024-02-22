@@ -1,6 +1,8 @@
 local Card = require 'assets.Scripting.Card'
 local Utils = require 'assets.Scripting.Utils'
 
+local manager = nil
+
 -- Camera
 local hud = nil
 local camera = nil
@@ -9,11 +11,10 @@ local cameraCenter = nil
 -- Cards
 cards = {}
 
-local save = {}
-
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
+    manager = System.getEntity("EnemyManager")
     hud = System.getEntity("Hud"):getComponentCanvas()
     camera = System.getEntity("Camera"):getComponentView()
 
@@ -27,11 +28,20 @@ function cards_init()
     scale = Vector2f.new(1, 1)
     angle = -5
 
-    for i=1, 4 do
-        card = Card.new(hud, position, scale, camera)
+    for i=1, 2 do
+        local card = Card.new(hud, position, scale, camera)
 
         card:rotate(angle)
-        card:setCallback(function() print(hud) end)
+        card:setCallback(function()
+            local script = manager:getComponentScript()
+            local bounds = card:getBounds()
+            local enemy = script:call("contain", bounds)
+
+            if enemy == nil then
+                return
+            end
+            enemy:call("takeDamage", 100)
+        end)
         table.insert(cards, card)
         position.x = position.x + 120
         angle = angle + 4
@@ -46,6 +56,7 @@ function Update()
     handleAnimation()
 
     for v, card in ipairs(cards) do
+        --print(card)
         card:update()
     end
 end
