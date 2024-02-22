@@ -16,4 +16,13 @@ function Utils.lerp2(start, target, dt)
             self:lerp(start.y, target.y, dt))
 end
 
+function Utils.arraySize(array)
+    local counter = 0
+
+    for _, _ in pairs(array) do
+        counter = counter + 1
+    end
+    return counter
+end
+
 return Utils
