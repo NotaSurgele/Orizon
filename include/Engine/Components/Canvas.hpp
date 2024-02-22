@@ -283,7 +283,7 @@ public:
 
 
     template <typename T>
-    void removeObject(T *obj)
+    void removeObject(T obj)
     {
         remove<T>(obj);
     }
@@ -308,7 +308,7 @@ public:
 private:
 
     template <typename T>
-    void remove(T *obj);
+    void remove(T obj);
 
 private:
     sf::Font _font;
@@ -319,31 +319,34 @@ private:
 };
 
 template <>
-inline void Canvas::remove<Text>(Text *text) {
+inline void Canvas::remove<Text *>(Text *text) {
     auto find = _text.find(text);
     if (find != _text.end()) {
         _text.erase(find);
+        delete text;
     }
 }
 
 template <>
-inline void Canvas::remove<Button>(Button *button) {
+inline void Canvas::remove<Button *>(Button *button) {
     auto find = _button.find(button);
     if (find != _button.end()) {
         _button.erase(find);
+        delete button;
     }
 }
 
 template <>
-inline void Canvas::remove<Image>(Image *img) {
+inline void Canvas::remove<Image *>(Image *img) {
     auto find = _image.find(img);
     if (find != _image.end()) {
         _image.erase(find);
+        delete img;
     }
 }
 
 template <typename T>
-inline void Canvas::remove(T *obj) {
+inline void Canvas::remove(T obj) {
     remove<T>(obj);
 }
 

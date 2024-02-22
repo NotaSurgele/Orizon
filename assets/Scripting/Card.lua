@@ -88,4 +88,8 @@ function Card:update()
     handleAnimation(self, sprite)
 end
 
+function Card:destroy()
+    self.hud:removeObject(self.button)
+end
+
 return Card

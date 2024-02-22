@@ -27,6 +27,13 @@ function createCard()
             return
         end
         enemy:call("takeDamage", 100)
+        for k, v in pairs(cards) do
+            if v == card then
+                cards[k] = nil
+                break
+            end
+        end
+        card:destroy()
     end)
     table.insert(cards, card)
     position.x = position.x + 120
@@ -51,7 +58,6 @@ function handleAnimation()
     animator:playAnimation("idle", true)
 end
 
-
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
@@ -60,15 +66,18 @@ function Start()
     camera = System.getEntity("Camera"):getComponentView()
 
     cardInit()
-    print(animator, transform)
 end
 
 function Update()
     handleAnimation()
 
-    for v, card in ipairs(cards) do
+    --print("start")
+    for v, card in pairs(cards) do
+        print(v, card)
         card:update()
     end
+    --print("end")
+
     draw:update()
 end
 
