@@ -1,5 +1,6 @@
 
-enemies = {}
+local enemies = {}
+local playerScript = nil
 
 --864.66668701172 331.33334350586
 
@@ -8,20 +9,20 @@ function createEnemies()
     y = 150
 
     for i=0, 3 do
-        enemy = {
+        local enemy = {
             entity = nil,
             sprite = nil,
             mainScript = nil,
             transform = nil
         }
-        entity = Entity.new()
+        local entity = Entity.new()
 
-        texture = ResourceManager:getResource("cross")
+        local texture = ResourceManager:getResource("cross")
 
         enemy.transform = entity:addComponentTransform2D(x, y)
         enemy.sprite = entity:addComponentSprite(texture)
 
-        bounds = enemy.sprite:getGlobalBounds()
+        local bounds = enemy.sprite:getGlobalBounds()
 
         enemy.mainScript = entity:addComponentScript("./assets/Scripting/Enemy.lua")
         enemy.entity = entity
@@ -45,6 +46,8 @@ end
 
 function Start()
     createEnemies()
+
+    playerScript = System.getEntity("player"):getComponentScript()
 end
 
 function getMe()

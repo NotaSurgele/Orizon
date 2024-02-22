@@ -672,9 +672,18 @@ void Script::registerCanvasComponent()
             }
         ),
         "removeObject", sol::overload(
-                &Canvas::removeObject<Text *>,
-                &Canvas::removeObject<Button *>,
-                &Canvas::removeObject<Image *>),
+        [](Canvas *canvas, Button *button) {
+                return canvas->removeObject<Button *>(button);
+            },
+
+            [](Canvas *canvas, Text *text) {
+                return canvas->removeObject<Text *>(text);
+            },
+
+            [] (Canvas *canvas, Image *img) {
+                return canvas->removeObject<Image *>(img);
+            }
+        ),
         "getTexts", &Canvas::getTexts,
         "getButtons", &Canvas::getButtons,
         "getImages", &Canvas::getImages
@@ -845,7 +854,7 @@ void Script::update()
 }
 
 std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
-sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::metatable,sol::object>
+sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::table,sol::object>
 Script::getTableValue(const sol::object& res)
 {
     auto ud = res.as<sol::userdata>();
@@ -859,9 +868,9 @@ Script::getTableValue(const sol::object& res)
     return res;
 }
 
-sol::metatable Script::deserializeTable(const sol::metatable &table)
+sol::table Script::deserializeTable(const sol::table &table)
 {
-    sol::metatable newTable = _state->create_table();
+    sol::table newTable = _state->create_table();
 
     newTable[sol::metatable_key] = table[sol::metatable_key];
     table.for_each([&](const sol::object& key, const sol::object& value) {
@@ -876,11 +885,12 @@ sol::metatable Script::deserializeTable(const sol::metatable &table)
         }
         newTable[key.as<std::string>()] = value;
     });
+    _state->set(newTable);
     return newTable;
 }
 
 std::variant<Script *, Entity *, sf::FloatRect, sf::Vector2f,
-sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::metatable, sol::object>
+sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::table, sol::object>
 Script::call(const std::string &function, sol::variadic_args args)
 {
     {

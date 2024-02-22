@@ -885,7 +885,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             auto pos = ImGui::GetCursorPosX();
             ImGui::SetCursorPosX(pos + 150);
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Button>(button);
+                canvas->removeObject<Button *>(button);
                 buttons.erase(button);
                 continue;
             }
@@ -917,7 +917,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             canvasRadioButton(selectedOption, text);
 
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Text>(text);
+                canvas->removeObject<Text *>(text);
                 texts.erase(text);
                 continue;
             }
@@ -946,7 +946,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Image>(image);
+                canvas->removeObject<Image *>(image);
                 images.erase(image);
                 continue;
             }
