@@ -37,7 +37,7 @@ function contain(bounds)
         box = enemy.mainScript:call("getHitbox")
 
         if box:intersects(bounds) == true then
-            return enemy
+            return enemy.mainScript
         end
     end
     return nil

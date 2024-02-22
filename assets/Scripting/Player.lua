@@ -11,8 +11,6 @@ local cameraCenter = nil
 -- Cards
 cards = {}
 
-local save = {}
-
 function Start()
     transform = _self:getComponentTransform2D()
     animator = _self:getComponentAnimator()
@@ -30,8 +28,8 @@ function cards_init()
     scale = Vector2f.new(1, 1)
     angle = -5
 
-    for i=1, 1 do
-        card = Card.new(hud, position, scale, camera)
+    for i=1, 2 do
+        local card = Card.new(hud, position, scale, camera)
 
         card:rotate(angle)
         card:setCallback(function()
@@ -42,13 +40,7 @@ function cards_init()
             if enemy == nil then
                 return
             end
-            for k, v in pairs(enemy) do
-                print(k, v)
-            end
-            print("tptp", rawget(enemy, "entity"))
-            --enemy:call("takeDamage", 100)
-            --print("coucou", enemy.mainScript)
-            --enemy:call("takeDamage", 100)
+            enemy:call("takeDamage", 100)
         end)
         table.insert(cards, card)
         position.x = position.x + 120
@@ -64,6 +56,7 @@ function Update()
     handleAnimation()
 
     for v, card in ipairs(cards) do
+        --print(card)
         card:update()
     end
 end

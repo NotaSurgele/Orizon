@@ -34,6 +34,7 @@ local function initState(card)
         local scale = Utils.lerp(card.button:getSize().x, 0.3, 10 * deltaTime)
         local bounds = sprite:getGlobalBounds()
 
+        --print("Bounds", bounds.x, bounds.y)
         mouse.x = ((mouse.x - card.camera:getCenter().x) - card.button:getBasePosition().x)
         mouse.y = ((mouse.y - card.camera:getCenter().y) - card.button:getBasePosition().y)
         card.button:setScale(scale, scale)
@@ -65,12 +66,12 @@ function Card.new(hud, position, scale, camera)
         scale = Vector2f.new(1, 1)
     }
     self.stateMachine = StateMachine.new()
-    button:setOffset(0, 0)
     initState(self)
     return self
 end
 
 function Card:getBounds()
+    print(self.button:getSprite():getGlobalBounds())
     return self.button:getSprite():getGlobalBounds()
 end
 
@@ -79,6 +80,7 @@ function Card:rotate(angle)
 end
 
 function Card:setCallback(callback)
+    print(self.button)
     self.button:setCallback(callback)
 end
 
