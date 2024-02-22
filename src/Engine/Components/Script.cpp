@@ -289,6 +289,9 @@ void Script::registerCoreType()
             [] (Core *core, BoxCollider *drawable) {
                 return core->CoreDraw(drawable);
             },
+            [] (Core *core, Sprite *sprite) {
+                return core->CoreDraw(sprite);
+            },
             [] (Core *core, const sf::Drawable& drawable) {
                 return core->CoreDraw(drawable);
             }
