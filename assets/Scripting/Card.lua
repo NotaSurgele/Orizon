@@ -42,7 +42,7 @@ function Card:initState()
         if Input.isButtonPressed("Left") then
             return self.stateMachine:play("onDrag", sprite)
         end
-        self.button:setOffset(0, fix)
+        self.button:setOffset(--[[offset.x this cause issue]] 0, fix)
     end)
 
     self.stateMachine:insert("onNothing", function(sprite, animation)
@@ -53,7 +53,7 @@ function Card:initState()
         animation.offsetY = -100
         sprite:setColor(Color.new(255, 255, 255, 255))
         self.button:setScale(scale, scale)
-        self.button:setOffset(0, fix)
+        self.button:setOffset(--[[offset.x this cause issue]]0, fix)
     end)
 
     self.stateMachine:insert("onDrag", function(sprite)
@@ -67,6 +67,10 @@ function Card:initState()
         self.button:setScale(scale, scale)
         self.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
     end)
+
+    self.stateMachine:insert("reset", function(position)
+
+    end)
 end
 
 function Card:getBounds()
@@ -75,6 +79,16 @@ end
 
 function Card:rotate(angle)
     self.button:getSprite():rotate(angle)
+end
+
+function Card:setPosition(position)
+    local offset = self.button:getOffset()
+    local basePosition = self.button:getBasePosition()
+    local fixOffset = position.x - basePosition.x
+
+    print("offset", offset.x, offset.y, basePosition.x, basePosition.y)
+    self.position.x = position.x
+    self.button:setOffset(fixOffset, offset.y)
 end
 
 function Card:setCallback(callback)

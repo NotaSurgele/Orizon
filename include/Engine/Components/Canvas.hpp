@@ -293,7 +293,7 @@ public:
         return _text;
     }
 
-    std::unordered_map<Button *, sf::Vector2f>& getButtons()
+    std::vector<Button *> getButtons()
     {
         return _button;
     }
@@ -313,7 +313,7 @@ private:
 private:
     sf::Font _font;
     std::unordered_map<Text *, sf::Vector2f> _text;
-    std::unordered_map<Button *, sf::Vector2f> _button;
+    std::vector<Button *> _button;
     std::unordered_map<Image *, sf::Vector2f> _image;
     Entity *_e = nullptr;
 };
@@ -329,11 +329,7 @@ inline void Canvas::remove<Text *>(Text *text) {
 
 template <>
 inline void Canvas::remove<Button *>(Button *button) {
-    auto find = _button.find(button);
-    if (find != _button.end()) {
-        _button.erase(find);
-        delete button;
-    }
+    _button.erase(std::remove(_button.begin(), _button.end(), button), _button.end());
 }
 
 template <>

@@ -13,6 +13,19 @@ local cameraCenter = nil
 local cards = {}
 local draw = {}
 
+function resetCardPosition()
+    position = Vector2f.new(-200, 300)
+    angle = -5
+
+    for i, card in pairs(cards) do
+        print(i, card)
+        card:setPosition(position)
+
+        position.x = position.x + 120
+        angle = angle + 4
+    end
+end
+
 function createCard()
     local card = Card.new(hud, position, scale, camera)
 
@@ -34,8 +47,11 @@ function createCard()
             end
         end
         card:destroy()
+        resetCardPosition()
     end)
     table.insert(cards, card)
+
+
     position.x = position.x + 120
     angle = angle + 4
 end
@@ -49,7 +65,7 @@ function cardInit()
         createCard()
     end
 
-    -- Draw
+    -- Draw cards
     draw = Draw.new(hud, _self:getComponentScript())
     draw:initState()
 end
@@ -70,14 +86,9 @@ end
 
 function Update()
     handleAnimation()
-
-    --print("start")
     for v, card in pairs(cards) do
-        print(v, card)
         card:update()
     end
-    --print("end")
-
     draw:update()
 end
 

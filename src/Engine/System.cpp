@@ -175,6 +175,7 @@ void System::canvasSystem(Entity *e)
         auto& t = it.first;
         auto& position = it.second;
         auto offset = t->getOffset();
+        auto& base = t->getBasePosition();
 
         t->setBasePosition(position);
         if (t->coordType == Text::LOCAL) {
@@ -192,17 +193,14 @@ void System::canvasSystem(Entity *e)
     auto buttons = canvas->getButtons();
     bool isHovered = false;
 
-    for (auto& it : buttons) {
-        auto& b = it.first;
-        auto& position = it.second;
+    for (auto& b : buttons) {
         auto offset = b->getOffset();
         auto& text = b->text;
+        auto& position = b->getBasePosition();
 
-        b->setBasePosition(position);
         if (b->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
-            auto size = b->getTextureSize();
 
             b->setPosition(((position.x + offset.x) + center.x),
                             ((position.y + offset.y) + center.y));
@@ -239,6 +237,7 @@ void System::canvasSystem(Entity *e)
         auto& i = it.first;
         auto& position = it.second;
         auto offset = i->getOffset();
+        auto& base = i->getBasePosition();
 
         i->setBasePosition(position);
         if (i->coordType == Text::LOCAL) {
