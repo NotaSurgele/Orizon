@@ -17,7 +17,6 @@ Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const
     newText->setPosition(pos);
     newText->setFont(_font);
     newText->setSave(save);
-
     _text.emplace(newText, pos);
     return newText;
 }
@@ -28,7 +27,8 @@ Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scal
 
     button->setTexture(texture);
     button->setSave(save);
-    _button.emplace(button, position);
+    button->setBasePosition(position);
+    _button.push_back(button);
     return button;
 }
 
@@ -40,7 +40,7 @@ void Canvas::destroy()
     }
 
     for (auto& b : _button) {
-        delete b.first;
+        delete b;
     }
     _button.clear();
     _text.clear();

@@ -317,6 +317,14 @@ void Script::registerCanvasTypes()
                 return obj->setOffset(x, y);
             }
         ),
+        "setBasePosition", sol::overload(
+            [](CanvasObject *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](CanvasObject *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
+            }
+        ),
         "getBasePosition", &CanvasObject::getBasePosition
     );
 
@@ -330,6 +338,14 @@ void Script::registerCanvasTypes()
             },
             [] (Text *obj, const float& x, const float& y) {
                 return obj->setOffset(x, y);
+            }
+        ),
+        "setBasePosition", sol::overload(
+            [](Text *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Text *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
             }
         ),
         "getBasePosition", &Text::getBasePosition
@@ -357,6 +373,14 @@ void Script::registerCanvasTypes()
             },
             [] (Image *obj, const float& x, const float& y) {
                 return obj->setOffset(x, y);
+            }
+        ),
+        "setBasePosition", sol::overload(
+            [](Image *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Image *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
             }
         ),
         "getBasePosition", &Image::getBasePosition,
@@ -420,7 +444,15 @@ void Script::registerCanvasTypes()
             }
         ),
         "text", &Button::text,
-        "getBasePosition", &Button::getBasePosition
+        "getBasePosition", &Button::getBasePosition,
+        "setBasePosition", sol::overload(
+            [](Button *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Button *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
+            }
+        )
     );
 }
 
