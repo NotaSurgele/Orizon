@@ -19,7 +19,7 @@ function resetCardPosition()
 
     for i, card in pairs(cards) do
         print(i, card)
-        card:setPosition(position)
+        card:resetPosition(position, angle)
 
         position.x = position.x + 120
         angle = angle + 4
