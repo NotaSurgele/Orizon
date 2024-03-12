@@ -6,6 +6,10 @@ Card.__index = Card
 
 -- Private methods
 local function handleAnimation(self, sprite)
+    if self.stateMachine:getCurrentState() == "resetCard" then
+        self.stateMachine:play("resetCard", self.target, self.targetAngle)
+        return
+    end
     if self.button:isHovered() then
         self.stateMachine:play("onHover", sprite, self.animation)
     else
@@ -24,6 +28,8 @@ function Card.new(hud, position, scale, camera)
     self.scale = scale
     self.button = button
     self.camera = camera
+    self.target = Vector2f.new(0, 0)
+    self.targetAngle = 0
     self.animation = {
         offsetY = -200,
         scale = Vector2f.new(1, 1)
@@ -42,7 +48,7 @@ function Card:initState()
         if Input.isButtonPressed("Left") then
             return self.stateMachine:play("onDrag", sprite)
         end
-        self.button:setOffset(--[[offset.x this cause issue]] 0, fix)
+        self.button:setOffset(0, fix)
     end)
 
     self.stateMachine:insert("onNothing", function(sprite, animation)
@@ -53,7 +59,7 @@ function Card:initState()
         animation.offsetY = -100
         sprite:setColor(Color.new(255, 255, 255, 255))
         self.button:setScale(scale, scale)
-        self.button:setOffset(--[[offset.x this cause issue]]0, fix)
+        self.button:setOffset(0, fix)
     end)
 
     self.stateMachine:insert("onDrag", function(sprite)
@@ -61,16 +67,34 @@ function Card:initState()
         local scale = Utils.lerp(self.button:getSize().x, 0.3, 10 * deltaTime)
         local bounds = sprite:getGlobalBounds()
 
-        --print("Bounds", bounds.x, bounds.y)
         mouse.x = ((mouse.x - self.camera:getCenter().x) - self.button:getBasePosition().x)
         mouse.y = ((mouse.y - self.camera:getCenter().y) - self.button:getBasePosition().y)
         self.button:setScale(scale, scale)
         self.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
     end)
 
-    self.stateMachine:insert("reset", function(position)
+    self.stateMachine:insert("resetCard", function(position, angle)
+        local fixedRotation = 360 - self.button:getSprite():getRotation()
+        local basePosition = self.button:getBasePosition()
+        local x = Utils.lerp(basePosition.x, position.x, 50 * deltaTime)
+        local y = Utils.lerp(basePosition.y, position.y, 50 * deltaTime)
 
+        if x == position.x and y == position.y then
+            self.stateMachine:play("onNothing", self.button:getSprite(), self.animation)
+            return
+        end
+        self.targetAngle = angle
+        self.target.x = position.x
+        self.target.y = position.y
+        self.position.x = x
+        self.position.y = y
+        self.button:setBasePosition(x, y)
+        self:rotate(fixedRotation + self.targetAngle)
     end)
+end
+
+function Card:playState(stateName, ...)
+    self.stateMachine:play(stateName, ...)
 end
 
 function Card:getBounds()
@@ -79,14 +103,6 @@ end
 
 function Card:rotate(angle)
     self.button:getSprite():rotate(angle)
-end
-
-function Card:resetCard(position, angle)
-    local fixedRotation = 360 - self.button:getSprite():getRotation()
-
-    self.position.x = position.x
-    self.button:setBasePosition(position)
-    self:rotate(fixedRotation + angle)
 end
 
 function Card:setCallback(callback)
