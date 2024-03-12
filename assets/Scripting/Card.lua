@@ -81,9 +81,12 @@ function Card:rotate(angle)
     self.button:getSprite():rotate(angle)
 end
 
-function Card:resetPosition(position, angle)
+function Card:resetCard(position, angle)
+    local fixedRotation = 360 - self.button:getSprite():getRotation()
+
     self.position.x = position.x
     self.button:setBasePosition(position)
+    self:rotate(fixedRotation + angle)
 end
 
 function Card:setCallback(callback)
