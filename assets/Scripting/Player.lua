@@ -18,7 +18,7 @@ function resetCardPosition()
     angle = -5
 
     for i, card in pairs(cards) do
-        card:resetCard(position, angle)
+        card:playState("resetCard", position, angle)
 
         position.x = position.x + 120
         angle = angle + 4
