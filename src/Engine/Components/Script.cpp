@@ -317,6 +317,8 @@ void Script::registerCanvasTypes()
                 return obj->setOffset(x, y);
             }
         ),
+        "getZ", &CanvasObject::getZ,
+        "setZ", &CanvasObject::setZ,
         "setBasePosition", sol::overload(
             [](CanvasObject *obj, const sf::Vector2f& position) {
                 return obj->setBasePosition(position);
@@ -332,6 +334,8 @@ void Script::registerCanvasTypes()
     "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
         "coordType", &Text::coordType,
         "getOffset", &Text::getOffset,
+        "getZ", &Text::getZ,
+        "setZ", &Text::setZ,
         "setOffset", sol::overload(
             [] (Text *obj, const sf::Vector2f& offset) {
                 return obj->setOffset(offset);
@@ -375,6 +379,8 @@ void Script::registerCanvasTypes()
                 return obj->setOffset(x, y);
             }
         ),
+        "getZ", &Image::getZ,
+        "setZ", &Image::setZ,
         "setBasePosition", sol::overload(
             [](Image *obj, const sf::Vector2f& position) {
                 return obj->setBasePosition(position);
@@ -433,6 +439,8 @@ void Script::registerCanvasTypes()
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
         "getTextureSize", &Button::getTextureSize,
+        "getZ", &Button::getZ,
+        "setZ", &Button::setZ,
         "coordType", &Button::coordType,
         "getOffset", &Button::getOffset,
         "setOffset", sol::overload(
