@@ -4,7 +4,8 @@
         "player",
         "Camera",
         "Hud",
-        "EnemyManager"
+        "EnemyManager",
+        "SoundManager"
     ],
     "resources": [
         {
@@ -41,6 +42,11 @@
             "name": "light_texture",
             "path": "./assets/light_2.png",
             "type": "Texture"
+        },
+        {
+            "name": "card_select",
+            "path": "./assets/card_select.ogg",
+            "type": "Sound"
         },
         {
             "path": "./assets/Scripting/Enemy.lua",
