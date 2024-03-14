@@ -23,6 +23,8 @@ function Card.new(hud, position, scale, camera)
     local button = hud:addButton(position, scale, texture)
     local self = setmetatable({}, Card)
 
+    self.soundManager = System.getEntity("SoundManager"):getComponentSound()
+    self.soundIsPlaying = false
     self.hud = hud
     self.position = position
     self.scale = scale
@@ -44,6 +46,10 @@ function Card:initState()
         local offset = self.button:getOffset()
         local fix = Utils.lerp(offset.y, animation.offsetY,  10 * deltaTime)
 
+        if self.soundIsPlaying == false then
+            self.soundIsPlaying = true
+            self.soundManager:play()
+        end
         if z ~= 1 then
             self.button:setZ(1)
         end
@@ -61,6 +67,7 @@ function Card:initState()
         local scale = Utils.lerp(self.button:getSize().x, 1, 10 * deltaTime)
         local fix = Utils.lerp(offset.y, animation.offsetY, 10 * deltaTime)
 
+        self.soundIsPlaying = false
         if z ~= 0 then
             self.button:setZ(0)
         end
