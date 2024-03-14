@@ -289,6 +289,9 @@ void Script::registerCoreType()
             [] (Core *core, BoxCollider *drawable) {
                 return core->CoreDraw(drawable);
             },
+            [] (Core *core, Sprite *sprite) {
+                return core->CoreDraw(sprite);
+            },
             [] (Core *core, const sf::Drawable& drawable) {
                 return core->CoreDraw(drawable);
             }
@@ -314,6 +317,16 @@ void Script::registerCanvasTypes()
                 return obj->setOffset(x, y);
             }
         ),
+        "getZ", &CanvasObject::getZ,
+        "setZ", &CanvasObject::setZ,
+        "setBasePosition", sol::overload(
+            [](CanvasObject *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](CanvasObject *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
+            }
+        ),
         "getBasePosition", &CanvasObject::getBasePosition
     );
 
@@ -321,12 +334,22 @@ void Script::registerCanvasTypes()
     "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
         "coordType", &Text::coordType,
         "getOffset", &Text::getOffset,
+        "getZ", &Text::getZ,
+        "setZ", &Text::setZ,
         "setOffset", sol::overload(
             [] (Text *obj, const sf::Vector2f& offset) {
                 return obj->setOffset(offset);
             },
             [] (Text *obj, const float& x, const float& y) {
                 return obj->setOffset(x, y);
+            }
+        ),
+        "setBasePosition", sol::overload(
+            [](Text *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Text *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
             }
         ),
         "getBasePosition", &Text::getBasePosition
@@ -354,6 +377,16 @@ void Script::registerCanvasTypes()
             },
             [] (Image *obj, const float& x, const float& y) {
                 return obj->setOffset(x, y);
+            }
+        ),
+        "getZ", &Image::getZ,
+        "setZ", &Image::setZ,
+        "setBasePosition", sol::overload(
+            [](Image *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Image *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
             }
         ),
         "getBasePosition", &Image::getBasePosition,
@@ -406,6 +439,8 @@ void Script::registerCanvasTypes()
         "getPosition", &Button::getPosition,
         "getSize", &Button::getSize,
         "getTextureSize", &Button::getTextureSize,
+        "getZ", &Button::getZ,
+        "setZ", &Button::setZ,
         "coordType", &Button::coordType,
         "getOffset", &Button::getOffset,
         "setOffset", sol::overload(
@@ -417,7 +452,15 @@ void Script::registerCanvasTypes()
             }
         ),
         "text", &Button::text,
-        "getBasePosition", &Button::getBasePosition
+        "getBasePosition", &Button::getBasePosition,
+        "setBasePosition", sol::overload(
+            [](Button *obj, const sf::Vector2f& position) {
+                return obj->setBasePosition(position);
+            },
+            [](Button *obj, const float& x, const float& y) {
+                return obj->setBasePosition(x, y);
+            }
+        )
     );
 }
 
@@ -669,9 +712,18 @@ void Script::registerCanvasComponent()
             }
         ),
         "removeObject", sol::overload(
-                &Canvas::removeObject<Text *>,
-                &Canvas::removeObject<Button *>,
-                &Canvas::removeObject<Image *>),
+        [](Canvas *canvas, Button *button) {
+                return canvas->removeObject<Button *>(button);
+            },
+
+            [](Canvas *canvas, Text *text) {
+                return canvas->removeObject<Text *>(text);
+            },
+
+            [] (Canvas *canvas, Image *img) {
+                return canvas->removeObject<Image *>(img);
+            }
+        ),
         "getTexts", &Canvas::getTexts,
         "getButtons", &Canvas::getButtons,
         "getImages", &Canvas::getImages
@@ -842,7 +894,7 @@ void Script::update()
 }
 
 std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
-sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::metatable,sol::object>
+sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::table,sol::object>
 Script::getTableValue(const sol::object& res)
 {
     auto ud = res.as<sol::userdata>();
@@ -856,9 +908,9 @@ Script::getTableValue(const sol::object& res)
     return res;
 }
 
-sol::metatable Script::deserializeTable(const sol::metatable &table)
+sol::table Script::deserializeTable(const sol::table &table)
 {
-    sol::metatable newTable = _state->create_table();
+    sol::table newTable = _state->create_table();
 
     newTable[sol::metatable_key] = table[sol::metatable_key];
     table.for_each([&](const sol::object& key, const sol::object& value) {
@@ -873,11 +925,12 @@ sol::metatable Script::deserializeTable(const sol::metatable &table)
         }
         newTable[key.as<std::string>()] = value;
     });
+    _state->set(newTable);
     return newTable;
 }
 
 std::variant<Script *, Entity *, sf::FloatRect, sf::Vector2f,
-sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::metatable, sol::object>
+sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::table, sol::object>
 Script::call(const std::string &function, sol::variadic_args args)
 {
     {

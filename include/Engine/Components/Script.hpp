@@ -99,16 +99,16 @@ private:
 
     std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
     sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color,
-    sol::nil_t, sol::metatable,sol::object>getTableValue(const sol::object& res);
+    sol::nil_t, sol::table,sol::object>getTableValue(const sol::object& res);
 
-    sol::metatable deserializeTable(const sol::metatable& table);
+    sol::table deserializeTable(const sol::table& table);
 
     std::variant<
     Script *,
     Entity *, sf::FloatRect,
     sf::Vector2f, sf::Vector2i,
     sf::Vector2u, sf::IntRect,
-    sf::Color, sol::nil_t, sol::metatable,
+    sf::Color, sol::nil_t, sol::table,
     sol::object> call(const std::string& function, sol::variadic_args args);
 
 private:

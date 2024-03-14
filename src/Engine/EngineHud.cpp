@@ -301,9 +301,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
 
     json["type"] = "Canvas";
     json["canvas_objects"] = nlohmann::json::array();
-    for (auto &it : buttons) {
-        auto& b = it.first;
-        auto& offset = it.second;
+    for (auto &b : buttons) {
+        auto offset = b->getOffset();
         auto sprite = b->getSprite();
         auto size = b->getSize();
         auto content = b->getTextContent();
@@ -322,9 +321,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
         });
     }
 
-    for (auto &it : texts) {
-        auto& t = it.first;
-        auto& offset = it.second;
+    for (auto &t : texts) {
+        auto offset = t->getOffset();
         auto size = t->getCharacterSize();
         auto content = t->getString();
         auto coordType = t->coordType;
@@ -340,9 +338,8 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
         });
     }
 
-    for (auto &it : images) {
-        auto& i = it.first;
-        auto& offset = it.second;
+    for (auto &i : images) {
+        auto offset = i->getOffset();
         auto sprite = i->getImage();
         auto size = sprite->getScale();
         std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
@@ -856,15 +853,14 @@ void EngineHud::canvasRadioButton(CanvasObject::CoordType& selectedOption, Canva
 void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 {
     auto canvas = dynamic_cast<Canvas *>(c);
-    auto& buttons = canvas->getButtons();
-    auto& texts = canvas->getTexts();
-    auto& images = canvas->getImages();
+    auto buttons = canvas->getButtons();
+    auto texts = canvas->getTexts();
+    auto images = canvas->getImages();
     std::size_t id = 0;
 
     if (ImGui::TreeNode("Buttons")) {
-        for (auto& it : buttons) {
-            auto button = it.first;
-            auto& position = it.second;
+        for (auto& button : buttons) {
+            auto& position = button->getBasePosition();
             auto sprite = button->getSprite();
             std::string label = "##button" + std::to_string(id);
             CanvasObject::CoordType selectedOption = button->coordType;
@@ -885,8 +881,9 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             auto pos = ImGui::GetCursorPosX();
             ImGui::SetCursorPosX(pos + 150);
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Button>(button);
-                buttons.erase(button);
+                canvas->removeObject<Button *>(button);
+                buttons.erase(std::remove(buttons.begin(), buttons.end(), button), buttons.end());
+                //buttons.erase(button);
                 continue;
             }
             id++;
@@ -895,9 +892,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         ImGui::TreePop();
     }
     if (ImGui::TreeNode("Texts")) {
-        for (auto &it : texts) {
-            auto& text = it.first;
-            auto& position = it.second;
+        for (auto &text : texts) {
+            auto& position = text->getBasePosition();
             std::string content = text->getString();
             std::string label = "##texts" + std::to_string(id);
             auto size = text->getCharacterSize();
@@ -917,8 +913,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             canvasRadioButton(selectedOption, text);
 
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Text>(text);
-                texts.erase(text);
+                canvas->removeObject<Text *>(text);
+                texts.erase(std::remove(texts.begin(), texts.end(), text), texts.end());
                 continue;
             }
             text->setString(content.data());
@@ -929,10 +925,9 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
         ImGui::TreePop();
     }
     if (ImGui::TreeNode("Images")) {
-        for (auto& it : images) {
+        for (auto& image : images) {
             std::string label = "##toto" + std::to_string(id);
-            auto& image = it.first;
-            auto& position = it.second;
+            auto& position = image->getBasePosition();
             auto sprite = image->getImage();
             CanvasObject::CoordType selectedOption = image->coordType;
 
@@ -946,8 +941,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
 
             EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
             if (ImGui::Button("x", ImVec2(20, 20))) {
-                canvas->removeObject<Image>(image);
-                images.erase(image);
+                canvas->removeObject<Image *>(image);
+                images.erase(std::remove(images.begin(), images.end(), image), images.end());
                 continue;
             }
             id++;

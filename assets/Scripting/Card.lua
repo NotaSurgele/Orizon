@@ -5,44 +5,11 @@ local Card = {}
 Card.__index = Card
 
 -- Private methods
-local function initState(card)
-    card.stateMachine:insert("onHover", function(sprite, animation)
-        local offset = card.button:getOffset()
-        local fix = Utils.lerp(offset.y, animation.offsetY,  10 * deltaTime)
-
-        sprite:setColor(Color.new(255, 0, 0, 255))
-        animation.offsetY = -200
-        if Input.isButtonPressed("Left") then
-            return card.stateMachine:play("onDrag", sprite)
-        end
-        card.button:setOffset(0, fix)
-    end)
-
-    card.stateMachine:insert("onNothing", function(sprite, animation)
-        local offset = card.button:getOffset()
-        local scale = Utils.lerp(card.button:getSize().x, 1, 10 * deltaTime)
-        local fix = Utils.lerp(offset.y, animation.offsetY, 10 * deltaTime)
-
-        animation.offsetY = -100
-        sprite:setColor(Color.new(255, 255, 255, 255))
-        card.button:setScale(scale, scale)
-        card.button:setOffset(0, fix)
-    end)
-
-    card.stateMachine:insert("onDrag", function(sprite)
-        local mouse = System.getGlobalMousePosition()
-        local scale = Utils.lerp(card.button:getSize().x, 0.3, 10 * deltaTime)
-        local bounds = sprite:getGlobalBounds()
-
-        --print("Bounds", bounds.x, bounds.y)
-        mouse.x = ((mouse.x - card.camera:getCenter().x) - card.button:getBasePosition().x)
-        mouse.y = ((mouse.y - card.camera:getCenter().y) - card.button:getBasePosition().y)
-        card.button:setScale(scale, scale)
-        card.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
-    end)
-end
-
 local function handleAnimation(self, sprite)
+    if self.stateMachine:getCurrentState() == "resetCard" then
+        self.stateMachine:play("resetCard", self.target, self.targetAngle)
+        return
+    end
     if self.button:isHovered() then
         self.stateMachine:play("onHover", sprite, self.animation)
     else
@@ -61,17 +28,85 @@ function Card.new(hud, position, scale, camera)
     self.scale = scale
     self.button = button
     self.camera = camera
+    self.target = Vector2f.new(0, 0)
+    self.targetAngle = 0
     self.animation = {
         offsetY = -200,
         scale = Vector2f.new(1, 1)
     }
     self.stateMachine = StateMachine.new()
-    initState(self)
     return self
 end
 
+function Card:initState()
+    self.stateMachine:insert("onHover", function(sprite, animation)
+        local z = self.button:getZ()
+        local offset = self.button:getOffset()
+        local fix = Utils.lerp(offset.y, animation.offsetY,  10 * deltaTime)
+
+        if z ~= 1 then
+            self.button:setZ(1)
+        end
+        sprite:setColor(Color.new(255, 0, 0, 255))
+        animation.offsetY = -200
+        if Input.isButtonPressed("Left") then
+            return self.stateMachine:play("onDrag", sprite)
+        end
+        self.button:setOffset(0, fix)
+    end)
+
+    self.stateMachine:insert("onNothing", function(sprite, animation)
+        local z = self.button:getZ()
+        local offset = self.button:getOffset()
+        local scale = Utils.lerp(self.button:getSize().x, 1, 10 * deltaTime)
+        local fix = Utils.lerp(offset.y, animation.offsetY, 10 * deltaTime)
+
+        if z ~= 0 then
+            self.button:setZ(0)
+        end
+        animation.offsetY = -100
+        sprite:setColor(Color.new(255, 255, 255, 255))
+        self.button:setScale(scale, scale)
+        self.button:setOffset(0, fix)
+    end)
+
+    self.stateMachine:insert("onDrag", function(sprite)
+        local mouse = System.getGlobalMousePosition()
+        local scale = Utils.lerp(self.button:getSize().x, 0.3, 10 * deltaTime)
+        local bounds = sprite:getGlobalBounds()
+
+        mouse.x = ((mouse.x - self.camera:getCenter().x) - self.button:getBasePosition().x)
+        mouse.y = ((mouse.y - self.camera:getCenter().y) - self.button:getBasePosition().y)
+        self.button:setScale(scale, scale)
+        self.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
+    end)
+
+    self.stateMachine:insert("resetCard", function(position, angle)
+        local sprite = self.button:getSprite()
+        local fixedRotation = 360 - sprite:getRotation()
+        local basePosition = self.button:getBasePosition()
+        local x = Utils.lerp(basePosition.x, position.x, 50 * deltaTime)
+        local y = Utils.lerp(basePosition.y, position.y, 50 * deltaTime)
+
+        if x == position.x and y == position.y then
+            self.stateMachine:play("onNothing", sprite, self.animation)
+            return
+        end
+        self.targetAngle = angle
+        self.target.x = position.x
+        self.target.y = position.y
+        self.position.x = x
+        self.position.y = y
+        self.button:setBasePosition(x, y)
+        self:rotate(fixedRotation + self.targetAngle)
+    end)
+end
+
+function Card:playState(stateName, ...)
+    self.stateMachine:play(stateName, ...)
+end
+
 function Card:getBounds()
-    print(self.button:getSprite():getGlobalBounds())
     return self.button:getSprite():getGlobalBounds()
 end
 
@@ -80,7 +115,6 @@ function Card:rotate(angle)
 end
 
 function Card:setCallback(callback)
-    print(self.button)
     self.button:setCallback(callback)
 end
 
@@ -89,6 +123,10 @@ function Card:update()
     local sprite = button:getSprite()
 
     handleAnimation(self, sprite)
+end
+
+function Card:destroy()
+    self.hud:removeObject(self.button)
 end
 
 return Card

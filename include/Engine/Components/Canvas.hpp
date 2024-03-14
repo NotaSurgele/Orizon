@@ -42,6 +42,13 @@ public:
         return _save;
     }
 
+    virtual void setZ(const int& index) = 0;
+
+    const int getZ()
+    {
+        return _z;
+    }
+
     void setBasePosition(const sf::Vector2f& base)
     {
         _basePosition = base;
@@ -64,6 +71,7 @@ protected:
     bool _save = true;
     sf::Vector2f _offset = {0, 0};
     sf::Vector2f _basePosition = {0, 0};
+    int _z = 0;
 };
 
 class Text : public sf::Text, public CanvasObject {
@@ -73,6 +81,9 @@ public:
     Text(const std::string& content, const sf::Font& font, const std::size_t& size) : sf::Text(content, font, size)
     {
     }
+
+    void setZ(const int& index) override final;
+
 };
 
 class Image : public Drawable, public CanvasObject {
@@ -121,6 +132,8 @@ public:
     {
         _image->draw(target, states);
     }
+
+    void setZ(const int& index) override final;
 
 private:
     Sprite *_image;
@@ -214,6 +227,8 @@ public:
         _sprite->setPosition(position);
     }
 
+    void setZ(const int& index) override final;
+
     std::string getTextContent()
     {
         if (text) {
@@ -277,73 +292,103 @@ public:
         auto img = new Image(texture, position, scale);
 
         img->setSave(save);
-        _image.emplace(img, position);
+        img->setBasePosition(position);
+        _image.push_back(img);
         return img;
     }
 
 
     template <typename T>
-    void removeObject(T *obj)
+    void removeObject(T obj)
     {
         remove<T>(obj);
     }
 
-    std::unordered_map<Text *, sf::Vector2f>& getTexts()
+    template <typename T>
+    void sort() {}
+
+    std::vector<Text *> getTexts()
     {
         return _text;
     }
 
-    std::unordered_map<Button *, sf::Vector2f>& getButtons()
+    std::vector<Button *> getButtons()
     {
         return _button;
     }
 
-    std::unordered_map<Image *, sf::Vector2f>& getImages()
+    std::vector<Image *> getImages()
     {
         return _image;
     }
 
     void destroy() final;
 
-private:
+public:
+    static inline bool buttonSorted = true;
+    static inline bool textSorted = true;
+    static inline bool imageSorted = true;
 
+private:
     template <typename T>
-    void remove(T *obj);
+    void remove(T obj);
 
 private:
     sf::Font _font;
-    std::unordered_map<Text *, sf::Vector2f> _text;
-    std::unordered_map<Button *, sf::Vector2f> _button;
-    std::unordered_map<Image *, sf::Vector2f> _image;
+    std::vector<Text *> _text;
+    std::vector<Button *> _button;
+    std::vector<Image *> _image;
     Entity *_e = nullptr;
 };
 
-template <>
-inline void Canvas::remove<Text>(Text *text) {
-    auto find = _text.find(text);
-    if (find != _text.end()) {
-        _text.erase(find);
-    }
+template <typename T>
+void sortTemplate(std::vector<T>& array)
+{
+    std::sort(array.begin(), array.end(),
+      [](T first, T second) {
+          auto f = first->getZ();
+          auto s = second->getZ();
+
+          return f < s;
+      }
+    );
 }
 
 template <>
-inline void Canvas::remove<Button>(Button *button) {
-    auto find = _button.find(button);
-    if (find != _button.end()) {
-        _button.erase(find);
-    }
+inline void Canvas::sort<Text *>()
+{
+    sortTemplate<Text *>(_text);
 }
 
 template <>
-inline void Canvas::remove<Image>(Image *img) {
-    auto find = _image.find(img);
-    if (find != _image.end()) {
-        _image.erase(find);
-    }
+inline void Canvas::sort<Button *>()
+{
+    sortTemplate<Button *>(_button);
+}
+
+template <>
+inline void Canvas::sort<Image *>()
+{
+    sortTemplate<Image *>(_image);
+}
+
+template <>
+inline void Canvas::remove<Text *>(Text *text) {
+    _text.erase(std::remove(_text.begin(), _text.end(), text), _text.end());
+}
+
+template <>
+inline void Canvas::remove<Button *>(Button *button) {
+    _button.erase(std::remove(_button.begin(), _button.end(), button), _button.end());
+}
+
+template <>
+inline void Canvas::remove<Image *>(Image *img) {
+    _image.erase(std::remove(_image.begin(), _image.end(), img), _image.end());
 }
 
 template <typename T>
-inline void Canvas::remove(T *obj) {
+inline void Canvas::remove(T obj) {
     remove<T>(obj);
 }
 
