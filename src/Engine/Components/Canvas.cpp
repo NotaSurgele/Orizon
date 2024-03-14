@@ -2,6 +2,24 @@
 #include "System.hpp"
 #include "Core.hpp"
 
+void Text::setZ(const int &index)
+{
+    _z = index;
+    Canvas::textSorted = false;
+}
+
+void Image::setZ(const int &index)
+{
+    _z = index;
+    Canvas::imageSorted = false;
+}
+
+void Button::setZ(const int &index)
+{
+    _z = index;
+    Canvas::buttonSorted = false;
+}
+
 Canvas::Canvas(Entity *e) : _e(e)
 {
     System::__addCanvas(e);
@@ -17,7 +35,8 @@ Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const
     newText->setPosition(pos);
     newText->setFont(_font);
     newText->setSave(save);
-    _text.emplace(newText, pos);
+    newText->setBasePosition(pos);
+    _text.push_back(newText);
     return newText;
 }
 
@@ -36,12 +55,17 @@ void Canvas::destroy()
 {
     System::__removeCanvas(_e);
     for (auto& t : _text) {
-        delete t.first;
+        delete t;
     }
 
     for (auto& b : _button) {
         delete b;
     }
+
+    for (auto& i : _image) {
+        delete i;
+    }
+    _image.clear();
     _button.clear();
     _text.clear();
 }

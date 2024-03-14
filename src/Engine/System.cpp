@@ -170,14 +170,27 @@ void System::canvasSystem(Entity *e)
     auto canvas = e->getComponent<Canvas>();
     auto texts = canvas->getTexts();
 
-    // Text system
-    for (auto& it : texts) {
-        auto& t = it.first;
-        auto& position = it.second;
-        auto offset = t->getOffset();
-        auto& base = t->getBasePosition();
+    // Sort each canvas registry
+    if (!Canvas::textSorted) {
+        canvas->sort<Text *>();
+        Canvas::textSorted = true;
+    }
 
-        t->setBasePosition(position);
+    if (!Canvas::buttonSorted) {
+        canvas->sort<Button *>();
+        Canvas::buttonSorted = true;
+    }
+
+    if (!Canvas::imageSorted) {
+        canvas->sort<Image *>();
+        Canvas::imageSorted = true;
+    }
+
+    // Text system
+    for (auto& t : texts) {
+        auto offset = t->getOffset();
+        auto& position = t->getBasePosition();
+
         if (t->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
@@ -188,6 +201,7 @@ void System::canvasSystem(Entity *e)
         } else t->setPosition(position.x + offset.x, position.y + offset.y);
         DRAW(*t);
     }
+
 
     // Button system
     auto buttons = canvas->getButtons();
@@ -231,15 +245,11 @@ void System::canvasSystem(Entity *e)
     }
 
     auto images = canvas->getImages();
-
     // Images system
-    for (auto& it : images) {
-        auto& i = it.first;
-        auto& position = it.second;
+    for (auto& i : images) {
         auto offset = i->getOffset();
-        auto& base = i->getBasePosition();
+        auto& position = i->getBasePosition();
 
-        i->setBasePosition(position);
         if (i->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();

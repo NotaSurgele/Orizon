@@ -40,9 +40,13 @@ end
 
 function Card:initState()
     self.stateMachine:insert("onHover", function(sprite, animation)
+        local z = self.button:getZ()
         local offset = self.button:getOffset()
         local fix = Utils.lerp(offset.y, animation.offsetY,  10 * deltaTime)
 
+        if z ~= 1 then
+            self.button:setZ(1)
+        end
         sprite:setColor(Color.new(255, 0, 0, 255))
         animation.offsetY = -200
         if Input.isButtonPressed("Left") then
@@ -52,10 +56,14 @@ function Card:initState()
     end)
 
     self.stateMachine:insert("onNothing", function(sprite, animation)
+        local z = self.button:getZ()
         local offset = self.button:getOffset()
         local scale = Utils.lerp(self.button:getSize().x, 1, 10 * deltaTime)
         local fix = Utils.lerp(offset.y, animation.offsetY, 10 * deltaTime)
 
+        if z ~= 0 then
+            self.button:setZ(0)
+        end
         animation.offsetY = -100
         sprite:setColor(Color.new(255, 255, 255, 255))
         self.button:setScale(scale, scale)
@@ -74,13 +82,14 @@ function Card:initState()
     end)
 
     self.stateMachine:insert("resetCard", function(position, angle)
-        local fixedRotation = 360 - self.button:getSprite():getRotation()
+        local sprite = self.button:getSprite()
+        local fixedRotation = 360 - sprite:getRotation()
         local basePosition = self.button:getBasePosition()
         local x = Utils.lerp(basePosition.x, position.x, 50 * deltaTime)
         local y = Utils.lerp(basePosition.y, position.y, 50 * deltaTime)
 
         if x == position.x and y == position.y then
-            self.stateMachine:play("onNothing", self.button:getSprite(), self.animation)
+            self.stateMachine:play("onNothing", sprite, self.animation)
             return
         end
         self.targetAngle = angle
