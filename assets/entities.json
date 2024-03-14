@@ -41,8 +41,8 @@
                 {
                     "collision_type": "Dynamic",
                     "position": [
-                        2450.0,
-                        3500.0
+                        3850.0,
+                        5500.0
                     ],
                     "range": 10,
                     "size": [
@@ -50,11 +50,6 @@
                         16.0
                     ],
                     "type": "BoxCollider"
-                },
-                {
-                    "loop": true,
-                    "sound_name": "titi",
-                    "type": "Sound"
                 },
                 {
                     "position": [
@@ -255,6 +250,40 @@
                 }
             ],
             "name": "EnemyManager"
+        },
+        {
+            "components": [
+                {
+                    "loop": false,
+                    "sound_name": "card_select",
+                    "type": "Sound"
+                },
+                {
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform2D"
+                },
+                {
+                    "tag": "SoundManager",
+                    "type": "Tag"
+                },
+                {
+                    "type": "Layer",
+                    "value": 0
+                }
+            ],
+            "name": "SoundManager"
         }
     ]
 }
