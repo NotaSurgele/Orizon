@@ -65,6 +65,7 @@ private:
     void registerDrawableType();
     void registerCoreType();
     void registerCanvasTypes();
+    void registerLineType();
     void registerBaseTypes();
 
     // register component

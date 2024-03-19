@@ -5,7 +5,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_USE_PTHREADS_INIT true)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -g3 -ggdb -gdwarf-2")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 include(FetchContent)
 
@@ -60,7 +60,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
-    ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+	${CMAKE_SOURCE_DIR}/include/Engine/Components/
+	${CMAKE_SOURCE_DIR}/include/Engine/Graphical/
     ${CMAKE_SOURCE_DIR}/include/external/
     ${CMAKE_SOURCE_DIR}/include/external/lua
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle

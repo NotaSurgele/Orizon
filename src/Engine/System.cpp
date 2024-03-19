@@ -202,7 +202,6 @@ void System::canvasSystem(Entity *e)
         DRAW(*t);
     }
 
-
     // Button system
     auto buttons = canvas->getButtons();
     bool isHovered = false;
@@ -217,7 +216,7 @@ void System::canvasSystem(Entity *e)
             auto center = v->getCenter();
 
             b->setPosition(((position.x + offset.x) + center.x),
-                            ((position.y + offset.y) + center.y));
+                           ((position.y + offset.y) + center.y));
         } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
         if (!isHovered) {
@@ -225,7 +224,6 @@ void System::canvasSystem(Entity *e)
             auto bounds = b->getSprite()->getGlobalBounds();
 
             if (bounds.contains((float)mousePos.x, (float)mousePos.y)) {
-                isHovered = true;
                 b->state = Button::HOVERED;
 
                 if (b->isClicked()) {
@@ -233,7 +231,9 @@ void System::canvasSystem(Entity *e)
                     b->call();
                 }
             } else b->state = Button::NOTHING;
-        } else b->state = Button::NOTHING;
+        } else {
+            b->state = Button::NOTHING;
+        }
         DRAW(b);
 
         //Handle button text
