@@ -4,10 +4,12 @@ local Utils = require 'assets.Scripting.Utils'
 
 local manager = nil
 
+-- Junk
+local line = nil
+
 -- Camera
 local hud = nil
 local camera = nil
-local cameraCenter = nil
 
 -- Cards
 local cards = {}
@@ -49,8 +51,6 @@ function createCard()
         resetCardPosition()
     end)
     table.insert(cards, card)
-
-
     position.x = position.x + 120
     angle = angle + 4
 end
@@ -80,15 +80,21 @@ function Start()
     hud = System.getEntity("Hud"):getComponentCanvas()
     camera = System.getEntity("Camera"):getComponentView()
 
+    line = Line.new(800, 500, 900, 500, 10)
     cardInit()
 end
 
 function Update()
+    local mouse = System.getGlobalMousePosition()
+    local center = camera:getCenter()
+
+    line:setEndPoint(mouse)
     handleAnimation()
     for v, card in pairs(cards) do
         card:update()
     end
     draw:update()
+    line:draw()
 end
 
 function Destroy()
