@@ -308,6 +308,7 @@ void System::systems()
 
     // Handle force update entity
     for (auto& e : _forceUpdate) {
+        if (!e->active) continue;
         pushEntity(e);
     }
 
@@ -317,6 +318,7 @@ void System::systems()
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
+            if (!e->active) continue;
             pushEntity(e);
         }
     }
@@ -325,7 +327,7 @@ void System::systems()
     // Handle hashGrid moving entity
     EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
     for (auto e : _dynamic_collider) {
-        if (!e) continue;
+        if (!e || !e->active) continue;
         _hashGrid->insert(e);
     }
 
@@ -344,15 +346,18 @@ void System::systems()
 
     // Light source system
     for (auto& e : _lightSource) {
+        if (!e->active) continue;
         lightSystem(e);
     }
 
     for (auto& e : _canvas) {
+        if (!e->active) continue;
         canvasSystem(e);
     }
 
     // Handle entity with script
     for (auto& e : _scripted_entity) {
+        if (!e->active) continue;
         scriptSystem(e);
     }
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());

@@ -134,7 +134,7 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
-    if (_fpsTime < .1f) {
+    if (_fpsTime < .5f) {
         _fpsTime += _time.getClock().getElapsedTime().asSeconds();
         return;
     }

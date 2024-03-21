@@ -1298,6 +1298,7 @@ void EngineHud::entityInformation()
         auto components = _selected->getComponents();
         std::size_t i = 0;
 
+        ImGui::Checkbox("Active", &_selected->active);
         for (auto& elem : components) {
             if (elem.second == nullptr) {
                 _selected->removeComponent(elem.second);

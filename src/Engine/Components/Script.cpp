@@ -138,7 +138,7 @@ void Script::registerVectorType()
 
 void Script::registerColorType()
 {
-    _state->new_usertype<sf::Color>(
+    auto color = _state->new_usertype<sf::Color>(
             "Color", sol::constructors<sf::Color(uint8_t, uint8_t, uint8_t, uint8_t),
                     sf::Color()>(),
             "r", &sf::Color::r,

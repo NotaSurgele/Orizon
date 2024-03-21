@@ -1,11 +1,11 @@
 local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
 local Utils = require 'assets.Scripting.Utils'
+local GlobalVariable = require 'assets.Scripting.Global'
 
 local manager = nil
 
 -- Junk
-local line = nil
 
 -- Camera
 local hud = nil
@@ -14,6 +14,12 @@ local camera = nil
 -- Cards
 local cards = {}
 local draw = {}
+
+local Stats = {
+    health = 100,
+    shield = 0,
+    attack = 1
+}
 
 function resetCardPosition()
     position = Vector2f.new(-200, 300)
@@ -37,6 +43,7 @@ function createCard()
         local bounds = card:getBounds()
         local enemy = script:call("contain", bounds)
 
+        GlobalVariable.selectedCard = nil
         if enemy == nil then
             return
         end
@@ -80,21 +87,19 @@ function Start()
     hud = System.getEntity("Hud"):getComponentCanvas()
     camera = System.getEntity("Camera"):getComponentView()
 
-    line = Line.new(800, 500, 900, 500, 10)
     cardInit()
 end
 
 function Update()
-    local mouse = System.getGlobalMousePosition()
-    local center = camera:getCenter()
-
-    line:setEndPoint(mouse)
     handleAnimation()
+
+    if Stats.health <= 0 then
+    	print("Player is dead restart")
+    end
     for v, card in pairs(cards) do
         card:update()
     end
     draw:update()
-    line:draw()
 end
 
 function Destroy()
