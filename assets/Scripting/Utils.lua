@@ -16,10 +16,6 @@ function Utils.lerp2(start, target, dt)
             self:lerp(start.y, target.y, dt))
 end
 
-function Utils.angleFromOriginToPoint(x1, y1, x2, y2)
-    return math.atan(y2, x2) - math.atan(y1, x1)
-end
-
 function Utils.arraySize(array)
     local counter = 0
 

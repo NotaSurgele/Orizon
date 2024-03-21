@@ -10,7 +10,7 @@ local function handleAnimation(self, sprite)
         self.stateMachine:play("resetCard", self.target, self.targetAngle)
         return
     end
-    if self.button:isHovered() then
+    if self.button:isHovered() or self.onDrag == true then
         self.stateMachine:play("onHover", sprite, self.animation)
     else
         self.stateMachine:play("onNothing", sprite, self.animation)
@@ -32,9 +32,12 @@ function Card.new(hud, position, scale, camera)
     self.camera = camera
     self.target = Vector2f.new(0, 0)
     self.targetAngle = 0
+    self.onDrag = false
     self.animation = {
         offsetY = -200,
-        scale = Vector2f.new(1, 1)
+        scale = Vector2f.new(1, 1),
+        dragPosition = Vector2f.new(-1, -1),
+        line = Line.new(0, 0, 0, 0, 10, Color.new(255, 255, 0, 255))
     }
     self.stateMachine = StateMachine.new()
     return self
@@ -82,10 +85,20 @@ function Card:initState()
         local scale = Utils.lerp(self.button:getSize().x, 0.3, 10 * deltaTime)
         local bounds = sprite:getGlobalBounds()
 
+        self.onDrag = true
+        if self.animation.dragPosition.x == -1
+            and self.animation.dragPosition.y == -1 then
+            self.animation.dragPosition.x = bounds.x + (bounds.width / 2)
+            self.animation.dragPosition.y = bounds.y + (bounds.height / 2)
+
+            self.animation.line:setStartPoint(self.animation.dragPosition)
+        end
+        self.animation.line:setEndPoint(mouse)
         mouse.x = ((mouse.x - self.camera:getCenter().x) - self.button:getBasePosition().x)
         mouse.y = ((mouse.y - self.camera:getCenter().y) - self.button:getBasePosition().y)
         self.button:setScale(scale, scale)
         self.button:setOffset(mouse.x - (bounds.width * .5), mouse.y - (bounds.height * .5))
+        self.animation.line:draw()
     end)
 
     self.stateMachine:insert("resetCard", function(position, angle)
