@@ -34,7 +34,6 @@ function Card.new(hud, position, scale, camera)
     self.camera = camera
     self.target = Vector2f.new(0, 0)
     self.targetAngle = 0
-    self.onDrag = false
     self.animation = {
         offsetY = -200,
         scale = Vector2f.new(1, 1),
