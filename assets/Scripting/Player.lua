@@ -1,6 +1,7 @@
 local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
 local Utils = require 'assets.Scripting.Utils'
+local GlobalVariable = require 'assets.Scripting.Global'
 
 local manager = nil
 
@@ -36,7 +37,7 @@ function createCard()
         local bounds = card:getBounds()
         local enemy = script:call("contain", bounds)
 
-        card.onDrag = false
+        GlobalVariable.selectedCard = nil
         if enemy == nil then
             return
         end
