@@ -1,5 +1,6 @@
 local Utils = require 'assets.Scripting.Utils'
 local StateMachine = require 'assets.Scripting.StateMachine'
+local GlobalVariable = require 'assets.Scripting.Global'
 
 local Card = {}
 Card.__index = Card
@@ -10,7 +11,8 @@ local function handleAnimation(self, sprite)
         self.stateMachine:play("resetCard", self.target, self.targetAngle)
         return
     end
-    if self.button:isHovered() or self.onDrag == true then
+    if self.button:isHovered() and GlobalVariable.selectedCard == nil
+        or GlobalVariable.selectedCard == self then
         self.stateMachine:play("onHover", sprite, self.animation)
     else
         self.stateMachine:play("onNothing", sprite, self.animation)
@@ -85,7 +87,7 @@ function Card:initState()
         local scale = Utils.lerp(self.button:getSize().x, 0.3, 10 * deltaTime)
         local bounds = sprite:getGlobalBounds()
 
-        self.onDrag = true
+        GlobalVariable.selectedCard = self
         if self.animation.dragPosition.x == -1
             and self.animation.dragPosition.y == -1 then
             self.animation.dragPosition.x = bounds.x + (bounds.width / 2)
