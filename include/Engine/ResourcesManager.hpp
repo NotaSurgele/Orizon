@@ -90,7 +90,7 @@ class ResourcesManager {
         std::string pathFromName(const std::string& name)
         {
             for (auto& it : _pathMap) {
-                if (it.first.find(name) != std::string::npos) {
+                if (it.first == name) {
                     return it.second;
                 }
             }

@@ -16,6 +16,7 @@
 #include "Time.hpp"
 #include "System.hpp"
 #include "Core.hpp"
+#include "Line.hpp"
 
 void loadScript(sol::state *state, const std::string& path)
 {
@@ -464,6 +465,35 @@ void Script::registerCanvasTypes()
     );
 }
 
+void Script::registerLineType()
+{
+    _state->new_usertype<Line>(
+        "Line", sol::constructors<Line(float, float, float, float, float, sf::Color),
+        Line(float, float, float, float), Line(float, float, float, float, float)>(),
+        "setColor", &Line::setColor,
+        "setEndPoint", sol::overload(
+            [](Line& line, float x2, float y2) {
+                return line.setEndPoint(x2, y2);
+            },
+            [](Line& line, const sf::Vector2f& point) {
+                return line.setEndPoint(point);
+            }
+        ),
+        "setStartPoint", sol::overload(
+            [] (Line& line, const sf::Vector2f& point) {
+                return line.setStartPoint(point);
+            },
+            [] (Line& line, float x1, float y1) {
+                return line.setStartPoint(x1, y1);
+            }
+        ),
+        "setThickness", &Line::setThickness,
+        "getStartPoint", &Line::getStartPoint,
+        "getEndPoint", &Line::getEndPoint,
+        "draw", &Line::draw
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -477,6 +507,7 @@ void Script::registerBaseTypes()
     registerDrawableType();
     registerCanvasTypes();
     registerCoreType();
+    registerLineType();
 }
 
 void Script::registerTransform2DComponent()

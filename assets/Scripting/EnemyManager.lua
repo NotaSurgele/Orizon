@@ -2,11 +2,11 @@
 local enemies = {}
 local playerScript = nil
 
---864.66668701172 331.33334350586
+--824 472
 
 function createEnemies()
-    x = 864
-    y = 150
+    x = 824
+    y = 472
 
     for i=0, 3 do
         local enemy = {
@@ -29,7 +29,7 @@ function createEnemies()
         enemy.mainScript:call("setHitboxData", x, y, bounds.width, bounds.height)
         System.pushEntity(entity)
         table.insert(enemies, enemy)
-        y = y + 200
+        x = x + 150
     end
 end
 
@@ -50,14 +50,7 @@ function Start()
     playerScript = System.getEntity("player"):getComponentScript()
 end
 
-function getMe()
-    return _self
-end
-
 function Update()
-    local mouse = System.getGlobalMousePosition()
-
-    ---print(mouse.x, mouse.y)
 end
 
 function Destroy()

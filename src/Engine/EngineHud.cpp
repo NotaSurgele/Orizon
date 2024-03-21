@@ -1056,8 +1056,10 @@ void EngineHud::saveScene()
                                                                         _currentSceneContent["entities"]);
             std::string entitiesPath;
             for (auto& r : _currentSceneContent["resources"]) {
-                if (r["type"].get<std::string>().find("Entities") != std::string::npos)
+                if (r["type"].get<std::string>().find("Entities") != std::string::npos) {
                     entitiesPath = r["path"];
+                    break;
+                }
             }
             saveResource(_currentSceneContent, entitiesPath);
             auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
@@ -1069,7 +1071,7 @@ void EngineHud::saveScene()
 
                 for (auto& json : entitiesContentJson["entities"]) {
                     auto entityName = json["name"];
-                    if (entityName.get<std::string>().find(name) != std::string::npos) {
+                    if (entityName.get<std::string>() == name) {
                         componentSerializer(json, e);
                         find = true;
                         break;
