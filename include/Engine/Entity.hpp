@@ -162,6 +162,7 @@ class Entity {
 
 public:
     int __registryPosition = -1;
+    bool active = true;
 
     protected:
         std::unordered_multimap<const char *, IComponent *> _component_map;

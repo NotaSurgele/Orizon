@@ -15,6 +15,12 @@ local camera = nil
 local cards = {}
 local draw = {}
 
+local Stats = {
+    health = 100,
+    shield = 0,
+    attack = 1
+}
+
 function resetCardPosition()
     position = Vector2f.new(-200, 300)
     angle = -5
@@ -86,6 +92,10 @@ end
 
 function Update()
     handleAnimation()
+
+    if Stats.health <= 0 then
+    	print("Player is dead restart")
+    end
     for v, card in pairs(cards) do
         card:update()
     end
