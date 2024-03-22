@@ -1175,7 +1175,7 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
     }
 }
 
-void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
+void EngineHud::entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;
     ImGui::SetNextWindowPos(ImVec2(0, 0));

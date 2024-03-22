@@ -52,9 +52,9 @@ public:
         _grid.clear();
     }
 
-    std::vector<Entity *> retrieve(Entity *e) {
+    std::list<Entity *> retrieve(Entity *e) {
         std::vector<sf::Vector2i> cells = calculateCells(e);
-        std::vector<Entity *> result;
+        std::list<Entity *> result;
 
         EngineHud::writeConsole<std::string, std::size_t>("Cells ", cells.size());
         for (const auto& cell : cells) {
@@ -111,5 +111,5 @@ private:
     int _capacity = 100;
     float _cellSize = 1.0f;
 
-    std::unordered_map<sf::Vector2i, std::vector<Entity *>, VectorHash> _grid;
+    std::unordered_map<sf::Vector2i, std::list<Entity *>, VectorHash> _grid;
 };

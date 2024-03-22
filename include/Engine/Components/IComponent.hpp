@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include <iostream>
+#include <list>
 
 #define SIGNATURE(type) \
     typeid(type).name()
