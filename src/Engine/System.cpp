@@ -34,7 +34,9 @@ void System::pushEntity(Entity *entity)
         entity->__registryPosition = _registry_size + 1;
     }
     else {
-        _registry.insert(_registry.begin() + position, entity);
+        auto it = _registry.begin();
+        std::advance(it, position);
+        _registry.insert(it, entity);
         entity->__registryPosition = position;
     }
 }
@@ -56,8 +58,7 @@ void System::forceDestroy()
             }
         }
         e->__destroyComponents();
-        e = nullptr;
-        // delete e; [TODO] Fix this
+        //delete e; //[TODO] Fix this
     }
     for (auto& l : _destroy_tilemap) {
         l->clear();
@@ -134,19 +135,6 @@ void System::velocitySystem(Entity *e)
 
 void System::sort()
 {
-    std::sort(_registry.begin(), _registry.end(),
-        [](Entity *e1, Entity *e2) {
-            auto l1 =  e1->getComponent<Layer>();
-            auto l2 = e2->getComponent<Layer>();
-
-            if (!l1 || !l2)
-                return true;
-            auto v1 = l1->value();
-            auto v2 = l2->value();
-
-            return v1 > v2;
-        }
-    );
 }
 
 void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
@@ -542,7 +530,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
 
 void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 {
-    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
+    std::list<Entity *> dynamic_entity = _hashGrid->retrieve(e);
 
     for (auto d_e : dynamic_entity) {
         if (d_e == e)
@@ -687,7 +675,7 @@ bool System::isInView(TileMap *map)
 
 void System::destroyEntity()
 {
-    for (auto& e : _to_destroy) {
+    for (auto e : _to_destroy) {
         if (!e) continue;
         if (e->hasComponents<Light>()) __removeLightSource(e);
 
