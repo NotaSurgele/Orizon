@@ -866,6 +866,8 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             CanvasObject::CoordType selectedOption = button->coordType;
 
             ImGui::Separator();
+            ImGui::PushID(id);
+            ImGui::Checkbox("Active", &button->active);
             ImGui::Text("position");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
@@ -886,6 +888,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
                 //buttons.erase(button);
                 continue;
             }
+            ImGui::PopID();
             id++;
         }
         ImGui::Separator();
@@ -899,7 +902,9 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             auto size = text->getCharacterSize();
             CanvasObject::CoordType selectedOption = text->coordType;
 
+            ImGui::PushID(id);
             ImGui::Separator();
+            ImGui::Checkbox("Active", &text->active);
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
             ImGui::InputFloat((label + "x").data(), &position.x);
@@ -919,6 +924,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             }
             text->setString(content.data());
             text->setCharacterSize(size);
+            ImGui::PopID();
             id++;
         }
         ImGui::Separator();
@@ -931,7 +937,9 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
             auto sprite = image->getImage();
             CanvasObject::CoordType selectedOption = image->coordType;
 
+            ImGui::PushID(id);
             ImGui::Separator();
+            ImGui::Checkbox("Active", &image->active);
             ImGui::Text("Position");
             ImGui::SetNextItemWidth(100);
             ImGui::InputFloat((label + "x").data(), &position.x);
@@ -945,6 +953,7 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
                 images.erase(std::remove(images.begin(), images.end(), image), images.end());
                 continue;
             }
+            ImGui::PopID();
             id++;
         }
         ImGui::Separator();
