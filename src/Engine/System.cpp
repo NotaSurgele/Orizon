@@ -188,6 +188,7 @@ void System::canvasSystem(Entity *e)
 
     // Text system
     for (auto& t : texts) {
+        if (!t->active) continue;
         auto offset = t->getOffset();
         auto& position = t->getBasePosition();
 
@@ -207,6 +208,7 @@ void System::canvasSystem(Entity *e)
     bool isHovered = false;
 
     for (auto& b : buttons) {
+        if (!b->active) continue;
         auto offset = b->getOffset();
         auto& text = b->text;
         auto& position = b->getBasePosition();
@@ -247,6 +249,7 @@ void System::canvasSystem(Entity *e)
     auto images = canvas->getImages();
     // Images system
     for (auto& i : images) {
+        if (!i->active) continue;
         auto offset = i->getOffset();
         auto& position = i->getBasePosition();
 

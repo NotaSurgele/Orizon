@@ -66,6 +66,7 @@ public:
 
 public:
     CoordType coordType = LOCAL;
+    bool active = true;
 
 protected:
     bool _save = true;
