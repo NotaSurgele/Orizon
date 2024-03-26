@@ -435,6 +435,7 @@ void Script::registerCanvasTypes()
                 return button->setScale(x, y);
             }
         ),
+        "clickable", &Button::clickable,
         "isHovered", &Button::isHovered,
         "isClicked", &Button::isClicked,
         "getPosition", &Button::getPosition,

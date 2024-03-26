@@ -266,6 +266,7 @@ public:
     };
 
 public:
+    bool clickable = true;
     States state = NOTHING;
     Text *text = nullptr;
 

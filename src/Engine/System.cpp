@@ -209,7 +209,7 @@ void System::canvasSystem(Entity *e)
                            ((position.y + offset.y) + center.y));
         } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
-        if (!isHovered) {
+        if (!isHovered && b->clickable) {
             auto mousePos = getGlobalMousePosition();
             auto bounds = b->getSprite()->getGlobalBounds();
 
@@ -221,8 +221,6 @@ void System::canvasSystem(Entity *e)
                     b->call();
                 }
             } else b->state = Button::NOTHING;
-        } else {
-            b->state = Button::NOTHING;
         }
         DRAW(b);
 
