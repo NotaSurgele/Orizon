@@ -102,7 +102,6 @@ void Script::registerInputSystem()
         "isActionButtonReleased", &Input::isActionButtonReleased,
         "isActionButtonPressed", &Input::isActionButtonPressed
     );
-    (*_state)["Input"] = Input();
 }
 
 void Script::registerVectorType()

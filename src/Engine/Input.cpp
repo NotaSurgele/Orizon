@@ -4,6 +4,8 @@
 #include <SFML/System.hpp>
 #include <fstream>
 
+#define INPUT_FUNCTION
+
 bool Input::isKeyPressed(std::string const& key)
 {
     return std::find(___keyArray.begin(), ___keyArray.end(), key) != ___keyArray.end();
@@ -64,6 +66,13 @@ bool Input::isButtonDown(std::string const& key)
     }
     return false;
 }
+
+void Input::___clearReleased()
+{
+    ___button_release.clear();
+    ___key_release.clear();
+}
+
 
 void Input::___push_key(sf::Keyboard::Key key)
 {

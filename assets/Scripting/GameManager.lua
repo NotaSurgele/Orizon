@@ -26,6 +26,9 @@ function Start()
 end
 
 function Update()
+    --if Input.isButtonReleased("Left") then
+    --    print("coucou")
+    --end
     if endTourButton.clickable == false then
         endTourButton:getSprite():setColor(Color.new(0, 0, 0, 255))
         return
