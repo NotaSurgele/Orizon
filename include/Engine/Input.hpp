@@ -32,12 +32,15 @@ public:
     static bool isAnyKeyPressed(void);
     static bool isAnyButtonPressed(void);
     void loadFromFile(std::string const& file);
+
+#ifndef INPUT_FUNCTION
+    void ___clearReleased();
     void ___push_key(sf::Keyboard::Key key);
     void ___push_button(sf::Mouse::Button button);
     void ___remove_key(sf::Keyboard::Key key);
     void ___remove_button(sf::Mouse::Button button);
     void __add_action(std::string const& action, std::string const& input);
-
+#endif
 
 private:
     std::unordered_map<sf::Keyboard::Key, std::string> _sfml_to_key = {

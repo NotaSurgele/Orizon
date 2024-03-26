@@ -209,7 +209,7 @@ void System::canvasSystem(Entity *e)
                            ((position.y + offset.y) + center.y));
         } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
-        if (!isHovered && b->clickable) {
+        if (!isHovered && b->clickable ) {
             auto mousePos = getGlobalMousePosition();
             auto bounds = b->getSprite()->getGlobalBounds();
 
