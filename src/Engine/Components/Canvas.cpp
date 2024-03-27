@@ -2,6 +2,11 @@
 #include "System.hpp"
 #include "Core.hpp"
 
+void Text::setColor(const sf::Color& color)
+{
+    this->setColor(color);
+}
+
 void Text::setZ(const int &index)
 {
     _z = index;

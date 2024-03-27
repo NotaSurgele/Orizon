@@ -83,6 +83,7 @@ public:
     {
     }
 
+    void setColor(const sf::Color& color);
     void setZ(const int& index) override final;
 
 };
@@ -119,6 +120,11 @@ public:
         return _image->getTexture()->getSize();
     }
 
+    void setColor(const sf::Color& color)
+    {
+        _image->setColor(color);
+    }
+
     void setSize(const sf::Vector2f& size)
     {
         _image->setScale(size.x, size.y);
@@ -148,6 +154,11 @@ public:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override
     {
         _sprite->draw(target, states);
+    }
+
+    void setColor(const sf::Color& color)
+    {
+        _sprite->setColor(color);
     }
 
     void setTexture(sf::Texture& texture)

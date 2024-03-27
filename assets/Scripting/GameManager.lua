@@ -6,7 +6,7 @@ local stateMachine = StateMachine.new()
 
 local function defineState()
 	stateMachine:insert("onHover", function ()
-        endTourButton:getSprite():setColor(Color.new(255, 0, 0, 255))
+        endTourButton:getSprite():setColor(Color.Red)
 	end)
 
 	stateMachine:insert("onNothing", function ()
