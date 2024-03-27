@@ -18,6 +18,8 @@
 #include "Core.hpp"
 #include "Line.hpp"
 
+const sf::Color Red = sf::Color(255, 0, 0, 255);
+
 void loadScript(sol::state *state, const std::string& path)
 {
     auto res = state->script_file(path);
@@ -145,6 +147,15 @@ void Script::registerColorType()
             "b", &sf::Color::b,
             "a", &sf::Color::a
     );
+    (*_state)["Color"]["Red"] = &sf::Color::Red;
+    (*_state)["Color"]["Black"] = &sf::Color::Black;
+    (*_state)["Color"]["Blue"] = &sf::Color::Blue;
+    (*_state)["Color"]["Cyan"] = &sf::Color::Cyan;
+    (*_state)["Color"]["Green"] = &sf::Color::Green;
+    (*_state)["Color"]["Magenta"] = &sf::Color::Magenta;
+    (*_state)["Color"]["Transparent"] = &sf::Color::Transparent;
+    (*_state)["Color"]["White"] = &sf::Color::White;
+    (*_state)["Color"]["Yellow"] = &sf::Color::Yellow;
 }
 
 void Script::registerRectType()
@@ -366,6 +377,7 @@ void Script::registerCanvasTypes()
                 return img->setPosition(position);
             }
         ),
+        "setColor", &Image::setColor,
         "getPosition", &Image::getPosition,
         "getTextureSize", &Image::getTextureSize,
         "setSize", &Image::setSize,
@@ -409,6 +421,7 @@ void Script::registerCanvasTypes()
                 return button->setTexture(texture, name);
             }
         ),
+        "setColor", &Button::setColor,
         "setCallback", &Button::setCallback,
         "setText", sol::overload(
             [](Button *button, const std::string& content, const std::size_t& size) {
