@@ -205,6 +205,7 @@ void Core::run()
         CoreDisplay();
         _time.end();
         fpsCalculation();
+        _input.___clearReleased();
     }
     destroyGUI();
     destroy();

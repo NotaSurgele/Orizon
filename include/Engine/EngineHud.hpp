@@ -37,7 +37,7 @@ public:
     void setCurrentSceneFilepath(const std::string& sceneFilepath);
     void currentSceneContent(const nlohmann::json& sceneContent);
 
-    void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
+    void entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
     void consoleWindow();
     void resourceManager();
@@ -300,6 +300,6 @@ private:
     std::string _consoleInputText;
 
     static inline std::queue<std::string> _consoleMsg;
-    static inline std::vector<Entity *> _toSave;
+    static inline std::list<Entity *> _toSave;
     static inline std::string _newVal = "new value";
 };

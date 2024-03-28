@@ -20,7 +20,7 @@ private:
 private:
     Entity *player = nullptr;
     TileMap *layer = nullptr;
-    std::vector<Entity *> _blocks;
+    std::list<Entity *> _blocks;
     std::vector<std::vector<int>> _heightMap;
     bool load = false;
     Particles _particles;

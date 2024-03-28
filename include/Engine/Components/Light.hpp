@@ -12,6 +12,7 @@ public:
 
     void destroy() override final;
 
+    void emit(const std::list<Entity *>& entities);
     void emit(const std::vector<Entity *>& entities);
     void emit(void);
     void setEmission(const float& emission);
