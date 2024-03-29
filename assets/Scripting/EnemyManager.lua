@@ -1,6 +1,8 @@
 
 local enemies = {}
 local playerScript = nil
+local myTurn = false
+local index = 1
 
 --824 472
 
@@ -16,7 +18,6 @@ function createEnemies()
             transform = nil
         }
         local entity = Entity.new()
-
         local texture = ResourceManager:getResource("cross")
 
         enemy.transform = entity:addComponentTransform2D(x, y)
@@ -51,6 +52,21 @@ function Start()
 end
 
 function Update()
+    if myTurn == true then
+        local enemy = enemies[index]
+
+        if enemy == nil then
+            enemies[index] = nil
+        	index = index + 1
+        	return
+        end
+        local endTurn = enemy.mainScript:call("getEndTurn")
+
+        enemy.mainScript:call("setTurn", true)
+        if endTurn == true then
+        	index = index + 1
+        end
+    end
 end
 
 function Destroy()
@@ -64,4 +80,8 @@ function Destroy()
         table.remove(enemies, pos)
     end
     print(#enemies)
+end
+
+function setTurn(turn)
+    myTurn = turn
 end

@@ -57,7 +57,7 @@ function Card:initState()
         if z ~= 1 then
             self.button:setZ(1)
         end
-        sprite:setColor(Color.new(255, 0, 0, 255))
+        sprite:setColor(Color.Red)
         animation.offsetY = -200
         if Input.isButtonPressed("Left") then
             return self.stateMachine:play("onDrag", sprite)
@@ -76,7 +76,7 @@ function Card:initState()
             self.button:setZ(0)
         end
         animation.offsetY = -100
-        sprite:setColor(Color.new(255, 255, 255, 255))
+        sprite:setColor(Color.White)
         self.button:setScale(scale, scale)
         self.button:setOffset(0, fix)
     end)
