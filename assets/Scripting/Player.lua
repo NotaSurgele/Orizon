@@ -2,6 +2,7 @@ local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
 local Utils = require 'assets.Scripting.Utils'
 local GlobalVariable = require 'assets.Scripting.Global'
+local StateMachine = require 'assets.Scripting.StateMachine'
 
 local manager = nil
 
@@ -15,6 +16,7 @@ local camera = nil
 local cards = {}
 local draw = {}
 
+local myTurn = true
 local Stats = {
     health = 100,
     shield = 0,
@@ -44,7 +46,8 @@ function createCard()
         local enemy = script:call("contain", bounds)
 
         GlobalVariable.selectedCard = nil
-        if enemy == nil then
+        if enemy == nil or
+            myTurn == false then
             return
         end
         enemy:call("takeDamage", 100)
@@ -95,6 +98,7 @@ function Update()
 
     if Stats.health <= 0 then
     	print("Player is dead restart")
+    	return
     end
     for v, card in pairs(cards) do
         card:update()
@@ -106,4 +110,13 @@ function Destroy()
     for _, card in ipairs(cards) do
         hud:removeObject(card)
     end
+end
+
+function setTurn(turn)
+    myTurn = turn
+end
+
+function takeDamage(amount)
+    print("Player is taking damage")
+    Stats.health = Stats.health - amount
 end
