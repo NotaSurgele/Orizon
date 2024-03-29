@@ -5,7 +5,7 @@
 #include "Components/Animator.hpp"
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
-#include "Components/Script.hpp"
+#include "Components/View.hpp"
 #include "json.hpp"
 #include <fstream>
 
@@ -14,7 +14,7 @@ public:
     Scene() = default;
     ~Scene() = default;
 
-    void create() override {};
+    void start() override {};
     void update() override {};
     void destroy() override {};
 
@@ -205,13 +205,6 @@ public:
 
                 static void create_light(Entity *e, nlohmann::json const& json);
 
-                static void create_script(Entity *e, const nlohmann::json& json)
-                {
-                    std::string path = json["path"];
-
-                    e->addComponent<Script>(path);
-                }
-
                 static void create_canvas(Entity *e, const nlohmann::json& json);
 
             public:
@@ -236,7 +229,6 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
-                    { "Script", create_script },
                     { "Canvas", create_canvas }
                 };
         };
@@ -271,21 +263,13 @@ public:
                     continue;
                 }
                 auto *e = new Entity();
-                std::vector<nlohmann::json> scripts;
-
 
                 for (auto& component : entity["components"]) {
                     auto type = component["type"];
 
-                    if (type.get<std::string>().find("Script") != std::string::npos) {
-                        scripts.push_back(component);
-                        continue;
-                    }
                     ComponentFactory::link_component(e, component);
                 }
-                for (auto& script : scripts) {
-                    ComponentFactory::link_component(e, script);
-                }
+
                 System::pushEntity(e);
                 System::forceUpdate(e);
 
@@ -303,19 +287,12 @@ public:
                 if (e_name.find(name) == std::string::npos)
                     continue;
                 auto *e = new Entity();
-                std::vector<nlohmann::json> scripts;
 
                 for (auto& component : entity["components"]) {
                     auto type = component["type"];
 
-                    if (type.get<std::string>().find("Script") != std::string::npos) {
-                        scripts.push_back(component);
-                        continue;
-                    }
+
                     ComponentFactory::link_component(e, component);
-                }
-                for (auto& script : scripts) {
-                    ComponentFactory::link_component(e, script);
                 }
                 System::pushEntity(e);
                 System::forceUpdate(e);

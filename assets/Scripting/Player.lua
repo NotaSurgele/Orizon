@@ -4,6 +4,9 @@ local Utils = require 'assets.Scripting.Utils'
 local GlobalVariable = require 'assets.Scripting.Global'
 local StateMachine = require 'assets.Scripting.StateMachine'
 
+local Player = {}
+Player.__index = Player
+
 local manager = nil
 
 -- Junk
@@ -23,7 +26,7 @@ local Stats = {
     attack = 1
 }
 
-function resetCardPosition()
+function Player:resetCardPosition()
     position = Vector2f.new(-200, 300)
     angle = -5
 
@@ -35,22 +38,21 @@ function resetCardPosition()
     end
 end
 
-function createCard()
+function Player:createCard()
     local card = Card.new(hud, position, scale, camera)
 
     card:rotate(angle)
     card:initState()
     card:setCallback(function()
-        local script = manager:getComponentScript()
         local bounds = card:getBounds()
-        local enemy = script:call("contain", bounds)
+        local enemy = nil--script:call("contain", bounds)
 
         GlobalVariable.selectedCard = nil
         if enemy == nil or
             myTurn == false then
             return
         end
-        enemy:call("takeDamage", 100)
+        --enemy:call("takeDamage", 100)
         for k, v in pairs(cards) do
             if v == card then
                 cards[k] = nil
@@ -58,43 +60,50 @@ function createCard()
             end
         end
         card:destroy()
-        resetCardPosition()
+        self:resetCardPosition()
     end)
     table.insert(cards, card)
     position.x = position.x + 120
     angle = angle + 4
 end
 
-function cardInit()
+function Player:cardInit()
     position = Vector2f.new(-200, 300)
     scale = Vector2f.new(1, 1)
     angle = -5
 
     for i=1, 2 do
-        createCard()
+        self:createCard()
     end
 
     -- Draw cards
-    draw = Draw.new(hud, _self:getComponentScript())
+    draw = Draw.new(hud, self)
     draw:initState()
 end
 
-function handleAnimation()
+function Player:handleAnimation()
     animator:playAnimation("idle", true)
 end
 
-function Start()
-    transform = _self:getComponentTransform2D()
-    animator = _self:getComponentAnimator()
+function Player.new()
+    local self = setmetatable({}, Player)
+    self.entity = nil
+    return self
+end
+
+function Player:Start()
+    self.entity = System.getEntity("player")
+    transform = self.entity:getComponentTransform2D()
+    animator = self.entity:getComponentAnimator()
     manager = System.getEntity("EnemyManager")
     hud = System.getEntity("Hud"):getComponentCanvas()
     camera = System.getEntity("Camera"):getComponentView()
 
-    cardInit()
+    self:cardInit()
 end
 
-function Update()
-    handleAnimation()
+function Player:Update()
+    self:handleAnimation()
 
     if Stats.health <= 0 then
     	print("Player is dead restart")
@@ -106,17 +115,19 @@ function Update()
     draw:update()
 end
 
-function Destroy()
+function Player:Destroy()
     for _, card in ipairs(cards) do
         hud:removeObject(card)
     end
 end
 
-function setTurn(turn)
+function Player:setTurn(turn)
     myTurn = turn
 end
 
-function takeDamage(amount)
+function Player:takeDamage(amount)
     print("Player is taking damage")
     Stats.health = Stats.health - amount
 end
+
+return Player

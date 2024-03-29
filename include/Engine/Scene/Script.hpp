@@ -15,29 +15,24 @@
 #include "Velocity.hpp"
 #include "View.hpp"
 #include "Input.hpp"
-#include "Time.hpp"
-#include "System.hpp"
 #include "Canvas.hpp"
-#include <unordered_map>
+#include "Scene.hpp"
 #include <variant>
 
 #include <string>
 
 typedef unsigned int uint;
 
-class Script : public IComponent {
+class Script : public Scene {
 public:
-    Script(Entity *e, const std::string& scriptPath);
-    Script() = delete;
+    Script(const std::string& scriptPath);
+
+	Script() = delete;
     ~Script() = default;
 
-    void update();
-    void start();
-    void destroyObjectInstance();
-
-    void destroy() override {
-        this->destroyObjectInstance();
-    }
+    void start() override;
+    void update() override;
+    void destroy() override;
 
     const std::string& getFile() const
     {
@@ -146,4 +141,5 @@ protected:
     Entity *_self = nullptr;
     sol::state *_state = nullptr;
     std::string _filepath;
+    std::string _className;
 };

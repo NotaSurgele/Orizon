@@ -3,7 +3,6 @@
 #include "Components/Light.hpp"
 #include "Core.hpp"
 #include "RayCaster.hpp"
-#include "Script.hpp"
 #include "Canvas.hpp"
 
 void System::addEntity(Entity *entity)
@@ -251,6 +250,7 @@ void System::canvasSystem(Entity *e)
     }
 }
 
+/*
 void System::scriptSystem(Entity *e)
 {
     std::vector<Script *> scriptArray = e->getComponents<Script>();
@@ -260,6 +260,7 @@ void System::scriptSystem(Entity *e)
         s->update();
     }
 }
+*/
 
 void System::clearComponentCache(const std::vector<IComponent *> &componentCache)
 {
@@ -345,10 +346,10 @@ void System::systems()
     }
 
     // Handle entity with script
-    for (auto& e : _scripted_entity) {
+    /*for (auto& e : _scripted_entity) {
         if (!e->active) continue;
         scriptSystem(e);
-    }
+    }*/
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
     clearComponentCache(componentCache);
     componentCache.clear();

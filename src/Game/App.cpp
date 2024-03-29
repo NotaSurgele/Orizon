@@ -1,4 +1,5 @@
 #include "Game/App.hpp"
+#include "Script.hpp"
 #include "Engine/Components/Animator.hpp"
 
 void App::start()
@@ -6,8 +7,7 @@ void App::start()
     loadInputFromFile(INPUT_FILE);
 
     //game_scene.create();
-    game_scene = new GameScene();
-    _sceneManager.addScene(game_scene);
+    _sceneManager.addScene(new GameScene("../assets/Scripting/Game.lua"));
     _sceneManager.create();
 }
 

@@ -17,7 +17,7 @@ Scene *SceneManager::getScene()
 
 void SceneManager::create()
 {
-    _sceneQueue.front()->create();
+    _sceneQueue.front()->start();
 }
 
 void SceneManager::update()

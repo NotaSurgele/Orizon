@@ -108,7 +108,6 @@ private:
         MusicR,
         TextureR,
         TileR,
-        ScriptR
     };
 
     static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
@@ -152,7 +151,7 @@ private:
                 { "Layer", createLayer },
                 { "Sound", createSound },
                 { "Music", createMusic },
-                { "Script", createScript },
+
                 { "Light", createLight },
                 { "Gravity", createGravity },
                 { "Canvas", createCanvas }
@@ -203,7 +202,6 @@ private:
                 { "Layer", serializeLayer },
                 { "Sound", serializeSound },
                 { "Music", serializeMusic },
-                { "Script", serializeScript },
                 { "Light", serializeLight },
                 { "Gravity", serializeGravity },
                 { "Canvas",  serializeCanvas }
@@ -256,7 +254,6 @@ private:
             { "Sound", buildSoundTreeNode },
             { "Layer", buildLayerTreeNode },
             { "OrizonMusic", buildOrizonMusicTreeNode },
-            { "Script", buildScriptTreeNode },
             { "Sprite", buildSpriteTreeNode },
             { "Id", buildIdTreeNode },
             { "Animator", buildAnimatorTreeNode },
@@ -288,8 +285,7 @@ private:
             { "Sound", ResourceType::SoundR },
             { "Music", ResourceType::MusicR },
             { "Texture", ResourceType::TextureR },
-            { "Tile", ResourceType::TileR },
-            { "Script", ResourceType::ScriptR }
+            { "Tile", ResourceType::TileR }
     };
 
     // scripting
