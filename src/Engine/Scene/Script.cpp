@@ -18,8 +18,6 @@
 #include "Core.hpp"
 #include "Line.hpp"
 
-const sf::Color Red = sf::Color(255, 0, 0, 255);
-
 void loadScript(sol::state *state, const std::string& path)
 {
     auto res = state->script_file(path);
@@ -31,8 +29,7 @@ void loadScript(sol::state *state, const std::string& path)
     std::cout << "[SCRIPT] successfully import script " << path << std::endl;
 }
 
-Script::Script(Entity *e, const std::string& scriptPath) :  _self(e),
-                                                            _filepath(scriptPath)
+Script::Script(const std::string& scriptPath) : _filepath(scriptPath)
 {
     create(scriptPath);
 }
@@ -46,8 +43,6 @@ void Script::create(const std::string& scriptPath, bool insert)
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
-    (*_state)["_self"] = _self;
-    (*_state)["_state"] = _state;
     (*_state)["Utils"] = Utils();
     (*_state)["ResourceManager"] = Core::resourceManager();
     (*_state)["DRAW"] = sol::overload(
@@ -66,12 +61,6 @@ void Script::create(const std::string& scriptPath, bool insert)
         if (!result.valid()) {
             sol::error res = result;
             std::cerr << "Error executing lua script " << res.what() << std::endl;
-        } else {
-            if (insert) {
-                R_ADD_SCRIPT(scriptPath);
-                System::__registerScriptedEntity(_self);
-                std::cout << "[SCRIPT] Successfully imported script " << scriptPath << std::endl;
-            }
         }
     } catch (std::exception& err) {
         std::cerr << err.what() << std::endl;
@@ -730,10 +719,15 @@ void Script::registerViewComponent()
 
 void Script::registerScriptComponent()
 {
-    _state->new_usertype<Script>(
-            "Script", sol::constructors<Script(Entity *, const std::string&)>(),
-            "call", &Script::call
+    _state->new_usertype<Scene>(
+        "Scene",
+        "loadSceneFromFile", &Scene::loadSceneFromFile
     );
+    _state->new_usertype<Script>(
+            "Script",
+            "loadSceneFromFile", &Script::loadSceneFromFile
+    );
+    _state->set_function("loadSceneFromFile", &Script::loadSceneFromFile);
 }
 
 void Script::registerCanvasComponent()
@@ -872,11 +866,11 @@ void Script::registerEntityFunction()
                         return entity->addComponent<View>(x, y, w, h, follow);
                     }
             ),
-            "addComponentScript", sol::overload(
+            /*"addComponentScript", sol::overload(
                     [] (Entity *e, const std::string& path) {
                         return e->addComponent<Script>(path);
                     }
-            ),
+            ),*/
             "addComponentCanvas", sol::overload(
                 [](Entity *e) {
                     return e->addComponent<Canvas>();
@@ -896,13 +890,14 @@ void Script::registerEntityFunction()
     entityType["getComponentTag"] = &Entity::getComponent<Tag>;
     entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
     entityType["getComponentView"] = &Entity::getComponent<View>;
+    /*
     entityType["getComponentScript"] = &Entity::getComponent<Script>;
+    */
     entityType["getComponentCanvas"] = &Entity::getComponent<Canvas>;
 }
 
 void Script::reload()
 {
-    destroyObjectInstance();
     System::forceDestroy();
     _state->collect_gc();
     _state->collect_garbage();
@@ -917,7 +912,7 @@ void Script::start()
     try {
         if (_start)
             return;
-        (*_state)["_self"] = _self;
+        //(*_state)["_self"] = _self;
         sol::function start = (*_state)["Start"];
         start();
         _start = true;
@@ -932,6 +927,15 @@ void Script::update()
         (*_state)["deltaTime"] = Time::deltaTime;
         sol::function update = (*_state)["Update"];
         update();
+    } catch (sol::error& error) {
+        std::cerr << error.what() << std::endl;
+    }
+}
+
+void Script::destroy() {
+    try {
+        sol::function destroy = (*_state)["Destroy"];
+        destroy();
     } catch (sol::error& error) {
         std::cerr << error.what() << std::endl;
     }
@@ -1001,14 +1005,6 @@ Script::call(const std::string &function, sol::variadic_args args)
         return sol::nil_t();
     }
 
-}
-
-void Script::destroyObjectInstance()
-{
-    try {
-        sol::function destroy = (*_state)["Destroy"];
-        destroy();
-    } catch (...) {}
 }
 
 void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, int i)

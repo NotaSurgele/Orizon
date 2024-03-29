@@ -3,7 +3,6 @@
 #include "Utils.hpp"
 #include "Core.hpp"
 #define GUI
-#include "Script.hpp"
 
 static int id = 0;
 
@@ -105,12 +104,6 @@ void EngineHud::ComponentCreationFactory::createSound(Entity *e)
 void EngineHud::ComponentCreationFactory::createMusic(Entity *e)
 {
     e->addComponent<OrizonMusic>("");
-}
-
-void EngineHud::ComponentCreationFactory::createScript(Entity *e)
-{
-    e->addComponent<Script>("");
-    System::__registerScriptedEntity(e);
 }
 
 void EngineHud::ComponentCreationFactory::createLight(Entity *e)
@@ -255,16 +248,6 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeMusic(IComponent 
     json["type"] = "Music";
     json["music_name"] = music->name();
     json["loop"] = music->isLoop();
-    return json;
-}
-
-nlohmann::json EngineHud::ComponentSerializerFactory::serializeScript(IComponent *c)
-{
-    auto script = dynamic_cast<Script *>(c);
-    nlohmann::json json;
-
-    json["type"] = "Script";
-    json["path"] = script->getFile();
     return json;
 }
 
@@ -638,36 +621,6 @@ void EngineHud::ComponentTreeNodeFactory::buildOrizonMusicTreeNode(IComponent *c
     music->setVolume(volume);
 }
 
-void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
-{
-    auto script = dynamic_cast<Script *>(c);
-    auto path = script->getFile();
-
-    if (path.empty()) path = "Default";
-    ImGui::Text("Current script: ");
-    ImGui::SameLine();
-    if (ImGui::Button(path.data())) {
-        ImGui::SameLine();
-        ImGui::OpenPopup("Script files");
-    }
-    if (ImGui::BeginPopup("Script files")) {
-        for (auto& it : R_GET_SCRIPTS()) {
-            auto s = it.first;
-
-            if (s.find(path) != std::string::npos) continue;
-            if (ImGui::Selectable(s.data())) {
-                script->setScript(s);
-                ImGui::CloseCurrentPopup();
-                break;
-            }
-        }
-        ImGui::EndPopup();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("View")) _scriptWindow = true;
-    if (_scriptWindow) scriptEditor(script);
-}
-
 void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
@@ -980,7 +933,6 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     json["resources"].clear();
     auto textures = R_GET_RESSOURCES(sf::Texture);
     auto sounds = R_GET_RESSOURCES(sf::SoundBuffer);
-    auto scripts = R_GET_SCRIPTS();
     auto musics = R_GET_MUSICS();
 
     // handle texture saving
@@ -1007,17 +959,6 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
         soundJson["name"] = name;
         soundJson["type"] = type;
         json["resources"].push_back(soundJson);
-    }
-
-    // handle scripts saving
-    for (auto& it : scripts) {
-        auto& path = it.first;
-        auto type = "Script";
-        auto scriptJson = nlohmann::json();
-
-        scriptJson["path"] = path;
-        scriptJson["type"] = type;
-        json["resources"].push_back(scriptJson);
     }
 
     // handle musics saving
@@ -1252,7 +1193,6 @@ void EngineHud::createComponent()
             "Layer",
             "Sound",
             "Music",
-            "Script",
             "Light",
             "Gravity",
             "Canvas"
@@ -1348,7 +1288,7 @@ void EngineHud::consoleWindow()
     ImGui::End();
 }
 
-void EngineHud::scriptEditor(Script *script)
+/*void EngineHud::scriptEditor(Script *script)
 {
     if (_lastScript != script) {
         _lastScript = script;
@@ -1371,7 +1311,7 @@ void EngineHud::scriptEditor(Script *script)
     ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
       ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
-}
+}*/
 
 void EngineHud::baseResourceForm(const std::string& type, bool showName)
 {
@@ -1400,8 +1340,7 @@ void EngineHud::resourceManager()
             "Sound",
             "Music",
             "Texture",
-            "Tile",
-            "Script"
+            "Tile"
     };
 
     if (ImGui::TreeNode("Textures")) {
@@ -1419,12 +1358,6 @@ void EngineHud::resourceManager()
     if (ImGui::TreeNode("Sound")) {
         auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
         resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
-        ImGui::TreePop();
-    }
-
-    if (ImGui::TreeNode("Script")) {
-        auto& resource = R_GET_SCRIPTS();
-        resourceManagerResourceTreeNodeContent<std::string>(resource);
         ImGui::TreePop();
     }
 
@@ -1455,9 +1388,6 @@ void EngineHud::resourceManager()
             case TextureR:
                 baseResourceForm(selected, true);
                 break;
-            case ScriptR:
-                baseResourceForm(selected, false);
-                break;
             case TileR:
                 baseResourceForm(selected, true);
                 // tile info
@@ -1481,8 +1411,6 @@ void EngineHud::resourceManager()
                 case TileR:
                     R_ADD_TILE(_inputName.c_str(), _inputPath.c_str(), _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
                     break;
-                case ScriptR:
-                    R_ADD_SCRIPT(_inputPath.c_str());
                 default: break;
             }
             // reset all values

@@ -11,7 +11,7 @@
 #include <random>
 #include <math.h>
 
-void GameScene::create()
+void GameScene::start()
 {
 /*    addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
         auto speed = json["speed"];
@@ -25,7 +25,7 @@ void GameScene::create()
     gameType.set("isOdd", &game::isOdd);
     script();*/
     loadSceneFromFile("../assets/game.json");
-    player = getEntity("player");
+    Script::start();
 /*    toto = new Entity();
     System::pushEntity(toto);*/
 /*
@@ -55,6 +55,7 @@ void GameScene::update()
         CLOSE();
     if (Input::isActionKeyPressed("Hide"))
         tiledMap->hide();
+    Script::update();
 
 /*    auto animator = player->getComponent<Animator>();
     animator->playAnimation("idle", true);*/
@@ -65,5 +66,5 @@ void GameScene::update()
 
 void GameScene::destroy()
 {
-    player->destroy();
+    Script::destroy();
 }

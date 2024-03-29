@@ -21,16 +21,16 @@ end
 
 -- Class methods
 function Card.new(hud, position, scale, camera)
-    local texture = ResourceManager:getResource('card')
-    local button = hud:addButton(position, scale, texture)
+    local texture = ResourceManager:getResource('hobbit')
     local self = setmetatable({}, Card)
 
+    print(texture)
     self.soundManager = System.getEntity("SoundManager"):getComponentSound()
     self.soundIsPlaying = false
     self.hud = hud
     self.position = position
     self.scale = scale
-    self.button = button
+    self.button = hud:addButton(position, scale, texture)
     self.camera = camera
     self.target = Vector2f.new(0, 0)
     self.targetAngle = 0

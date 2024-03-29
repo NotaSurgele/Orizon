@@ -55,10 +55,6 @@
                     "type": "Animator"
                 },
                 {
-                    "path": "./assets/Scripting/Player.lua",
-                    "type": "Script"
-                },
-                {
                     "tag": "player",
                     "type": "Tag"
                 },
@@ -171,10 +167,6 @@
                     "type": "Transform2D"
                 },
                 {
-                    "path": "./assets/Scripting/MapManager.lua",
-                    "type": "Script"
-                },
-                {
                     "tag": "MapManager",
                     "type": "Tag"
                 },
@@ -206,39 +198,6 @@
                         1.0
                     ],
                     "type": "Transform2D"
-                },
-                {
-                    "tag": "coucuo",
-                    "type": "Tag"
-                },
-                {
-                    "type": "Layer",
-                    "value": 0
-                }
-            ],
-            "name": "coucuo"
-        },
-        {
-            "components": [
-                {
-                    "position": [
-                        0.0,
-                        0.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        1.0,
-                        1.0
-                    ],
-                    "type": "Transform2D"
-                },
-                {
-                    "path": "./assets/Scripting/EnemyManager.lua",
-                    "type": "Script"
                 },
                 {
                     "tag": "EnemyManager",
@@ -302,10 +261,6 @@
                         1.0
                     ],
                     "type": "Transform2D"
-                },
-                {
-                    "path": "./assets/Scripting/GameManager.lua",
-                    "type": "Script"
                 },
                 {
                     "tag": "GameManager",
