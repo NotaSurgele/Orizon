@@ -1,50 +1,43 @@
-local hitbox = nil
-local health = 100
-local player = nil
+local Enemy = {
+    entity = nil,
+    health = nil
+}
 
-local myTurn = false
-local endTurn = false
+Enemy.__index = Enemy
 
-function setHitboxData(x, y, w, h)
-    hitbox = FloatRect.new(x, y, w, h)
+function Enemy.new()
+    local self = setmetatable({}, Enemy)
+    self.entity = nil
+    self.health = 100
+    self.hitbox = nil
+    return self
 end
 
-function getHitbox()
-    return hitbox
+function Enemy:Start()
 end
 
-function takeDamage(amount)
+function Enemy:Update()
+    if health <= 0 then
+        self.entity:destroy()
+    end
+end
+
+function Enemy:getEntity()
+    return self.entity
+end
+
+function Enemy:takeDamage(amount)
     health = health - amount
 end
 
-function Start()
-    player = System.getEntity("player"):getScript()
+function Enemy:setHitboxData(hitbox)
+    self.hitbox = hitbox
 end
 
-function Update()
-    if health <= 0 then
-        _self:destroy()
-    end
-    if myTurn == false then return end
-    print("attack")
-    Attack()
+function Enemy:getHitbox()
+    return self.hitbox
 end
 
-function Destroy()
-
-end
-
-function setTurn(turn)
-    print("Enemies set turn", turn)
-    myTurn = turn
-end
-
-function getEndTurn()
-    return endTurn
-end
-
-function Attack()
-    player:call("takeDamage", 40)
-    endTurn = true
-    myTurn = false
+function Enemy:Destroy()
+    self.entity:destroy()
 end

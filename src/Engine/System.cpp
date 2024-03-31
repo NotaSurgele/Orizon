@@ -294,6 +294,7 @@ sf::Vector2f System::globalToLocalCoordinate(const sf::Vector2f &global)
 
 void System::systems()
 {
+    _registry.clear();
     std::vector<IComponent *> componentCache;
 
     // Handle force update entity
@@ -354,7 +355,6 @@ void System::systems()
     clearComponentCache(componentCache);
     componentCache.clear();
     destroyEntity();
-    _registry.clear();
     _orders_values.clear();
     Light::set = true;
 }

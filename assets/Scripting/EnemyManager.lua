@@ -1,31 +1,40 @@
+local Enemy = require "assets.Scripting.Enemy"
 
-local enemies = {}
-local playerScript = nil
+local EnemyManager = {
+    enemies = {}
+}
+
+EnemyManager.__index = EnemyManager
+
 local myTurn = false
 local index = 1
 
 --824 472
 
-function createEnemies()
-    x = 824
-    y = 472
+function EnemyManager.new()
+    local self = setmetatable({}, EnemyManager)
+    self.enemies = {}
+    return self
+end
+
+function EnemyManager:createEnemies()
+    local x = 824
+    local y = 472
 
     for i=0, 3 do
         local enemy = {
-            entity = nil,
-            sprite = nil,
-            mainScript = nil,
-            transform = nil
+            instance = nil,
+            entity = nil
         }
         local entity = Entity.new()
         local texture = ResourceManager.getResource("cross")
 
-        enemy.transform = entity:addComponentTransform2D(x, y)
-        enemy.sprite = entity:addComponentSprite(texture)
+        enemy.transform = entity:addTransform2D(x, y)
+        enemy.sprite = entity:addSprite(texture)
 
         local bounds = enemy.sprite:getGlobalBounds()
 
-        enemy.mainScript = entity:addComponentScript("./assets/Scripting/Enemy.lua")
+        enemy.mainScript = entity:addScript("./assets/Scripting/Enemy.lua")
         enemy.entity = entity
         enemy.mainScript:call("setHitboxData", x, y, bounds.width, bounds.height)
         System.pushEntity(entity)
@@ -34,7 +43,7 @@ function createEnemies()
     end
 end
 
-function contain(bounds)
+function EnemyManager:contain(bounds)
     for _, enemy in ipairs(enemies) do
         box = enemy.mainScript:call("getHitbox")
 
@@ -45,41 +54,23 @@ function contain(bounds)
     return nil
 end
 
-function Start()
-    createEnemies()
+function EnemyManager:Start()
+    self:createEnemies()
 end
 
-function Update()
-    if myTurn == true then
-        local enemy = enemies[index]
-
-        if enemy == nil then
-            enemies[index] = nil
-        	index = index + 1
-        	return
-        end
-        local endTurn = enemy.mainScript:call("getEndTurn")
-
-        enemy.mainScript:call("setTurn", true)
-        if endTurn == true then
-        	index = index + 1
-        end
+function EnemyManager:Update()
+    for k,enemy in pairs(self.enemies) do
+        enemy:Update()
     end
 end
 
-function Destroy()
-    for pos, enemy in ipairs(enemies) do
-        if enemy ~= nil then
-            enemy.entity:destroy()
-        end
+function EnemyManager:Destroy()
+    for pos, enemy in pairs(self.enemies) do
+        enemy:Destroy()
     end
 
     for pos, enemy in ipairs(enemies) do
         table.remove(enemies, pos)
     end
     print(#enemies)
-end
-
-function setTurn(turn)
-    myTurn = turn
 end

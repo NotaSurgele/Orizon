@@ -7,8 +7,6 @@ local StateMachine = require 'assets.Scripting.StateMachine'
 local Player = {}
 Player.__index = Player
 
-local manager = nil
-
 -- Junk
 
 -- Camera
