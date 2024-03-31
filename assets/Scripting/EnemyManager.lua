@@ -47,8 +47,6 @@ end
 
 function Start()
     createEnemies()
-
-    playerScript = System.getEntity("player"):getComponentScript()
 end
 
 function Update()

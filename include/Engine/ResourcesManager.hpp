@@ -103,7 +103,6 @@ class ResourcesManager {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return static_cast<sf::SoundBuffer>(_soundMap[ressourceName]);
             else {
-                std::cout << "Returning Texture" << std::endl;
                 return static_cast<T>(_map[ressourceName]);
             }
         }

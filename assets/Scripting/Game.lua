@@ -1,16 +1,13 @@
 local Player = require 'assets.Scripting.Player'
 
-local player = nil
+local player = Player.new()
+local enemyManager = nil
 
 function Start()
-
+    player:Start()
 end
 
 function Update()
-    if player == nil then
-        player = Player.new()
-        player:Start()
-    end
     player:Update()
 end
 
