@@ -23,7 +23,7 @@ function Start()
     player = System.getEntity("player"):getComponentScript()
     hud = System.getEntity("Hud"):getComponentCanvas()
 
-    local buttonTexture = ResourceManager:getResource("end_tour")
+    local buttonTexture = ResourceManager.getResource("end_tour")
     endTourButton = hud:addButton(Vector2f.new(50, 50), Vector2f.new(1, 1), buttonTexture)
 
     endTourButton:setCallback(function ()
