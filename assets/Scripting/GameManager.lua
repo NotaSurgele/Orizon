@@ -19,9 +19,9 @@ local function defineState()
 end
 
 function Start()
-    enemiesManager = System.getEntity("EnemyManager"):getComponentScript()
-    player = System.getEntity("player"):getComponentScript()
-    hud = System.getEntity("Hud"):getComponentCanvas()
+    enemiesManager = System.getEntity("EnemyManager"):getScript()
+    player = System.getEntity("player"):getScript()
+    hud = System.getEntity("Hud"):getCanvas()
 
     local buttonTexture = ResourceManager.getResource("end_tour")
     endTourButton = hud:addButton(Vector2f.new(50, 50), Vector2f.new(1, 1), buttonTexture)

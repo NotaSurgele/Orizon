@@ -18,7 +18,7 @@ function takeDamage(amount)
 end
 
 function Start()
-    player = System.getEntity("player"):getComponentScript()
+    player = System.getEntity("player"):getScript()
 end
 
 function Update()

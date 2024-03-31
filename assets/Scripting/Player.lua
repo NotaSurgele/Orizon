@@ -93,11 +93,11 @@ end
 
 function Player:Start()
     self.entity = System.getEntity("player")
-    transform = self.entity:getComponentTransform2D()
-    animator = self.entity:getComponentAnimator()
+    transform = self.entity:getTransform2D()
+    animator = self.entity:getAnimator()
     manager = System.getEntity("EnemyManager")
-    hud = System.getEntity("Hud"):getComponentCanvas()
-    camera = System.getEntity("Camera"):getComponentView()
+    hud = System.getEntity("Hud"):getCanvas()
+    camera = System.getEntity("Camera"):getView()
 
     self:cardInit()
 end

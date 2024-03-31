@@ -89,7 +89,7 @@ function tiledMap.loadTileMap()
                 texture = ResourceManager.getResource(tostring(cellId))
                 e = Entity.new()
 
-                e:getComponentLayer():set(layerIndex)
+                e:getLayer():set(layerIndex)
                 transform = e:addComponentTransform2D(posY, posX)
                 e:addComponentSprite(texture)
                 if layerIndex >= 1 then
@@ -122,7 +122,7 @@ end
 
 function tiledMap.drawBox()
     for k, e in pairs(saveEntity) do
-        collider = e:getComponentBoxCollider()
+        collider = e:getBoxCollider()
         if collider ~= nil then
             Core:draw(collider)
         end

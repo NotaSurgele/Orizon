@@ -789,7 +789,7 @@ void Script::registerEntityFunction()
 {
     sol::usertype<Entity> entityType = _state->new_usertype<Entity>(
             "Entity", sol::constructors<Entity()>(),
-            "addComponentTransform2D",sol::overload(
+            "addTransform2D",sol::overload(
                     [](Entity *entity, float a, float b, float c, float d) {
                         return entity->addComponent<Transform2D>(a, b, c, d);
                     },
@@ -800,12 +800,12 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Transform2D>();
                     }
             ),
-            "addComponentAnimator", sol::overload(
+            "addAnimator", sol::overload(
                     [](Entity *entity) {
                         return entity->addComponent<Animator>();
                     }
             ),
-            "addComponentBoxCollider", sol::overload(
+            "addBoxCollider", sol::overload(
                     [](Entity *entity, sf::Vector2f position, sf::Vector2f size) {
                         return entity->addComponent<BoxCollider>(position, size);
                     },
@@ -813,7 +813,7 @@ void Script::registerEntityFunction()
                         return entity->addComponent<BoxCollider>(position, size, range);
                     }
             ),
-            "addComponentGravity", sol::overload(
+            "addGravity", sol::overload(
                     [](Entity *entity, double value) {
                         return entity->addComponent<Gravity>(value);
                     },
@@ -821,7 +821,7 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Gravity>();
                     }
             ),
-            "addComponentLight", sol::overload(
+            "addLight", sol::overload(
                     [](Entity *entity, Sprite *sprite, float intensity) {
                         return entity->addComponent<Light>(sprite, intensity);
                     },
@@ -829,17 +829,17 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Light>(sprite);
                     }
             ),
-            "addComponentOrizonMusic", sol::overload(
+            "addOrizonMusic", sol::overload(
                     [](Entity *entity, const std::string& name) {
                         return entity->addComponent<OrizonMusic>(name);
                     }
             ),
-            "addComponentSound", sol::overload(
+            "addSound", sol::overload(
                     [](Entity *entity, const std::string& name) {
                         return entity->addComponent<Sound>(name);
                     }
             ),
-            "addComponentSprite", sol::overload(
+            "addSprite", sol::overload(
                     [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
                         return entity->addComponent<Sprite>(texture, width, height);
                     },
@@ -850,49 +850,49 @@ void Script::registerEntityFunction()
                         return entity->addComponent<Sprite>(texturePath, width, height);
                     }
             ),
-            "addComponentVelocity", sol::overload(
+            "addVelocity", sol::overload(
                     [](Entity *entity) {
                         entity->addComponent<Velocity>();
                     }
             ),
-            "addComponentTag", sol::overload(
+            "addTag", sol::overload(
                     [](Entity *entity, std::string tagName) {
                         return entity->addComponent<Tag>(std::move(tagName));
                     }
             ),
-            "addComponentView", sol::overload(
+            "addView", sol::overload(
                     [](Entity *entity, float x, float y, float w, float h, bool follow=false) {
                         return entity->addComponent<View>(x, y, w, h, follow);
                     }
             ),
-            /*"addComponentScript", sol::overload(
+            /*"addScript", sol::overload(
                     [] (Entity *e, const std::string& path) {
                         return e->addComponent<Script>(path);
                     }
             ),*/
-            "addComponentCanvas", sol::overload(
+            "addCanvas", sol::overload(
                 [](Entity *e) {
                     return e->addComponent<Canvas>();
                 }
             ),
             "destroy", &Entity::destroy
     );
-    entityType["getComponentTransform2D"] = &Entity::getComponent<Transform2D>;
-    entityType["getComponentAnimator"] = &Entity::getComponent<Animator>;
-    entityType["getComponentBoxCollider"] = &Entity::getComponent<BoxCollider>;
-    entityType["getComponentGravity"] = &Entity::getComponent<Gravity>;
-    entityType["getComponentLayer"] = &Entity::getComponent<Layer>;
-    entityType["getComponentLight"] = &Entity::getComponent<Light>;
-    entityType["getComponentMusic"] = &Entity::getComponent<OrizonMusic>;
-    entityType["getComponentSound"] = &Entity::getComponent<Sound>;
-    entityType["getComponentSprite"] = &Entity::getComponent<Sprite>;
-    entityType["getComponentTag"] = &Entity::getComponent<Tag>;
-    entityType["getComponentVelocity"] = &Entity::getComponent<Velocity>;
-    entityType["getComponentView"] = &Entity::getComponent<View>;
+    entityType["getTransform2D"] = &Entity::getComponent<Transform2D>;
+    entityType["getAnimator"] = &Entity::getComponent<Animator>;
+    entityType["getBoxCollider"] = &Entity::getComponent<BoxCollider>;
+    entityType["getGravity"] = &Entity::getComponent<Gravity>;
+    entityType["getLayer"] = &Entity::getComponent<Layer>;
+    entityType["getLight"] = &Entity::getComponent<Light>;
+    entityType["getMusic"] = &Entity::getComponent<OrizonMusic>;
+    entityType["getSound"] = &Entity::getComponent<Sound>;
+    entityType["getSprite"] = &Entity::getComponent<Sprite>;
+    entityType["getTag"] = &Entity::getComponent<Tag>;
+    entityType["getVelocity"] = &Entity::getComponent<Velocity>;
+    entityType["getView"] = &Entity::getComponent<View>;
     /*
-    entityType["getComponentScript"] = &Entity::getComponent<Script>;
+    entityType["getScript"] = &Entity::getComponent<Script>;
     */
-    entityType["getComponentCanvas"] = &Entity::getComponent<Canvas>;
+    entityType["getCanvas"] = &Entity::getComponent<Canvas>;
 }
 
 void Script::reload()
