@@ -21,10 +21,9 @@ end
 
 -- Class methods
 function Card.new(hud, position, scale, camera)
-    local texture = ResourceManager:getResource('hobbit')
     local self = setmetatable({}, Card)
+    local texture = ResourceManager.getResource('card')
 
-    print(texture)
     self.soundManager = System.getEntity("SoundManager"):getComponentSound()
     self.soundIsPlaying = false
     self.hud = hud

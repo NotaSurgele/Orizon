@@ -18,7 +18,7 @@ function createEnemies()
             transform = nil
         }
         local entity = Entity.new()
-        local texture = ResourceManager:getResource("cross")
+        local texture = ResourceManager.getResource("cross")
 
         enemy.transform = entity:addComponentTransform2D(x, y)
         enemy.sprite = entity:addComponentSprite(texture)
