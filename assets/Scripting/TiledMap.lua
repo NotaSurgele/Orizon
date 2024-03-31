@@ -90,10 +90,10 @@ function tiledMap.loadTileMap()
                 e = Entity.new()
 
                 e:getLayer():set(layerIndex)
-                transform = e:addComponentTransform2D(posY, posX)
-                e:addComponentSprite(texture)
+                transform = e:addTransform2D(posY, posX)
+                e:addSprite(texture)
                 if layerIndex >= 1 then
-                    e:addComponentBoxCollider(transform.position,
+                    e:addBoxCollider(transform.position,
                             Vector2f.new(tileSize.x, tileSize.y)):setType(BoxColliderType.DYNAMIC)
                 end
                 tilemap:emplaceEntity(e)

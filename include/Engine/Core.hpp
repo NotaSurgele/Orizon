@@ -91,6 +91,7 @@ private:
     float _fpsTime=1.0f;
     bool _mainViewSelected = true;
     std::thread _guiThread;
+    sf::Color _clearColor;
 };
 
 /**

@@ -29,7 +29,7 @@ void Core::loadInputFromFile(std::string const& file)
 
 void Core::CoreClear(sf::Color color)
 {
-    _window.clear(color);
+    _clearColor = color;
 }
 
 bool Core::CoreEvent(sf::Event& event)
@@ -193,8 +193,9 @@ void Core::run()
         sf::Event event {};
 
         inputHandler(event);
-        render();
+        _window.clear(_clearColor);
         _system_handler.systems();
+        render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
         WindowInstance.getSFMLRenderWindow()->setView(_hud);

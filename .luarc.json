@@ -6,6 +6,7 @@
         "ResourceManager"
     ],
     "diagnostics.disable": [
-        "undefined-field"
+        "undefined-field",
+        "lowercase-global"
     ]
 }

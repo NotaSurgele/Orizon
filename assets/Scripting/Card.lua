@@ -37,7 +37,7 @@ function Card.new(hud, position, scale, camera)
         offsetY = -200,
         scale = Vector2f.new(1, 1),
         dragPosition = Vector2f.new(-1, -1),
-        line = Line.new(0, 0, 0, 0, 10, Color.new(255, 255, 0, 255))
+        line = Line.new(0, 0, 0, 0, 10, Color.Yellow)
     }
     self.stateMachine = StateMachine.new()
     return self
