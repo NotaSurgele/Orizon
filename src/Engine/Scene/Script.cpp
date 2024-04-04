@@ -59,8 +59,9 @@ void Script::create(const std::string& scriptPath, bool insert)
 
         if (!result.valid()) {
             sol::error res = result;
-            std::cerr << "Error executing lua script " << res.what() << std::endl;
+            std::cerr << "[SCRIPT] Error executing lua script " << res.what() << std::endl;
         }
+        std::cout << "[SCRIPT] Successfully imported scripted scene: " << scriptPath << "!" << std::endl;
     } catch (std::exception& err) {
         std::cerr << err.what() << std::endl;
     }

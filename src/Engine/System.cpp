@@ -491,7 +491,7 @@ void System::collisionResolution(BoxCollider *box, BoxCollider *collider)
 {
     auto entity = collider->entity();
 
-    box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    box->collide = (collider->overlap(box));
     // Resolve collision
     if (box->collide) {
         if (!resolutionCalculation(box, collider, entity))
@@ -511,7 +511,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
     box->setColor(sf::Color::Green);
     box->sides.clear();
     box->side = BoxCollider::Side::NONE;
-    box->collide = BoxCollider::Collide::FALSE;
+    box->collide = false;
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
@@ -523,7 +523,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
             collisionResolution(box, collider);
         }
-        box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        box->collide = (!box->getSides().empty()) ? true : false;
     }
 }
 
@@ -546,7 +546,7 @@ void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 
         for (auto& other : arr) {
             collisionResolution(box, other);
-            box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+            box->collide = (!box->getSides().empty());
         }
     }
 }

@@ -38,6 +38,11 @@ class Core : public ICore {
         void loadInputFromFile(std::string const& path);
         RenderWindow& getWindow();
 
+        static inline Scene *getCurrentScene()
+        {
+            return _sceneManager.getScene();
+        }
+
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);

@@ -3,6 +3,7 @@
 #include "Engine/Core.hpp"
 
 #ifdef ENGINE_GUI
+#include "EngineHud.hpp"
     static std::atomic<bool> show = true;
 #endif
 
@@ -164,10 +165,11 @@ void Core::updateGUI()
             _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
             _gui.currentSceneContent(currentScene->getSceneContent());
             _gui.entityWindow(_system_handler.
-            getRegistry(), _system_handler.getTileMaps());
+                getRegistry(), _system_handler.getTileMaps());
             _gui.entityInformation();
             _gui.consoleWindow();
             _gui.resourceManager();
+            _gui.menuBar();
         }
         _gui.saveScene();
     });
@@ -201,8 +203,10 @@ void Core::run()
         WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
         if (old) WindowInstance.setView(old);
-#endif
+        EngineHud::writeConsole<std::string, std::string>("FPS ", fpsText.getString());
+#else
         _window.draw(fpsText);
+#endif
         CoreDisplay();
         _time.end();
         fpsCalculation();

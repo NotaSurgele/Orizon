@@ -2,6 +2,8 @@
 #include "Tag.hpp"
 #include "Utils.hpp"
 #include "Core.hpp"
+#include "imgui_internal.h"
+
 #define GUI
 
 static int id = 0;
@@ -63,9 +65,6 @@ void EngineHud::setTheme()
     colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
     colors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
     colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-    colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
-    colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 
     style.WindowPadding                     = ImVec2(8.00f, 8.00f);
     style.FramePadding                      = ImVec2(5.00f, 2.00f);
@@ -1189,6 +1188,40 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
     }
 }
 
+void EngineHud::menuBar()
+{
+    ImGui::Begin("Menu Bar", NULL, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open..", "Ctrl+O")) {
+                _fb.Open();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+    ImGui::End();
+
+    // Handle script editor file opening
+    _fb.Display();
+
+    if(_fb.HasSelected())
+    {
+        _scriptContent = Utils::readFile(_fb.GetSelected().string(), true);
+        _scriptPath = _fb.GetSelected().string();
+        _openScriptWindow = true;
+
+        if (_contentSize <= _scriptContent.size()) {
+            _contentSize = (_scriptContent.size() * 2);
+            _scriptContent.reserve(_contentSize);
+        }
+        _fb.ClearSelected();
+    }
+    scriptEditor();
+}
+
 void EngineHud::entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;
@@ -1361,30 +1394,38 @@ void EngineHud::consoleWindow()
     ImGui::End();
 }
 
-/*void EngineHud::scriptEditor(Script *script)
+void EngineHud::scriptEditor()
 {
-    if (_lastScript != script) {
-        _lastScript = script;
-        _scriptContent = R_GET_SCRIPT(script->getFile());
-    }
-    static bool open = true;
-    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
-    ImGui::Begin("File Editor", &open);
-    if (!open) {
-        _scriptWindow = false;
-        open = true;
-        ImGui::End();
+    if (!_openScriptWindow && !_scriptContent.empty()) {
+        _contentSize = 4096;
+        _scriptContent.clear();
+        _scriptPath.clear();
+        _scriptContent.reserve(_contentSize);
+        _scriptContent.shrink_to_fit();
         return;
     }
+    if (!_openScriptWindow) return;
+    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+    ImGui::Begin("File Editor", &_openScriptWindow);
     if (ImGui::Button("Save File")) {
-        Utils::writeFile(script->getFile(), _scriptContent);
-        script->reload();
+        Utils::writeFile(_scriptPath, _scriptContent);
+        auto currentScene = Core::getCurrentScene();
+        // if currentScene is an instance of Script reload it
+    }
+    if (ImGui::IsWindowFocused()) {
+        auto currentSize = std::strlen(_scriptContent.data());
+
+        if (currentSize >= _contentSize) {
+            _contentSize *= 2;
+            _scriptContent.reserve(_contentSize);
+        }
     }
     ImGui::Separator();
-    ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
-      ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
+    ImGui::InputTextMultiline("##editor", _scriptContent.data(),
+                              _contentSize,
+                                ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
-}*/
+}
 
 void EngineHud::baseResourceForm(const std::string& type, bool showName)
 {
