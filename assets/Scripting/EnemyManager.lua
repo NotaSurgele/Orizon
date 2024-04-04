@@ -6,8 +6,6 @@ local EnemyManager = {
 
 EnemyManager.__index = EnemyManager
 
-local enemies = {}
-
 --824 472
 
 function EnemyManager.new()
@@ -23,22 +21,24 @@ function EnemyManager:createEnemies()
     for i=0, 3 do
         local enemy = Enemy.new()
         local texture = ResourceManager.getResource("cross")
+        local bounds = nil
 
-        enemy.entity:addTransform2D(x, y)
         enemy.entity:addSprite(texture)
-        enemy:setHitboxData(enemy.entity:getSprite():getGlobalBounds())
+        bounds = enemy.entity:getSprite():getGlobalBounds()
+        enemy.entity:addTransform2D(x, y)
+        enemy:setHitboxData(x, y, bounds.width, bounds.height)
         System.pushEntity(enemy.entity)
-        table.insert(enemies, enemy)
+        table.insert(self.enemies, enemy)
         x = x + 150
     end
 end
 
 function EnemyManager:contain(bounds)
-    for _, enemy in ipairs(enemies) do
-        box = enemy.mainScript:call("getHitbox")
+    for _, enemy in ipairs(self.enemies) do
+        local box = enemy:getHitbox()
 
         if box:intersects(bounds) == true then
-            return enemy.mainScript
+            return enemy
         end
     end
     return nil
@@ -49,7 +49,7 @@ function EnemyManager:Start()
 end
 
 function EnemyManager:Update()
-    for k,enemy in pairs(self.enemies) do
+    for k, enemy in pairs(self.enemies) do
         enemy:Update()
     end
 end
@@ -59,10 +59,10 @@ function EnemyManager:Destroy()
         enemy:Destroy()
     end
 
-    for pos, enemy in ipairs(enemies) do
-        table.remove(enemies, pos)
+    for pos, enemy in ipairs(self.enemies) do
+        table.remove(self.enemies, pos)
     end
-    print(#enemies)
+    print(#self.enemies)
 end
 
 return EnemyManager

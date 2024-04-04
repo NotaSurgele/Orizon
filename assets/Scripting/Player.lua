@@ -1,13 +1,13 @@
 local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
 local Utils = require 'assets.Scripting.Utils'
-local GlobalVariable = require 'assets.Scripting.Global'
 local StateMachine = require 'assets.Scripting.StateMachine'
 
 local Player = {}
 Player.__index = Player
 
--- Junk
+-- Others
+local manager = nil
 
 -- Camera
 local hud = nil
@@ -43,14 +43,13 @@ function Player:createCard()
     card:initState()
     card:setCallback(function()
         local bounds = card:getBounds()
-        local enemy = nil--script:call("contain", bounds)
+        local enemy = GlobalVariable.enemyManager:contain(bounds)
 
         GlobalVariable.selectedCard = nil
-        if enemy == nil or
-            myTurn == false then
+        if enemy == nil then
             return
         end
-        --enemy:call("takeDamage", 100)
+        enemy:takeDamage(100)
         for k, v in pairs(cards) do
             if v == card then
                 cards[k] = nil
@@ -117,6 +116,7 @@ function Player:Destroy()
     for _, card in ipairs(cards) do
         hud:removeObject(card)
     end
+    self.entity:destroy()
 end
 
 function Player:setTurn(turn)
