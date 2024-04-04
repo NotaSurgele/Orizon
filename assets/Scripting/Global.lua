@@ -1,4 +1,5 @@
 GlobalVariable = {
+    enemyManager = nil,
     selectedCard = nil
 }
 

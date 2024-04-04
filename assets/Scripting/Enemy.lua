@@ -17,7 +17,7 @@ function Enemy:Start()
 end
 
 function Enemy:Update()
-    if health <= 0 then
+    if self.health <= 0 then
         self.entity:destroy()
     end
 end
@@ -27,11 +27,11 @@ function Enemy:getEntity()
 end
 
 function Enemy:takeDamage(amount)
-    health = health - amount
+    self.health = self.health - amount
 end
 
-function Enemy:setHitboxData(hitbox)
-    self.hitbox = hitbox
+function Enemy:setHitboxData(x, y, w, h)
+    self.hitbox = FloatRect.new(x, y, w, h)
 end
 
 function Enemy:getHitbox()
