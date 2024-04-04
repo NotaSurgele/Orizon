@@ -7,7 +7,7 @@ Enemy.__index = Enemy
 
 function Enemy.new()
     local self = setmetatable({}, Enemy)
-    self.entity = nil
+    self.entity = Entity.new()
     self.health = 100
     self.hitbox = nil
     return self
@@ -41,3 +41,5 @@ end
 function Enemy:Destroy()
     self.entity:destroy()
 end
+
+return Enemy

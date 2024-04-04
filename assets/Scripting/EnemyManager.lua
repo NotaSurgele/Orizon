@@ -6,8 +6,7 @@ local EnemyManager = {
 
 EnemyManager.__index = EnemyManager
 
-local myTurn = false
-local index = 1
+local enemies = {}
 
 --824 472
 
@@ -22,22 +21,13 @@ function EnemyManager:createEnemies()
     local y = 472
 
     for i=0, 3 do
-        local enemy = {
-            instance = nil,
-            entity = nil
-        }
-        local entity = Entity.new()
+        local enemy = Enemy.new()
         local texture = ResourceManager.getResource("cross")
 
-        enemy.transform = entity:addTransform2D(x, y)
-        enemy.sprite = entity:addSprite(texture)
-
-        local bounds = enemy.sprite:getGlobalBounds()
-
-        enemy.mainScript = entity:addScript("./assets/Scripting/Enemy.lua")
-        enemy.entity = entity
-        enemy.mainScript:call("setHitboxData", x, y, bounds.width, bounds.height)
-        System.pushEntity(entity)
+        enemy.entity:addTransform2D(x, y)
+        enemy.entity:addSprite(texture)
+        enemy:setHitboxData(enemy.entity:getSprite():getGlobalBounds())
+        System.pushEntity(enemy.entity)
         table.insert(enemies, enemy)
         x = x + 150
     end
@@ -74,3 +64,5 @@ function EnemyManager:Destroy()
     end
     print(#enemies)
 end
+
+return EnemyManager
