@@ -1070,51 +1070,48 @@ void EngineHud::saveEntity(nlohmann::json &json)
 
 void EngineHud::saveScene()
 {
-    if (Input::isKeyPressed("LControl") &&
-        Input::isKeyDown("S")) {
-        try {
-            saveEntity(_currentSceneContent);
-            std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
-                                                                        _currentSceneContent["entities"]);
-            std::string entitiesPath;
-            for (auto& r : _currentSceneContent["resources"]) {
-                if (r["type"].get<std::string>().find("Entities") != std::string::npos) {
-                    entitiesPath = r["path"];
+    try {
+        saveEntity(_currentSceneContent);
+        std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
+                                                                    _currentSceneContent["entities"]);
+        std::string entitiesPath;
+        for (auto& r : _currentSceneContent["resources"]) {
+            if (r["type"].get<std::string>().find("Entities") != std::string::npos) {
+                entitiesPath = r["path"];
+                break;
+            }
+        }
+        saveResource(_currentSceneContent, entitiesPath);
+        auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
+
+        for (auto &it : toSaves) {
+            auto& name = it.first;
+            auto *e = it.second;
+            bool find = false;
+
+            for (auto& json : entitiesContentJson["entities"]) {
+                auto entityName = json["name"];
+                if (entityName.get<std::string>() == name) {
+                    componentSerializer(json, e);
+                    find = true;
                     break;
                 }
             }
-            saveResource(_currentSceneContent, entitiesPath);
-            auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
 
-            for (auto &it : toSaves) {
-                auto& name = it.first;
-                auto *e = it.second;
-                bool find = false;
+            // if entity not found create it
+            if (!find) {
+                auto newEntity = nlohmann::json();
+                newEntity["name"] = name;
+                newEntity["components"] = {};
 
-                for (auto& json : entitiesContentJson["entities"]) {
-                    auto entityName = json["name"];
-                    if (entityName.get<std::string>() == name) {
-                        componentSerializer(json, e);
-                        find = true;
-                        break;
-                    }
-                }
-
-                // if entity not found create it
-                if (!find) {
-                    auto newEntity = nlohmann::json();
-                    newEntity["name"] = name;
-                    newEntity["components"] = {};
-
-                    componentSerializer(newEntity, e);
-                    entitiesContentJson["entities"].push_back(newEntity);
-                }
+                componentSerializer(newEntity, e);
+                entitiesContentJson["entities"].push_back(newEntity);
             }
-            std::string content = entitiesContentJson.dump(4);
-            Utils::writeFile(entitiesPath, content);
-        } catch (std::exception& msg) {
-            std::cerr << msg.what() << std::endl;
         }
+        std::string content = entitiesContentJson.dump(4);
+        Utils::writeFile(entitiesPath, content);
+    } catch (std::exception& msg) {
+        std::cerr << msg.what() << std::endl;
     }
 }
 
@@ -1197,6 +1194,10 @@ void EngineHud::menuBar()
         {
             if (ImGui::MenuItem("Open..", "Ctrl+O")) {
                 _fb.Open();
+            }
+
+            if (ImGui::MenuItem("Save..", "Ctrl+S")) {
+                saveScene();
             }
             ImGui::EndMenu();
         }
