@@ -171,7 +171,7 @@ void Core::updateGUI()
             _gui.resourceManager();
             _gui.menuBar();
         }
-        _gui.saveScene();
+        if (Input::isKeyPressed("LControl") && Input::isKeyDown("S")) _gui.saveScene();
     });
     if (_guiThread.joinable()) _guiThread.join();
     ImGui::SFML::Render(*_window.getSFMLRenderWindow());
