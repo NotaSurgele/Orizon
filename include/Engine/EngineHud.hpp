@@ -47,6 +47,7 @@ public:
     void entityInformation();
     void consoleWindow();
     void resourceManager();
+    void gameWindow(const sf::RenderTexture& texture);
 
     static inline void registerSavedEntity(Entity *e)
     {

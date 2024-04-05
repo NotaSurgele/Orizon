@@ -43,6 +43,11 @@ class Core : public ICore {
             return _sceneManager.getScene();
         }
 
+        sf::RenderTexture& getRenderTexture()
+        {
+            return _windowTexture;
+        }
+
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
@@ -75,6 +80,11 @@ class Core : public ICore {
 public:
     static inline Core *instance;
     static inline float fps = 0.0f;
+
+#ifdef ENGINE_GUI
+    sf::RenderTexture _windowTexture;
+    bool _isTextureLoaded = false;
+#endif
 
 protected:
     static inline SceneManager _sceneManager {};

@@ -12,6 +12,10 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _input(),
                                                 _gui(width, height)
 {
+#ifdef ENGINE_GUI
+    if (!(_isTextureLoaded = _windowTexture.create(1063, 951)))
+        std::cerr << "[CORE] Couldn't create RenderTexture" << std::endl;
+#endif
     _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
@@ -40,22 +44,42 @@ bool Core::CoreEvent(sf::Event& event)
 
 void Core::CoreDraw(Drawable *component)
 {
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(*component);
+#else
     _window.draw(component);
+#endif
 }
 
 void Core::CoreDraw(Drawable *component, const sf::BlendMode& blendMode)
 {
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(*component, blendMode);
+#else
     _window.draw(component, blendMode);
+#endif
 }
 
 void Core::CoreDraw(sf::Drawable const& draw)
 {
-    _window.draw(draw);
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(draw);
+#else
+    _window.draw(component, blendMode);
+#endif
 }
 
 void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
 {
-    _window.draw(draw, blendMode);
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(draw, blendMode);
+#else
+    _window.draw(component, blendMode);
+#endif
 }
 
 void Core::CoreDisplay()
@@ -174,6 +198,7 @@ void Core::updateGUI()
         if (Input::isKeyPressed("LControl") && Input::isKeyDown("S")) _gui.saveScene();
     });
     if (_guiThread.joinable()) _guiThread.join();
+    _gui.gameWindow(_windowTexture);
     ImGui::SFML::Render(*_window.getSFMLRenderWindow());
 #endif
 }
@@ -195,14 +220,20 @@ void Core::run()
         sf::Event event {};
 
         inputHandler(event);
+#ifdef ENGINE_GUI
+        _windowTexture.clear(_clearColor);
         _window.clear(_clearColor);
+#else
+        _window.clear(_clearColor);
+#endif
         _system_handler.systems();
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
-        WindowInstance.getSFMLRenderWindow()->setView(_hud);
+        _windowTexture.setView(_hud);
+        //WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
-        if (old) WindowInstance.setView(old);
+        if (old) _windowTexture.setView(*old);
         EngineHud::writeConsole<std::string, std::string>("FPS ", fpsText.getString());
 #else
         _window.draw(fpsText);
