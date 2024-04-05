@@ -114,7 +114,7 @@ end
 
 function Player:Destroy()
     for _, card in ipairs(cards) do
-        hud:removeObject(card)
+        hud:removeObject(card.button)
     end
     self.entity:destroy()
 end

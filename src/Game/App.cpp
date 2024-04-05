@@ -19,5 +19,5 @@ void App::render()
 
 void App::destroy()
 {
-    game_scene->destroy();
+    _sceneManager.getScene()->destroy();
 }
