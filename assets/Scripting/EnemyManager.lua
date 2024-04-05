@@ -10,7 +10,6 @@ EnemyManager.__index = EnemyManager
 
 function EnemyManager.new()
     local self = setmetatable({}, EnemyManager)
-    self.enemies = {}
     return self
 end
 
@@ -60,7 +59,8 @@ function EnemyManager:Destroy()
         enemy:Destroy()
     end
 
-    for pos, enemy in ipairs(self.enemies) do
+    for pos, enemy in pairs(self.enemies) do
+        enemy = nil
         table.remove(self.enemies, pos)
     end
     print(#self.enemies)

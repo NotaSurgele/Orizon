@@ -279,12 +279,26 @@ sf::Vector2f System::getLocalMousePosition()
 
 sf::Vector2f System::getGlobalMousePosition()
 {
+#ifdef ENGINE_GUI
+    auto& renderTexture = Core::instance->getRenderTexture();
+
+    auto coord = renderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+
+    return { coord.x - (float)renderTexture.getSize().x / 2, coord.y };
+#else
     return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+#endif
 }
 
 sf::Vector2f System::localToGlobalCoordinate(const sf::Vector2f& local)
 {
+#ifdef ENGINE_GUI
+    auto& renderTexture = Core::instance->getRenderTexture();
+
+    return renderTexture.mapPixelToCoords((sf::Vector2i)local);
+#else
     return WindowInstance.mapPixelToCoords((sf::Vector2i)local);
+#endif
 }
 
 sf::Vector2f System::globalToLocalCoordinate(const sf::Vector2f &global)

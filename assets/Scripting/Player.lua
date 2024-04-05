@@ -7,7 +7,6 @@ local Player = {}
 Player.__index = Player
 
 -- Others
-local manager = nil
 
 -- Camera
 local hud = nil
@@ -92,7 +91,6 @@ function Player:Start()
     self.entity = System.getEntity("player")
     transform = self.entity:getTransform2D()
     animator = self.entity:getAnimator()
-    manager = System.getEntity("EnemyManager")
     hud = System.getEntity("Hud"):getCanvas()
     camera = System.getEntity("Camera"):getView()
 
