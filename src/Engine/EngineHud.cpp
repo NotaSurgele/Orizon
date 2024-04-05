@@ -1448,7 +1448,7 @@ void EngineHud::baseResourceForm(const std::string& type, bool showName)
 
 void EngineHud::gameWindow(const sf::RenderTexture& texture)
 {
-    ImGui::SetNextWindowSize(ImVec2(1063, 951));
+    ImGui::SetNextWindowSize(ImVec2(1063, 970));
     ImGui::SetNextWindowPos(ImVec2(430, 34));
     ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoTitleBar);
     ImGui::Image(texture);
