@@ -37,8 +37,8 @@
                 {
                     "collision_type": "Dynamic",
                     "position": [
-                        5250.0,
-                        7500.0
+                        0,
+                        0
                     ],
                     "range": 10,
                     "size": [
