@@ -1,47 +1,38 @@
 local StateMachine = require 'assets.Scripting.StateMachine'
 
-local hud = nil
-local endTourButton = nil
-local stateMachine = StateMachine.new()
-local playerTurn = true
+GameManager = {
+    player = nil,
+    enemyManager = nil,
+    stateMachine = StateMachine.new()
+}
+GameManager.__index = GameManager
 
-local enemiesManager = nil
-local player = nil
+function GameManager:defineState()
+    self.stateMachine:insert("playerTurn", function()
 
-local function defineState()
-	stateMachine:insert("onHover", function ()
-        endTourButton:setColor(Color.Red)
-	end)
-
-	stateMachine:insert("onNothing", function ()
-        endTourButton:setColor(Color.White)
-	end)
-end
-
-function Start()
-    enemiesManager = System.getEntity("EnemyManager"):getScript()
-    player = System.getEntity("player"):getScript()
-    hud = System.getEntity("Hud"):getCanvas()
-
-    local buttonTexture = ResourceManager.getResource("end_tour")
-    endTourButton = hud:addButton(Vector2f.new(50, 50), Vector2f.new(1, 1), buttonTexture)
-
-    endTourButton:setCallback(function ()
-        endTourButton.clickable = not endTourButton.clickable
-        playerTurn = not playerTurn
-        player:call("setTurn", playerTurn)
-        enemiesManager:call("setTurn", true)
     end)
-    defineState()
+
+    self.stateMachine:insert("enemiesTurn", function()
+
+    end)
 end
 
-function Update()
-    if endTourButton:isHovered() == true then
-        stateMachine:play("onHover")
-    else
-        stateMachine:play("onNothing")
-    end
+function GameManager.new()
+    local self = setmetatable({}, GameManager)
+    self.player = nil
+    self.enemyManager = nil
+    return self
 end
 
-function Destroy()
+function GameManager:Start(player, enemyManager)
+    self.player = player
+    self.enemyManager = enemyManager
 end
+
+function GameManager:Update()
+end
+
+function GameManager:Destroy()
+end
+
+return GameManager
