@@ -3,7 +3,10 @@ local Draw = require 'assets.Scripting.Draw'
 local Utils = require 'assets.Scripting.Utils'
 local StateMachine = require 'assets.Scripting.StateMachine'
 
-local Player = {}
+local Player = {
+    entity = {},
+    enemyManager = nil
+}
 Player.__index = Player
 
 -- Others
@@ -16,7 +19,6 @@ local camera = nil
 local cards = {}
 local draw = {}
 
-local myTurn = true
 local Stats = {
     health = 100,
     shield = 0,
@@ -42,7 +44,7 @@ function Player:createCard()
     card:initState()
     card:setCallback(function()
         local bounds = card:getBounds()
-        local enemy = GlobalVariable.enemyManager:contain(bounds)
+        local enemy = self.enemyManager:contain(bounds)
 
         GlobalVariable.selectedCard = nil
         if enemy == nil then
@@ -84,11 +86,13 @@ end
 function Player.new()
     local self = setmetatable({}, Player)
     self.entity = nil
+    self.enemyManager = nil
     return self
 end
 
-function Player:Start()
+function Player:Start(enemyManager)
     self.entity = System.getEntity("player")
+    self.enemyManager = enemyManager
     transform = self.entity:getTransform2D()
     animator = self.entity:getAnimator()
     hud = System.getEntity("Hud"):getCanvas()
