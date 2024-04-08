@@ -284,7 +284,7 @@ sf::Vector2f System::getGlobalMousePosition()
 
     auto coord = renderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
 
-    return { coord.x - (float)renderTexture.getSize().x / 2, coord.y };
+    return { coord.x - (float)(renderTexture.getSize().x / 2.5f), coord.y };
 #else
     return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
 #endif
