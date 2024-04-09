@@ -1,6 +1,7 @@
 local Enemy = {
     entity = nil,
-    health = nil
+    health = nil,
+    turn = false,
 }
 
 Enemy.__index = Enemy
@@ -16,10 +17,21 @@ end
 function Enemy:Start()
 end
 
-function Enemy:Update()
+function Enemy:Update(player, enemyManager)
     if self.health <= 0 then
         self.entity:destroy()
+        return
     end
+
+    -- if its not is turn then do nothing
+    if self.turn == false then
+    	return
+    end
+
+    -- Attack logic
+    player:takeDamage(10)
+    enemyManager:hasPlayed()
+    self.turn = false
 end
 
 function Enemy:getEntity()
@@ -32,6 +44,18 @@ end
 
 function Enemy:setHitboxData(x, y, w, h)
     self.hitbox = FloatRect.new(x, y, w, h)
+end
+
+function Enemy:Play(turn)
+    self.turn = turn
+end
+
+function Enemy:setTurn(turn)
+	self.turn = turn
+end
+
+function Enemy:getTurn()
+    return self.turn
 end
 
 function Enemy:getHitbox()

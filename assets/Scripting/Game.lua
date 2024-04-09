@@ -8,14 +8,13 @@ local enemyManager = EnemyManager.new()
 local gameManager = GameManager.new()
 
 function Start()
-    enemyManager:Start()
+    enemyManager:Start(gameManager)
     player:Start(enemyManager)
     gameManager:Start(player, enemyManager)
 end
 
 function Update()
-    player:Update()
-    enemyManager:Update()
+    gameManager:Update()
 end
 
 function Destroy()
