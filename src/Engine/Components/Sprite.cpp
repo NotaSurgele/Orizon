@@ -31,6 +31,7 @@ Sprite::Sprite(Entity *self, const std::string& textureName, const float& w, con
                                                                                                 _texture()
 {
     sf::Texture text = R_GET_RESSOURCE(sf::Texture, textureName);
+
     setTexture(text);
     _sprite.setScale(w, h);
 }
