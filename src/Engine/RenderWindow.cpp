@@ -70,6 +70,11 @@ sf::RenderWindow *RenderWindow::getSFMLRenderWindow()
     return _window;
 }
 
+void RenderWindow::draw(sf::VertexArray& sprite, sf::RenderStates &states)
+{
+    _window->draw(sprite, states);
+}
+
 void RenderWindow::draw(Drawable *sprite)
 {
     if (sprite == nullptr)  {

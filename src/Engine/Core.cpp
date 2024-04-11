@@ -16,6 +16,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     if (!(_isTextureLoaded = _windowTexture.create(1063, 951)))
         std::cerr << "[CORE] Couldn't create RenderTexture" << std::endl;
 #endif
+    _status = sf::RenderStates();
     _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
@@ -79,6 +80,23 @@ void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
     _windowTexture.draw(draw, blendMode);
 #else
     _window.draw(component, blendMode);
+#endif
+}
+
+void Core::CoreDrawBatch(Sprite *sprite)
+{
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    std::cout << _batches.size() << std::endl;
+    for (auto batch : _batches) {
+        if (batch->texture == sprite->getTexture()) {
+            batch->draw(sprite);
+            return;
+        }
+    }
+    SpriteBatch *newBatch = new SpriteBatch();
+    _batches.push_back(newBatch);
+    newBatch->draw(sprite);
 #endif
 }
 
@@ -227,6 +245,15 @@ void Core::run()
         _window.clear(_clearColor);
 #endif
         _system_handler.systems();
+        for (auto batch : _batches) {
+            _status.texture = batch->texture;
+
+#ifdef ENGINE_GUI
+            _windowTexture.draw(batch->vertexArray, _status);
+#else
+            _window.draw(batch.vertexArray, _status);
+#endif
+        }
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
@@ -238,6 +265,9 @@ void Core::run()
 #else
         _window.draw(fpsText);
 #endif
+        for (auto batch: _batches)
+            batch->clear();
+        _batches.clear();
         CoreDisplay();
         _time.end();
         fpsCalculation();

@@ -149,7 +149,7 @@ void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
         return;
     sprite->setTransform(transform);
     sprite->setLightApply(false);
-    DRAW(sprite);
+    DRAW_BATCH(sprite);
 }
 
 void System::canvasSystem(Entity *e)
@@ -221,7 +221,7 @@ void System::canvasSystem(Entity *e)
                 }
             } else b->state = Button::NOTHING;
         }
-        DRAW(b);
+        DRAW_BATCH(b->getSprite());
 
         //Handle button text
         if (text != nullptr) {
