@@ -69,6 +69,11 @@ class Sprite : public IComponent, public Drawable {
             return _textureName;
         }
 
+        const sf::IntRect& getTextureRect()
+        {
+            return _sprite.getTextureRect();
+        }
+
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override
         {
             target.draw(_sprite, states);
