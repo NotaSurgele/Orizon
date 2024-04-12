@@ -3,6 +3,7 @@
 //
 
 #include "SpriteBatch.hpp"
+#include <Math.hpp>
 
 SpriteBatch::SpriteBatch()
 {
@@ -13,38 +14,56 @@ void SpriteBatch::draw(Sprite *sprite)
 {
     auto length = vertexArray.getVertexCount();
 
-    if (length < _counter * 4) {
-        vertexArray.resize((_counter * 4) + 4);
+    if (length < counter * 4) {
+        std::cout << "Resizing" << std::endl;
+        vertexArray.resize((counter * 4) + 4);
     }
 
     auto bounds = sprite->getGlobalBounds();
-    auto size = bounds.getSize();
-    auto position = bounds.getPosition();
+    auto size = sprite->getTextureRect();
 
     texture = (sf::Texture *)sprite->getTexture();
 
+//    sprite->setPosition(0, 0);
+
     // Set vertex data
-    vertexArray[_counter].position = sf::Vector2f(bounds.left, bounds.top);
-    vertexArray[_counter].texCoords = sf::Vector2f(0, 0);
-    vertexArray[_counter].color = sprite->getColor();
+    float rotation = sprite->getRotation() * 3.14159f / 180.f;
 
-    vertexArray[_counter + 1].position = sf::Vector2f(bounds.left + bounds.width, bounds.top);
-    vertexArray[_counter + 1].texCoords = sf::Vector2f(bounds.width, 0);
-    vertexArray[_counter + 1].color = sprite->getColor();
+    // Get the origin of rotation (center of the sprite)
+    sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
 
-    vertexArray[_counter + 2].position = sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height);
-    vertexArray[_counter + 2].texCoords = sf::Vector2f(bounds.width, bounds.height);
-    vertexArray[_counter + 2].color = sprite->getColor();
+    // Define a lambda function to rotate a point around the origin
+    auto rotate = [&](sf::Vector2f point) {
+        point -= origin;
+        return sf::Vector2f(
+                point.x * cos(rotation) - point.y * sin(rotation),
+                point.x * sin(rotation) + point.y * cos(rotation)
+        ) + origin;
+    };
 
-    vertexArray[_counter + 3].position = sf::Vector2f(bounds.width, bounds.top + bounds.height);
-    vertexArray[_counter + 3].texCoords = sf::Vector2f(0, bounds.height);
-    vertexArray[_counter + 3].color = sprite->getColor();
-    _counter++;
+    // Rotate the vertices
+    vertexArray[counter].position = rotate(sf::Vector2f(bounds.left, bounds.top));
+    vertexArray[counter + 1].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top));
+    vertexArray[counter + 2].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height));
+    vertexArray[counter + 3].position = rotate(sf::Vector2f(bounds.left, bounds.top + bounds.height));
+
+//    sf::Vector2u texSize = texture->getSize();
+
+    vertexArray[counter].texCoords = sf::Vector2f(size.left, size.top);
+    vertexArray[counter + 1].texCoords = sf::Vector2f(size.left + size.width, size.top);
+    vertexArray[counter + 2].texCoords = sf::Vector2f(size.left + size.width, size.top + size.height);
+    vertexArray[counter + 3].texCoords = sf::Vector2f(size.left, size.top + size.height);
+
+    vertexArray[counter].color = sprite->getColor();
+    vertexArray[counter + 1].color = sprite->getColor();
+    vertexArray[counter + 2].color = sprite->getColor();
+    vertexArray[counter + 3].color = sprite->getColor();
+    counter++;
 }
 
 void SpriteBatch::clear()
 {
-    vertexArray.clear();
-    _counter = 1;
+    //vertexArray.clear();
+    counter = 0;
 }
 

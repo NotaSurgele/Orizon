@@ -87,7 +87,6 @@ void Core::CoreDrawBatch(Sprite *sprite)
 {
 #ifdef ENGINE_GUI
     if (!_isTextureLoaded) return;
-    std::cout << _batches.size() << std::endl;
     for (auto batch : _batches) {
         if (batch->texture == sprite->getTexture()) {
             batch->draw(sprite);
@@ -251,7 +250,7 @@ void Core::run()
 #ifdef ENGINE_GUI
             _windowTexture.draw(batch->vertexArray, _status);
 #else
-            _window.draw(batch.vertexArray, _status);
+            _window.draw(batch->vertexArray, _status);
 #endif
         }
         render();
@@ -265,10 +264,11 @@ void Core::run()
 #else
         _window.draw(fpsText);
 #endif
-        for (auto batch: _batches)
-            batch->clear();
-        _batches.clear();
         CoreDisplay();
+        for (auto batch: _batches) {
+            batch->clear();
+        }
+//        _batches.clear();
         _time.end();
         fpsCalculation();
         _input.___clearReleased();

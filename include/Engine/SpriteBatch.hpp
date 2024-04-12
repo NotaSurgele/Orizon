@@ -13,7 +13,5 @@ public:
 
     sf::Texture *texture = nullptr;
     sf::VertexArray vertexArray;
-
-private:
-    std::size_t _counter = 1;
+    std::size_t counter = 1;
 };
