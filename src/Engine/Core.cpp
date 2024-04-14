@@ -88,14 +88,17 @@ void Core::CoreDrawBatch(Sprite *sprite)
 #ifdef ENGINE_GUI
     if (!_isTextureLoaded) return;
     for (auto batch : _batches) {
-        if (batch->texture == sprite->getTexture()) {
+        if (batch->textureId == sprite->getTextureId()) {
             batch->draw(sprite);
             return;
         }
     }
     SpriteBatch *newBatch = new SpriteBatch();
-    _batches.push_back(newBatch);
     newBatch->draw(sprite);
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    _batches.push_back(newBatch);
+    std::cout << _batches.size() << std::endl;
 #endif
 }
 
@@ -246,7 +249,6 @@ void Core::run()
         _system_handler.systems();
         for (auto batch : _batches) {
             _status.texture = batch->texture;
-
 #ifdef ENGINE_GUI
             _windowTexture.draw(batch->vertexArray, _status);
 #else

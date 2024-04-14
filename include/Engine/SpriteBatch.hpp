@@ -11,7 +11,9 @@ public:
     void draw(Sprite *sprite);
     void clear();
 
-    sf::Texture *texture = nullptr;
+    const sf::Texture *texture = nullptr;
+    sf::Texture textureCpy;
+    std::size_t textureId = 0;
     sf::VertexArray vertexArray;
     std::size_t counter = 1;
 };

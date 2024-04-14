@@ -8,18 +8,18 @@ Sound::Sound(Entity *e, const std::string& name) : _name(name)
 
 bool Sound::load(const std::string& filePath)
 {
-    if (!_buffer.loadFromFile(filePath))
+    if (!_buffer->loadFromFile(filePath))
         return false;
-    _sound.setBuffer(_buffer);
+    _sound.setBuffer(*_buffer);
     return true;
 }
 
 bool Sound::loadFromName(const std::string &name)
 {
-    sf::SoundBuffer buff = R_GET_RESSOURCE(sf::SoundBuffer, name);
+    sf::SoundBuffer *buff = R_GET_RESSOURCE(sf::SoundBuffer, name);
     _buffer = buff;
-    _sound.setBuffer(_buffer);
-    return _buffer.getDuration().asSeconds() > 0;
+    _sound.setBuffer(*_buffer);
+    return _buffer->getDuration().asSeconds() > 0;
 }
 
 bool Sound::reload(const std::string& filePath)
@@ -54,10 +54,10 @@ Sound *Sound::setVolume(const float& volume)
     return this;
 }
 
-Sound *Sound::setBuffer(const sf::SoundBuffer& buffer)
+Sound *Sound::setBuffer(sf::SoundBuffer *buffer)
 {
     _buffer = buffer;
-    _sound.setBuffer(_buffer);
+    _sound.setBuffer(*_buffer);
     return this;
 }
 

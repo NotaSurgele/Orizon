@@ -4,7 +4,7 @@
 void Scene::ComponentFactory::create_sprite(Entity *e, nlohmann::json const& json)
 {
     std::string textureName = json["texture_name"];
-    sf::Texture texture = R_GET_RESSOURCE(sf::Texture, textureName);
+    sf::Texture *texture = R_GET_RESSOURCE(sf::Texture, textureName);
 
     e->addComponent<Sprite>(texture)->setTextureName(textureName);
 }
@@ -21,7 +21,7 @@ void Scene::ComponentFactory::create_music(Entity *e, nlohmann::json const& json
 void Scene::ComponentFactory::create_light(Entity *e, nlohmann::json const& json)
 {
     float intensity = .4f;
-    sf::Texture lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
+    sf::Texture *lightTexture = R_GET_RESSOURCE(sf::Texture, json["texture_name"]);
     auto *sprite = new Sprite(lightTexture);
 
     if (json.contains("intensity"))
@@ -31,7 +31,7 @@ void Scene::ComponentFactory::create_light(Entity *e, nlohmann::json const& json
 
 void Scene::ComponentFactory::create_sound(Entity *e, nlohmann::json const& json)
 {
-    sf::SoundBuffer buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
+    sf::SoundBuffer *buffer = R_GET_RESSOURCE(sf::SoundBuffer, json["sound_name"]);
     bool loop = json["loop"];
 
     e->addComponent<Sound>(json["sound_name"])->setBuffer(buffer)

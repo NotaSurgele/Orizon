@@ -21,10 +21,9 @@ void SpriteBatch::draw(Sprite *sprite)
 
     auto bounds = sprite->getGlobalBounds();
     auto size = sprite->getTextureRect();
-
-    texture = (sf::Texture *)sprite->getTexture();
-
-//    sprite->setPosition(0, 0);
+    textureCpy = *sprite->getTexture();
+    texture = sprite->getTexture();
+     sprite->setPosition(0, 0);
 
     // Set vertex data
     float rotation = sprite->getRotation() * 3.14159f / 180.f;
@@ -63,7 +62,7 @@ void SpriteBatch::draw(Sprite *sprite)
 
 void SpriteBatch::clear()
 {
-    //vertexArray.clear();
+//    vertexArray.clear();
     counter = 0;
 }
 

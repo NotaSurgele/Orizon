@@ -123,8 +123,8 @@ void EngineHud::ComponentCreationFactory::createSprite(Entity *e)
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture* texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     e->addComponent<Sprite>(texture, 1, 1)->setTextureName("Default");
 }
 
@@ -183,8 +183,8 @@ void EngineHud::ComponentCreationFactory::createLight(Entity *e)
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture *texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     auto *s  = new Sprite(texture);
     s->setTextureName("Default");
     e->addComponent<Light>(s);
@@ -719,7 +719,7 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
-                auto size = it.second.getSize();
+                auto size = it.second->getSize();
                 sprite->setTextureName(s);
                 sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();
@@ -1469,7 +1469,7 @@ void EngineHud::resourceManager()
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
-        resourceManagerResourceTreeNodeContent<sf::Texture>(resource);
+        resourceManagerResourceTreeNodeContent<sf::Texture *>(resource);
         ImGui::TreePop();
     }
 
@@ -1480,8 +1480,8 @@ void EngineHud::resourceManager()
     }
 
     if (ImGui::TreeNode("Sound")) {
-        auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
-        resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
+        auto resource = R_GET_RESSOURCES(sf::SoundBuffer);
+        resourceManagerResourceTreeNodeContent<sf::SoundBuffer *>(resource);
         ImGui::TreePop();
     }
 
