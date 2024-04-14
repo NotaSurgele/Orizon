@@ -45,7 +45,7 @@ Text *Canvas::addText(const std::string &content, const sf::Vector2f &pos, const
     return newText;
 }
 
-Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture, bool save)
+Button *Canvas::addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture* texture, bool save)
 {
     auto *button = new Button(position, scale, texture);
 
@@ -76,7 +76,7 @@ void Canvas::destroy()
 }
 
 // Button definitions
-Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, sf::Texture texture) :
+Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, sf::Texture* texture) :
                                                                         _position(position),
                                                                         _size(size),
                                                                         _sprite()

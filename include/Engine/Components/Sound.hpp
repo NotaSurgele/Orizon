@@ -23,7 +23,7 @@ public:
 
     Sound *setLoop(bool loop);
     Sound *setVolume(const float& volume);
-    Sound *setBuffer(const sf::SoundBuffer& buffer);
+    Sound *setBuffer(sf::SoundBuffer* buffer);
 
     std::string name() { return _name; }
     float getVolume();
@@ -35,6 +35,6 @@ public:
 
 private:
     std::string _name;
-    sf::SoundBuffer _buffer;
+    sf::SoundBuffer *_buffer;
     sf::Sound _sound;
 };

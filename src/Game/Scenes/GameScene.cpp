@@ -11,43 +11,28 @@
 #include <random>
 #include <math.h>
 
+std::vector<Sprite *> array;
+
 void GameScene::start()
 {
-/*    addCustomComponentConstructor("CharacterController", [](Entity *e, nlohmann::json const& json) {
-        auto speed = json["speed"];
-
-        e->addCustomComponent<CharacterController>(speed);
-    });*/
-/*    sol::state lua;
-    lua.open_libraries(sol::lib::base);
-
-    sol::usertype<game> gameType = lua.new_usertype<game>("game",sol::constructors<game(int)>());
-    gameType.set("isOdd", &game::isOdd);
-    script();*/
     loadSceneFromFile("../assets/game.json");
     Script::start();
-/*    toto = new Entity();
-    System::pushEntity(toto);*/
-/*
-    player->getComponent<OrizonMusic>();
-*/
-/*
-    player->addComponent<Script>("../assets/Scripting/Player.lua")->call();
-*/
-    auto c = sf::Color::Yellow;
-    c.a = 40;
-    //player->getComponent<Light>()->setColor(c);
-    //player->getComponent<Sprite>()->setShadowIntensity(1);
-/*    tiledMap = new TiledMap();
-    tiledMap->load("../assets/map_test.tmj");
-    player->addCustomComponent<CharacterController>(tiledMap);
-    player->getComponent<BoxCollider>()->onCollision([&](BoxCollider *other) {
-        other->entity()->destroy();
-    });*/
+    float x = 400;
+    for (std::size_t i = 0; i < 10000; i++) {
+        auto texture = R_GET_RESSOURCE(sf::Texture, "hobbit");
+        auto s = new Sprite(texture);
+
+        s->setPosition(x, 500);
+//        array.push_back(s);
+        x += 0.1f;
+    }
 }
 
 void GameScene::update()
 {
+    for (auto& s : array) {
+        DRAW_BATCH(s);
+    }
     if (Input::isActionKeyPressed("Refresh"))
     {
     }
