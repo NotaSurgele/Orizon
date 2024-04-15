@@ -94,9 +94,10 @@ void Core::CoreDrawBatch(Sprite *sprite)
         }
     }
     SpriteBatch *newBatch = new SpriteBatch();
-    newBatch->draw(sprite);
     newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
     newBatch->textureId = sprite->getTextureId();
+    newBatch->draw(sprite);
     _batches.push_back(newBatch);
     std::cout << _batches.size() << std::endl;
 #endif
@@ -248,12 +249,16 @@ void Core::run()
 #endif
         _system_handler.systems();
         for (auto batch : _batches) {
-            _status.texture = batch->texture;
+            for (auto& v : batch->vertexArray) {
+                sf::RenderStates states;
+                states.texture = &batch->textureCpy;
+
 #ifdef ENGINE_GUI
-            _windowTexture.draw(batch->vertexArray, _status);
+            _windowTexture.draw(&v, 4, sf::PrimitiveType::Quads, states);
 #else
-            _window.draw(batch->vertexArray, _status);
+            _window.draw(batch->vertexArray, states);
 #endif
+            }
         }
         render();
 #ifdef  ENGINE_GUI

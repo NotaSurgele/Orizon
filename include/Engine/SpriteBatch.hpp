@@ -12,8 +12,8 @@ public:
     void clear();
 
     const sf::Texture *texture = nullptr;
+    std::vector<sf::Vertex> vertexArray;
     sf::Texture textureCpy;
     std::size_t textureId = 0;
-    sf::VertexArray vertexArray;
     std::size_t counter = 1;
 };
