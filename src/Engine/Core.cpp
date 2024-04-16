@@ -99,7 +99,6 @@ void Core::CoreDrawBatch(Sprite *sprite)
     newBatch->textureId = sprite->getTextureId();
     newBatch->draw(sprite);
     _batches.push_back(newBatch);
-    std::cout << _batches.size() << std::endl;
 #endif
 }
 
@@ -249,16 +248,11 @@ void Core::run()
 #endif
         _system_handler.systems();
         for (auto batch : _batches) {
-            for (auto& v : batch->vertexArray) {
-                sf::RenderStates states;
-                states.texture = &batch->textureCpy;
-
 #ifdef ENGINE_GUI
-            _windowTexture.draw(&v, 4, sf::PrimitiveType::Quads, states);
+            _windowTexture.draw(*((sf::Drawable *)batch));
 #else
             _window.draw(batch->vertexArray, states);
 #endif
-            }
         }
         render();
 #ifdef  ENGINE_GUI
@@ -267,7 +261,7 @@ void Core::run()
         //WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
         if (old) _windowTexture.setView(*old);
-        EngineHud::writeConsole<std::string, std::string>("FPS ", fpsText.getString());
+        EngineHud::writeConsole<std::string, std::string>("", fpsText.getString());
 #else
         _window.draw(fpsText);
 #endif
