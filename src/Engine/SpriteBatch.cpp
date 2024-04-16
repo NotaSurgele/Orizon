@@ -40,16 +40,16 @@ void SpriteBatch::draw(Sprite *sprite)
     vertexArray.setPrimitiveType(sf::Quads);
 
     // Rotate the vertices
-    vertexArray[counter * 4 + 0].position = sf::Vector2f(bounds.left, bounds.top);
+    vertexArray[counter * 4 + 0].position = rotate(sf::Vector2f(bounds.left, bounds.top));
     vertexArray[counter * 4 + 0].texCoords = sf::Vector2f(size.left, size.top);
 
-    vertexArray[counter * 4 + 1].position = sf::Vector2f(bounds.left + bounds.width, bounds.top);
+    vertexArray[counter * 4 + 1].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top));
     vertexArray[counter * 4 + 1].texCoords = sf::Vector2f(size.left + size.width, size.top);
 
-    vertexArray[counter * 4 + 2].position = sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height);
+    vertexArray[counter * 4 + 2].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height));
     vertexArray[counter * 4 + 2].texCoords = sf::Vector2f(size.left + size.width, size.top + size.height);
 
-    vertexArray[counter * 4 + 3].position = sf::Vector2f(bounds.left, bounds.top + bounds.height);
+    vertexArray[counter * 4 + 3].position = rotate(sf::Vector2f(bounds.left, bounds.top + bounds.height));
     vertexArray[counter * 4 + 3].texCoords = sf::Vector2f(size.left, size.top + size.height);
 
     vertexArray[counter * 4 + 0].color = sprite->getColor();
