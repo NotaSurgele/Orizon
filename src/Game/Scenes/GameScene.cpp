@@ -18,7 +18,7 @@ void GameScene::start()
     loadSceneFromFile("../assets/game.json");
     Script::start();
     float x = 400;
-    for (std::size_t i = 0; i < 10000; i++) {
+    for (std::size_t i = 0; i < 0; i++) {
         auto texture = R_GET_RESSOURCE(sf::Texture, "hobbit");
         auto s = new Sprite(texture);
 

@@ -7,16 +7,16 @@
 
 SpriteBatch::SpriteBatch()
 {
-    vertexArray.resize(5);
+    vertexArray = sf::VertexArray(sf::PrimitiveType::Quads, 5);
 }
 
 void SpriteBatch::draw(Sprite *sprite)
 {
-    auto length = counter * 4;
+    auto currentLength = counter * 4;
 
-    if (length + 4 > vertexArray.size()) {
-        std::cout << "Resizing" << std::endl;
-        vertexArray.resize(vertexArray.size() + 4);
+    if (currentLength + 4 > length) {
+        length = currentLength + 4;
+        vertexArray.resize(length);
     }
 
     auto bounds = sprite->getGlobalBounds();
@@ -37,28 +37,37 @@ void SpriteBatch::draw(Sprite *sprite)
         ) + origin;
     };
 
+    vertexArray.setPrimitiveType(sf::Quads);
+
     // Rotate the vertices
-    vertexArray[counter].position = rotate(sf::Vector2f(bounds.left, bounds.top));
-    vertexArray[counter + 1].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top));
-    vertexArray[counter + 2].position = rotate(sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height));
-    vertexArray[counter + 3].position = rotate(sf::Vector2f(bounds.left, bounds.top + bounds.height));
+    vertexArray[counter * 4 + 0].position = sf::Vector2f(bounds.left, bounds.top);
+    vertexArray[counter * 4 + 0].texCoords = sf::Vector2f(size.left, size.top);
 
-    vertexArray[counter].texCoords = sf::Vector2f(size.left, size.top);
-    vertexArray[counter + 1].texCoords = sf::Vector2f(size.left + size.width, size.top);
-    vertexArray[counter + 2].texCoords = sf::Vector2f(size.left + size.width, size.top + size.height);
-    vertexArray[counter + 3].texCoords = sf::Vector2f(size.left, size.top + size.height);
+    vertexArray[counter * 4 + 1].position = sf::Vector2f(bounds.left + bounds.width, bounds.top);
+    vertexArray[counter * 4 + 1].texCoords = sf::Vector2f(size.left + size.width, size.top);
 
-    vertexArray[counter].color = sprite->getColor();
-    vertexArray[counter + 1].color = sprite->getColor();
-    vertexArray[counter + 2].color = sprite->getColor();
-    vertexArray[counter + 3].color = sprite->getColor();
-    std::cout << "length " << length << " counter " << counter << " array size " << vertexArray.size() / 4 << std::endl;
+    vertexArray[counter * 4 + 2].position = sf::Vector2f(bounds.left + bounds.width, bounds.top + bounds.height);
+    vertexArray[counter * 4 + 2].texCoords = sf::Vector2f(size.left + size.width, size.top + size.height);
+
+    vertexArray[counter * 4 + 3].position = sf::Vector2f(bounds.left, bounds.top + bounds.height);
+    vertexArray[counter * 4 + 3].texCoords = sf::Vector2f(size.left, size.top + size.height);
+
+    vertexArray[counter * 4 + 0].color = sprite->getColor();
+    vertexArray[counter * 4 + 1].color = sprite->getColor();
+    vertexArray[counter * 4 + 2].color = sprite->getColor();
+    vertexArray[counter * 4 + 3].color = sprite->getColor();
     counter++;
+}
+
+void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
+{
+    states.texture = texture;
+    target.draw(vertexArray, states);
 }
 
 void SpriteBatch::clear()
 {
-    vertexArray.clear();
+    //vertexArray.clear();
     counter = 0;
 }
 

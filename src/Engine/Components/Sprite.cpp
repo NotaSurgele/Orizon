@@ -54,7 +54,7 @@ sf::Sprite& Sprite::getSprite()
 
 const sf::Texture* Sprite::getTexture()
 {
-    return _texture;
+    return _sprite.getTexture();
 }
 
 const sf::Vector2f& Sprite::getPosition()
