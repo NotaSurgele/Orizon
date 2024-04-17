@@ -18,12 +18,12 @@ void GameScene::start()
     loadSceneFromFile("../assets/game.json");
     Script::start();
     float x = 400;
-    for (std::size_t i = 0; i < 0; i++) {
+    for (std::size_t i = 0; i < 10; i++) {
         auto texture = R_GET_RESSOURCE(sf::Texture, "hobbit");
         auto s = new Sprite(texture);
 
         s->setPosition(x, 500);
-//        array.push_back(s);
+        array.push_back(s);
         x += 0.1f;
     }
 }
