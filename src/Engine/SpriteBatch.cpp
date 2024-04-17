@@ -1,13 +1,8 @@
-//
-// Created by alexi on 11/04/2024.
-//
-
 #include "SpriteBatch.hpp"
 #include <Math.hpp>
 
 SpriteBatch::SpriteBatch()
 {
-    vertexArray = sf::VertexArray(sf::PrimitiveType::Quads, 5);
 }
 
 void SpriteBatch::draw(Sprite *sprite)
@@ -61,8 +56,10 @@ void SpriteBatch::draw(Sprite *sprite)
 
 void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+    if (length <= 0) return;
     states.texture = texture;
-    target.draw(vertexArray, states);
+
+    target.draw(&vertexArray[0], counter * 4, sf::Quads, states);
 }
 
 void SpriteBatch::clear()
