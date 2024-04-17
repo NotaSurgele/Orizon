@@ -33,7 +33,6 @@ void SpriteBatch::draw(Sprite *sprite)
     };
 
     vertexArray.setPrimitiveType(sf::Quads);
-
     // Rotate the vertices
     vertexArray[counter * 4 + 0].position = rotate(sf::Vector2f(bounds.left, bounds.top));
     vertexArray[counter * 4 + 0].texCoords = sf::Vector2f(size.left, size.top);
@@ -57,14 +56,14 @@ void SpriteBatch::draw(Sprite *sprite)
 void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (length <= 0) return;
-    states.texture = texture;
+    states.texture = &textureCpy;
 
     target.draw(&vertexArray[0], counter * 4, sf::Quads, states);
 }
 
 void SpriteBatch::clear()
 {
-    //vertexArray.clear();
+    vertexArray.clear();
     counter = 0;
 }
 
