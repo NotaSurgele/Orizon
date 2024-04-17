@@ -22,6 +22,7 @@ class RenderWindow {
         bool isOpen();
         bool pollEvent(sf::Event& event);
         void display();
+        void draw(sf::VertexArray& vb, sf::RenderStates& states);
         void draw(Drawable *sprite);
         void draw(Drawable *sprite, const sf::BlendMode& blendMode);
         void draw(sf::Drawable const& draw);

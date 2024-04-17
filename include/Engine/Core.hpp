@@ -7,8 +7,10 @@
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
 #include "Engine/EngineHud.hpp"
+#include "Engine/SpriteBatch.hpp"
 #include "external/json.hpp"
 #include "SceneManager.hpp"
+
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
@@ -55,6 +57,7 @@ class Core : public ICore {
         void CoreDraw(Drawable *component, const sf::BlendMode& blendMode);
         void CoreDraw(sf::Drawable const& drawable);
         void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
+        void CoreDrawBatch(Sprite *sprite);
         void CoreClose();
 
         void run();
@@ -92,6 +95,10 @@ protected:
 private:
     static inline Time _time;
     static inline ResourcesManager _r_manager;
+
+    //Batch
+    std::vector<SpriteBatch *> _batches;
+    sf::RenderStates _status;
 
     //Utils
     RenderWindow _window;
@@ -179,6 +186,9 @@ private:
 
 #define DRAW_BLEND(to_draw, blendMode) \
         Core::instance->CoreDraw(to_draw, blendMode)
+
+#define DRAW_BATCH(to_draw) \
+        Core::instance->CoreDrawBatch(to_draw);
 
 #define DRAW_QUEUE(to_draw) \
         System::addInDrawQueue(to_draw)

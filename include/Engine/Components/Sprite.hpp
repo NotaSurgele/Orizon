@@ -8,9 +8,9 @@
 
 class Sprite : public IComponent, public Drawable {
     public:
-        Sprite(Entity *self, sf::Texture& texture,
+        Sprite(Entity *self, sf::Texture* texture,
             float const& width=1, float const& height=1);
-        explicit Sprite(sf::Texture& texture);
+        explicit Sprite(sf::Texture* texture);
 /*        Sprite(Entity *self, std::string const& texturePath,
               float const& width=1, float const& height=1);*/
         Sprite(Entity *self, const std::string& textureName,
@@ -20,8 +20,9 @@ class Sprite : public IComponent, public Drawable {
 
         sf::Sprite& getSprite();
         const sf::Texture* getTexture();
+        std::size_t getTextureId();
         Sprite& setSprite(sf::Sprite const& sprite);
-        Sprite& setTexture(sf::Texture& texture, bool reset=false);
+        Sprite& setTexture(sf::Texture* texture, bool reset=false);
         Sprite& setTexture(std::string const &filePath);
         Sprite& setTextureRect(sf::IntRect const& rect);
         Sprite& setTransform(Transform2D *transform);
@@ -69,6 +70,11 @@ class Sprite : public IComponent, public Drawable {
             return _textureName;
         }
 
+        const sf::IntRect& getTextureRect()
+        {
+            return _sprite.getTextureRect();
+        }
+
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override
         {
             target.draw(_sprite, states);
@@ -77,9 +83,10 @@ class Sprite : public IComponent, public Drawable {
         void destroy() override final;
 
     private:
+        std::size_t _textureId = 0;
         std::string _textureName;
         float _intensity = .4f;
-        sf::Texture _texture;
+        sf::Texture *_texture = nullptr;
         sf::Sprite _sprite;
         bool _light = false;
         Entity *_self;

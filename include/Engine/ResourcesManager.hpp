@@ -17,15 +17,15 @@ class ResourcesManager {
         ResourcesManager& addRessource(std::string const& ressourceName,
                                        std::string const& filePath)
         {
-            T ressource = T();
+            T *ressource = new T();
 
-            ressource.loadFromFile(filePath);
+            ressource->loadFromFile(filePath);
             _pathMap.insert(std::pair<std::string, std::string>(ressourceName, filePath));
             if constexpr (std::is_same_v<T, sf::SoundBuffer>) {
-                _soundMap.insert(std::pair<std::string, sf::SoundBuffer>(ressourceName, ressource));
+                _soundMap.insert(std::pair<std::string, sf::SoundBuffer *>(ressourceName, ressource));
                 return *this;
             } else
-                _map.insert(std::pair<std::string, T>(ressourceName, ressource));
+                _map.insert(std::pair<std::string, T *>(ressourceName, ressource));
             return *this;
         }
 
@@ -44,14 +44,14 @@ class ResourcesManager {
         ResourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
                                                   std::string const& filepath, int x, int y, int w, int h)
         {
-            sf::Texture tile = sf::Texture();
-            if (!tile.loadFromFile(filepath,
+            sf::Texture *tile = new sf::Texture();
+            if (!tile->loadFromFile(filepath,
                sf::IntRect{x, y, w, h})) {
                 std::cerr << "[ResourceManager] ERROR cannot load Tile " << filepath << " at position "
                     << x << " " << y << std::endl;
             }
             _pathMap.insert(std::pair<std::string, std::string>(tilename, filepath));
-            _map.insert(std::pair<std::string, sf::Texture>(tilename, tile));
+            _map.insert(std::pair<std::string, sf::Texture *>(tilename, tile));
             return *this;
         }
 
@@ -98,17 +98,17 @@ class ResourcesManager {
         }
 
         template<typename T>
-        T getRessource(std::string const &ressourceName)
+        T* getRessource(std::string const &ressourceName)
         {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
-                return static_cast<sf::SoundBuffer>(_soundMap[ressourceName]);
+                return static_cast<sf::SoundBuffer *>(_soundMap[ressourceName]);
             else {
-                return static_cast<T>(_map[ressourceName]);
+                return static_cast<T *>(_map[ressourceName]);
             }
         }
 
         template<typename T>
-        std::map<std::string, T>& getRessources()
+        std::map<std::string, T *>& getRessources()
         {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return _soundMap;
@@ -145,7 +145,7 @@ class ResourcesManager {
         {
             for (auto& it : _map) {
                 bool equal = true;
-                sf::Image image1 = it.second.copyToImage();
+                sf::Image image1 = it.second->copyToImage();
                 sf::Image image2 = texture->copyToImage();
 
                 // Compare the size of the images
@@ -179,8 +179,8 @@ class ResourcesManager {
 
     private:
         std::unordered_map<std::string, std::string> _pathMap;
-        std::map<std::string, sf::Texture> _map;
-        std::map<std::string, sf::SoundBuffer> _soundMap;
+        std::map<std::string, sf::Texture *> _map;
+        std::map<std::string, sf::SoundBuffer *> _soundMap;
         std::map<std::string, sf::Music *> _musicMap;
         std::map<std::string, std::string> _scriptMap;
         std::map<std::string, std::size_t> _tagArray;

@@ -90,7 +90,7 @@ public:
 
 class Image : public Drawable, public CanvasObject {
 public:
-    explicit Image(sf::Texture& texture, const sf::Vector2f& position, const sf::Vector2f& scale,
+    explicit Image(sf::Texture* texture, const sf::Vector2f& position, const sf::Vector2f& scale,
                         const sf::Color& color=sf::Color::White) : _image(new Sprite(texture))
     {
         _image->setScale(scale.x, scale.y);
@@ -148,7 +148,7 @@ private:
 
 class Button : public Drawable, public CanvasObject {
 public:
-    Button(const sf::Vector2f& position, const sf::Vector2f& size, sf::Texture texture);
+    Button(const sf::Vector2f& position, const sf::Vector2f& size, sf::Texture* texture);
     ~Button() override = default;
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override
@@ -161,7 +161,7 @@ public:
         _sprite->setColor(color);
     }
 
-    void setTexture(sf::Texture& texture)
+    void setTexture(sf::Texture* texture)
     {
         _sprite->setTexture(texture);
     }
@@ -171,7 +171,7 @@ public:
         return _sprite;
     }
 
-    void setTexture(sf::Texture& texture, const std::string& name)
+    void setTexture(sf::Texture* texture, const std::string& name)
     {
         _sprite->setTexture(texture);
         _sprite->setTextureName(name);
@@ -296,10 +296,10 @@ public:
 
     Text *addText(const std::string& content, const sf::Vector2f& pos, const std::size_t& size, bool save=true);
 
-    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture texture, bool save=true);
+    Button *addButton(const sf::Vector2f& position, const sf::Vector2f& scale, sf::Texture* texture, bool save=true);
 
 
-    Image *addImage(sf::Texture texture, const sf::Vector2f& position,
+    Image *addImage(sf::Texture* texture, const sf::Vector2f& position,
                      const sf::Vector2f& scale, bool save=true)
     {
         auto img = new Image(texture, position, scale);
