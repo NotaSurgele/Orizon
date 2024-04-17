@@ -356,7 +356,7 @@ void Script::registerCanvasTypes()
     );
 
     _state->new_usertype<Image>(
-        "Image", sol::constructors<Image(sf::Texture&, const sf::Vector2f&,
+        "Image", sol::constructors<Image(sf::Texture *, const sf::Vector2f&,
                                          const sf::Vector2f& scale, const sf::Color& color)>(),
         "setPosition", sol::overload(
             [](Image *img, const float& x, const float& y) {
@@ -400,13 +400,13 @@ void Script::registerCanvasTypes()
         "NOTHING", Button::States::NOTHING
     );
     _state->new_usertype<Button>(
-        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture&)>(),
+        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture*)>(),
         "getSprite", &Button::getSprite,
         "setTexture", sol::overload(
-            [](Button *button, sf::Texture& texture) {
+            [](Button *button, sf::Texture *texture) {
                 return button->setTexture(texture);
             },
-            [](Button *button, sf::Texture& texture, const std::string& name) {
+            [](Button *button, sf::Texture *texture, const std::string& name) {
                 return button->setTexture(texture, name);
             }
         ),
@@ -626,16 +626,16 @@ void Script::registerSpriteComponent()
 {
     _state->new_usertype<Sprite>(
         "Sprite", sol::constructors<
-                            Sprite(Entity *, sf::Texture, float, float),
-                            Sprite(Entity *, sf::Texture),
+                            Sprite(Entity *, sf::Texture*, float, float),
+                            Sprite(Entity *, sf::Texture*),
                             Sprite(Entity *, std::string, float, float),
-                            Sprite(sf::Texture texture)>(),
+                            Sprite(sf::Texture*)>(),
         "setScale", &Sprite::setScale,
         "setTexture", sol::overload(
                 [] (Sprite *sprite, const std::string& texturePath) {
                     return sprite->setTexture(texturePath);
                 },
-                [] (Sprite *sprite, sf::Texture& texture) {
+                [] (Sprite *sprite, sf::Texture* texture) {
                     return sprite->setTexture(texture);
                 }
         ),
@@ -740,12 +740,12 @@ void Script::registerCanvasComponent()
             }
         ),
         "addButton", sol::overload(
-            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, const sf::Texture& text) {
+            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, sf::Texture* text) {
                 return canvas->addButton(pos, scale, text, false);
             }
         ),
         "addImage", sol::overload(
-            [] (Canvas *canvas, sf::Texture texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
+            [] (Canvas *canvas, sf::Texture* texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
                 return canvas->addImage(texture, position, scale, false);
             }
         ),
@@ -841,10 +841,10 @@ void Script::registerEntityFunction()
                     }
             ),
             "addSprite", sol::overload(
-                    [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
+                    [](Entity *entity, sf::Texture *texture, float width=1, float height=1) {
                         return entity->addComponent<Sprite>(texture, width, height);
                     },
-                    [](Entity *entity, sf::Texture texture) {
+                    [](Entity *entity, sf::Texture *texture) {
                         return entity->addComponent<Sprite>(texture);
                     },
                     [](Entity *entity, std::string texturePath, float width=1, float height=1) {

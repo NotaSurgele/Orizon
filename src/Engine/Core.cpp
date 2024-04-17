@@ -16,6 +16,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     if (!(_isTextureLoaded = _windowTexture.create(1063, 951)))
         std::cerr << "[CORE] Couldn't create RenderTexture" << std::endl;
 #endif
+    _status = sf::RenderStates();
     _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
@@ -79,6 +80,26 @@ void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
     _windowTexture.draw(draw, blendMode);
 #else
     _window.draw(component, blendMode);
+#endif
+}
+
+void Core::CoreDrawBatch(Sprite *sprite)
+{
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite);
+            return;
+        }
+    }
+    SpriteBatch *newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->draw(sprite);
+    _batches.push_back(newBatch);
+    std::cout << _batches.size() << std::endl;
 #endif
 }
 
@@ -159,7 +180,7 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
-    if (_fpsTime < .5f) {
+    if (_fpsTime < 1.0f) {
         _fpsTime += _time.getClock().getElapsedTime().asSeconds();
         return;
     }
@@ -227,6 +248,15 @@ void Core::run()
         _window.clear(_clearColor);
 #endif
         _system_handler.systems();
+        for (auto batch : _batches) {
+#ifdef ENGINE_GUI
+            _windowTexture.draw(*((sf::Drawable *)batch));
+#else
+            _window.draw(*((sf::Drawable *)batch));
+#endif
+        }
+        for (auto batch : _batches)
+            batch->clear();
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
@@ -234,7 +264,7 @@ void Core::run()
         //WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
         if (old) _windowTexture.setView(*old);
-        EngineHud::writeConsole<std::string, std::string>("FPS ", fpsText.getString());
+        EngineHud::writeConsole<std::string, std::string>("", fpsText.getString());
 #else
         _window.draw(fpsText);
 #endif

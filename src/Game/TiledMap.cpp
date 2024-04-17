@@ -64,7 +64,7 @@ bool TiledMap::_loadTileMap()
                 posX += _tileHeight;
             }
             if (cellId > 0) {
-                sf::Texture texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
+                sf::Texture *texture = R_GET_RESSOURCE(sf::Texture, std::to_string(cellId));
                 Entity *e = new Entity();
 
                 e->getComponent<Layer>()->set(0);
