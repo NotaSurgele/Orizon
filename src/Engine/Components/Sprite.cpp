@@ -45,6 +45,7 @@ Sprite::Sprite(sf::Texture*texture) : _self(nullptr)
     _textureId = texture->getNativeHandle();
     _texture = texture;
     setTexture(texture);
+    _sprite.setScale(1, 1);
 }
 
 sf::Sprite& Sprite::getSprite()
@@ -54,7 +55,7 @@ sf::Sprite& Sprite::getSprite()
 
 const sf::Texture* Sprite::getTexture()
 {
-    return _sprite.getTexture();
+    return _texture;
 }
 
 const sf::Vector2f& Sprite::getPosition()

@@ -99,6 +99,7 @@ void Core::CoreDrawBatch(Sprite *sprite)
     newBatch->textureId = sprite->getTextureId();
     newBatch->draw(sprite);
     _batches.push_back(newBatch);
+    std::cout << _batches.size() << std::endl;
 #endif
 }
 
@@ -179,7 +180,7 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
-    if (_fpsTime < .5f) {
+    if (_fpsTime < 1.0f) {
         _fpsTime += _time.getClock().getElapsedTime().asSeconds();
         return;
     }
@@ -254,6 +255,8 @@ void Core::run()
             _window.draw(batch->vertexArray, states);
 #endif
         }
+        for (auto batch : _batches)
+            batch->clear();
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
@@ -266,10 +269,6 @@ void Core::run()
         _window.draw(fpsText);
 #endif
         CoreDisplay();
-        for (auto batch: _batches) {
-            batch->clear();
-        }
-//        _batches.clear();
         _time.end();
         fpsCalculation();
         _input.___clearReleased();
