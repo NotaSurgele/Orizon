@@ -252,7 +252,7 @@ void Core::run()
 #ifdef ENGINE_GUI
             _windowTexture.draw(*((sf::Drawable *)batch));
 #else
-            _window.draw(batch->vertexArray, states);
+            _window.draw(*((sf::Drawable *)batch));
 #endif
         }
         for (auto batch : _batches)
