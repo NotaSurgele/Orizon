@@ -70,6 +70,8 @@ class Core : public ICore {
     private:
         bool CoreEvent(sf::Event& event);
         void CoreDisplay();
+        void clearBatch();
+        void renderBatch();
 
         void inputHandler(sf::Event& event);
         void fpsCalculation();

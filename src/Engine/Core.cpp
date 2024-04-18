@@ -248,20 +248,12 @@ void Core::run()
         _window.clear(_clearColor);
 #endif
         _system_handler.systems();
-        for (auto batch : _batches) {
-#ifdef ENGINE_GUI
-            _windowTexture.draw(*((sf::Drawable *)batch));
-#else
-            _window.draw(*((sf::Drawable *)batch));
-#endif
-        }
-        for (auto batch : _batches)
-            batch->clear();
+        renderBatch();
+        clearBatch();
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
         _windowTexture.setView(_hud);
-        //WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
         if (old) _windowTexture.setView(*old);
         EngineHud::writeConsole<std::string, std::string>("", fpsText.getString());
@@ -276,4 +268,21 @@ void Core::run()
     destroyGUI();
     destroy();
     _window.close();
+}
+
+void Core::renderBatch()
+{
+    for (auto batch : _batches) {
+#ifdef ENGINE_GUI
+        _windowTexture.draw(*((sf::Drawable *)batch));
+#else
+        _window.draw(*((sf::Drawable *)batch));
+#endif
+    }
+}
+
+void Core::clearBatch()
+{
+    for (auto batch : _batches)
+        batch->clear();
 }
