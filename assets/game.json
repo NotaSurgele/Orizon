@@ -15,6 +15,11 @@
             "type": "Texture"
         },
         {
+            "name": "black_rect",
+            "path": "./assets/black.png",
+            "type": "Texture"
+        },
+        {
             "name": "block",
             "path": "./assets/generic-rpg-tile02.png",
             "type": "Texture"

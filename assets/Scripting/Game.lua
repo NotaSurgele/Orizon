@@ -6,14 +6,42 @@ GlobalVariable = require 'assets.Scripting.Global'
 local player = Player.new()
 local enemyManager = EnemyManager.new()
 local gameManager = GameManager.new()
+local transition = {
+    sprite = nil,
+    color = Color.Black,
+    ended = false
+}
 
 function Start()
+    local texture = ResourceManager.getResource("black_rect")
+    transition.sprite = Sprite.new(texture)
+    transition.sprite:setColor(transition.color)
+    transition.sprite:setScale(10, 10)
+    transition.sprite:setPosition(0, 0)
+
     enemyManager:Start(gameManager)
     player:Start(enemyManager)
     gameManager:Start(player, enemyManager)
 end
 
+function playTransition()
+    if transition.ended == false then
+        if transition.color.a <= 0 then
+        	transition.color.a = 255
+        	transition.sprite:setColor(transition.color)
+        	transition.ended = true
+        	return 0
+        end
+        transition.color.a = transition.color.a - 80 * deltaTime
+        transition.sprite:setColor(transition.color)
+        Core:draw(transition.sprite)
+    	return 1
+    end
+    return 0
+end
+
 function Update()
+    playTransition()
     gameManager:Update()
 end
 
