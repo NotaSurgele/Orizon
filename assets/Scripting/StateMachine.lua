@@ -18,8 +18,7 @@ function StateMachine:play(name, ...)
 
     if state then
         self.currentState = name
-        state(...)
-        return
+        return state(...)
     end
     print("State", name, "Does not exist !")
 end

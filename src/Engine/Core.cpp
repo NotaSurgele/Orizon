@@ -99,7 +99,6 @@ void Core::CoreDrawBatch(Sprite *sprite)
     newBatch->textureId = sprite->getTextureId();
     newBatch->draw(sprite);
     _batches.push_back(newBatch);
-    std::cout << _batches.size() << std::endl;
 #endif
 }
 

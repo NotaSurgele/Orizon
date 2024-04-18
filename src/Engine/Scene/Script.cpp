@@ -44,12 +44,18 @@ void Script::create(const std::string& scriptPath, bool insert)
     registerComponentsType();
     registerEntityFunction();
     (*_state)["Utils"] = Utils();
-    (*_state)["DRAW"] = sol::overload(
+    (*_state)["Draw"] = sol::overload(
             [](Core* core, Drawable *drawable) {
                 return core->CoreDraw(drawable);
             },
             [] (Core* core, const sf::Drawable& drawable) {
                 return core->CoreDraw(drawable);
+            },
+            [] (Core *core, Sprite *sprite) {
+                return core->CoreDrawBatch(sprite);
+            },
+            [] (Core *core, sf::RectangleShape& shape) {
+                return core->CoreDraw(shape);
             }
     );
     _state->set_function("Import", &loadScript);

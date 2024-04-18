@@ -32,7 +32,6 @@ function GameManager:Start(player, enemyManager)
 
     self.button = canvas:addButton(Vector2f.new(300, 300), Vector2f.new(1, 1), texture)
     self.button:setCallback(function ()
-        print("click")
         if self.turn == false then
         	return
         end
