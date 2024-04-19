@@ -58,6 +58,9 @@ void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
     if (length <= 0) return;
     states.texture = &textureCpy;
 
+    if (sprite->hasShader) {
+        states.shader = **sprite->shader;
+    }
     target.draw(&vertexArray[0], counter * 4, sf::Quads, states);
 }
 

@@ -12,6 +12,22 @@ local transition = {
     ended = false
 }
 
+transition.play = function ()
+    if transition.ended == false then
+        if transition.color.a <= 0 then
+            transition.color.a = 255
+            transition.sprite:setColor(transition.color)
+            transition.ended = true
+            return 0
+        end
+        transition.color.a = transition.color.a - 80 * deltaTime
+        transition.sprite:setColor(transition.color)
+        Core:draw(transition.sprite)
+        return 1
+    end
+    return 0
+end
+
 function Start()
     local texture = ResourceManager.getResource("black_rect")
     transition.sprite = Sprite.new(texture)
@@ -24,24 +40,8 @@ function Start()
     gameManager:Start(player, enemyManager)
 end
 
-function playTransition()
-    if transition.ended == false then
-        if transition.color.a <= 0 then
-        	transition.color.a = 255
-        	transition.sprite:setColor(transition.color)
-        	transition.ended = true
-        	return 0
-        end
-        transition.color.a = transition.color.a - 80 * deltaTime
-        transition.sprite:setColor(transition.color)
-        Core:draw(transition.sprite)
-    	return 1
-    end
-    return 0
-end
-
 function Update()
-    playTransition()
+    transition.play()
     gameManager:Update()
 end
 

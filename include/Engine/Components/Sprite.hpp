@@ -19,17 +19,29 @@ class Sprite : public IComponent, public Drawable {
         ~Sprite() = default;
 
         sf::Sprite& getSprite();
+
         const sf::Texture* getTexture();
+
         std::size_t getTextureId();
+
         Sprite& setSprite(sf::Sprite const& sprite);
+
         Sprite& setTexture(sf::Texture* texture, bool reset=false);
+
         Sprite& setTexture(std::string const &filePath);
+
         Sprite& setTextureRect(sf::IntRect const& rect);
+
         Sprite& setTransform(Transform2D *transform);
+
         Sprite& setColor(const sf::Color& color);
+
         Sprite& setShadowIntensity(const float& intensity=.4f);
+
         Sprite& setLightApply(bool apply);
+
         Sprite& setScale(const float& x, const float& y);
+
         Sprite& setTextureName(const std::string& name)
         {
             _textureName = name;
@@ -58,6 +70,7 @@ class Sprite : public IComponent, public Drawable {
 
         void setPosition(const sf::Vector2f& position);
         void setPosition(const float& x, const float& y);
+
 
         bool isLightApply();
 
