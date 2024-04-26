@@ -40,6 +40,12 @@
             "type": "Texture"
         },
         {
+            "name": "shader",
+            "type": "Shader",
+            "vertex": "./assets/test.vert",
+            "fragment": "./assets/test.frag"
+        },
+        {
             "name": "end_tour",
             "path": "./assets/EndTourButton.png",
             "type": "Texture"
