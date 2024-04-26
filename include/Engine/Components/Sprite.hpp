@@ -71,7 +71,6 @@ class Sprite : public IComponent, public Drawable {
         void setPosition(const sf::Vector2f& position);
         void setPosition(const float& x, const float& y);
 
-
         bool isLightApply();
 
         const sf::Vector2f& getPosition();
