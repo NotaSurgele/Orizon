@@ -88,11 +88,13 @@ void Scene::get_ressources(nlohmann::json const& ressources)
 {
     for (auto& ressource : ressources) {
         std::string type = ressource["type"];
-        std::string path = ressource["path"];
+        std::string path = "";
         std::string name = "";
 
         if (ressource.contains("name"))
             name = ressource["name"];
+        if (ressource.contains("path"))
+            path = ressource["path"];
         if (type.find("Texture") != std::string::npos)
             R_ADD_RESSOURCE(sf::Texture, name, path);
         else if (type.find("Tile") != std::string::npos) {
@@ -107,7 +109,11 @@ void Scene::get_ressources(nlohmann::json const& ressources)
             R_ADD_MUSIC(name, path);
         else if (type.find("Entities") != std::string::npos)
             _entitiesPath = path;
-        /*else if (type.find("Script") != std::string::npos)
-            R_ADD_SCRIPT(path);*/
+        else if (type.find("Shader") != std::string::npos) {
+            auto& vertex = ressource["vertex"];
+            auto& fragment = ressource["fragment"];
+
+            R_ADD_SHADER(name, vertex, fragment);
+        }
     }
 }
