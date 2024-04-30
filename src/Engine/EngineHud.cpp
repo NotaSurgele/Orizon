@@ -237,6 +237,10 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent
 
     if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
     else json["texture_name"] = sprite->getTextureName();
+    if (sprite->hasShader) {
+        auto name = sprite->shader->name;
+        json["shader"]["name"] = name;
+    }
     return json;
 }
 
