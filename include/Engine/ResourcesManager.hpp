@@ -37,8 +37,11 @@ class ResourcesManager {
 
             if (!Shader::isAvailable())
                return *this;
-            shader->loadFromFile(vertex, fragment);
-            shader->name = name;
+            if (!vertex.empty())
+                shader->loadFromFile(vertex, sf::Shader::Vertex);
+            if (!fragment.empty())
+                shader->loadFromFile(fragment, sf::Shader::Fragment);
+            shader->name = resourceName;
             _shaderMap.insert(std::pair<std::string, Shader *>(resourceName, shader));
             return *this;
         }

@@ -12,6 +12,7 @@ public:
 
     void attachShader(Shader *s)
     {
+        hasShader = true;
         shader = s;
     }
 

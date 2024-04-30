@@ -155,9 +155,13 @@ void Scene::get_ressources(nlohmann::json const& ressources)
         {
           "Shader", [&] (std::string& name, const nlohmann::json& resource) {
                 try {
-                    auto& vertex = resource["vertex"];
-                    auto& fragment = resource["fragment"];
+                    std::string vertex;
+                    std::string fragment;
 
+                    if (resource.contains("vertex"))
+                        vertex = resource["vertex"];
+                    if (resource.contains("fragment"))
+                        fragment = resource["fragment"];
                     R_ADD_SHADER(name, vertex, fragment);
                 } catch (std::exception& e) {
                     std::cerr << "[SCENE] missing shader parameter in json file " << _sceneFile << " " << e.what() << std::endl;
