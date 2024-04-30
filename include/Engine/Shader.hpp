@@ -83,6 +83,7 @@ public:
 
 public:
     static inline bool available = false;
+    std::string name;
 
 private:
     sf::Shader _shader;

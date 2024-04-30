@@ -4,9 +4,14 @@
 void Scene::ComponentFactory::create_sprite(Entity *e, nlohmann::json const& json)
 {
     std::string textureName = json["texture_name"];
-    sf::Texture *texture = R_GET_RESSOURCE(sf::Texture, textureName);
+    auto texture = R_GET_RESSOURCE(sf::Texture, textureName);
 
-    e->addComponent<Sprite>(texture)->setTextureName(textureName);
+    auto sprite = e->addComponent<Sprite>(texture);
+    sprite->setTextureName(textureName);
+    if (json.contains("shader")) {
+        auto shader = R_GET_RESSOURCE(Shader, json["shader"]["name"]);
+        sprite->attachShader(shader);
+    }
 }
 
 void Scene::ComponentFactory::create_music(Entity *e, nlohmann::json const& json)
@@ -88,7 +93,7 @@ void Scene::get_ressources(nlohmann::json const& ressources)
 {
     static std::unordered_map<std::string, std::function<void(std::string& name, const nlohmann::json& resource)>> resourceMap = {
         {
-            "Texture", [&](std::string &name, const nlohmann::json &resource) {
+        "Texture", [&](std::string &name, const nlohmann::json &resource) {
                 try {
                     std::string path = resource["path"];
 
@@ -100,7 +105,7 @@ void Scene::get_ressources(nlohmann::json const& ressources)
             }
         },
         {
-            "Tile", [&](std::string &name, const nlohmann::json &resource) {
+        "Tile", [&](std::string &name, const nlohmann::json &resource) {
                 try {
                     std::string path = resource["path"];
                     float x = resource["tile_info"][0];

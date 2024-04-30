@@ -23,6 +23,7 @@ public:
 
     Shader *shader = nullptr;
     bool hasShader = false;
+    std::string name;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 };
