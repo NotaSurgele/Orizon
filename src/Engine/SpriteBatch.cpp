@@ -1,4 +1,5 @@
 #include "SpriteBatch.hpp"
+#include "Time.hpp"
 #include <Math.hpp>
 
 SpriteBatch::SpriteBatch()
@@ -57,6 +58,7 @@ void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (length <= 0) return;
     states.texture = &textureCpy;
+
 
     if (sprite->hasShader) {
         states.shader = **sprite->shader;
