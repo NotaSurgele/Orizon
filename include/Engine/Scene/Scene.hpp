@@ -7,7 +7,9 @@
 #include "Components/Light.hpp"
 #include "Components/View.hpp"
 #include "json.hpp"
+
 #include <fstream>
+#include <unordered_map>
 
 class Scene : public IScene {
 public:
@@ -312,6 +314,7 @@ public:
         }
 
 private:
+
     std::string _sceneFile;
     std::string _entitiesPath;
     nlohmann::json _sceneContent;
