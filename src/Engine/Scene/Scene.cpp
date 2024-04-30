@@ -162,11 +162,9 @@ void Scene::get_ressources(nlohmann::json const& ressources)
     };
     for (auto& ressource : ressources) {
         std::string type = ressource["type"];
-        std::string path;
         std::string name;
 
         if (ressource.contains("name")) name = ressource["name"];
-        if (ressource.contains("path")) path = ressource["path"];
         for (auto& it : resourceMap) {
             if (it.first == type) {
                 it.second(name, ressource);
