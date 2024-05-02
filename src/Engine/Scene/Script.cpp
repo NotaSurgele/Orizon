@@ -270,12 +270,19 @@ void Script::registerResourceManager()
     _state->new_usertype<ResourcesManager>(
     "ResourceManager",
     "addTile", &ResourcesManager::loadTileFromSpriteSheet,
-        "getResource", sol::overload(
+        "getTexture", sol::overload(
             [] (const std::string& resourceName) {
                 return Core::resourceManager().getRessource<sf::Texture>(resourceName);
-            },
-            [] (const std::string& resourceName) {
-                return Core::resourceManager().getRessource<sf::SoundBuffer>(resourceName);
+            }
+        ),
+        "getShader", sol::overload(
+            [] (const std::string& resource) {
+                return R_GET_RESSOURCE(Shader, resource);
+            }
+        ),
+        "getSound", sol::overload(
+            [] (const std::string& name) {
+                return R_GET_RESSOURCE(sf::SoundBuffer, name);
             }
         )
     );
@@ -502,6 +509,71 @@ void Script::registerLineType()
     );
 }
 
+void Script::registerShaderType()
+{
+
+    _state->new_enum("ShaderType",
+                     "Vertex", sf::Shader::Type::Vertex,
+                     "Geometry", sf::Shader::Type::Geometry,
+                     "Fragment", sf::Shader::Type::Fragment
+    );
+    _state->new_usertype<Shader>(
+        "Shader", sol::constructors<Shader()>(),
+        "isAvailable", &Shader::isAvailable,
+        "loadFromFile", sol::overload(
+            [] (Shader *shader, const std::string& path, const sf::Shader::Type& type) {
+                return shader->loadFromFile(path, type);
+            },
+            [] (Shader *shader, const std::string& vertex, const std::string& fragment) {
+                return shader->loadFromFile(vertex, fragment);
+            }
+        ),
+        "setUniform", sol::overload(
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec2& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec3& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec4& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, bool x) {
+                return shader->setUniform(name, x);
+            },
+            [] (Shader *shader, const std::string& name, sf::Texture& texture) {
+                return shader->setUniform(name, texture);
+            },
+            [] (Shader *shader, const std::string& name, float x) {
+                return shader->setUniform(name, x);
+            }
+        ),
+        "setUniformArray", sol::overload(
+            [] (Shader *shader, const std::string& name, const float *array, std::size_t length) {
+                return shader->setUniformArray(name, array, length);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            }
+        )
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -510,12 +582,13 @@ void Script::registerBaseTypes()
     registerRectType();
     registerTileMap();
     registerUtilsType();
-    registerResourceManager();
+    registerShaderType();
     registerSystemType();
     registerDrawableType();
     registerCanvasTypes();
     registerCoreType();
     registerLineType();
+    registerResourceManager();
 }
 
 void Script::registerTransform2DComponent()
@@ -658,6 +731,8 @@ void Script::registerSpriteComponent()
         "setTransform", &Sprite::setTransform,
         "setTextureRect", &Sprite::setTextureRect,
         "setSprite", &Sprite::setSprite,
+        "attachShader", &Sprite::attachShader,
+        "dropShader", &Sprite::dropShader,
         "getPosition", &Sprite::getPosition,
         "getTexture", &Sprite::getTexture,
         "getScale", &Sprite::getScale,
@@ -666,6 +741,8 @@ void Script::registerSpriteComponent()
         "getSprite", &Sprite::getSprite,
         "getGlobalBounds", &Sprite::getGlobalBounds,
         "rotate", &Sprite::rotate,
+        "shader", &Sprite::shader,
+        "hasShader", &Sprite::hasShader,
         "destroy", &Sprite::destroy
     );
 }

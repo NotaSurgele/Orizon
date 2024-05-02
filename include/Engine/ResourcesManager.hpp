@@ -124,6 +124,8 @@ class ResourcesManager {
             } else if constexpr (std::is_same_v<T, Shader>) {
                 return static_cast<T *>(_shaderMap[ressourceName]);
             }
+            std::cerr << "[RESOURCE MANAGER] resource " << ressourceName << " does not exist in !" << std::endl;
+            return nullptr;
         }
 
         template<typename T>
