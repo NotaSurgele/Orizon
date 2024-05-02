@@ -28,7 +28,7 @@ function GameManager:Start(player, enemyManager)
     self.enemyManager = enemyManager
 
     -- setup endTour button
-    local texture = ResourceManager.getResource("end_tour")
+    local texture = ResourceManager.getTexture("end_tour")
 
     self.button = canvas:addButton(Vector2f.new(300, 300), Vector2f.new(1, 1), texture)
     self.button:setCallback(function ()

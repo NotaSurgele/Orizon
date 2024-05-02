@@ -101,7 +101,6 @@ function Player:Start(enemyManager)
     animator = self.entity:getAnimator()
     hud = System.getEntity("Hud"):getCanvas()
     camera = System.getEntity("Camera"):getView()
-
     self:cardInit()
 end
 

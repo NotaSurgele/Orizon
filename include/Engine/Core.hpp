@@ -136,6 +136,9 @@ private:
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::resourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
 
+#define R_ADD_SHADER(name, vertex, fragment) \
+        Core::resourceManager().loadShader(name, vertex, fragment)
+
 #define R_ADD_TAG(tag) \
         Core::resourceManager().addTag(tag)
 

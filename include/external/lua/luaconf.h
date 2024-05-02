@@ -461,7 +461,7 @@
 
 #elif LUA_FLOAT_TYPE == LUA_FLOAT_DOUBLE	/* }{ double */
 
-#define LUA_NUMBER	double
+#define LUA_NUMBER	float
 
 #define l_floatatt(n)		(DBL_##n)
 

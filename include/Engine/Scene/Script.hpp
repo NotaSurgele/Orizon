@@ -61,6 +61,7 @@ private:
     void registerCoreType();
     void registerCanvasTypes();
     void registerLineType();
+    void registerShaderType();
     void registerBaseTypes();
 
     // register component
