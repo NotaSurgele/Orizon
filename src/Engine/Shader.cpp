@@ -131,7 +131,6 @@ void Shader::setUniformArray(const std::string &name, const float *scalarArray, 
 
 void Shader::setUniformArray(const std::string &name, const sf::Glsl::Vec2 *vectorArray, std::size_t length)
 {
-
     _shader.setUniform(name, vectorArray);
 }
 

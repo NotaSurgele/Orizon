@@ -86,7 +86,7 @@ function tiledMap.loadTileMap()
                 posX = posX + tileSize.y
             end
             if cellId > 0 then
-                texture = ResourceManager.getResource(tostring(cellId))
+                texture = ResourceManager.getTexture(tostring(cellId))
                 e = Entity.new()
 
                 e:getLayer():set(layerIndex)
