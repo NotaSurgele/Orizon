@@ -28,11 +28,9 @@ private:
     std::vector<std::vector<int>> _heightMap;
     bool load = false;
     Particles _particles;
-    sf::RenderTexture test;
     sf::RectangleShape wall = sf::RectangleShape();
     sf::RectangleShape wall2 = sf::RectangleShape();
     std::vector<RayCaster> _rayCaster;
     OrizonMusic *_music = nullptr;
     TiledMap *tiledMap = new TiledMap();
-    Entity *toto = nullptr;
 };

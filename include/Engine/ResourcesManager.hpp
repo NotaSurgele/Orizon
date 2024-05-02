@@ -29,6 +29,23 @@ class ResourcesManager {
             return *this;
         }
 
+        ResourcesManager& loadShader(const std::string& resourceName,
+                                     const std::string& vertex,
+                                     const std::string& fragment)
+        {
+            auto shader = new Shader;
+
+            if (!Shader::isAvailable())
+               return *this;
+            if (!vertex.empty())
+                shader->loadFromFile(vertex, sf::Shader::Vertex);
+            if (!fragment.empty())
+                shader->loadFromFile(fragment, sf::Shader::Fragment);
+            shader->name = resourceName;
+            _shaderMap.insert(std::pair<std::string, Shader *>(resourceName, shader));
+            return *this;
+        }
+
         ResourcesManager& loadMusic(const std::string& ressourceName,
                                     const std::string& filePath)
         {
@@ -102,9 +119,13 @@ class ResourcesManager {
         {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return static_cast<sf::SoundBuffer *>(_soundMap[ressourceName]);
-            else {
+            else if constexpr (std::is_same_v<T, sf::Texture>) {
                 return static_cast<T *>(_map[ressourceName]);
+            } else if constexpr (std::is_same_v<T, Shader>) {
+                return static_cast<T *>(_shaderMap[ressourceName]);
             }
+            std::cerr << "[RESOURCE MANAGER] resource " << ressourceName << " does not exist in !" << std::endl;
+            return nullptr;
         }
 
         template<typename T>
@@ -112,8 +133,11 @@ class ResourcesManager {
         {
             if constexpr (std::is_same_v<T, sf::SoundBuffer>)
                 return _soundMap;
-            else
+            else if constexpr (std::is_same_v<T, sf::Texture>) {
                 return _map;
+            } else if constexpr (std::is_same_v<T, Shader>) {
+                return _shaderMap;
+            }
         }
 
         sf::Music *getMusic(std::string const& ressourceName)
@@ -139,6 +163,11 @@ class ResourcesManager {
         std::map<std::string, std::size_t> getTags()
         {
             return _tagArray;
+        }
+
+        std::map<std::string, Shader *>& getShader()
+        {
+            return _shaderMap;
         }
 
         std::string textureToName(const sf::Texture *texture)
@@ -179,6 +208,7 @@ class ResourcesManager {
 
     private:
         std::unordered_map<std::string, std::string> _pathMap;
+        std::map<std::string, Shader *> _shaderMap;
         std::map<std::string, sf::Texture *> _map;
         std::map<std::string, sf::SoundBuffer *> _soundMap;
         std::map<std::string, sf::Music *> _musicMap;

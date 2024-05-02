@@ -12,9 +12,9 @@ public:
     void clear();
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-private:
 
 public:
+    Sprite *sprite = nullptr;
     const sf::Texture *texture = nullptr;
     sf::VertexArray vertexArray;
     sf::Texture textureCpy;

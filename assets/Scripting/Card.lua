@@ -22,7 +22,7 @@ end
 -- Class methods
 function Card.new(hud, position, scale, camera)
     local self = setmetatable({}, Card)
-    local texture = ResourceManager.getResource('card')
+    local texture = ResourceManager.getTexture('card')
 
     self.soundManager = System.getEntity("SoundManager"):getSound()
     self.soundIsPlaying = false

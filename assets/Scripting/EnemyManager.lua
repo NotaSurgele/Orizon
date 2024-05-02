@@ -25,7 +25,7 @@ function EnemyManager:createEnemies()
 
     for i=0, 3 do
         local enemy = Enemy.new()
-        local texture = ResourceManager.getResource("cross")
+        local texture = ResourceManager.getTexture("cross")
         local bounds = nil
 
         enemy.entity:addSprite(texture)

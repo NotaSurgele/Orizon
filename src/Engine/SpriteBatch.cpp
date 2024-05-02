@@ -1,4 +1,5 @@
 #include "SpriteBatch.hpp"
+#include "Time.hpp"
 #include <Math.hpp>
 
 SpriteBatch::SpriteBatch()
@@ -18,7 +19,7 @@ void SpriteBatch::draw(Sprite *sprite)
     auto size = sprite->getTextureRect();
 
     // Set vertex data
-    float rotation = sprite->getRotation() * 3.14159f / 180.f;
+    float rotation = sprite->getRotation() * M_PI / 180.f;
 
     // Get the origin of rotation (center of the sprite)
     sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
@@ -58,6 +59,10 @@ void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
     if (length <= 0) return;
     states.texture = &textureCpy;
 
+
+    if (sprite->hasShader) {
+        states.shader = **sprite->shader;
+    }
     target.draw(&vertexArray[0], counter * 4, sf::Quads, states);
 }
 
