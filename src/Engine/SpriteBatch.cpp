@@ -19,7 +19,7 @@ void SpriteBatch::draw(Sprite *sprite)
     auto size = sprite->getTextureRect();
 
     // Set vertex data
-    float rotation = sprite->getRotation() * 3.14159265358979323846 / 180.f;
+    float rotation = sprite->getRotation() * M_PI / 180.f;
 
     // Get the origin of rotation (center of the sprite)
     sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
