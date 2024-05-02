@@ -76,6 +76,7 @@ add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
 if (MSVC)
 message("Visual studio C++ compilation")
+add_compile_definitions(_USE_MATH_DEFINES)
 target_compile_options(${PROJECT_NAME} PRIVATE /bigobj /MP10)
 target_link_libraries(
 	${PROJECT_NAME}
