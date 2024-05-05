@@ -32,9 +32,6 @@
                 },
                 {
                     "texture_name": "hobbit",
-                    "shader": {
-                        "name": "shader"
-                    },
                     "type": "Sprite"
                 },
                 {

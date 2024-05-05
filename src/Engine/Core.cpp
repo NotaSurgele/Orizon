@@ -85,7 +85,6 @@ void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
 
 void Core::CoreDrawBatch(Sprite *sprite)
 {
-#ifdef ENGINE_GUI
     if (!_isTextureLoaded) return;
     for (auto batch : _batches) {
         if (batch->textureId == sprite->getTextureId()) {
@@ -93,14 +92,13 @@ void Core::CoreDrawBatch(Sprite *sprite)
             return;
         }
     }
-    SpriteBatch *newBatch = new SpriteBatch();
+    auto newBatch = new SpriteBatch();
     newBatch->texture = sprite->getTexture();
     newBatch->textureCpy = *sprite->getTexture();
     newBatch->textureId = sprite->getTextureId();
     newBatch->sprite = sprite;
     newBatch->draw(sprite);
     _batches.push_back(newBatch);
-#endif
 }
 
 void Core::CoreDisplay()

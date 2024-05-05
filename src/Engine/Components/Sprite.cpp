@@ -142,6 +142,7 @@ Sprite& Sprite::setTexture(sf::Texture*texture, bool reset)
 {
     _texture = texture;
     _sprite.setTexture(*_texture, reset);
+    _textureId = texture->getNativeHandle();
     return *this;
 }
 
@@ -149,6 +150,7 @@ Sprite& Sprite::setTexture(std::string const &filePath)
 {
     _texture->loadFromFile(filePath);
     _sprite.setTexture(*_texture);
+    _textureId = _texture->getNativeHandle();
     return *this;
 }
 
