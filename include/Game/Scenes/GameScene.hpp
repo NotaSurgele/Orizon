@@ -5,7 +5,7 @@
 #include "Engine/Scene/Scene.hpp"
 #include "Game/Entity/Player.hpp"
 #include "external/OpenSimplexNoise.hpp"
-#include "Engine/Particle/Particles.hpp"
+#include "Engine/Components/Particles.hpp"
 #include "Engine/Collision/Layer/TileMap.hpp"
 #include "Engine/RayCaster.hpp"
 #include"OrizonMusic.hpp"

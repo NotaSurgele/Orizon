@@ -1,4 +1,4 @@
-#include "Engine/Particle/Particles.hpp"
+#include "Engine/Components/Particles.hpp"
 
 void Particles::setShape(const ParticleShape& shape, const float& size=10)
 {
