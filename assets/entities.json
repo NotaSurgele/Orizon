@@ -66,6 +66,15 @@
                 {
                     "type": "Layer",
                     "value": 1
+                },
+                {
+                    "type": "ParticlesEmitter",
+                    "particles":[
+                        {
+                            "name": "toto",
+                            "path": "./assets/Particle/test.json"
+                        }
+                    ]
                 }
             ],
             "name": "player"

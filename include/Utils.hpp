@@ -65,8 +65,13 @@ public:
 
     static inline nlohmann::json readfileToJson(const std::string& filePath)
     {
-        std::string fileContent = readFile(filePath);
+        try {
+            std::string fileContent = readFile(filePath);
 
-        return fileContentToJson(fileContent);
+            return fileContentToJson(fileContent);
+        } catch (std::exception& e) {
+            std::cerr << "Error file: " << filePath << " " << e.what() << std::endl;
+        }
+        return {};
     }
 };

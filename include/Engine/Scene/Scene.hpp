@@ -6,6 +6,7 @@
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
 #include "Components/View.hpp"
+#include "Components/Particles.hpp"
 #include "json.hpp"
 
 #include <fstream>
@@ -201,6 +202,8 @@ public:
                     }
                 }
 
+                static void create_particles_emitter(Entity *e, nlohmann::json const& json);
+
                 static void create_sound(Entity *e, nlohmann::json const& json);
 
                 static void create_music(Entity *e, nlohmann::json const& json);
@@ -219,7 +222,6 @@ public:
                 static inline std::unordered_map<std::string,
                 std::function<void(Entity *e, nlohmann::json const&)>> _map = {
                     { "Transform2D", create_transform },
-                    { "Transform2D", create_transform },
                     { "BoxCollider", create_boxcollider },
                     { "Sprite" , create_sprite },
                     { "Velocity", create_velocity },
@@ -231,7 +233,8 @@ public:
                     { "Sound", create_sound },
                     { "Music", create_music },
                     { "Light", create_light },
-                    { "Canvas", create_canvas }
+                    { "Canvas", create_canvas },
+                    { "ParticlesEmitter", create_particles_emitter }
                 };
         };
 

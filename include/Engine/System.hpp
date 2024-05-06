@@ -11,6 +11,7 @@
 #include "Components/Tag.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Particles.hpp"
 #include "Collision/HashGrid.hpp"
 #include "Collision/Layer/TileMap.hpp"
 #include "Time.hpp"
@@ -236,6 +237,8 @@ private:
     void cameraSystem(Entity *e);
 
     void lightSystem(Entity *e);
+
+    void particleEmitterSystem(Entity *e);
 
     void spriteSystem(Entity *e, std::vector<IComponent *> componentCache);
 

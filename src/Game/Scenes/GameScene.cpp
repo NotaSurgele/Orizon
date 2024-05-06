@@ -7,7 +7,7 @@
 #include "Utils.hpp"
 #include "sol/sol.hpp"
 #include "Canvas.hpp"
-
+#include "Core.hpp"
 #include <random>
 #include <math.h>
 
