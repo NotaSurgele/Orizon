@@ -6,14 +6,17 @@
     },
     {
       "data_name": "color",
-      "rgba": [255, 255, 255, 255]
+      "rgba": [0, 0, 0, 255]
+    },
+    {
+      "data_name": "velocity",
+      "velocity": [60, 0]
     },
     {
       "data_name": "emitter",
-      "texture": "block",
+      "texture": "hobbit",
       "randomness": 1,
-      "velocity": [1, 0],
-      "life_time": 1.0,
+      "life_time": 3.0,
       "size": [100, 50],
       "texture_scale": [1, 1],
       "amount": 10,

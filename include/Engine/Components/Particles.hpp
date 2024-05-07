@@ -10,6 +10,7 @@
 #include "json.hpp"
 
 class Particle;
+class ParticleData;
 
 class ParticlesEmitter : public IComponent {
 public:
@@ -60,8 +61,20 @@ private:
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(nlohmann::json&)>> _behaviourMap;
 
-    std::vector<Sprite *> _sprites;
+    std::vector<ParticleData> _sprites;
     nlohmann::json _json;
 
     sf::Vector2f _offset;
+};
+
+struct ParticleData {
+    ParticleData() = default;
+    ~ParticleData() = default;
+
+   Sprite *sprite = nullptr;
+
+   float currentLifeTime = 0;
+   float maxLifeTime = 0;
+
+   bool isDead = false;
 };

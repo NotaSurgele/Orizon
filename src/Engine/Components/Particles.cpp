@@ -22,7 +22,6 @@ Particle::Particle(const std::string &file) : _behaviourMap({
     {
         "emitter", [&] (nlohmann::json& json) {
             randomness = json["randomness"];
-            velocity = { json["velocity"][0], json["velocity"][1] };
             lifeTime = json["life_time"];
             amount = json["amount"];
             rect.width = json["size"][0];
@@ -34,6 +33,11 @@ Particle::Particle(const std::string &file) : _behaviourMap({
     {
         "color", [&] (nlohmann::json& json) {
             color  = { json["rgba"][0], json["rgba"][1], json["rgba"][2], json["rgba"][3] };
+        }
+    },
+    {
+        "velocity", [&] (nlohmann::json& json) {
+            velocity = { json["velocity"][0], json["velocity"][1] };
         }
     }
 })
@@ -71,26 +75,54 @@ void Particle::load()
 
     for (std::size_t i = 0; i < amount; i++) {
         auto sprite = new Sprite(texture);
+        auto pData = ParticleData();
+
         sprite->setPosition(0, 0);
         sprite->setColor(color);
         sprite->setScale(scale.x, scale.y);
-        _sprites.push_back(sprite);
+        pData.sprite = sprite;
+        pData.maxLifeTime = lifeTime;
+        _sprites.push_back(pData);
     }
 }
 
 void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 {
     //Base draw
-    if (loop) reset();
-    if (_hasFinished) return;
-    for (auto &s : _sprites) {
-        auto fixedPosition = entityPosition + _offset;
+    static bool set = false;
+    static std::size_t deadParticle = 0;
 
+    if (deadParticle >= amount) _hasFinished = true;
+    if (!loop && _hasFinished) return;
+    if (loop && _hasFinished) set = false;
+    for (auto &pData : _sprites) {
+        auto s = pData.sprite;
+
+        if (!set) {
+            s->setPosition(entityPosition + _offset);
+            pData.isDead = false;
+            pData.maxLifeTime = lifeTime;
+            pData.currentLifeTime = 0.0f;
+            deadParticle = 0;
+            _hasFinished = false;
+            continue;
+        }
+
+        // Fix deltaTime issue currentlifeTime not going over .35f
+        pData.currentLifeTime += Time::deltaTime * 2.0f;
+
+        std::cout << pData.currentLifeTime << std::endl;
+        if (pData.currentLifeTime >= pData.maxLifeTime) {
+            pData.isDead = true;
+            deadParticle += 1;
+            continue;
+        }
+        auto fixedPosition = s->getPosition() + (velocity * Time::deltaTime);
         s->setPosition(fixedPosition);
         s->setColor(color);
         DRAW_BATCH(s);
     }
-    _hasFinished = true;
+    set = true;
 }
 
 void Particle::reset()
@@ -105,6 +137,7 @@ bool Particle::hasFinished() const
 
 void Particle::destroy()
 {
-    for (auto& s : _sprites)
-        delete s;
+    for (auto& s : _sprites) {
+        delete s.sprite;
+    }
 }
