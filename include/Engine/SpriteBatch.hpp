@@ -14,11 +14,12 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 public:
-    Sprite *sprite = nullptr;
     const sf::Texture *texture = nullptr;
     sf::VertexArray vertexArray;
     sf::Texture textureCpy;
     std::size_t textureId = 0;
     std::size_t counter = 1;
     std::size_t length = 5;
+    Sprite *savedSprite = nullptr;
 };
+

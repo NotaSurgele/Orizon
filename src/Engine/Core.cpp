@@ -96,7 +96,7 @@ void Core::CoreDrawBatch(Sprite *sprite)
     newBatch->texture = sprite->getTexture();
     newBatch->textureCpy = *sprite->getTexture();
     newBatch->textureId = sprite->getTextureId();
-    newBatch->sprite = sprite;
+    newBatch->savedSprite = sprite;
     newBatch->draw(sprite);
     _batches.push_back(newBatch);
 }

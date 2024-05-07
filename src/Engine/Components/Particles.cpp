@@ -21,7 +21,6 @@ Particle::Particle(const std::string &file) : _behaviourMap({
     },
     {
         "emitter", [&] (nlohmann::json& json) {
-            std::cout << "emitter behaviour" << std::endl;
             randomness = json["randomness"];
             velocity = { json["velocity"][0], json["velocity"][1] };
             lifeTime = json["life_time"];
@@ -30,6 +29,11 @@ Particle::Particle(const std::string &file) : _behaviourMap({
             rect.height = json["size"][1];
             texture = R_GET_RESSOURCE(sf::Texture, json["texture"]);
             scale = { json["texture_scale"][0], json["texture_scale"][1] };
+        }
+    },
+    {
+        "color", [&] (nlohmann::json& json) {
+            color  = { json["rgba"][0], json["rgba"][1], json["rgba"][2], json["rgba"][3] };
         }
     }
 })
@@ -60,7 +64,7 @@ void Particle::load()
     if (texture == nullptr) {
         sf::Image blank = sf::Image();
 
-        blank.create(100, 100, sf::Color::White);
+        blank.create(100, 100, color);
         texture = new sf::Texture;
         texture->loadFromImage(blank);
     }
@@ -68,7 +72,7 @@ void Particle::load()
     for (std::size_t i = 0; i < amount; i++) {
         auto sprite = new Sprite(texture);
         sprite->setPosition(0, 0);
-        sprite->setColor(sf::Color::White);
+        sprite->setColor(color);
         sprite->setScale(scale.x, scale.y);
         _sprites.push_back(sprite);
     }
@@ -83,6 +87,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         auto fixedPosition = entityPosition + _offset;
 
         s->setPosition(fixedPosition);
+        s->setColor(color);
         DRAW_BATCH(s);
     }
     _hasFinished = true;

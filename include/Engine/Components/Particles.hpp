@@ -51,6 +51,7 @@ public:
 
     sf::Texture *texture = nullptr;
 
+    sf::Color color = sf::Color::White;
     sf::FloatRect rect { 0, 0, 0, 0 };
 
     bool loop = true;

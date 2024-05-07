@@ -5,14 +5,19 @@
       "offset": [0, 0]
     },
     {
+      "data_name": "color",
+      "rgba": [255, 255, 255, 255]
+    },
+    {
       "data_name": "emitter",
-      "texture": "cross",
+      "texture": "block",
       "randomness": 1,
       "velocity": [1, 0],
       "life_time": 1.0,
       "size": [100, 50],
       "texture_scale": [1, 1],
-      "amount": 10
+      "amount": 10,
+      "loop": true
     }
   ]
 }
