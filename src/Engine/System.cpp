@@ -447,7 +447,7 @@ void System::particleEmitterSystem(Entity *e)
 
     auto position = transform->position;
     for (auto& it : emitter->particles) {
-        auto p = it.second;
+        auto& p = it.second;
 
         p.play(p.loop, position);
     }

@@ -72,7 +72,7 @@ void Particle::load()
         texture = new sf::Texture;
         texture->loadFromImage(blank);
     }
-
+    std::cout << "LOAD" << std::endl;
     for (std::size_t i = 0; i < amount; i++) {
         auto sprite = new Sprite(texture);
         auto pData = ParticleData();
@@ -82,6 +82,7 @@ void Particle::load()
         sprite->setScale(scale.x, scale.y);
         pData.sprite = sprite;
         pData.maxLifeTime = lifeTime;
+        pData.currentLifeTime = 0.0f;
         _sprites.push_back(pData);
     }
 }
@@ -95,6 +96,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
     if (deadParticle >= amount) _hasFinished = true;
     if (!loop && _hasFinished) return;
     if (loop && _hasFinished) set = false;
+
     for (auto &pData : _sprites) {
         auto s = pData.sprite;
 
@@ -107,11 +109,9 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             _hasFinished = false;
             continue;
         }
+        // [TODO] move velocity into ParticleData for randomness, remove emitter behaviour
+        pData.currentLifeTime += Time::deltaTime;
 
-        // Fix deltaTime issue currentlifeTime not going over .35f
-        pData.currentLifeTime += Time::deltaTime * 2.0f;
-
-        std::cout << pData.currentLifeTime << std::endl;
         if (pData.currentLifeTime >= pData.maxLifeTime) {
             pData.isDead = true;
             deadParticle += 1;

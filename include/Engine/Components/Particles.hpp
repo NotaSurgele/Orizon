@@ -73,7 +73,7 @@ struct ParticleData {
 
    Sprite *sprite = nullptr;
 
-   float currentLifeTime = 0;
+   double currentLifeTime = 0;
    float maxLifeTime = 0;
 
    bool isDead = false;
