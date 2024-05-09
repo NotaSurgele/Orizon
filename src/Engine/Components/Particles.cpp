@@ -134,7 +134,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         }
         auto fixedPosition = s->getPosition();
 
-        if (pData.velocityData.has_value()) fixedPosition + (pData.velocityData->velocity * Time::deltaTime);
+        if (pData.velocityData.has_value()) fixedPosition += (pData.velocityData->velocity * Time::deltaTime);
         s->setPosition(fixedPosition);
         s->setColor(color);
         DRAW_BATCH(s);
