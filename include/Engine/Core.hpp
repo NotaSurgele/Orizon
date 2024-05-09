@@ -7,8 +7,10 @@
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
 #include "Engine/EngineHud.hpp"
+#include "Engine/SpriteBatch.hpp"
 #include "external/json.hpp"
 #include "SceneManager.hpp"
+
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
@@ -38,6 +40,16 @@ class Core : public ICore {
         void loadInputFromFile(std::string const& path);
         RenderWindow& getWindow();
 
+        static inline Scene *getCurrentScene()
+        {
+            return _sceneManager.getScene();
+        }
+
+        sf::RenderTexture& getRenderTexture()
+        {
+            return _windowTexture;
+        }
+
         //Window related function
         bool isOpen();
         void CoreClear(sf::Color color);
@@ -45,6 +57,7 @@ class Core : public ICore {
         void CoreDraw(Drawable *component, const sf::BlendMode& blendMode);
         void CoreDraw(sf::Drawable const& drawable);
         void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
+        void CoreDrawBatch(Sprite *sprite);
         void CoreClose();
 
         void run();
@@ -57,6 +70,8 @@ class Core : public ICore {
     private:
         bool CoreEvent(sf::Event& event);
         void CoreDisplay();
+        void clearBatch();
+        void renderBatch();
 
         void inputHandler(sf::Event& event);
         void fpsCalculation();
@@ -71,12 +86,21 @@ public:
     static inline Core *instance;
     static inline float fps = 0.0f;
 
+#ifdef ENGINE_GUI
+    sf::RenderTexture _windowTexture;
+    bool _isTextureLoaded = false;
+#endif
+
 protected:
     static inline SceneManager _sceneManager {};
 
 private:
     static inline Time _time;
     static inline ResourcesManager _r_manager;
+
+    //Batch
+    std::vector<SpriteBatch *> _batches;
+    sf::RenderStates _status;
 
     //Utils
     RenderWindow _window;
@@ -91,6 +115,7 @@ private:
     float _fpsTime=1.0f;
     bool _mainViewSelected = true;
     std::thread _guiThread;
+    sf::Color _clearColor;
 };
 
 /**
@@ -110,6 +135,9 @@ private:
 
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::resourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
+
+#define R_ADD_SHADER(name, vertex, fragment) \
+        Core::resourceManager().loadShader(name, vertex, fragment)
 
 #define R_ADD_TAG(tag) \
         Core::resourceManager().addTag(tag)
@@ -163,6 +191,9 @@ private:
 
 #define DRAW_BLEND(to_draw, blendMode) \
         Core::instance->CoreDraw(to_draw, blendMode)
+
+#define DRAW_BATCH(to_draw) \
+        Core::instance->CoreDrawBatch(to_draw);
 
 #define DRAW_QUEUE(to_draw) \
         System::addInDrawQueue(to_draw)

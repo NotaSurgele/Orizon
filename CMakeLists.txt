@@ -3,13 +3,11 @@ project(Orizon)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_USE_PTHREADS_INIT true)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -g3 -ggdb -gdwarf-2")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 include(FetchContent)
 
 if (MSVC)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} /bigobj)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
@@ -60,7 +58,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/
     ${CMAKE_SOURCE_DIR}/include/Engine/
     ${CMAKE_SOURCE_DIR}/include/Engine/Scene/
-    ${CMAKE_SOURCE_DIR}/include/Engine/Components/
+	${CMAKE_SOURCE_DIR}/include/Engine/Components/
+	${CMAKE_SOURCE_DIR}/include/Engine/Graphical/
     ${CMAKE_SOURCE_DIR}/include/external/
     ${CMAKE_SOURCE_DIR}/include/external/lua
     ${CMAKE_SOURCE_DIR}/include/Engine/Particle
@@ -76,7 +75,9 @@ include_directories(
 add_executable(${PROJECT_NAME} main.cpp ${SRC} ${LUA_FILES})
 
 if (MSVC)
-target_compile_options(${PROJECT_NAME} PRIVATE /bigobj)
+message("Visual studio C++ compilation")
+add_compile_definitions(_USE_MATH_DEFINES)
+target_compile_options(${PROJECT_NAME} PRIVATE /bigobj /MP10)
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
@@ -89,6 +90,7 @@ target_link_libraries(
 	Threads::Threads
 )
 else()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
 target_link_libraries(
  	${PROJECT_NAME}
 	PUBLIC

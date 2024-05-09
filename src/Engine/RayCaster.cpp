@@ -124,5 +124,5 @@ void RayCaster::show(const float& thickness)
         _line[1].position.x = _collisionPoint.x;
         _line[1].position.y = _collisionPoint.y;
     }
-    WindowInstance.getSFMLRenderWindow().draw(_line, 2, sf::Lines);
+    WindowInstance.getSFMLRenderWindow()->draw(_line, 2, sf::Lines);
 }

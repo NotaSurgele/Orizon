@@ -3,7 +3,6 @@
 #include "Components/Light.hpp"
 #include "Core.hpp"
 #include "RayCaster.hpp"
-#include "Script.hpp"
 #include "Canvas.hpp"
 
 void System::addEntity(Entity *entity)
@@ -34,7 +33,9 @@ void System::pushEntity(Entity *entity)
         entity->__registryPosition = _registry_size + 1;
     }
     else {
-        _registry.insert(_registry.begin() + position, entity);
+        auto it = _registry.begin();
+        std::advance(it, position);
+        _registry.insert(it, entity);
         entity->__registryPosition = position;
     }
 }
@@ -49,13 +50,14 @@ void System::forceDestroy()
                                         _dynamic_collider.end(),
                                         e),
                                 _dynamic_collider.end());
+        _forceUpdate.erase(std::remove(_forceUpdate.begin(), _forceUpdate.end(), e), _forceUpdate.end());
         for (auto& layer : _layers) {
             if (layer->contain(e)) {
                 layer->removeEntity(e);
             }
         }
         e->__destroyComponents();
-        // delete e; [TODO] Fix this
+        //delete e; //[TODO] Fix this
     }
     for (auto& l : _destroy_tilemap) {
         l->clear();
@@ -132,19 +134,6 @@ void System::velocitySystem(Entity *e)
 
 void System::sort()
 {
-    std::sort(_registry.begin(), _registry.end(),
-        [](Entity *e1, Entity *e2) {
-            auto l1 =  e1->getComponent<Layer>();
-            auto l2 = e2->getComponent<Layer>();
-
-            if (!l1 || !l2)
-                return true;
-            auto v1 = l1->value();
-            auto v2 = l2->value();
-
-            return v1 > v2;
-        }
-    );
 }
 
 void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
@@ -160,7 +149,7 @@ void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
         return;
     sprite->setTransform(transform);
     sprite->setLightApply(false);
-    DRAW(sprite);
+    DRAW_BATCH(sprite);
 }
 
 void System::canvasSystem(Entity *e)
@@ -168,46 +157,71 @@ void System::canvasSystem(Entity *e)
     auto canvas = e->getComponent<Canvas>();
     auto texts = canvas->getTexts();
 
+    // Sort each canvas registry
+    if (!Canvas::textSorted) {
+        canvas->sort<Text *>();
+        Canvas::textSorted = true;
+    }
+
+    if (!Canvas::buttonSorted) {
+        canvas->sort<Button *>();
+        Canvas::buttonSorted = true;
+    }
+
+    if (!Canvas::imageSorted) {
+        canvas->sort<Image *>();
+        Canvas::imageSorted = true;
+    }
+
     // Text system
-    for (auto& it : texts) {
-        auto& t = it.first;
-        auto& offset = it.second;
+    for (auto& t : texts) {
+        if (!t->active) continue;
+        auto offset = t->getOffset();
+        auto& position = t->getBasePosition();
 
         if (t->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             sf::FloatRect textBounds = t->getLocalBounds();
 
-            t->setPosition((offset.x + center.x) - (textBounds.width / 2), (offset.y + center.y) - (textBounds.height / 2));
-        } else t->setPosition(offset);
+            t->setPosition(((position.x + offset.x) + center.x) - (textBounds.width / 2),
+                           ((position.y + offset.y) + center.y) - (textBounds.height / 2));
+        } else t->setPosition(position.x + offset.x, position.y + offset.y);
         DRAW(*t);
     }
 
     // Button system
     auto buttons = canvas->getButtons();
+    bool isHovered = false;
 
-    for (auto& it : buttons) {
-        auto& b = it.first;
-        auto& offset = it.second;
+    for (auto& b : buttons) {
+        if (!b->active) continue;
+        auto offset = b->getOffset();
         auto& text = b->text;
+        auto& position = b->getBasePosition();
 
         if (b->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
-            auto size = b->getTextureSize();
 
-            b->setPosition((offset.x + center.x) - ((float)size.x / 2),
-                            (offset.y + center.y) - ((float)size.y / 2));
-        } else b->setPosition(offset);
-        if (b->isHovered()) {
-            b->state = Button::HOVERED;
+            b->setPosition(((position.x + offset.x) + center.x),
+                           ((position.y + offset.y) + center.y));
+        } else b->setPosition(position.x + offset.x, position.y + offset.y);
 
-            if (b->isClicked()) {
-                b->state = Button::PRESSED;
-                b->call();
-            }
-        } else b->state = Button::NOTHING;
-        DRAW(b);
+        if (!isHovered && b->clickable ) {
+            auto mousePos = getGlobalMousePosition();
+            auto bounds = b->getSprite()->getGlobalBounds();
+
+            if (bounds.contains((float)mousePos.x, (float)mousePos.y)) {
+                b->state = Button::HOVERED;
+
+                if (b->isClicked()) {
+                    b->state = Button::PRESSED;
+                    b->call();
+                }
+            } else b->state = Button::NOTHING;
+        }
+        DRAW_BATCH(b->getSprite());
 
         //Handle button text
         if (text != nullptr) {
@@ -218,24 +232,25 @@ void System::canvasSystem(Entity *e)
     }
 
     auto images = canvas->getImages();
-
     // Images system
-    for (auto& it : images) {
-        auto& i = it.first;
-        auto& offset = it.second;
+    for (auto& i : images) {
+        if (!i->active) continue;
+        auto offset = i->getOffset();
+        auto& position = i->getBasePosition();
 
         if (i->coordType == Text::LOCAL) {
             auto v = WindowInstance.getView();
             auto center = v->getCenter();
             auto size = i->getTextureSize();
 
-            i->setPosition((offset.x + center.x) - ((float)size.x / 2),
-                           (offset.y + center.y) - ((float)size.y / 2));
-        } else i->setPosition(offset);
+            i->setPosition(((position.x + offset.x) + center.x) - ((float)size.x / 2),
+                           ((position.y + offset.y) + center.y) - ((float)size.y / 2));
+        } else i->setPosition(position.x + offset.x, position.y + offset.y);
         DRAW(i);
     }
 }
 
+/*
 void System::scriptSystem(Entity *e)
 {
     std::vector<Script *> scriptArray = e->getComponents<Script>();
@@ -245,6 +260,7 @@ void System::scriptSystem(Entity *e)
         s->update();
     }
 }
+*/
 
 void System::clearComponentCache(const std::vector<IComponent *> &componentCache)
 {
@@ -255,12 +271,49 @@ void System::clearComponentCache(const std::vector<IComponent *> &componentCache
     }
 }
 
+sf::Vector2f System::getLocalMousePosition()
+{
+    auto pos = sf::Mouse::getPosition();
+    return {(float)pos.x, (float)pos.y};
+}
+
+sf::Vector2f System::getGlobalMousePosition()
+{
+#ifdef ENGINE_GUI
+    auto& renderTexture = Core::instance->getRenderTexture();
+
+    auto coord = renderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+
+    return { coord.x - (float)(renderTexture.getSize().x / 2.5f), coord.y };
+#else
+    return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+#endif
+}
+
+sf::Vector2f System::localToGlobalCoordinate(const sf::Vector2f& local)
+{
+#ifdef ENGINE_GUI
+    auto& renderTexture = Core::instance->getRenderTexture();
+
+    return renderTexture.mapPixelToCoords((sf::Vector2i)local);
+#else
+    return WindowInstance.mapPixelToCoords((sf::Vector2i)local);
+#endif
+}
+
+sf::Vector2f System::globalToLocalCoordinate(const sf::Vector2f &global)
+{
+    return (sf::Vector2f)WindowInstance.mapCoordsToPixel(global);
+}
+
 void System::systems()
 {
+    _registry.clear();
     std::vector<IComponent *> componentCache;
 
     // Handle force update entity
     for (auto& e : _forceUpdate) {
+        if (!e->active) continue;
         pushEntity(e);
     }
 
@@ -270,6 +323,7 @@ void System::systems()
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
+            if (!e->active) continue;
             pushEntity(e);
         }
     }
@@ -278,7 +332,7 @@ void System::systems()
     // Handle hashGrid moving entity
     EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
     for (auto e : _dynamic_collider) {
-        if (!e) continue;
+        if (!e || !e->active) continue;
         _hashGrid->insert(e);
     }
 
@@ -297,22 +351,24 @@ void System::systems()
 
     // Light source system
     for (auto& e : _lightSource) {
+        if (!e->active) continue;
         lightSystem(e);
     }
 
     for (auto& e : _canvas) {
+        if (!e->active) continue;
         canvasSystem(e);
     }
 
     // Handle entity with script
-    for (auto& e : _scripted_entity) {
+    /*for (auto& e : _scripted_entity) {
+        if (!e->active) continue;
         scriptSystem(e);
-    }
+    }*/
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
     clearComponentCache(componentCache);
     componentCache.clear();
     destroyEntity();
-    _registry.clear();
     _orders_values.clear();
     Light::set = true;
 }
@@ -449,7 +505,7 @@ void System::collisionResolution(BoxCollider *box, BoxCollider *collider)
 {
     auto entity = collider->entity();
 
-    box->collide = (collider->overlap(box)) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+    box->collide = (collider->overlap(box));
     // Resolve collision
     if (box->collide) {
         if (!resolutionCalculation(box, collider, entity))
@@ -469,7 +525,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
     box->setColor(sf::Color::Green);
     box->sides.clear();
     box->side = BoxCollider::Side::NONE;
-    box->collide = BoxCollider::Collide::FALSE;
+    box->collide = false;
     for (TileMap *layer : _layers) {
         float x = box->getPosition().x;
         float y = box->getPosition().y;
@@ -481,13 +537,13 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
             collisionResolution(box, collider);
         }
-        box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+        box->collide = (!box->getSides().empty()) ? true : false;
     }
 }
 
 void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 {
-    std::vector<Entity *> dynamic_entity = _hashGrid->retrieve(e);
+    std::list<Entity *> dynamic_entity = _hashGrid->retrieve(e);
 
     for (auto d_e : dynamic_entity) {
         if (d_e == e)
@@ -504,7 +560,7 @@ void System::handleDynamicEntityCollision(Entity *e, BoxCollider *box)
 
         for (auto& other : arr) {
             collisionResolution(box, other);
-            box->collide = (!box->getSides().empty()) ? BoxCollider::Collide::TRUE : BoxCollider::Collide::FALSE;
+            box->collide = (!box->getSides().empty());
         }
     }
 }
@@ -543,6 +599,7 @@ void System::cameraSystem(Entity *e) {
 
     if (!view)
         return;
+    SET_VIEW(view);
     if (!view->isFollowing())
         return;
     if (!transform) {
@@ -550,7 +607,6 @@ void System::cameraSystem(Entity *e) {
         transform = Transform2D::zero();
     }
     view->setCenter(transform->position);
-    SET_VIEW(view);
     if (destroy) {
         transform->destroy();
         destroy = false;
@@ -632,7 +688,7 @@ bool System::isInView(TileMap *map)
 
 void System::destroyEntity()
 {
-    for (auto& e : _to_destroy) {
+    for (auto e : _to_destroy) {
         if (!e) continue;
         if (e->hasComponents<Light>()) __removeLightSource(e);
 

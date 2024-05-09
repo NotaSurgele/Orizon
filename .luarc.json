@@ -1,0 +1,13 @@
+{
+    "diagnostics.globals": [
+        "deltaTime",
+        "selected",
+        "System",
+        "ResourceManager",
+        "Color"
+    ],
+    "diagnostics.disable": [
+        "undefined-field",
+        "lowercase-global"
+    ]
+}

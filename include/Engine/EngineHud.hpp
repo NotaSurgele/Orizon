@@ -1,8 +1,4 @@
 #pragma once
-#include "Entity.hpp"
-#include "TileMap.hpp"
-#include "json.hpp"
-#include "Canvas.hpp"
 #include <vector>
 #include <thread>
 #include <queue>
@@ -10,6 +6,12 @@
 #include <sstream>
 #include <imgui.h>
 #include <imgui-SFML.h>
+
+#include "Entity.hpp"
+#include "TileMap.hpp"
+#include "json.hpp"
+#include "Canvas.hpp"
+#include "imfilebrowser.hpp"
 
 #ifndef GUI
 #define GUI_ENTITIES_HEIGHT_SIZE_RATIO 0.40f
@@ -22,6 +24,9 @@ class EngineHud {
 public:
     EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height)
     {
+        _fb.SetTitle("File Browser");
+        _fb.SetTypeFilters({ ".lua" });
+        _fb.SetPwd("../");
         sf::Image img = sf::Image();
         sf::Texture texture;
 
@@ -37,10 +42,12 @@ public:
     void setCurrentSceneFilepath(const std::string& sceneFilepath);
     void currentSceneContent(const nlohmann::json& sceneContent);
 
-    void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
+    void menuBar();
+    void entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
     void consoleWindow();
     void resourceManager();
+    void gameWindow(const sf::RenderTexture& texture);
 
     static inline void registerSavedEntity(Entity *e)
     {
@@ -79,7 +86,7 @@ private:
     static inline bool _imgWindow = false;
 
     static void imageViewer(const sf::Texture *sprite);
-    static void scriptEditor(Script *component);
+    void scriptEditor();
 
     template <typename T>
     static inline void writeConsole(const T& last)
@@ -108,7 +115,6 @@ private:
         MusicR,
         TextureR,
         TileR,
-        ScriptR
     };
 
     static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
@@ -152,7 +158,7 @@ private:
                 { "Layer", createLayer },
                 { "Sound", createSound },
                 { "Music", createMusic },
-                { "Script", createScript },
+
                 { "Light", createLight },
                 { "Gravity", createGravity },
                 { "Canvas", createCanvas }
@@ -203,7 +209,6 @@ private:
                 { "Layer", serializeLayer },
                 { "Sound", serializeSound },
                 { "Music", serializeMusic },
-                { "Script", serializeScript },
                 { "Light", serializeLight },
                 { "Gravity", serializeGravity },
                 { "Canvas",  serializeCanvas }
@@ -256,7 +261,6 @@ private:
             { "Sound", buildSoundTreeNode },
             { "Layer", buildLayerTreeNode },
             { "OrizonMusic", buildOrizonMusicTreeNode },
-            { "Script", buildScriptTreeNode },
             { "Sprite", buildSpriteTreeNode },
             { "Id", buildIdTreeNode },
             { "Animator", buildAnimatorTreeNode },
@@ -271,6 +275,7 @@ private:
     void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);
 
 private:
+    ImGui::FileBrowser _fb;
     std::string _currentSceneFilepath;
     nlohmann::json _currentSceneContent;
     Entity *_selected = nullptr;
@@ -278,6 +283,12 @@ private:
     std::size_t _width;
     std::size_t _height;
     bool _theme = false;
+
+    // Script editor
+    std::string _scriptContent;
+    std::string _scriptPath;
+    bool _openScriptWindow = false;
+    std::size_t _contentSize = 4096;
 
     // form information
     std::string _inputPath;
@@ -288,18 +299,16 @@ private:
             { "Sound", ResourceType::SoundR },
             { "Music", ResourceType::MusicR },
             { "Texture", ResourceType::TextureR },
-            { "Tile", ResourceType::TileR },
-            { "Script", ResourceType::ScriptR }
+            { "Tile", ResourceType::TileR }
     };
 
     // scripting
     static inline sf::Sprite _colorSprite;
-    static inline std::string _scriptContent;
     static inline Script *_lastScript = nullptr;
 
     std::string _consoleInputText;
 
     static inline std::queue<std::string> _consoleMsg;
-    static inline std::vector<Entity *> _toSave;
+    static inline std::list<Entity *> _toSave;
     static inline std::string _newVal = "new value";
 };
