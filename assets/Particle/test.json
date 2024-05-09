@@ -1,26 +1,25 @@
 {
+  "emitter": {
+    "life_time": 3.0,
+    "size": [100, 50],
+    "amount": 10,
+    "loop": true,
+    "seed": 4242
+  },
   "data": [
     {
       "data_name": "offset",
       "offset": [0, 0]
     },
     {
-      "data_name": "color",
-      "rgba": [0, 0, 0, 255]
+      "data_name": "sprite",
+      "color": [255, 255, 255, 255],
+      "scale": [1, 1],
+      "texture": "hobbit"
     },
     {
       "data_name": "velocity",
-      "velocity": [60, 0]
-    },
-    {
-      "data_name": "emitter",
-      "texture": "hobbit",
-      "randomness": 1,
-      "life_time": 3.0,
-      "size": [100, 50],
-      "texture_scale": [1, 1],
-      "amount": 10,
-      "loop": true
+      "value": [60, 0]
     }
   ]
 }

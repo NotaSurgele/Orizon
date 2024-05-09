@@ -33,21 +33,22 @@ public:
     ~Particle() = default;
 
     void load();
+    void initData(nlohmann::json& json);
     void play(bool loop, const sf::Vector2f& entityPosition);
     bool hasFinished() const;
     void reset();
     void destroy();
 
 public:
+    int seed = 0;
+
     std::size_t amount = 10;
     std::size_t amountMax = 10;
     std::size_t amountMin = 1;
 
     sf::Vector2f scale = { 1, 1 };
-    sf::Vector2f velocity;
     sf::Vector2f emitterLength = { 1, 1 };
 
-    float randomness = 0;
     float lifeTime = 1.0f;
 
     sf::Texture *texture = nullptr;
@@ -59,7 +60,7 @@ public:
 
 private:
     bool _hasFinished = false;
-    std::unordered_map<std::string, std::function<void(nlohmann::json&)>> _behaviourMap;
+    std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
 
     std::vector<ParticleData> _sprites;
     nlohmann::json _json;
@@ -71,10 +72,28 @@ struct ParticleData {
     ParticleData() = default;
     ~ParticleData() = default;
 
-   Sprite *sprite = nullptr;
+    struct VelocityData {
+       sf::Vector2f velocity { 0, 0 };
+       sf::Vector2f minVelocity { 0, 0 };
+       sf::Vector2f maxVelocity { 0, 0 };
+       bool random = false;
+    };
 
-   double currentLifeTime = 0;
-   float maxLifeTime = 0;
+    struct LifeTimeData {
 
-   bool isDead = false;
+    };
+
+    struct SpriteData {
+        Sprite *sprite = nullptr;
+        sf::Color color = sf::Color::White;
+        sf::Vector2f scale = { 1, 1 };
+    };
+
+    std::optional<VelocityData> velocityData;
+    std::optional<LifeTimeData> lifeTimeData;
+    SpriteData spriteData = {};
+
+    double currentLifeTime = 0;
+    float maxLifeTime = 0;
+    bool isDead = false;
 };
