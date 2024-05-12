@@ -1,9 +1,10 @@
 {
   "emitter": {
-    "life_time": 1.0,
+    "life_time": 5.0,
     "size": [100, 50],
     "amount": 10,
     "loop": true,
+    "delay": 1.0,
     "seed": 4242
   },
   "data": [
@@ -15,11 +16,16 @@
       "data_name": "sprite",
       "color": [255, 255, 255, 255],
       "scale": [1, 1],
-      "texture": "hobbit"
+      "texture": "cross"
     },
     {
       "data_name": "velocity",
       "value": [60, 0]
+    },
+    {
+      "data_name": "fade_in",
+      "speed": 50,
+      "to": [42, 42, 42, 255]
     }
   ]
 }

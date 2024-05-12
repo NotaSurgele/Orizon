@@ -7,23 +7,64 @@
 
 #include "Components/Sprite.hpp"
 #include "IComponent.hpp"
+#include "Timer.hpp"
 #include "json.hpp"
 
 class Particle;
-class ParticleData;
 
 class ParticlesEmitter : public IComponent {
 public:
     explicit ParticlesEmitter(Entity *e) : _e(e) {};
     ~ParticlesEmitter() = default;
 
-    void destroy() override final;
+    void destroy() final;
 
 public:
     std::unordered_map<std::string, Particle> particles;
 
 private:
     Entity *_e = nullptr;
+};
+
+struct ParticleData {
+    ParticleData() = default;
+    ~ParticleData() = default;
+
+    struct VelocityData {
+        sf::Vector2f velocity { 0, 0 };
+        sf::Vector2f minVelocity { 0, 0 };
+        sf::Vector2f maxVelocity { 0, 0 };
+        bool random = false;
+    };
+
+    struct SpriteData {
+        Sprite *sprite = nullptr;
+        sf::Color color = sf::Color::White;
+        sf::Color currentColor = sf::Color::White;
+        sf::Vector2f scale = { 1, 1 };
+    };
+
+    struct FadeInData {
+        bool end = false;
+        float speed = 1;
+        sf::Color to = sf::Color::White;
+    };
+
+    struct FadeOutData {
+        bool end = false;
+        float speed = 1;
+        sf::Color to = sf::Color::White;
+    };
+
+    std::optional<VelocityData> velocityData;
+    std::optional<FadeInData> fadeInData;
+    std::optional<FadeOutData> fadeOutData;
+
+    SpriteData spriteData = {};
+
+    bool set = false;
+    Timer lifeTimer;
+    bool isDead = false;
 };
 
 class Particle {
@@ -39,6 +80,14 @@ public:
     void reset();
     void destroy();
 
+private:
+
+    void resetSpriteData(ParticleData::SpriteData& spriteData, const sf::Vector2f& ePosition);
+    void resetParticleData(ParticleData& pData) const;
+    void resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn);
+    void resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut);
+    void colorFading(ParticleData& pData);
+
 public:
     int seed = 0;
 
@@ -51,6 +100,8 @@ public:
 
     float lifeTime = 1.0f;
 
+    float delay = 0.0F;
+
     sf::Texture *texture = nullptr;
 
     sf::Color color = sf::Color::White;
@@ -59,6 +110,7 @@ public:
     bool loop = true;
 
 private:
+    Timer delayTimer;
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
 
@@ -66,34 +118,4 @@ private:
     nlohmann::json _json;
 
     sf::Vector2f _offset;
-};
-
-struct ParticleData {
-    ParticleData() = default;
-    ~ParticleData() = default;
-
-    struct VelocityData {
-       sf::Vector2f velocity { 0, 0 };
-       sf::Vector2f minVelocity { 0, 0 };
-       sf::Vector2f maxVelocity { 0, 0 };
-       bool random = false;
-    };
-
-    struct LifeTimeData {
-
-    };
-
-    struct SpriteData {
-        Sprite *sprite = nullptr;
-        sf::Color color = sf::Color::White;
-        sf::Vector2f scale = { 1, 1 };
-    };
-
-    std::optional<VelocityData> velocityData;
-    std::optional<LifeTimeData> lifeTimeData;
-    SpriteData spriteData = {};
-
-    double currentLifeTime = 0;
-    float maxLifeTime = 0;
-    bool isDead = false;
 };
