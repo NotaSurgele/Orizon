@@ -11,7 +11,10 @@ public:
 
     void update(float factor=1.0f)
     {
-        if (_ended || _to <= 0.0f) return;
+        if (_ended || _to <= 0.0f) {
+            _ended = true;
+            return;
+        }
         _current += (Time::deltaTime * factor);
 
         _ended = _current >= _to;

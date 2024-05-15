@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <functional>
+#include <queue>
 
 #include "Components/Sprite.hpp"
 #include "IComponent.hpp"
@@ -99,7 +100,6 @@ public:
     sf::Vector2f emitterLength = { 1, 1 };
 
     float lifeTime = 1.0f;
-
     float delay = 0.0F;
 
     sf::Texture *texture = nullptr;
@@ -114,7 +114,10 @@ private:
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
 
-    std::vector<ParticleData> _sprites;
+    // Handle particles
+    std::vector<ParticleData> _particles;
+    std::queue<ParticleData> _deadParticle;
+
     nlohmann::json _json;
 
     sf::Vector2f _offset;

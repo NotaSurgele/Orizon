@@ -72,7 +72,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
         initData(_json["emitter"]);
 
         load();
-        for (auto& pData : _sprites) {
+        for (auto& pData : _particles) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
@@ -120,7 +120,7 @@ void Particle::load()
         pData.spriteData.sprite = sprite;
 
         pData.lifeTimer.set(lifeTime);
-        _sprites.push_back(pData);
+        _particles.push_back(pData);
     }
 }
 
@@ -161,7 +161,9 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 {
     //Base draw
     static std::size_t deadParticle = 0;
-    static std::size_t index = 1;
+    static std::queue<std::size_t> removeQueue;
+
+    std::size_t length = _particles.size();
 
     if (deadParticle >= amount) _hasFinished = true;
     if (!loop && _hasFinished) return;
@@ -169,14 +171,16 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
     //Handle delay
     delayTimer.update();
     if (delayTimer.ended()) {
-        index++;
+        if (!_deadParticle.empty()) {
+            _particles.push_back(_deadParticle.front());
+            _deadParticle.pop();
+        }
         delayTimer.reset();
     }
 
-
     // Particle loop
-    for (std::size_t i = 0; i < index; i++) {
-        auto& pData = _sprites[i];
+    for (std::size_t i = 0; i < length; i++) {
+        auto& pData = _particles[i];
         auto& spriteData = pData.spriteData;
         auto s = spriteData.sprite;
         auto& velocityData = pData.velocityData;
@@ -199,7 +203,8 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             pData.isDead = true;
             pData.set = false;
             deadParticle += 1;
-            index -= 1;
+            _deadParticle.push(pData);
+            removeQueue.push(i);
             continue;
         }
         auto fixedPosition = s->getPosition();
@@ -208,6 +213,14 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         s->setPosition(fixedPosition);
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);
+    }
+
+    // remove dead particles from array
+    while (!removeQueue.empty()) {
+        std::size_t& i = removeQueue.front();
+
+        _particles.erase(_particles.begin() + i);
+        removeQueue.pop();
     }
 }
 
@@ -223,7 +236,7 @@ bool Particle::hasFinished() const
 
 void Particle::destroy()
 {
-    for (auto& s : _sprites) {
+    for (auto& s : _particles) {
         delete s.spriteData.sprite;
     }
 }
