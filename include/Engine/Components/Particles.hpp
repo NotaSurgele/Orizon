@@ -86,10 +86,12 @@ private:
     void resetSpriteData(ParticleData::SpriteData& spriteData, const sf::Vector2f& ePosition);
     void resetParticleData(ParticleData& pData) const;
     void resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn, ParticleData::SpriteData& spriteData);
-    void resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut);
+    void resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut, ParticleData::SpriteData& spriteData);
 
     void fadeInSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeInData>& fadeIn);
-
+    void fadeOutSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeOutData>& fadeOut);
+    void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
+                    std::optional<ParticleData::FadeOutData>& fadeOut);
 public:
     int seed = 0;
 

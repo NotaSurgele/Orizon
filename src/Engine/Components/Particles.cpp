@@ -147,13 +147,63 @@ void Particle::resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn, Part
     spriteData.currentColor.a = 0;
 }
 
-void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut)
+void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut, ParticleData::SpriteData& spriteData)
 {
     if (!fadeOut.has_value()) return;
     fadeOut->end = false;
+    spriteData.currentColor.a = spriteData.color.a;
 }
 
-void Particle::fadeInSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeInData>& fadeIn)
+void Particle::fadeSystem(ParticleData::SpriteData &spriteData, std::optional<ParticleData::FadeInData> &fadeIn,
+                          std::optional<ParticleData::FadeOutData> &fadeOut)
+{
+    if (fadeIn.has_value() && !fadeIn->end) {
+        fadeInSystem(spriteData, fadeIn);
+        return;
+    }
+    fadeOutSystem(spriteData, fadeOut);
+}
+
+void Particle::fadeOutSystem(ParticleData::SpriteData &pData, std::optional<ParticleData::FadeOutData> &fadeOut)
+{
+    if (!fadeOut.has_value() || fadeOut->end) return;
+    auto& a = pData.currentColor.a;
+    auto& r = pData.currentColor.r;
+    auto& g = pData.currentColor.g;
+    auto& b = pData.currentColor.b;
+    auto& toA = fadeOut->to.a;
+    auto& toR = fadeOut->to.r;
+    auto& toG = fadeOut->to.g;
+    auto& toB = fadeOut->to.b;
+    auto aFloat = static_cast<float>(a);
+    auto rFloat = static_cast<float>(r);
+    auto gFloat = static_cast<float>(g);
+    auto bFloat = static_cast<float>(b);
+
+    if (a <= toA && r <= toR && g <= toG && b <= toB) {
+        fadeOut->end = true;
+        return;
+    }
+
+    float speed = fadeOut->speed * Time::deltaTime;
+
+    aFloat -= speed;
+    rFloat -= speed;
+    gFloat -= speed;
+    bFloat -= speed;
+
+    aFloat = std::max(aFloat, static_cast<float>(toA));
+    rFloat = std::max(rFloat, static_cast<float>(toR));
+    gFloat = std::max(gFloat, static_cast<float>(toG));
+    bFloat = std::max(bFloat, static_cast<float>(toB));
+
+    r = static_cast<sf::Uint8>(rFloat);
+    g = static_cast<sf::Uint8>(gFloat);
+    b = static_cast<sf::Uint8>(bFloat);
+    a = static_cast<sf::Uint8>(aFloat);
+}
+
+void Particle::fadeInSystem(ParticleData::SpriteData &pData, std::optional<ParticleData::FadeInData> &fadeIn)
 {
     if (!fadeIn.has_value() || fadeIn->end) return;
     auto& a = pData.currentColor.a;
@@ -173,15 +223,18 @@ void Particle::fadeInSystem(ParticleData::SpriteData& pData, std::optional<Parti
         fadeIn->end = true;
         return;
     }
-    aFloat += (fadeIn->speed * Time::deltaTime);
-    rFloat += (fadeIn->speed * Time::deltaTime);
-    gFloat += (fadeIn->speed * Time::deltaTime);
-    bFloat += (fadeIn->speed * Time::deltaTime);
 
-    aFloat = std::min(aFloat, static_cast<float>(toA));
-    rFloat = std::min(aFloat, static_cast<float>(toR));
-    gFloat = std::min(aFloat, static_cast<float>(toG));
-    bFloat = std::min(aFloat, static_cast<float>(toB));
+    float speed = fadeIn->speed * Time::deltaTime;
+
+    aFloat += speed;
+    rFloat += speed;
+    gFloat += speed;
+    bFloat += speed;
+
+    aFloat = std::min(static_cast<float>(toA), aFloat);
+    rFloat = std::min(static_cast<float>(toR), rFloat);
+    gFloat = std::min(static_cast<float>(toG), gFloat);
+    bFloat = std::min(static_cast<float>(toB), bFloat);
 
     r = static_cast<sf::Uint8>(rFloat);
     g = static_cast<sf::Uint8>(gFloat);
@@ -223,8 +276,8 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         if (!pData.set) {
             resetSpriteData(spriteData, entityPosition);
             resetParticleData(pData);
+            resetFadeOut(fadeOut, spriteData);
             resetFadeIn(fadeIn, spriteData);
-            resetFadeOut(fadeOut);
             deadParticle -= 1;
             _hasFinished = false;
             continue;
@@ -242,7 +295,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 
         auto fixedPosition = s->getPosition();
         if (velocityData.has_value()) fixedPosition += velocityData->velocity * Time::deltaTime;
-        fadeInSystem(spriteData, fadeIn);
+        fadeSystem(spriteData, fadeIn, fadeOut);
         s->setPosition(fixedPosition);
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);

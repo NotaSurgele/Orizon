@@ -4,7 +4,7 @@
     "size": [100, 50],
     "amount": 10,
     "loop": true,
-    "delay": 0.1,
+    "delay": 0.3,
     "seed": 4242
   },
   "data": [
@@ -20,12 +20,17 @@
     },
     {
       "data_name": "velocity",
-      "value": [255, 0]
+      "value": [0, 255]
     },
     {
       "data_name": "fade_in",
+      "speed": 600,
+      "to": [125, 125, 125, 255]
+    },
+    {
+      "data_name": "fade_out",
       "speed": 400,
-      "to": [42, 42, 42, 255]
+      "to": [255, 255, 255, 0]
     }
   ]
 }
