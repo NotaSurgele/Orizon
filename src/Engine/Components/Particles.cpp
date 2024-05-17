@@ -140,10 +140,11 @@ void Particle::resetParticleData(ParticleData &pData) const
     pData.lifeTimer.reset();
 }
 
-void Particle::resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn)
+void Particle::resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn, ParticleData::SpriteData& spriteData)
 {
     if (!fadeIn.has_value()) return;
     fadeIn->end = false;
+    spriteData.currentColor.a = 0;
 }
 
 void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut)
@@ -152,9 +153,40 @@ void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut)
     fadeOut->end = false;
 }
 
-void Particle::colorFading(ParticleData &pData)
+void Particle::fadeInSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeInData>& fadeIn)
 {
+    if (!fadeIn.has_value() || fadeIn->end) return;
+    auto& a = pData.currentColor.a;
+    auto& r = pData.currentColor.r;
+    auto& g = pData.currentColor.g;
+    auto& b = pData.currentColor.b;
+    auto& toA = fadeIn->to.a;
+    auto& toR = fadeIn->to.r;
+    auto& toG = fadeIn->to.g;
+    auto& toB = fadeIn->to.b;
+    auto aFloat = static_cast<float>(a);
+    auto rFloat = static_cast<float>(r);
+    auto gFloat = static_cast<float>(g);
+    auto bFloat = static_cast<float>(b);
 
+    if (a >= toA && r >= toR && g >= toG && b >= toB) {
+        fadeIn->end = true;
+        return;
+    }
+    aFloat += (fadeIn->speed * Time::deltaTime);
+    rFloat += (fadeIn->speed * Time::deltaTime);
+    gFloat += (fadeIn->speed * Time::deltaTime);
+    bFloat += (fadeIn->speed * Time::deltaTime);
+
+    aFloat = std::min(aFloat, static_cast<float>(toA));
+    rFloat = std::min(aFloat, static_cast<float>(toR));
+    gFloat = std::min(aFloat, static_cast<float>(toG));
+    bFloat = std::min(aFloat, static_cast<float>(toB));
+
+    r = static_cast<sf::Uint8>(rFloat);
+    g = static_cast<sf::Uint8>(gFloat);
+    b = static_cast<sf::Uint8>(bFloat);
+    a = static_cast<sf::Uint8>(aFloat);
 }
 
 void Particle::play(bool loop, const sf::Vector2f& entityPosition)
@@ -191,7 +223,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         if (!pData.set) {
             resetSpriteData(spriteData, entityPosition);
             resetParticleData(pData);
-            resetFadeIn(fadeIn);
+            resetFadeIn(fadeIn, spriteData);
             resetFadeOut(fadeOut);
             deadParticle -= 1;
             _hasFinished = false;
@@ -207,9 +239,10 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             removeQueue.push(i);
             continue;
         }
+
         auto fixedPosition = s->getPosition();
-        // [FIXME] delay do weird things look at index value when you have to decrease it
         if (velocityData.has_value()) fixedPosition += velocityData->velocity * Time::deltaTime;
+        fadeInSystem(spriteData, fadeIn);
         s->setPosition(fixedPosition);
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);

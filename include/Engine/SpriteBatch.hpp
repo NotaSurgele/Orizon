@@ -9,11 +9,14 @@ public:
     ~SpriteBatch() override = default;
 
     void draw(Sprite *sprite);
+    void draw(Sprite *sprite, sf::BlendMode& mode);
+
     void clear();
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 public:
+    sf::BlendMode _blendMode;
     const sf::Texture *texture = nullptr;
     sf::VertexArray vertexArray;
     sf::Texture textureCpy;

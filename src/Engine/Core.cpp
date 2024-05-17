@@ -101,6 +101,24 @@ void Core::CoreDrawBatch(Sprite *sprite)
     _batches.push_back(newBatch);
 }
 
+void Core::CoreDrawBatch(Sprite *sprite, sf::BlendMode mode)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite, mode);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite, mode);
+    _batches.push_back(newBatch);
+}
+
 void Core::CoreDisplay()
 {
     _window.display();
