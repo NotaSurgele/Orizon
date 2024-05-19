@@ -80,6 +80,8 @@ public:
     bool hasFinished() const;
     void reset();
     void destroy();
+    std::vector<ParticleData>& getParticlesData();
+
 
 private:
 
@@ -93,6 +95,7 @@ private:
     void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
                     std::optional<ParticleData::FadeOutData>& fadeOut);
 public:
+    std::string path;
     int seed = 0;
 
     std::size_t amount = 10;

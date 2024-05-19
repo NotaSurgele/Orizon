@@ -119,6 +119,24 @@ void Core::CoreDrawBatch(Sprite *sprite, sf::BlendMode mode)
     _batches.push_back(newBatch);
 }
 
+SpriteBatch *Core::getBatch(Sprite *sprite)
+{
+    for (auto& batch : _batches) {
+        if (sprite->getTextureId() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
+}
+
+SpriteBatch *Core::getBatch(sf::Texture *texture)
+{
+    for (auto& batch : _batches) {
+        if (texture->getNativeHandle() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
+}
+
 void Core::CoreDisplay()
 {
     _window.display();
@@ -236,6 +254,7 @@ void Core::updateGUI()
     });
     if (_guiThread.joinable()) _guiThread.join();
     _gui.gameWindow(_windowTexture);
+    _gui.renderParticleWindow();
     ImGui::SFML::Render(*_window.getSFMLRenderWindow());
 #endif
 }

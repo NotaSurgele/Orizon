@@ -67,7 +67,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
 })
 {
     _json = Utils::readfileToJson(file);
-
+    path = file;
     try {
         initData(_json["emitter"]);
 
@@ -318,6 +318,11 @@ void Particle::reset()
 bool Particle::hasFinished() const
 {
     return _hasFinished;
+}
+
+std::vector<ParticleData>& Particle::getParticlesData()
+{
+    return _particles;
 }
 
 void Particle::destroy()

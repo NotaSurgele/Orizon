@@ -16,6 +16,9 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 public:
+#ifdef ENGINE_GUI
+    sf::RenderTexture _renderTexture;
+#endif
     sf::BlendMode _blendMode;
     const sf::Texture *texture = nullptr;
     sf::VertexArray vertexArray;

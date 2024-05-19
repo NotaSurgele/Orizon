@@ -990,6 +990,26 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
     }
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
+{
+    auto pEmitter = dynamic_cast<ParticlesEmitter *>(c);
+
+    for (auto& it : pEmitter->particles) {
+        auto &particle = it.second;
+        auto &path = particle.path;
+
+        ImGui::Separator();
+        ImGui::Text(("Particle path: " + path).data());
+        if (ImGui::Button("View")) {
+            _renderPWindow = true;
+            _pPath = path;
+            _particle = particle;
+            _batch = GET_BATCH(particle.texture);
+        }
+    }
+    ImGui::Separator();
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -1070,6 +1090,42 @@ void EngineHud::saveEntity(nlohmann::json &json)
     }
     auto c = json["entities"].dump(4);
     std::cout << c << std::endl;
+}
+
+void EngineHud::renderParticleWindow()
+{
+    if (!_pPath.has_value() || !_particle.has_value() || !_renderPWindow || !_batch) {
+        _renderPWindow = false;
+        _pPath = {};
+        _particle = {};
+        _batch = nullptr;
+        return;
+    }
+    _particleRenderTexture.clear(sf::Color::White);
+
+    ImGui::SetNextWindowSize(ImVec2(1800, 1600));
+    ImGui::Begin("Particle window", &_renderPWindow);
+
+    // Render particle part
+    ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
+    // Render particles
+    for (auto& pData : _particle->getParticlesData()) {
+        auto& sData = pData.spriteData;
+
+        DRAW_BATCH(sData.sprite);
+    }
+    _particleRenderTexture.draw(*(sf::Drawable *)_batch);
+    ImGui::Image(_particleRenderTexture);
+    ImGui::EndChild();
+
+    ImGui::SameLine();
+
+    // Data part
+    ImGui::BeginChild("Data part");
+    ImGui::Text("hello world");
+    ImGui::EndChild();
+    _batch->clear();
+    ImGui::End();
 }
 
 void EngineHud::saveScene()
