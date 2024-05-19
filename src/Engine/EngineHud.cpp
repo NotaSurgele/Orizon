@@ -1003,7 +1003,9 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
         if (ImGui::Button("View")) {
             _renderPWindow = true;
             _pPath = path;
-            _particle = particle;
+            _particleEmitter = pEmitter;
+            _particle = Particle{ path };
+
             _batch = GET_BATCH(particle.texture);
         }
     }
@@ -1094,26 +1096,28 @@ void EngineHud::saveEntity(nlohmann::json &json)
 
 void EngineHud::renderParticleWindow()
 {
-    if (!_pPath.has_value() || !_particle.has_value() || !_renderPWindow || !_batch) {
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle.has_value()) {
         _renderPWindow = false;
         _pPath = {};
-        _particle = {};
+        _particleEmitter = nullptr;
         _batch = nullptr;
         return;
     }
     _particleRenderTexture.clear(sf::Color::White);
 
-    ImGui::SetNextWindowSize(ImVec2(1800, 1600));
+    ImGui::SetNextWindowSize(ImVec2(1800, 900));
     ImGui::Begin("Particle window", &_renderPWindow);
 
     // Render particle part
     ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
     // Render particles
-    for (auto& pData : _particle->getParticlesData()) {
-        auto& sData = pData.spriteData;
 
-        DRAW_BATCH(sData.sprite);
-    }
+    auto e = _particleEmitter->getEntity();
+
+    if (!e) return;
+    auto& position = e->getComponent<Transform2D>()->position;
+
+    _particle->play(true, position);
     _particleRenderTexture.draw(*(sf::Drawable *)_batch);
     ImGui::Image(_particleRenderTexture);
     ImGui::EndChild();
@@ -1124,7 +1128,6 @@ void EngineHud::renderParticleWindow()
     ImGui::BeginChild("Data part");
     ImGui::Text("hello world");
     ImGui::EndChild();
-    _batch->clear();
     ImGui::End();
 }
 

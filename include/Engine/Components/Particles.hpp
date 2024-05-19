@@ -20,6 +20,11 @@ public:
 
     void destroy() final;
 
+    Entity *getEntity()
+    {
+        return _e;
+    }
+
 public:
     std::unordered_map<std::string, Particle> particles;
 

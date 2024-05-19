@@ -323,6 +323,7 @@ private:
     // Particle
     static inline sf::RenderTexture _particleRenderTexture;
     static inline std::optional<std::string> _pPath;
+    static inline ParticlesEmitter * _particleEmitter;
     static inline std::optional<Particle> _particle;
     static inline bool _renderPWindow = false;
     static inline SpriteBatch *_batch = nullptr;
