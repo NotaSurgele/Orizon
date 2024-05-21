@@ -242,6 +242,16 @@ void Particle::fadeInSystem(ParticleData::SpriteData &pData, std::optional<Parti
     a = static_cast<sf::Uint8>(aFloat);
 }
 
+bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue, std::size_t &index, std::size_t& deadParticle)
+{
+    pData.isDead = true;
+    pData.set = false;
+    deadParticle += 1;
+    _deadParticle.push(pData);
+    removeQueue.push(index);
+    return true;
+}
+
 void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 {
     //Base draw
@@ -282,14 +292,12 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             _hasFinished = false;
             continue;
         }
-        lifeTimer.update();
 
+        if (lifeTimer.to() != lifeTime) lifeTimer.set(lifeTime);
+
+        lifeTimer.update();
         if (lifeTimer.ended()) {
-            pData.isDead = true;
-            pData.set = false;
-            deadParticle += 1;
-            _deadParticle.push(pData);
-            removeQueue.push(i);
+            killParticle(pData, removeQueue, i, deadParticle);
             continue;
         }
 

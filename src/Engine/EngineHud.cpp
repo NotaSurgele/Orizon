@@ -1094,6 +1094,11 @@ void EngineHud::saveEntity(nlohmann::json &json)
     std::cout << c << std::endl;
 }
 
+void EngineHud::renderEmitterTreeNode(std::optional<Particle>& particle, ParticlesEmitter *emitter)
+{
+    ImGui::InputFloat("Particle life time", &particle->lifeTime);
+}
+
 void EngineHud::renderParticleWindow()
 {
     if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle.has_value()) {
@@ -1126,7 +1131,13 @@ void EngineHud::renderParticleWindow()
 
     // Data part
     ImGui::BeginChild("Data part");
-    ImGui::Text("hello world");
+
+    ImGui::Separator();
+    if (ImGui::TreeNode("Emitter")) {
+        renderEmitterTreeNode(_particle, _particleEmitter);
+        ImGui::TreePop();
+    }
+    ImGui::Separator();
     ImGui::EndChild();
     ImGui::End();
 }

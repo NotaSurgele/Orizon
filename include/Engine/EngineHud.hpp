@@ -75,7 +75,10 @@ public:
         writeConsole(args ...);
     }
 
+    // Particle
     void renderParticleWindow();
+    void renderEmitterTreeNode(std::optional<Particle>& particle, ParticlesEmitter *emitter);
+    //
     void saveScene();
     void saveResource(nlohmann::json& json, const std::string& entityPath);
     void saveEntity(nlohmann::json& json);

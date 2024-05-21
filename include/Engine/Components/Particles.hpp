@@ -99,6 +99,9 @@ private:
     void fadeOutSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeOutData>& fadeOut);
     void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
                     std::optional<ParticleData::FadeOutData>& fadeOut);
+
+    bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue, std::size_t& index, std::size_t& deadParticle);
+
 public:
     std::string path;
     int seed = 0;
