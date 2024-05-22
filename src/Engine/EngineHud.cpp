@@ -1004,7 +1004,7 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _renderPWindow = true;
             _pPath = path;
             _particleEmitter = pEmitter;
-            _particle = Particle{ path };
+            _particle = new Particle( path );
 
             _batch = GET_BATCH(particle.texture);
         }
@@ -1094,18 +1094,37 @@ void EngineHud::saveEntity(nlohmann::json &json)
     std::cout << c << std::endl;
 }
 
-void EngineHud::renderEmitterTreeNode(std::optional<Particle>& particle, ParticlesEmitter *emitter)
+void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emitter,
+                                      sf::Vector2f& position)
 {
+    auto seed = particle->seed;
+    auto amount = particle->amount;
+    auto amountMin = particle->amountMin;
+    auto amountMax = particle->amountMax;
+
     ImGui::InputFloat("Particle life time", &particle->lifeTime);
+    ImGui::InputInt("Seed", &seed);
+    ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
+
+    if (amount != particle->amount) {
+        // particle crash maybe because ref got destroyed
+        particle->load( amount - particle->amount);
+        particle->amount = amount;
+    }
 }
 
 void EngineHud::renderParticleWindow()
 {
-    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle.has_value()) {
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
         _renderPWindow = false;
         _pPath = {};
         _particleEmitter = nullptr;
         _batch = nullptr;
+        if (_particle) {
+            _particle->destroy();
+            delete _particle;
+        }
+        _particle = nullptr;
         return;
     }
     _particleRenderTexture.clear(sf::Color::White);
@@ -1134,7 +1153,7 @@ void EngineHud::renderParticleWindow()
 
     ImGui::Separator();
     if (ImGui::TreeNode("Emitter")) {
-        renderEmitterTreeNode(_particle, _particleEmitter);
+        renderEmitterTreeNode(_particle, _particleEmitter, position);
         ImGui::TreePop();
     }
     ImGui::Separator();

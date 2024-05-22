@@ -79,13 +79,15 @@ public:
     Particle();
     ~Particle() = default;
 
+    void reload();
     void load();
+    void load(const std::size_t& amount);
     void initData(nlohmann::json& json);
     void play(bool loop, const sf::Vector2f& entityPosition);
     bool hasFinished() const;
     void reset();
     void destroy();
-    std::vector<ParticleData>& getParticlesData();
+    std::list<ParticleData>& getParticlesData();
 
 
 private:
@@ -106,9 +108,9 @@ public:
     std::string path;
     int seed = 0;
 
-    std::size_t amount = 10;
-    std::size_t amountMax = 10;
-    std::size_t amountMin = 1;
+    int amount = 10;
+    int amountMax = 10;
+    int amountMin = 1;
 
     sf::Vector2f scale = { 1, 1 };
     sf::Vector2f emitterLength = { 1, 1 };
@@ -124,15 +126,16 @@ public:
     bool loop = true;
 
 private:
+    std::queue<std::size_t> _removeQueue;
     Timer delayTimer;
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
 
     // Handle particles
-    std::vector<ParticleData> _particles;
+    std::list<ParticleData> _particles;
     std::queue<ParticleData> _deadParticle;
 
     nlohmann::json _json;
 
-    sf::Vector2f _offset;
+    sf::Vector2f _offset = {0, 0};
 };

@@ -3,6 +3,8 @@
     "life_time": 1,
     "size": [100, 50],
     "amount": 10,
+    "amount_min": 1,
+    "amount_max": 20,
     "loop": true,
     "delay": 0.3,
     "seed": 4242

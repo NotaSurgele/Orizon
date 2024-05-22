@@ -77,7 +77,7 @@ public:
 
     // Particle
     void renderParticleWindow();
-    void renderEmitterTreeNode(std::optional<Particle>& particle, ParticlesEmitter *emitter);
+    void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
     //
     void saveScene();
     void saveResource(nlohmann::json& json, const std::string& entityPath);
@@ -327,7 +327,7 @@ private:
     static inline sf::RenderTexture _particleRenderTexture;
     static inline std::optional<std::string> _pPath;
     static inline ParticlesEmitter * _particleEmitter;
-    static inline std::optional<Particle> _particle;
+    static inline Particle *_particle = nullptr;
     static inline bool _renderPWindow = false;
     static inline SpriteBatch *_batch = nullptr;
 };
