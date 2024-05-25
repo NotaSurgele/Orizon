@@ -33,12 +33,19 @@ struct ParticleData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
+
+       FadeInData(bool end, float speed, sf::Color to)
+            : end(end), speed(speed), to(to) {}
+
     };
 
     struct FadeOutData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
+
+        FadeOutData(bool end, float speed, sf::Color to)
+                : end(end), speed(speed), to(to) {}
     };
 
     std::optional<VelocityData> velocityData;
