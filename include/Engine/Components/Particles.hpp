@@ -11,27 +11,6 @@
 #include "Timer.hpp"
 #include "json.hpp"
 
-class Particle;
-
-class ParticlesEmitter : public IComponent {
-public:
-    explicit ParticlesEmitter(Entity *e) : _e(e) {};
-    ~ParticlesEmitter() = default;
-
-    void destroy() final;
-
-    Entity *getEntity()
-    {
-        return _e;
-    }
-
-public:
-    std::unordered_map<std::string, Particle> particles;
-
-private:
-    Entity *_e = nullptr;
-};
-
 struct ParticleData {
     ParticleData() = default;
     ~ParticleData() = default;
@@ -90,9 +69,7 @@ public:
     void destroy();
     std::list<ParticleData>& getParticlesData();
 
-
 private:
-
     void resetSpriteData(ParticleData::SpriteData& spriteData, const sf::Vector2f& ePosition);
     void resetParticleData(ParticleData& pData) const;
     void resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn, ParticleData::SpriteData& spriteData);
@@ -140,4 +117,23 @@ private:
     nlohmann::json _json{};
 
     sf::Vector2f _offset = {0, 0};
+};
+
+class ParticlesEmitter : public IComponent {
+public:
+    explicit ParticlesEmitter(Entity *e) : _e(e) {};
+    ~ParticlesEmitter() = default;
+
+    void destroy() final;
+
+    Entity *getEntity()
+    {
+        return _e;
+    }
+
+public:
+    std::unordered_map<std::string, Particle> particles;
+
+private:
+    Entity *_e = nullptr;
 };
