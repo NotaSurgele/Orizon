@@ -347,6 +347,7 @@ void System::systems()
         BoxSystem(e);
         colliderSystem(e);
         velocitySystem(e);
+        particleEmitterSystem(e);
     }
 
     // Light source system
@@ -434,6 +435,21 @@ void System::lightSystem(Entity *e)
             return;
         }
         light->emit();
+    }
+}
+
+void System::particleEmitterSystem(Entity *e)
+{
+    auto emitter = e->getComponent<ParticlesEmitter>();
+    auto transform = e->getComponent<Transform2D>();
+
+    if (!emitter || !transform) return;
+
+    auto position = transform->position;
+    for (auto& it : emitter->particles) {
+        auto& p = it.second;
+
+        p.play(p.loop, position);
     }
 }
 

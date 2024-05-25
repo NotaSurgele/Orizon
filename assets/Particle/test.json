@@ -1,0 +1,38 @@
+{
+  "emitter": {
+    "life_time": 1,
+    "size": [100, 50],
+    "amount": 10,
+    "amount_min": 1,
+    "amount_max": 20,
+    "loop": true,
+    "delay": 0.3,
+    "seed": 4242
+  },
+  "data": [
+    {
+      "data_name": "offset",
+      "offset": [0, 0]
+    },
+    {
+      "data_name": "sprite",
+      "color": [255, 255, 255, 255],
+      "scale": [1, 1],
+      "texture": "cross"
+    },
+    {
+      "data_name": "velocity",
+      "value": [0, 255]
+    },
+    {
+      "data_name": "fade_in",
+      "speed": 600,
+      "to": [125, 125, 125, 255]
+    },
+    {
+      "data_name": "fade_out",
+      "speed": 400,
+      "to": [255, 255, 255, 0]
+    }
+  ]
+}

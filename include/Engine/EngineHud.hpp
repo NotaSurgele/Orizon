@@ -12,6 +12,7 @@
 #include "json.hpp"
 #include "Canvas.hpp"
 #include "imfilebrowser.hpp"
+#include "Particles.hpp"
 
 #ifndef GUI
 #define GUI_ENTITIES_HEIGHT_SIZE_RATIO 0.40f
@@ -19,6 +20,8 @@
 #define GUI_CONSOLE_WIDTH_SIZE_RATIO .60f
 #define GUI_CONSOLE_HEIGHT_SIZE_RATIO .25f
 #endif
+
+class SpriteBatch;
 
 class EngineHud {
 public:
@@ -31,6 +34,7 @@ public:
         sf::Texture texture;
 
         img.create(16, 16, sf::Color::White);
+        _particleRenderTexture.create(900, 900);
         texture.loadFromImage(img);
         _colorSprite.setTexture(texture);
     }
@@ -71,6 +75,10 @@ public:
         writeConsole(args ...);
     }
 
+    // Particle
+    void renderParticleWindow();
+    void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
+    //
     void saveScene();
     void saveResource(nlohmann::json& json, const std::string& entityPath);
     void saveEntity(nlohmann::json& json);
@@ -250,6 +258,7 @@ private:
         static void buildGravityTreeNode(IComponent *c);
         static void buildLightTreeNode(IComponent *c);
         static void buildCanvasTreeNode(IComponent *c);
+        static void buildParticleEmitter(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -266,7 +275,8 @@ private:
             { "Animator", buildAnimatorTreeNode },
             { "Gravity", buildGravityTreeNode },
             { "Light", buildLightTreeNode  },
-            { "Canvas", buildCanvasTreeNode }
+            { "Canvas", buildCanvasTreeNode },
+            { "ParticlesEmitter", buildParticleEmitter }
         };
     };
 
@@ -283,6 +293,7 @@ private:
     std::size_t _width;
     std::size_t _height;
     bool _theme = false;
+
 
     // Script editor
     std::string _scriptContent;
@@ -311,4 +322,12 @@ private:
     static inline std::queue<std::string> _consoleMsg;
     static inline std::list<Entity *> _toSave;
     static inline std::string _newVal = "new value";
+
+    // Particle
+    static inline sf::RenderTexture _particleRenderTexture;
+    static inline std::optional<std::string> _pPath;
+    static inline ParticlesEmitter * _particleEmitter;
+    static inline Particle *_particle = nullptr;
+    static inline bool _renderPWindow = false;
+    static inline SpriteBatch *_batch = nullptr;
 };

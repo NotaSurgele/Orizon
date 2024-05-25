@@ -51,16 +51,25 @@ void SpriteBatch::draw(Sprite *sprite)
     vertexArray[counter * 4 + 1].color = sprite->getColor();
     vertexArray[counter * 4 + 2].color = sprite->getColor();
     vertexArray[counter * 4 + 3].color = sprite->getColor();
+
+    savedSprite->setColor(sprite->getColor());
     counter++;
+}
+
+void SpriteBatch::draw(Sprite *sprite, sf::BlendMode &mode)
+{
+    _blendMode = mode;
+    draw(sprite);
 }
 
 void SpriteBatch::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (length <= 0) return;
     states.texture = &textureCpy;
+    states.blendMode = _blendMode;
 
-    if (sprite->hasShader) {
-        states.shader = **sprite->shader;
+    if (savedSprite->hasShader) {
+        states.shader = **savedSprite->shader;
     }
     target.draw(&vertexArray[0], counter * 4, sf::Quads, states);
 }

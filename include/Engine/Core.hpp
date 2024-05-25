@@ -58,6 +58,9 @@ class Core : public ICore {
         void CoreDraw(sf::Drawable const& drawable);
         void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
         void CoreDrawBatch(Sprite *sprite);
+        void CoreDrawBatch(Sprite *sprite, sf::BlendMode mode);
+        SpriteBatch *getBatch(sf::Texture *texture);
+        SpriteBatch *getBatch(Sprite *sprite);
         void CoreClose();
 
         void run();
@@ -194,6 +197,12 @@ private:
 
 #define DRAW_BATCH(to_draw) \
         Core::instance->CoreDrawBatch(to_draw);
+
+#define DRAW_BATCH_BLENDED(toDraw, blendMode) \
+        Core::instance->CoreDrawBatch(toDraw, blendMode)
+
+#define GET_BATCH(sprite) \
+        Core::instance->getBatch(sprite)
 
 #define DRAW_QUEUE(to_draw) \
         System::addInDrawQueue(to_draw)

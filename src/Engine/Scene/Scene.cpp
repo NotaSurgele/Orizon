@@ -54,6 +54,7 @@ void Scene::ComponentFactory::create_canvas(Entity *e, const nlohmann::json &jso
         auto position = sf::Vector2f(obj["position"][0], obj["position"][1]);
         auto coordType = obj["coord_type"];
 
+        // [TODO] refactor in to unordered_map
         if (type.find("Button") != std::string::npos) {
             try {
                 auto texture = R_GET_RESSOURCE(sf::Texture, obj["texture_name"]);
@@ -86,6 +87,23 @@ void Scene::ComponentFactory::create_canvas(Entity *e, const nlohmann::json &jso
                     << type << " does not exist !" << std::endl;
             continue;
         }
+    }
+}
+
+void Scene::ComponentFactory::create_particles_emitter(Entity *e, const nlohmann::json &json) {
+    auto emitter = e->addComponent<ParticlesEmitter>();
+
+    try {
+        for (auto &particle: json["particles"]) {
+            std::string path = particle["path"];
+            std::string name = particle["name"];
+
+            Particle p = Particle(path);
+            emitter->particles.insert(std::pair<std::string, Particle>(name, p));
+            std::cout << "Create a particle emitter with particle" << std::endl;
+        }
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
 }
 
