@@ -48,20 +48,13 @@ Particle::Particle(const std::string &file) : _behaviourMap({
     },
     {
         "fade_in", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeInData = (ParticleData::FadeInData) {
-                .end = false,
-                .speed = json["speed"],
-                .to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] }
-            };
+            pData.fadeOutData = ParticleData::FadeOutData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
         }
+
     },
     {
         "fade_out", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeOutData = (ParticleData::FadeOutData) {
-                .end = false,
-                .speed = json["speed"],
-                .to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] }
-            };
+            pData.fadeInData = ParticleData::FadeInData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
         }
     }
 })
