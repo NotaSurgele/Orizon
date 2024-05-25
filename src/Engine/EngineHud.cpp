@@ -2,19 +2,92 @@
 #include "Tag.hpp"
 #include "Utils.hpp"
 #include "Core.hpp"
+#include "imgui_internal.h"
+
 #define GUI
-#include "Script.hpp"
+
+static int id = 0;
 
 void EngineHud::setTheme()
 {
     if (_theme)
         return;
-    ImGuiStyle *style = &ImGui::GetStyle();
-    ImVec4 *colors = style->Colors;
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4 *colors = style.Colors;
 
-    colors[ImGuiCol_WindowBg] = ImVec4(0.05, 0.18, 0.18, .5f);
-    colors[ImGuiCol_Text] = ImVec4(0.61, 0.8, 0.57, 1.0);
-    colors[ImGuiCol_FrameBg] = ImVec4(0.3, 0.3, 0.3, 1.0);
+    colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
+    colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+    colors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+    colors[ImGuiCol_TabHovered]             = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
+    colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+    colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+    colors[ImGuiCol_TableBorderLight]       = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+    colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+    colors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+    colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+
+    style.WindowPadding                     = ImVec2(8.00f, 8.00f);
+    style.FramePadding                      = ImVec2(5.00f, 2.00f);
+    style.CellPadding                       = ImVec2(6.00f, 6.00f);
+    style.ItemSpacing                       = ImVec2(6.00f, 6.00f);
+    style.ItemInnerSpacing                  = ImVec2(6.00f, 6.00f);
+    style.TouchExtraPadding                 = ImVec2(0.00f, 0.00f);
+    style.IndentSpacing                     = 25;
+    style.ScrollbarSize                     = 15;
+    style.GrabMinSize                       = 10;
+    style.WindowBorderSize                  = 1;
+    style.ChildBorderSize                   = 1;
+    style.PopupBorderSize                   = 1;
+    style.FrameBorderSize                   = 1;
+    style.TabBorderSize                     = 1;
+    style.WindowRounding                    = 7;
+    style.ChildRounding                     = 4;
+    style.FrameRounding                     = 3;
+    style.PopupRounding                     = 4;
+    style.ScrollbarRounding                 = 9;
+    style.GrabRounding                      = 3;
+    style.LogSliderDeadzone                 = 4;
+    style.TabRounding                       = 4;
     _theme = true;
 }
 
@@ -50,8 +123,8 @@ void EngineHud::ComponentCreationFactory::createSprite(Entity *e)
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture* texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     e->addComponent<Sprite>(texture, 1, 1)->setTextureName("Default");
 }
 
@@ -105,19 +178,13 @@ void EngineHud::ComponentCreationFactory::createMusic(Entity *e)
     e->addComponent<OrizonMusic>("");
 }
 
-void EngineHud::ComponentCreationFactory::createScript(Entity *e)
-{
-    e->addComponent<Script>("");
-    System::__registerScriptedEntity(e);
-}
-
 void EngineHud::ComponentCreationFactory::createLight(Entity *e)
 {
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture *texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     auto *s  = new Sprite(texture);
     s->setTextureName("Default");
     e->addComponent<Light>(s);
@@ -131,10 +198,15 @@ void EngineHud::ComponentCreationFactory::createGravity(Entity *e)
     e->addComponent<Gravity>(0.0f);
 }
 
+void EngineHud::ComponentCreationFactory::createCanvas(Entity *e)
+{
+    e->getComponent<Canvas>();
+}
+
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
 {
     auto transform = dynamic_cast<Transform2D *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Transform2D";
     json["position"] = { transform->position.x, transform->position.y };
@@ -147,7 +219,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComponent *c)
 {
     auto box = dynamic_cast<BoxCollider *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "BoxCollider";
     json["position"] = { box->getPosition().x, box->getPosition().y };
@@ -160,17 +232,21 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Sprite";
 
     if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
     else json["texture_name"] = sprite->getTextureName();
+    if (sprite->hasShader) {
+        auto name = sprite->shader->name;
+        json["shader"]["name"] = name;
+    }
     return json;
 }
 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(IComponent *c)
 {
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Velocity";
     return json;
 }
@@ -178,7 +254,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(ICompone
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(IComponent *c)
 {
     auto animator = dynamic_cast<Animator *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Animator";
     for (auto& animation : animator->getAnimations()) {
@@ -198,14 +274,12 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(ICompon
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *c)
 {
     auto view = dynamic_cast<View *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     auto viewBounds = view->getViewBounds();
     auto viewPort = view->getViewport();
 
-    viewPort.left = (viewPort.left - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.left - EDITOR_VIEW_SIZE_RATIO;
-    viewPort.top = (viewPort.top - EDITOR_VIEW_SIZE_RATIO) < 0 ? 0 : viewPort.top - EDITOR_VIEW_SIZE_RATIO;
     json["type"] = "View";
-    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width * 2, viewBounds.height * 2 };
+    json["view_bounds"] = { viewBounds.left, viewBounds.top, viewBounds.width, viewBounds.height };
     json["viewport"] = { viewPort.left, viewPort.top, viewPort.width, viewPort.height };
     json["follow"] = view->isFollowing();
     return json;
@@ -214,7 +288,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c)
 {
     auto tag = dynamic_cast<Tag *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Tag";
     json["tag"] = tag->value();
@@ -224,7 +298,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent *c)
 {
     auto layer = dynamic_cast<Layer *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Layer";
     json["value"] = layer->value();
@@ -234,7 +308,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent *c)
 {
     auto sound = dynamic_cast<Sound *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Sound";
     json["sound_name"] = sound->name();
@@ -245,21 +319,11 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeMusic(IComponent *c)
 {
     auto music = dynamic_cast<OrizonMusic *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Music";
     json["music_name"] = music->name();
     json["loop"] = music->isLoop();
-    return json;
-}
-
-nlohmann::json EngineHud::ComponentSerializerFactory::serializeScript(IComponent *c)
-{
-    auto script = dynamic_cast<Script *>(c);
-    nlohmann::json json;
-
-    json["type"] = "Script";
-    json["path"] = script->getFile();
     return json;
 }
 
@@ -268,7 +332,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
     auto light = dynamic_cast<Light *>(c);
     float intensity = light->getIntensity();
     Sprite *sprite = light->getSprite();
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Light";
     json["intensity"] = intensity;
@@ -279,13 +343,79 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponent *c)
 {
     auto gravity = dynamic_cast<Gravity *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Gravity";
     json["force"] = gravity->force;
     return json;
 }
 
+nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent *c)
+{
+    auto canvas = dynamic_cast<Canvas *>(c);
+    auto buttons = canvas->getButtons();
+    auto texts = canvas->getTexts();
+    auto images = canvas->getImages();
+    nlohmann::json json {};
+
+    json["type"] = "Canvas";
+    json["canvas_objects"] = nlohmann::json::array();
+    for (auto &b : buttons) {
+        auto offset = b->getOffset();
+        auto sprite = b->getSprite();
+        auto size = b->getSize();
+        auto content = b->getTextContent();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = b->coordType;
+
+        if (!b->shouldSave()) continue;
+
+        json["canvas_objects"].push_back({
+            { "type", "Button" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &t : texts) {
+        auto offset = t->getOffset();
+        auto size = t->getCharacterSize();
+        auto content = t->getString();
+        auto coordType = t->coordType;
+
+        if (!t->shouldSave()) continue;
+
+        json["canvas_objects"].push_back({
+            { "type", "Text" },
+            { "position", { offset.x, offset.y } },
+            { "font_size", size },
+            { "content", content },
+            { "coord_type", coordType }
+        });
+    }
+
+    for (auto &i : images) {
+        auto offset = i->getOffset();
+        auto sprite = i->getImage();
+        auto size = sprite->getScale();
+        std::string textureName = RESOURCE_MANAGER().textureToName(sprite->getTexture());
+        auto coordType = i->coordType;
+
+        if (!i->shouldSave()) continue;
+
+        json["canvas_objects"].push_back({
+            { "type", "Image" },
+            { "position", { offset.x, offset.y } },
+            { "size", { size.x, size.y } },
+            { "texture_name", textureName },
+            { "coord_type", coordType }
+        });
+    }
+    return json;
+}
 
 std::unordered_map<std::string, Entity *> EngineHud::getEntitiesNameToSave(const nlohmann::json &entitiesJson)
 {
@@ -341,7 +471,7 @@ void EngineHud::ComponentTreeNodeFactory::buildTransformTreeNode(IComponent *c)
     //Handle rotation
     ImGui::Text("Rotation");
     ImGui::SameLine();
-    ImGui::SliderFloat("##Rotation", &transform->rotation, 0, 360, "%2f");
+    ImGui::SliderFloat("##Rotation", &transform->rotation, -360, 360, "%2f");
 }
 
 void EngineHud::ComponentTreeNodeFactory::buildTagTreeNode(IComponent *c)
@@ -567,36 +697,6 @@ void EngineHud::ComponentTreeNodeFactory::buildOrizonMusicTreeNode(IComponent *c
     music->setVolume(volume);
 }
 
-void EngineHud::ComponentTreeNodeFactory::buildScriptTreeNode(IComponent *c)
-{
-    auto script = dynamic_cast<Script *>(c);
-    auto path = script->getFile();
-
-    if (path.empty()) path = "Default";
-    ImGui::Text("Current script: ");
-    ImGui::SameLine();
-    if (ImGui::Button(path.data())) {
-        ImGui::SameLine();
-        ImGui::OpenPopup("Script files");
-    }
-    if (ImGui::BeginPopup("Script files")) {
-        for (auto& it : R_GET_SCRIPTS()) {
-            auto s = it.first;
-
-            if (s.find(path) != std::string::npos) continue;
-            if (ImGui::Selectable(s.data())) {
-                script->setScript(s);
-                ImGui::CloseCurrentPopup();
-                break;
-            }
-        }
-        ImGui::EndPopup();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("View")) _scriptWindow = true;
-    if (_scriptWindow) scriptEditor(script);
-}
-
 void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
@@ -611,17 +711,19 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     }
     ImGui::Text("Current texture: ");
     ImGui::SameLine();
+    ImGui::PushID(id++);
     if (ImGui::Button(name.data())) {
         ImGui::OpenPopup("Textures buffer");
     }
     ImGui::SameLine();
-    ImGui::Image(*texture, sf::Vector2f(64, 64));
+    if (ImGui::ImageButton(*texture, sf::Vector2f(64, 64))) _imgWindow = true;
+    if (_imgWindow) imageViewer(texture);
     if (ImGui::BeginPopup("Textures buffer")) {
         for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
-                auto size = it.second.getSize();
+                auto size = it.second->getSize();
                 sprite->setTextureName(s);
                 sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();
@@ -637,6 +739,7 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
     ImGui::SameLine();
     ImGui::Image(_colorSprite, sf::Vector2f(16, 16), color);
     sprite->setColor(color);
+    ImGui::PopID();
 }
 
 void EngineHud::ComponentTreeNodeFactory::buildIdTreeNode(IComponent *c)
@@ -756,6 +859,158 @@ void EngineHud::ComponentTreeNodeFactory::buildLightTreeNode(IComponent *c)
     light->setIntensity(intensity);
 }
 
+void EngineHud::canvasRadioButton(CanvasObject::CoordType& selectedOption, CanvasObject *obj)
+{
+    static std::map<std::string, CanvasObject::CoordType> typeMap = {
+            { "Local", CanvasObject::CoordType::LOCAL },
+            { "World", CanvasObject::CoordType::WORLD },
+    };
+
+    for (auto& type : typeMap) {
+        auto name = type.first;
+        auto index = type.second;
+
+        bool selected = (selectedOption == index);
+        if (ImGui::RadioButton(name.data(), selected)) {
+            selectedOption = index;
+            obj->coordType = index;
+        }
+        if (name.find("Local") != std::string::npos) ImGui::SameLine();
+    }
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
+{
+    auto canvas = dynamic_cast<Canvas *>(c);
+    auto buttons = canvas->getButtons();
+    auto texts = canvas->getTexts();
+    auto images = canvas->getImages();
+    std::size_t id = 0;
+
+    if (ImGui::TreeNode("Buttons")) {
+        for (auto& button : buttons) {
+            auto& position = button->getBasePosition();
+            auto sprite = button->getSprite();
+            std::string label = "##button" + std::to_string(id);
+            CanvasObject::CoordType selectedOption = button->coordType;
+
+            ImGui::Separator();
+            ImGui::PushID(id);
+            ImGui::Checkbox("Active", &button->active);
+            ImGui::Text("position");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "positionX").data(), &position.x);
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "positionY").data(), &position.y);
+            ImGui::Text("Coordinate type");
+            ImGui::SameLine();
+
+            canvasRadioButton(selectedOption, button);
+            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            auto pos = ImGui::GetCursorPosX();
+            ImGui::SetCursorPosX(pos + 150);
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Button *>(button);
+                buttons.erase(std::remove(buttons.begin(), buttons.end(), button), buttons.end());
+                //buttons.erase(button);
+                continue;
+            }
+            ImGui::PopID();
+            id++;
+        }
+        ImGui::Separator();
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("Texts")) {
+        for (auto &text : texts) {
+            auto& position = text->getBasePosition();
+            std::string content = text->getString();
+            std::string label = "##texts" + std::to_string(id);
+            auto size = text->getCharacterSize();
+            CanvasObject::CoordType selectedOption = text->coordType;
+
+            ImGui::PushID(id);
+            ImGui::Separator();
+            ImGui::Checkbox("Active", &text->active);
+            ImGui::Text("Position");
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "x").data(), &position.x);
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "y").data(), &position.y);
+            ImGui::SetNextItemWidth(300);
+            ImGui::InputText((label + "Content").data(), content.data(), 4096);
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt((label + "Character size").data(), (int *)(&size));
+            canvasRadioButton(selectedOption, text);
+
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Text *>(text);
+                texts.erase(std::remove(texts.begin(), texts.end(), text), texts.end());
+                continue;
+            }
+            text->setString(content.data());
+            text->setCharacterSize(size);
+            ImGui::PopID();
+            id++;
+        }
+        ImGui::Separator();
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("Images")) {
+        for (auto& image : images) {
+            std::string label = "##toto" + std::to_string(id);
+            auto& position = image->getBasePosition();
+            auto sprite = image->getImage();
+            CanvasObject::CoordType selectedOption = image->coordType;
+
+            ImGui::PushID(id);
+            ImGui::Separator();
+            ImGui::Checkbox("Active", &image->active);
+            ImGui::Text("Position");
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputFloat((label + "x").data(), &position.x);
+            ImGui::SameLine();
+            ImGui::InputFloat((label + "y").data(), &position.y);
+            canvasRadioButton(selectedOption, image);
+
+            EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(sprite);
+            if (ImGui::Button("x", ImVec2(20, 20))) {
+                canvas->removeObject<Image *>(image);
+                images.erase(std::remove(images.begin(), images.end(), image), images.end());
+                continue;
+            }
+            ImGui::PopID();
+            id++;
+        }
+        ImGui::Separator();
+        ImGui::TreePop();
+    }
+}
+
+void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
+{
+    auto pEmitter = dynamic_cast<ParticlesEmitter *>(c);
+
+    for (auto& it : pEmitter->particles) {
+        auto &particle = it.second;
+        auto &path = particle.path;
+
+        ImGui::Separator();
+        ImGui::Text(("Particle path: " + path).data());
+        if (ImGui::Button("View")) {
+            _renderPWindow = true;
+            _pPath = path;
+            _particleEmitter = pEmitter;
+            _particle = new Particle( path );
+            _batch = GET_BATCH(particle.texture);
+        }
+    }
+    ImGui::Separator();
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -775,7 +1030,6 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     json["resources"].clear();
     auto textures = R_GET_RESSOURCES(sf::Texture);
     auto sounds = R_GET_RESSOURCES(sf::SoundBuffer);
-    auto scripts = R_GET_SCRIPTS();
     auto musics = R_GET_MUSICS();
 
     // handle texture saving
@@ -804,17 +1058,6 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
         json["resources"].push_back(soundJson);
     }
 
-    // handle scripts saving
-    for (auto& it : scripts) {
-        auto& path = it.first;
-        auto type = "Script";
-        auto scriptJson = nlohmann::json();
-
-        scriptJson["path"] = path;
-        scriptJson["type"] = type;
-        json["resources"].push_back(scriptJson);
-    }
-
     // handle musics saving
     for (auto& it : musics) {
         auto& name = it.first;
@@ -835,7 +1078,7 @@ void EngineHud::saveResource(nlohmann::json& json, const std::string& entityPath
     json["resources"].push_back(entityPathJson);
 
     auto content = json.dump(4);
-    Utils::writeFile(_currentSceneFilepath + std::to_string(1), content);
+    Utils::writeFile(_currentSceneFilepath, content);
 }
 
 void EngineHud::saveEntity(nlohmann::json &json)
@@ -850,51 +1093,118 @@ void EngineHud::saveEntity(nlohmann::json &json)
     std::cout << c << std::endl;
 }
 
+void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emitter,
+                                      sf::Vector2f& position)
+{
+    auto seed = particle->seed;
+    auto amount = particle->amount;
+    auto amountMin = particle->amountMin;
+    auto amountMax = particle->amountMax;
+
+    ImGui::InputFloat("Particle life time", &particle->lifeTime);
+    ImGui::InputInt("Seed", &seed);
+    ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
+
+    if (amount != particle->amount) {
+        // particle crash maybe because ref got destroyed
+        particle->load( amount - particle->amount);
+        particle->amount = amount;
+    }
+}
+
+void EngineHud::renderParticleWindow()
+{
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
+        _renderPWindow = false;
+        _pPath = {};
+        _particleEmitter = nullptr;
+        _batch = nullptr;
+        if (_particle) {
+            _particle->destroy();
+            delete _particle;
+        }
+        _particle = nullptr;
+        return;
+    }
+    _particleRenderTexture.clear(sf::Color::White);
+
+    ImGui::SetNextWindowSize(ImVec2(1800, 900));
+    ImGui::Begin("Particle window", &_renderPWindow);
+
+    // Render particle part
+    ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
+    // Render particles
+
+    auto e = _particleEmitter->getEntity();
+
+    if (!e) return;
+    auto& position = e->getComponent<Transform2D>()->position;
+
+    _particle->play(true, position);
+    _particleRenderTexture.draw(*(sf::Drawable *)_batch);
+    ImGui::Image(_particleRenderTexture);
+    ImGui::EndChild();
+
+    ImGui::SameLine();
+
+    // Data part
+    ImGui::BeginChild("Data part");
+
+    ImGui::Separator();
+    if (ImGui::TreeNode("Emitter")) {
+        renderEmitterTreeNode(_particle, _particleEmitter, position);
+        ImGui::TreePop();
+    }
+    _batch->clear();
+    ImGui::Separator();
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 void EngineHud::saveScene()
 {
-    if (Input::isKeyPressed("LControl") &&
-        Input::isKeyDown("S")) {
-        try {
-            saveEntity(_currentSceneContent);
-            std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
-                                                                        _currentSceneContent["entities"]);
-            std::string entitiesPath;
-            for (auto& r : _currentSceneContent["resources"]) {
-                if (r["type"].get<std::string>().find("Entities") != std::string::npos)
-                    entitiesPath = r["path"];
+    try {
+        saveEntity(_currentSceneContent);
+        std::unordered_map<std::string, Entity *> toSaves = getEntitiesNameToSave(
+                                                                    _currentSceneContent["entities"]);
+        std::string entitiesPath;
+        for (auto& r : _currentSceneContent["resources"]) {
+            if (r["type"].get<std::string>().find("Entities") != std::string::npos) {
+                entitiesPath = r["path"];
+                break;
             }
-            saveResource(_currentSceneContent, entitiesPath);
-            auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
-
-            for (auto &it : toSaves) {
-                auto& name = it.first;
-                auto *e = it.second;
-                bool find = false;
-
-                for (auto& json : entitiesContentJson["entities"]) {
-                    auto entityName = json["name"];
-                    if (entityName.get<std::string>().find(name) != std::string::npos) {
-                        componentSerializer(json, e);
-                        find = true;
-                        break;
-                    }
-                }
-
-                // if entity not found create it
-                if (!find) {
-                    auto newEntity = nlohmann::json();
-                    newEntity["name"] = name;
-                    newEntity["components"] = {};
-
-                    componentSerializer(newEntity, e);
-                    entitiesContentJson["entities"].push_back(newEntity);
-                }
-            }
-            std::string content = entitiesContentJson.dump(4);
-            Utils::writeFile(entitiesPath + std::to_string(1), content);
-        } catch (std::exception& msg) {
-            std::cerr << msg.what() << std::endl;
         }
+        saveResource(_currentSceneContent, entitiesPath);
+        auto entitiesContentJson = Utils::readfileToJson(entitiesPath);
+
+        for (auto &it : toSaves) {
+            auto& name = it.first;
+            auto *e = it.second;
+            bool find = false;
+
+            for (auto& json : entitiesContentJson["entities"]) {
+                auto entityName = json["name"];
+                if (entityName.get<std::string>() == name) {
+                    componentSerializer(json, e);
+                    find = true;
+                    break;
+                }
+            }
+
+            // if entity not found create it
+            if (!find) {
+                auto newEntity = nlohmann::json();
+                newEntity["name"] = name;
+                newEntity["components"] = {};
+
+                componentSerializer(newEntity, e);
+                entitiesContentJson["entities"].push_back(newEntity);
+            }
+        }
+        std::string content = entitiesContentJson.dump(4);
+        Utils::writeFile(entitiesPath, content);
+    } catch (std::exception& msg) {
+        std::cerr << msg.what() << std::endl;
     }
 }
 
@@ -968,7 +1278,45 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
     }
 }
 
-void EngineHud::entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
+void EngineHud::menuBar()
+{
+    ImGui::Begin("Menu Bar", NULL, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open..", "Ctrl+O")) {
+                _fb.Open();
+            }
+
+            if (ImGui::MenuItem("Save..", "Ctrl+S")) {
+                saveScene();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+    ImGui::End();
+
+    // Handle script editor file opening
+    _fb.Display();
+
+    if(_fb.HasSelected())
+    {
+        _scriptContent = Utils::readFile(_fb.GetSelected().string(), true);
+        _scriptPath = _fb.GetSelected().string();
+        _openScriptWindow = true;
+
+        if (_contentSize <= _scriptContent.size()) {
+            _contentSize = (_scriptContent.size() * 2);
+            _scriptContent.reserve(_contentSize);
+        }
+        _fb.ClearSelected();
+    }
+    scriptEditor();
+}
+
+void EngineHud::entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap)
 {
     //_selected = nullptr;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -1034,7 +1382,7 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
 void EngineHud::createComponent()
 {
     ImGui::SetCursorPosX(((_height * GUI_ENTITIES_HEIGHT_SIZE_RATIO) / 2) / 2);
-    std::array<std::string, 13> componentList = {
+    std::array<std::string, 14> componentList = {
             "Transform2D",
             "BoxCollider",
             "Sprite",
@@ -1045,9 +1393,9 @@ void EngineHud::createComponent()
             "Layer",
             "Sound",
             "Music",
-            "Script",
             "Light",
-            "Gravity"
+            "Gravity",
+            "Canvas"
     };
 
     if (ImGui::Button("Add Component")) {
@@ -1099,6 +1447,7 @@ void EngineHud::entityInformation()
         auto components = _selected->getComponents();
         std::size_t i = 0;
 
+        ImGui::Checkbox("Active", &_selected->active);
         for (auto& elem : components) {
             if (elem.second == nullptr) {
                 _selected->removeComponent(elem.second);
@@ -1116,6 +1465,7 @@ void EngineHud::entityInformation()
         }
         createComponent();
     }
+    id = 0;
     ImGui::End();
 }
 
@@ -1138,26 +1488,36 @@ void EngineHud::consoleWindow()
     ImGui::End();
 }
 
-void EngineHud::scriptEditor(Script *script)
+void EngineHud::scriptEditor()
 {
-    if (_lastScript != script) {
-        _lastScript = script;
-        _scriptContent = R_GET_SCRIPT(script->getFile());
+    if (!_openScriptWindow && !_scriptContent.empty()) {
+        _contentSize = 4096;
+        _scriptContent.clear();
+        _scriptPath.clear();
+        _scriptContent.reserve(_contentSize);
+        _scriptContent.shrink_to_fit();
+        return;
     }
+    if (!_openScriptWindow) return;
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
-    ImGui::Begin("File Editor");
-    if (ImGui::Button("x")) {
-        _scriptWindow = false;
-         ImGui::End();
-         return;
-    }
+    ImGui::Begin("File Editor", &_openScriptWindow);
     if (ImGui::Button("Save File")) {
-        Utils::writeFile(script->getFile(), _scriptContent);
-        script->reload();
+        Utils::writeFile(_scriptPath, _scriptContent);
+        auto currentScene = Core::getCurrentScene();
+        // if currentScene is an instance of Script reload it
+    }
+    if (ImGui::IsWindowFocused()) {
+        auto currentSize = std::strlen(_scriptContent.data());
+
+        if (currentSize >= _contentSize) {
+            _contentSize *= 2;
+            _scriptContent.reserve(_contentSize);
+        }
     }
     ImGui::Separator();
-    ImGui::InputTextMultiline("##editor", _scriptContent.data(), 4096,
-      ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
+    ImGui::InputTextMultiline("##editor", _scriptContent.data(),
+                              _contentSize,
+                                ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
     ImGui::End();
 }
 
@@ -1179,6 +1539,15 @@ void EngineHud::baseResourceForm(const std::string& type, bool showName)
     ImGui::InputText("##inputPath", _inputPath.data(), 4096);
 }
 
+void EngineHud::gameWindow(const sf::RenderTexture& texture)
+{
+    ImGui::SetNextWindowSize(ImVec2(1063, 970));
+    ImGui::SetNextWindowPos(ImVec2(430, 34));
+    ImGui::Begin("Game", NULL, ImGuiWindowFlags_NoTitleBar);
+    ImGui::Image(texture);
+    ImGui::End();
+}
+
 void EngineHud::resourceManager()
 {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
@@ -1188,13 +1557,12 @@ void EngineHud::resourceManager()
             "Sound",
             "Music",
             "Texture",
-            "Tile",
-            "Script"
+            "Tile"
     };
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
-        resourceManagerResourceTreeNodeContent<sf::Texture>(resource);
+        resourceManagerResourceTreeNodeContent<sf::Texture *>(resource);
         ImGui::TreePop();
     }
 
@@ -1205,14 +1573,8 @@ void EngineHud::resourceManager()
     }
 
     if (ImGui::TreeNode("Sound")) {
-        auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
-        resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
-        ImGui::TreePop();
-    }
-
-    if (ImGui::TreeNode("Script")) {
-        auto& resource = R_GET_SCRIPTS();
-        resourceManagerResourceTreeNodeContent<std::string>(resource);
+        auto resource = R_GET_RESSOURCES(sf::SoundBuffer);
+        resourceManagerResourceTreeNodeContent<sf::SoundBuffer *>(resource);
         ImGui::TreePop();
     }
 
@@ -1243,9 +1605,6 @@ void EngineHud::resourceManager()
             case TextureR:
                 baseResourceForm(selected, true);
                 break;
-            case ScriptR:
-                baseResourceForm(selected, false);
-                break;
             case TileR:
                 baseResourceForm(selected, true);
                 // tile info
@@ -1269,8 +1628,6 @@ void EngineHud::resourceManager()
                 case TileR:
                     R_ADD_TILE(_inputName.c_str(), _inputPath.c_str(), _tileInfo[0],_tileInfo[1], _tileInfo[2], _tileInfo[3]);
                     break;
-                case ScriptR:
-                    R_ADD_SCRIPT(_inputPath.c_str());
                 default: break;
             }
             // reset all values
@@ -1285,6 +1642,22 @@ void EngineHud::resourceManager()
 
     }
 
+    ImGui::End();
+}
+
+void EngineHud::imageViewer(const sf::Texture *texture)
+{
+    static bool open = true;
+
+    ImGui::SetNextWindowSize(ImVec2(800, 800));
+    ImGui::Begin("Image Viewer", &open);
+    if (!open) {
+        _imgWindow = false;
+        open = true;
+        ImGui::End();
+        return;
+    }
+    ImGui::Image(*texture, sf::Vector2f(texture->getSize().x, texture->getSize().y));
     ImGui::End();
 }
 

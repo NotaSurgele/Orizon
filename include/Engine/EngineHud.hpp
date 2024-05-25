@@ -1,7 +1,4 @@
 #pragma once
-#include "Entity.hpp"
-#include "TileMap.hpp"
-#include "json.hpp"
 #include <vector>
 #include <thread>
 #include <queue>
@@ -10,6 +7,13 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
+#include "Entity.hpp"
+#include "TileMap.hpp"
+#include "json.hpp"
+#include "Canvas.hpp"
+#include "imfilebrowser.hpp"
+#include "Particles.hpp"
+
 #ifndef GUI
 #define GUI_ENTITIES_HEIGHT_SIZE_RATIO 0.40f
 #define GUI_ENTITIES_WIDTH_SIZE_RATIO 0.2f
@@ -17,14 +21,20 @@
 #define GUI_CONSOLE_HEIGHT_SIZE_RATIO .25f
 #endif
 
+class SpriteBatch;
+
 class EngineHud {
 public:
     EngineHud(const std::size_t& width, const std::size_t& height) : _width(width), _height(height)
     {
+        _fb.SetTitle("File Browser");
+        _fb.SetTypeFilters({ ".lua" });
+        _fb.SetPwd("../");
         sf::Image img = sf::Image();
         sf::Texture texture;
 
         img.create(16, 16, sf::Color::White);
+        _particleRenderTexture.create(900, 900);
         texture.loadFromImage(img);
         _colorSprite.setTexture(texture);
     }
@@ -36,10 +46,12 @@ public:
     void setCurrentSceneFilepath(const std::string& sceneFilepath);
     void currentSceneContent(const nlohmann::json& sceneContent);
 
-    void entityWindow(const std::vector<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
+    void menuBar();
+    void entityWindow(const std::list<Entity *>& _registry, const std::vector<TileMap *>& tileMap);
     void entityInformation();
     void consoleWindow();
     void resourceManager();
+    void gameWindow(const sf::RenderTexture& texture);
 
     static inline void registerSavedEntity(Entity *e)
     {
@@ -63,6 +75,10 @@ public:
         writeConsole(args ...);
     }
 
+    // Particle
+    void renderParticleWindow();
+    void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
+    //
     void saveScene();
     void saveResource(nlohmann::json& json, const std::string& entityPath);
     void saveEntity(nlohmann::json& json);
@@ -75,8 +91,10 @@ public:
 private:
     static inline std::string _msg;
     static inline bool _scriptWindow = false;
+    static inline bool _imgWindow = false;
 
-    static void scriptEditor(Script *component);
+    static void imageViewer(const sf::Texture *sprite);
+    void scriptEditor();
 
     template <typename T>
     static inline void writeConsole(const T& last)
@@ -105,8 +123,9 @@ private:
         MusicR,
         TextureR,
         TileR,
-        ScriptR
     };
+
+    static void canvasRadioButton(CanvasObject::CoordType& type, CanvasObject *obj);
 
     class ComponentCreationFactory {
     public:
@@ -133,6 +152,7 @@ private:
         static void createScript(Entity *e);
         static void createLight(Entity *e);
         static void createGravity(Entity *e);
+        static void createCanvas(Entity *e);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(Entity *)>> _map = {
@@ -146,9 +166,10 @@ private:
                 { "Layer", createLayer },
                 { "Sound", createSound },
                 { "Music", createMusic },
-                { "Script", createScript },
+
                 { "Light", createLight },
-                { "Gravity", createGravity }
+                { "Gravity", createGravity },
+                { "Canvas", createCanvas }
         };
     };
 
@@ -181,6 +202,7 @@ private:
         static nlohmann::json serializeScript(IComponent *c);
         static nlohmann::json serializeLight(IComponent *c);
         static nlohmann::json serializeGravity(IComponent *c);
+        static nlohmann::json serializeCanvas(IComponent *c);
 
 
     private:
@@ -195,9 +217,9 @@ private:
                 { "Layer", serializeLayer },
                 { "Sound", serializeSound },
                 { "Music", serializeMusic },
-                { "Script", serializeScript },
                 { "Light", serializeLight },
-                { "Gravity", serializeGravity }
+                { "Gravity", serializeGravity },
+                { "Canvas",  serializeCanvas }
         };
 
     };
@@ -235,6 +257,8 @@ private:
         static void buildAnimatorTreeNode(IComponent *c);
         static void buildGravityTreeNode(IComponent *c);
         static void buildLightTreeNode(IComponent *c);
+        static void buildCanvasTreeNode(IComponent *c);
+        static void buildParticleEmitter(IComponent *c);
 
     private:
         static inline std::unordered_map<std::string, std::function<void(IComponent *)>> _map= {
@@ -246,12 +270,13 @@ private:
             { "Sound", buildSoundTreeNode },
             { "Layer", buildLayerTreeNode },
             { "OrizonMusic", buildOrizonMusicTreeNode },
-            { "Script", buildScriptTreeNode },
             { "Sprite", buildSpriteTreeNode },
             { "Id", buildIdTreeNode },
             { "Animator", buildAnimatorTreeNode },
             { "Gravity", buildGravityTreeNode },
-            { "Light", buildLightTreeNode  }
+            { "Light", buildLightTreeNode  },
+            { "Canvas", buildCanvasTreeNode },
+            { "ParticlesEmitter", buildParticleEmitter }
         };
     };
 
@@ -260,6 +285,7 @@ private:
     void layersEntity(std::size_t& index,  const std::vector<TileMap *>& tileMap);
 
 private:
+    ImGui::FileBrowser _fb;
     std::string _currentSceneFilepath;
     nlohmann::json _currentSceneContent;
     Entity *_selected = nullptr;
@@ -267,6 +293,13 @@ private:
     std::size_t _width;
     std::size_t _height;
     bool _theme = false;
+
+
+    // Script editor
+    std::string _scriptContent;
+    std::string _scriptPath;
+    bool _openScriptWindow = false;
+    std::size_t _contentSize = 4096;
 
     // form information
     std::string _inputPath;
@@ -277,18 +310,24 @@ private:
             { "Sound", ResourceType::SoundR },
             { "Music", ResourceType::MusicR },
             { "Texture", ResourceType::TextureR },
-            { "Tile", ResourceType::TileR },
-            { "Script", ResourceType::ScriptR }
+            { "Tile", ResourceType::TileR }
     };
 
     // scripting
     static inline sf::Sprite _colorSprite;
-    static inline std::string _scriptContent;
     static inline Script *_lastScript = nullptr;
 
     std::string _consoleInputText;
 
     static inline std::queue<std::string> _consoleMsg;
-    static inline std::vector<Entity *> _toSave;
+    static inline std::list<Entity *> _toSave;
     static inline std::string _newVal = "new value";
+
+    // Particle
+    static inline sf::RenderTexture _particleRenderTexture;
+    static inline std::optional<std::string> _pPath;
+    static inline ParticlesEmitter * _particleEmitter;
+    static inline Particle *_particle = nullptr;
+    static inline bool _renderPWindow = false;
+    static inline SpriteBatch *_batch = nullptr;
 };

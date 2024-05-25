@@ -16,10 +16,13 @@ class RenderWindow {
         RenderWindow() = default;
         ~RenderWindow() = default;
 
+        sf::Vector2f mapPixelToCoords(const sf::Vector2i& point);
+        sf::Vector2i mapCoordsToPixel(const sf::Vector2f& point);
         void clear(sf::Color color);
         bool isOpen();
         bool pollEvent(sf::Event& event);
         void display();
+        void draw(sf::VertexArray& vb, sf::RenderStates& states);
         void draw(Drawable *sprite);
         void draw(Drawable *sprite, const sf::BlendMode& blendMode);
         void draw(sf::Drawable const& draw);
@@ -29,12 +32,12 @@ class RenderWindow {
         void setActive(bool active);
 
         View *getView();
-        sf::RenderWindow& getSFMLRenderWindow();
+        sf::RenderWindow *getSFMLRenderWindow();
         // void setView(const &)
 
     private:
         View *_view = nullptr;
-        sf::RenderWindow _window;
+        sf::RenderWindow *_window;
         std::size_t _width;
         std::size_t _height;
 };

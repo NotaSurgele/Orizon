@@ -1,55 +1,72 @@
 {
+    "entities": [
+        "MapManager",
+        "player",
+        "Camera",
+        "Hud",
+        "EnemyManager",
+        "SoundManager",
+        "GameManager"
+    ],
     "resources": [
         {
-            "type": "Texture",
-            "name": "hobbit",
-            "path": "../assets/Hobbit/pngs/hobbit_idle_spritesheet.png"
+            "name": "background",
+            "path": "./assets/background.png",
+            "type": "Texture"
         },
         {
-            "type": "Texture",
+            "name": "black_rect",
+            "path": "./assets/black.png",
+            "type": "Texture"
+        },
+        {
             "name": "block",
-            "path": "../assets/generic-rpg-tile02.png"
+            "path": "./assets/generic-rpg-tile02.png",
+            "type": "Texture"
         },
         {
-            "type": "Tile",
-            "name": "grass",
-            "tile_info": [16, 16, 16, 16],
-            "path": "../assets/tileset.png"
+            "name": "card",
+            "path": "./assets/card_template.png",
+            "type": "Texture"
         },
         {
-            "type": "Tile",
-            "name": "test",
-            "tile_info": [48, 48, 16, 16],
-            "path": "../assets/tileset.png"
+            "name": "card_back",
+            "path": "./assets/card_template_back.png",
+            "type": "Texture"
         },
         {
-            "type": "Sound",
-            "name": "titi",
-            "path": "../assets/slash.mp3"
+            "name": "cross",
+            "path": "./assets/cross.png",
+            "type": "Texture"
         },
         {
-            "type": "Music",
-            "name": "tata",
-            "path": "../assets/Freedom.wav"
+            "name": "end_tour",
+            "path": "./assets/EndTourButton.png",
+            "type": "Texture"
         },
         {
-            "type": "Texture",
+            "name": "hobbit",
+            "path": "./assets/Hobbit/pngs/hobbit_idle_spritesheet.png",
+            "type": "Texture"
+        },
+        {
             "name": "light_texture",
-            "path": "../assets/light_2.png"
+            "path": "./assets/light_2.png",
+            "type": "Texture"
         },
         {
-            "type": "Texture",
-            "name": "toto",
-            "path": "../assets/light.png"
+            "name": "card_select",
+            "path": "./assets/card_select.ogg",
+            "type": "Sound"
         },
         {
-            "type": "Entities",
-            "path": "../assets/entities.json"
+            "name": "tata",
+            "path": "./assets/Freedom.wav",
+            "type": "Music"
         },
         {
-            "type": "Script",
-            "path": "./assets/Scripting/toto.lua"
+            "path": "../assets/entities.json",
+            "type": "Entities"
         }
-    ],
-    "entities": ["MapManager", "player"]
+    ]
 }

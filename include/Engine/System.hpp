@@ -3,6 +3,7 @@
 #include <functional>
 #include <thread>
 #include <semaphore>
+#include <list>
 
 // internal
 #include "Components/Velocity.hpp"
@@ -10,6 +11,7 @@
 #include "Components/Tag.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Gravity.hpp"
+#include "Components/Particles.hpp"
 #include "Collision/HashGrid.hpp"
 #include "Collision/Layer/TileMap.hpp"
 #include "Time.hpp"
@@ -28,7 +30,11 @@ public:
 
     static Entity *getEntity(std::size_t const& id)
     {
-        return _registry[id];
+        for (auto& e : _registry) {
+            auto id = e->getComponent<Id>();
+            if (id == id) return e;
+        }
+        return nullptr;
     }
 
     static Entity *getEntity(std::string const& signature)
@@ -58,9 +64,9 @@ public:
         return results;
     }
 
-    static std::vector<Entity *> getEntitiesFromTag(const std::string& tagName)
+    static std::list<Entity *> getEntitiesFromTag(const std::string& tagName)
     {
-        std::vector<Entity *> results;
+        std::list<Entity *> results;
         for (auto &e : _registry) {
             Tag *name = e->getComponent<Tag>();
 
@@ -70,9 +76,9 @@ public:
         return results;
     }
 
-    static std::vector<Entity *> setRegistry(const std::vector<Entity *>& newRegistry)
+    static std::list<Entity *> setRegistry(const std::list<Entity *>& newRegistry)
     {
-        std::vector<Entity *> old = _registry;
+        std::list<Entity *> old = _registry;
         _registry.clear();
         _registry = newRegistry;
         _registry_size = _registry.size();
@@ -86,7 +92,7 @@ public:
         return old;
     }
 
-    static std::vector<Entity *> getDynamicEntities()
+    static std::list<Entity *> getDynamicEntities()
     {
         return _dynamic_collider;
     }
@@ -108,7 +114,6 @@ public:
         _scripted_entity.push_back(e);
     }
 
-
 //#ifdef SYSTEM_CALLER
 
     static void __registerDynamicCollider(Entity *other)
@@ -128,6 +133,16 @@ public:
     {
         _dynamic_collider.erase(std::remove(_dynamic_collider.begin(),
                                     _dynamic_collider.end(), e), _dynamic_collider.end());
+    }
+
+    static void __addCanvas(Entity *e)
+    {
+        _canvas.push_back(e);
+    }
+
+    static void __removeCanvas(Entity *e)
+    {
+        _canvas.erase(std::remove(_canvas.begin(), _canvas.end(), e), _canvas.end());
     }
 
     static void __addLightSource(Entity *e)
@@ -184,7 +199,13 @@ public:
         _layers.push_back(layer);
     }
 
-    std::vector<Entity *> getRegistry() { return _forceUpdate; }
+    static sf::Vector2f getLocalMousePosition();
+    static sf::Vector2f getGlobalMousePosition();
+
+    static sf::Vector2f localToGlobalCoordinate(const sf::Vector2f& local);
+    static sf::Vector2f globalToLocalCoordinate(const sf::Vector2f& global);
+
+    std::list<Entity *> getRegistry() { return _forceUpdate; }
 
     std::vector<TileMap *> getTileMaps() {  return _layers; }
 
@@ -217,7 +238,11 @@ private:
 
     void lightSystem(Entity *e);
 
+    void particleEmitterSystem(Entity *e);
+
     void spriteSystem(Entity *e, std::vector<IComponent *> componentCache);
+
+    void canvasSystem(Entity *e);
 
     void scriptSystem(Entity *e);
 
@@ -247,14 +272,15 @@ private:
 
     static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::size_t _id = 0;
-    static inline std::vector<Entity *> _registry;
+    static inline std::list<Entity *> _registry;
     static inline int _registry_size = 0;
     static inline std::vector<TileMap *> _layers;
-    static inline std::vector<Entity *> _dynamic_collider;
-    static inline std::vector<Entity *> _scripted_entity;
+    static inline std::list<Entity *> _dynamic_collider;
+    static inline std::list<Entity *> _scripted_entity;
+    static inline std::list<Entity *> _canvas;
     static inline std::map<std::size_t, int> _orders_values;
-    static inline std::vector<Entity *> _to_destroy;
+    static inline std::list<Entity *> _to_destroy;
     static inline std::vector<TileMap *> _destroy_tilemap;
-    static inline std::vector<Entity *> _lightSource;
-    static inline std::vector<Entity *> _forceUpdate;
+    static inline std::list<Entity *> _lightSource;
+    static inline std::list<Entity *> _forceUpdate;
 };

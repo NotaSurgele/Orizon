@@ -10,11 +10,6 @@
 class BoxCollider : public IComponent, public Drawable {
 public:
 
-    enum Collide {
-        FALSE=0,
-        TRUE=1
-    };
-
     enum Type {
         DYNAMIC=0,
         STATIC=1,
@@ -156,7 +151,7 @@ public:
     }
 
 public:
-    Collide collide = Collide::FALSE;
+    bool collide = false;
     Side side = Side::NONE;
     std::vector<Side> sides;
     bool isColliding = false;

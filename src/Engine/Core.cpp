@@ -2,11 +2,21 @@
 #include <imgui-SFML.h>
 #include "Engine/Core.hpp"
 
+#ifdef ENGINE_GUI
+#include "EngineHud.hpp"
+    static std::atomic<bool> show = true;
+#endif
+
 Core::Core(std::string const& name, std::size_t width, std::size_t height) :
                                                 _window(name, width, height),
                                                 _input(),
                                                 _gui(width, height)
 {
+#ifdef ENGINE_GUI
+    if (!(_isTextureLoaded = _windowTexture.create(1063, 951)))
+        std::cerr << "[CORE] Couldn't create RenderTexture" << std::endl;
+#endif
+    _status = sf::RenderStates();
     _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
@@ -25,7 +35,7 @@ void Core::loadInputFromFile(std::string const& file)
 
 void Core::CoreClear(sf::Color color)
 {
-    _window.clear(color);
+    _clearColor = color;
 }
 
 bool Core::CoreEvent(sf::Event& event)
@@ -35,22 +45,96 @@ bool Core::CoreEvent(sf::Event& event)
 
 void Core::CoreDraw(Drawable *component)
 {
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(*component);
+#else
     _window.draw(component);
+#endif
 }
 
 void Core::CoreDraw(Drawable *component, const sf::BlendMode& blendMode)
 {
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(*component, blendMode);
+#else
     _window.draw(component, blendMode);
+#endif
 }
 
 void Core::CoreDraw(sf::Drawable const& draw)
 {
-    _window.draw(draw);
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(draw);
+#else
+    _window.draw(component, blendMode);
+#endif
 }
 
 void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
 {
-    _window.draw(draw, blendMode);
+#ifdef ENGINE_GUI
+    if (!_isTextureLoaded) return;
+    _windowTexture.draw(draw, blendMode);
+#else
+    _window.draw(component, blendMode);
+#endif
+}
+
+void Core::CoreDrawBatch(Sprite *sprite)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite);
+    _batches.push_back(newBatch);
+}
+
+void Core::CoreDrawBatch(Sprite *sprite, sf::BlendMode mode)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite, mode);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite, mode);
+    _batches.push_back(newBatch);
+}
+
+SpriteBatch *Core::getBatch(Sprite *sprite)
+{
+    for (auto& batch : _batches) {
+        if (sprite->getTextureId() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
+}
+
+SpriteBatch *Core::getBatch(sf::Texture *texture)
+{
+    for (auto& batch : _batches) {
+        if (texture->getNativeHandle() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
 }
 
 void Core::CoreDisplay()
@@ -82,28 +166,28 @@ void Core::setView(View *view)
 void Core::inputHandler(sf::Event& event)
 {
     if (!WindowInstance.getView()) return;
-    auto& sfmlWindow = WindowInstance.getSFMLRenderWindow();
-    auto viewBounds = sfmlWindow.getViewport(sfmlWindow.getView());
-    auto mousePosition = sf::Mouse::getPosition(WindowInstance.getSFMLRenderWindow());
+    auto sfmlWindow = WindowInstance.getSFMLRenderWindow();
+    auto viewBounds = sfmlWindow->getViewport(sfmlWindow->getView());
+    auto mousePosition = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
 
 /*    EngineHud::writeConsole<std::string, bool>("Main view is ", _mainViewSelected);
     EngineHud::writeConsole<std::string, int, std::string, int>("Mouse position ", mousePosition.x, " ", mousePosition.y);*/
     while (CoreEvent(event)) {
-        if (ENGINE_MODE) {
-            ImGui::SFML::ProcessEvent(event);
 
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
-                }
+#ifdef ENGINE_GUI
+        ImGui::SFML::ProcessEvent(event);
+
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.mouseButton.button == sf::Mouse::Left) {
+                _mainViewSelected = viewBounds.contains(mousePosition.x, mousePosition.y);
             }
         }
-
+#endif
         if (event.type == sf::Event::Closed)
             CoreClose();
-        if (ENGINE_MODE && !_mainViewSelected) {
-            return;
-        }
+#ifdef ENGINE_GUI
+        if (!_mainViewSelected) return;
+#endif
         if (event.type == sf::Event::KeyPressed)
             _input.___push_key(event.key.code);
         if (event.type == sf::Event::KeyReleased)
@@ -130,7 +214,7 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
-    if (_fpsTime < .1f) {
+    if (_fpsTime < 1.0f) {
         _fpsTime += _time.getClock().getElapsedTime().asSeconds();
         return;
     }
@@ -142,35 +226,44 @@ void Core::initGui()
 {
     _baseView = new View(nullptr, 0, 0, 800, 600);
     SET_VIEW(_baseView);
-    if (ENGINE_MODE)
-        ImGui::SFML::Init(WindowInstance.getSFMLRenderWindow());
+#ifdef ENGINE_GUI
+    ImGui::SFML::Init(*WindowInstance.getSFMLRenderWindow());
+#endif
 }
 
 void Core::updateGUI()
 {
-    if (ENGINE_MODE) {
-        ImGui::SFML::Update(_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
-        _guiThread = std::thread([&] () {
-            auto currentScene = _sceneManager.getScene();
+#ifdef ENGINE_GUI
+    ImGui::SFML::Update(*_window.getSFMLRenderWindow(), _time.getClock().getElapsedTime());
+    _guiThread = std::thread([&] () {
+        auto currentScene = _sceneManager.getScene();
 
+        if (Input::isKeyDown("F1")) show = !show;
+        if (show) {
             _gui.setTheme();
             _gui.setCurrentSceneFilepath(currentScene->getSceneFilepath());
             _gui.currentSceneContent(currentScene->getSceneContent());
-            _gui.entityWindow(_system_handler.getRegistry(), _system_handler.getTileMaps());
+            _gui.entityWindow(_system_handler.
+                getRegistry(), _system_handler.getTileMaps());
             _gui.entityInformation();
             _gui.consoleWindow();
             _gui.resourceManager();
-            _gui.saveScene();
-        });
-        if (_guiThread.joinable()) _guiThread.join();
-        ImGui::SFML::Render(_window.getSFMLRenderWindow());
-    }
+            _gui.menuBar();
+        }
+        if (Input::isKeyPressed("LControl") && Input::isKeyDown("S")) _gui.saveScene();
+    });
+    if (_guiThread.joinable()) _guiThread.join();
+    _gui.gameWindow(_windowTexture);
+    _gui.renderParticleWindow();
+    ImGui::SFML::Render(*_window.getSFMLRenderWindow());
+#endif
 }
 
 void Core::destroyGUI()
 {
-    if (ENGINE_MODE)
-        ImGui::SFML::Shutdown();
+#ifdef ENGINE_GUI
+    ImGui::SFML::Shutdown();
+#endif
     delete _baseView;
 }
 
@@ -183,18 +276,48 @@ void Core::run()
         sf::Event event {};
 
         inputHandler(event);
-        render();
+#ifdef ENGINE_GUI
+        _windowTexture.clear(_clearColor);
+        _window.clear(_clearColor);
+#else
+        _window.clear(_clearColor);
+#endif
         _system_handler.systems();
+        renderBatch();
+        clearBatch();
+        render();
+#ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
-        WindowInstance.getSFMLRenderWindow().setView(_hud);
+        _windowTexture.setView(_hud);
         updateGUI();
-        if (old) WindowInstance.setView(old);
+        if (old) _windowTexture.setView(*old);
+        EngineHud::writeConsole<std::string, std::string>("", fpsText.getString());
+#else
         _window.draw(fpsText);
+#endif
         CoreDisplay();
         _time.end();
         fpsCalculation();
+        _input.___clearReleased();
     }
     destroyGUI();
     destroy();
     _window.close();
+}
+
+void Core::renderBatch()
+{
+    for (auto batch : _batches) {
+#ifdef ENGINE_GUI
+        _windowTexture.draw(*((sf::Drawable *)batch));
+#else
+        _window.draw(*((sf::Drawable *)batch));
+#endif
+    }
+}
+
+void Core::clearBatch()
+{
+    for (auto batch : _batches)
+        batch->clear();
 }
