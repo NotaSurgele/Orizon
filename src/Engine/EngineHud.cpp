@@ -206,7 +206,7 @@ void EngineHud::ComponentCreationFactory::createCanvas(Entity *e)
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
 {
     auto transform = dynamic_cast<Transform2D *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Transform2D";
     json["position"] = { transform->position.x, transform->position.y };
@@ -219,7 +219,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComponent *c)
 {
     auto box = dynamic_cast<BoxCollider *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "BoxCollider";
     json["position"] = { box->getPosition().x, box->getPosition().y };
@@ -232,7 +232,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Sprite";
 
     if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
@@ -246,7 +246,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent
 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(IComponent *c)
 {
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Velocity";
     return json;
 }
@@ -254,7 +254,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(ICompone
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(IComponent *c)
 {
     auto animator = dynamic_cast<Animator *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Animator";
     for (auto& animation : animator->getAnimations()) {
@@ -274,7 +274,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(ICompon
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *c)
 {
     auto view = dynamic_cast<View *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     auto viewBounds = view->getViewBounds();
     auto viewPort = view->getViewport();
 
@@ -288,7 +288,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c)
 {
     auto tag = dynamic_cast<Tag *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Tag";
     json["tag"] = tag->value();
@@ -298,7 +298,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent *c)
 {
     auto layer = dynamic_cast<Layer *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Layer";
     json["value"] = layer->value();
@@ -308,7 +308,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent *c)
 {
     auto sound = dynamic_cast<Sound *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Sound";
     json["sound_name"] = sound->name();
@@ -319,7 +319,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeMusic(IComponent *c)
 {
     auto music = dynamic_cast<OrizonMusic *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Music";
     json["music_name"] = music->name();
@@ -332,7 +332,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
     auto light = dynamic_cast<Light *>(c);
     float intensity = light->getIntensity();
     Sprite *sprite = light->getSprite();
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Light";
     json["intensity"] = intensity;
@@ -343,7 +343,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponent *c)
 {
     auto gravity = dynamic_cast<Gravity *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Gravity";
     json["force"] = gravity->force;
@@ -356,7 +356,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
     auto buttons = canvas->getButtons();
     auto texts = canvas->getTexts();
     auto images = canvas->getImages();
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Canvas";
     json["canvas_objects"] = nlohmann::json::array();
@@ -1005,7 +1005,6 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _pPath = path;
             _particleEmitter = pEmitter;
             _particle = new Particle( path );
-
             _batch = GET_BATCH(particle.texture);
         }
     }
@@ -1156,6 +1155,7 @@ void EngineHud::renderParticleWindow()
         renderEmitterTreeNode(_particle, _particleEmitter, position);
         ImGui::TreePop();
     }
+    _batch->clear();
     ImGui::Separator();
     ImGui::EndChild();
     ImGui::End();

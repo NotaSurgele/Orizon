@@ -68,6 +68,7 @@ struct ParticleData {
 
     SpriteData spriteData = {};
 
+    std::size_t id = 0;
     bool set = false;
     Timer lifeTimer;
     bool isDead = false;
@@ -102,7 +103,7 @@ private:
     void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
                     std::optional<ParticleData::FadeOutData>& fadeOut);
 
-    bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue, std::size_t& index, std::size_t& deadParticle);
+    bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue, int& deadParticle);
 
 public:
     std::string path;
@@ -134,8 +135,9 @@ private:
     // Handle particles
     std::list<ParticleData> _particles;
     std::queue<ParticleData> _deadParticle;
+    int _totalDeadParticle = 0;
 
-    nlohmann::json _json;
+    nlohmann::json _json{};
 
     sf::Vector2f _offset = {0, 0};
 };

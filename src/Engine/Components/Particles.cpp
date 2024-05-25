@@ -16,8 +16,7 @@ void ParticlesEmitter::destroy()
 // Particle
 Particle::Particle(const std::string &file) : _behaviourMap({
     {
-        "offset", [&] (ParticleData& pData, nlohmann::json& json) {
-            std::cout << "Texture addre " << texture << std::endl;
+        "offset", [&] (ParticleData& pData[[maybe_unused]], nlohmann::json& json) {
             _offset.x = json["offset"][0];
             _offset.y = json["offset"][1];
         }
@@ -100,17 +99,15 @@ void Particle::load(const std::size_t& nb)
 
             pData.spriteData.sprite = sprite;
             pData.lifeTimer.set(lifeTime);
+            pData.id = amount + i;
             _particles.push_back(pData);
         }
-        std::size_t test = 0;
         for (auto &pData: _particles) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
 
-                std::cout << "test  " << test << std::endl;
                 behaviour(pData, data);
-                test++;
             }
         }
     } catch (std::exception& e) {
@@ -159,7 +156,6 @@ Particle::Particle()
 void Particle::load()
 {
     for (std::size_t i = 0; i < amount; i++) {
-        std::cout << i << std::endl;
         auto pData = ParticleData();
         auto sprite = new Sprite { texture };
 
@@ -169,6 +165,7 @@ void Particle::load()
 
         pData.spriteData.sprite = sprite;
         pData.lifeTimer.set(lifeTime);
+        pData.id = i;
         _particles.push_back(pData);
     }
 }
@@ -291,38 +288,35 @@ void Particle::fadeInSystem(ParticleData::SpriteData &pData, std::optional<Parti
     a = static_cast<sf::Uint8>(aFloat);
 }
 
-bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue, std::size_t &index, std::size_t& deadParticle)
+bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue, int& deadParticle)
 {
     pData.isDead = true;
     pData.set = false;
     deadParticle += 1;
     _deadParticle.push(pData);
-    _removeQueue.push(index);
-    index++;
+    _removeQueue.push(pData.id);
     return true;
 }
 
 void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 {
     //Base draw
-    static std::size_t deadParticle = 0;
     std::size_t length = _particles.size();
 
-    if (deadParticle >= amount) _hasFinished = true;
+    if (_totalDeadParticle >= amount) _hasFinished = true;
     if (!loop && _hasFinished) return;
 
+    // it should have 10 entities not 13
     //Handle delay
     delayTimer.update();
     if (delayTimer.ended()) {
         if (!_deadParticle.empty()) {
+            _totalDeadParticle += 1;
             _particles.push_back(_deadParticle.front());
             _deadParticle.pop();
         }
         delayTimer.reset();
     }
-
-    std::size_t i = 0;
-
     // Particle loop
     for (auto& pData : _particles) {
         auto& spriteData = pData.spriteData;
@@ -337,9 +331,8 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             resetParticleData(pData);
             resetFadeOut(fadeOut, spriteData);
             resetFadeIn(fadeIn, spriteData);
-            deadParticle -= 1;
+            _totalDeadParticle -= 1;
             _hasFinished = false;
-            i++;
             continue;
         }
 
@@ -347,7 +340,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 
         lifeTimer.update();
         if (lifeTimer.ended()) {
-            killParticle(pData, _removeQueue, i, deadParticle);
+            killParticle(pData, _removeQueue,  _totalDeadParticle);
             continue;
         }
 
@@ -357,20 +350,19 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         s->setPosition(fixedPosition);
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);
-        i++;
     }
 
     // remove dead particles from array
     while (!_removeQueue.empty()) {
-        std::size_t& current = _removeQueue.front();
-        std::size_t index = 0;
+        std::size_t current = _removeQueue.front();
 
         for (auto it = _particles.begin(); it != _particles.end(); it++) {
-            if (index == current) {
+            auto& pData = it;
+
+            if (pData->id == current) {
                 _particles.erase(it);
                 break;
             }
-            index++;
         }
         _removeQueue.pop();
     }

@@ -90,7 +90,7 @@ target_link_libraries(
 	Threads::Threads
 )
 else()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1 -gdwarf-2")
 target_link_libraries(
  	${PROJECT_NAME}
 	PUBLIC
