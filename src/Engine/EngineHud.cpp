@@ -1098,12 +1098,24 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
 {
     auto seed = particle->seed;
     auto amount = particle->amount;
-    auto amountMin = particle->amountMin;
-    auto amountMax = particle->amountMax;
+    auto& amountMin = particle->amountMin;
+    auto& amountMax = particle->amountMax;
 
+    // LifeTime
     ImGui::InputFloat("Particle life time", &particle->lifeTime);
+
+    // Seed
     ImGui::InputInt("Seed", &seed);
+
+    // Amount
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Min", &amountMin);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(300);
     ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Max", &amountMax);
 
     if (amount != particle->amount) {
         if (particle->amount < amount) {
