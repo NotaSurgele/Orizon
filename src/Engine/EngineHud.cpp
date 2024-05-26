@@ -1110,12 +1110,14 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     // Amount
     ImGui::SetNextItemWidth(100);
     ImGui::InputInt("Min", &amountMin);
+    amountMin = std::max(1, amountMin);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(300);
     ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(100);
     ImGui::InputInt("Max", &amountMax);
+    amountMax = std::max(1, amountMax);
 
     if (amount != particle->amount) {
         if (particle->amount < amount) {
