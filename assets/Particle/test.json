@@ -1,6 +1,6 @@
 {
   "emitter": {
-    "life_time": 1,
+    "life_time": 10,
     "size": [100, 50],
     "amount": 10,
     "amount_min": 1,

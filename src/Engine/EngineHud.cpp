@@ -1106,8 +1106,10 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
 
     if (amount != particle->amount) {
-        // particle crash maybe because ref got destroyed
-        particle->load( amount - particle->amount);
+        if (particle->amount < amount) {
+            // particle crash maybe because ref got destroyed
+            particle->load( amount - particle->amount);
+        }
         particle->amount = amount;
     }
 }

@@ -311,15 +311,19 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 
     // it should have 10 entities not 13
     //Handle delay
+
     delayTimer.update();
     if (delayTimer.ended()) {
         if (!_deadParticle.empty()) {
-            _totalDeadParticle += 1;
-            _particles.push_back(_deadParticle.front());
+            if (_particles.size() + 1 < amount) {
+                _totalDeadParticle += 1;
+                _particles.push_back(_deadParticle.front());
+            }
             _deadParticle.pop();
         }
         delayTimer.reset();
     }
+
     // Particle loop
     for (auto& pData : _particles) {
         auto& spriteData = pData.spriteData;
