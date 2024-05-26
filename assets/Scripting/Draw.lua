@@ -17,7 +17,6 @@ function Draw.new(hud, player)
         sprite = Sprite.new(texture),
         play = false
     }
-
     self.animation.sprite:setPosition(1200, 590)
     self.animation.sprite:setScale(0.8, 0.8)
     return self

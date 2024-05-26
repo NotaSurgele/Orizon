@@ -47,14 +47,24 @@ Particle::Particle(const std::string &file) : _behaviourMap({
         }
     },
     {
-        "fade_in", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeOutData = ParticleData::FadeOutData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
+        "fade_out", [&] (ParticleData& pData, nlohmann::json& json) {
+            auto fadeOutData = ParticleData::FadeOutData();
+
+            fadeOutData.end = false;
+            fadeOutData.speed = json["speed"];
+            fadeOutData.to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] };
+            pData.fadeOutData = fadeOutData;
         }
 
     },
     {
-        "fade_out", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeInData = ParticleData::FadeInData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
+        "fade_in", [&] (ParticleData& pData, nlohmann::json& json) {
+            auto fadeInData = ParticleData::FadeInData();
+
+            fadeInData.end = false;
+            fadeInData.speed = json["speed"];
+            fadeInData.to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] };
+            pData.fadeInData = fadeInData;
         }
     }
 })
@@ -313,7 +323,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
     // Particle loop
     for (auto& pData : _particles) {
         auto& spriteData = pData.spriteData;
-        auto s = spriteData.sprite;
+        auto& s = spriteData.sprite;
         auto& velocityData = pData.velocityData;
         auto& fadeIn = pData.fadeInData;
         auto& fadeOut = pData.fadeOutData;
@@ -341,6 +351,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         if (velocityData.has_value()) fixedPosition += velocityData->velocity * Time::deltaTime;
         fadeSystem(spriteData, fadeIn, fadeOut);
         s->setPosition(fixedPosition);
+        // FIXME alpha does not apply when fading
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);
     }

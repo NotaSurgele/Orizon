@@ -1005,7 +1005,7 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _pPath = path;
             _particleEmitter = pEmitter;
             _particle = new Particle( path );
-            _batch = GET_BATCH(particle.texture);
+            _batch = GET_BATCH(_particle->texture);
         }
     }
     ImGui::Separator();
