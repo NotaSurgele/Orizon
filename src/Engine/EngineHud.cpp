@@ -1149,7 +1149,6 @@ void EngineHud::renderParticleWindow()
 
     // Render particle part
     ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
-    // Render particles
 
     auto e = _particleEmitter->getEntity();
 

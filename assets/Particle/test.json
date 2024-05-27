@@ -1,6 +1,6 @@
 {
   "emitter": {
-    "life_time": 10,
+    "life_time": 1,
     "size": [100, 50],
     "amount": 10,
     "amount_min": 1,
@@ -31,7 +31,8 @@
     },
     {
       "data_name": "fade_out",
-      "speed": 400,
+      "start_time": 0.6,
+      "speed": 600,
       "to": [255, 255, 255, 0]
     }
   ]

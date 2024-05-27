@@ -39,6 +39,7 @@ struct ParticleData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
+        Timer timer;
     };
 
     std::optional<VelocityData> velocityData;

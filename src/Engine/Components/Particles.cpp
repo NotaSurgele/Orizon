@@ -51,6 +51,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
             auto fadeOutData = ParticleData::FadeOutData();
 
             fadeOutData.end = false;
+            fadeOutData.timer = Timer{ json["start_time"] };
             fadeOutData.speed = json["speed"];
             fadeOutData.to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] };
             pData.fadeOutData = fadeOutData;
@@ -114,7 +115,7 @@ void Particle::load(const std::size_t& nb)
             }
         }
     } catch (std::exception& e) {
-        std::cout << "[PARTICLE] failed loading n: " << nb << "particles cause " << e.what() << std::endl;
+        throw "[PARTICLE] failed loading n: " + std::to_string(nb) + " particles cause " + e.what();
     }
 }
 
@@ -201,16 +202,18 @@ void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut, P
     if (!fadeOut.has_value()) return;
     fadeOut->end = false;
     spriteData.currentColor.a = spriteData.color.a;
+    fadeOut->timer.reset();
 }
 
 void Particle::fadeSystem(ParticleData::SpriteData &spriteData, std::optional<ParticleData::FadeInData> &fadeIn,
                           std::optional<ParticleData::FadeOutData> &fadeOut)
 {
-    if (fadeIn.has_value() && !fadeIn->end) {
+    if (fadeIn.has_value() && !fadeIn->end)
         fadeInSystem(spriteData, fadeIn);
-        return;
-    }
-    fadeOutSystem(spriteData, fadeOut);
+    if (!fadeOut.has_value()) return;
+    if (fadeOut->timer.ended())
+        fadeOutSystem(spriteData, fadeOut);
+    fadeOut->timer.update();
 }
 
 void Particle::fadeOutSystem(ParticleData::SpriteData &pData, std::optional<ParticleData::FadeOutData> &fadeOut)
