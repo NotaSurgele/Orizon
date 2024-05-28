@@ -16,12 +16,6 @@ void ParticlesEmitter::destroy()
 // Particle
 Particle::Particle(const std::string &file) : _behaviourMap({
     {
-        "offset", [&] (ParticleData& pData[[maybe_unused]], nlohmann::json& json) {
-            _offset.x = json["offset"][0];
-            _offset.y = json["offset"][1];
-        }
-    },
-    {
         "sprite", [&] (ParticleData& pData, nlohmann::json& json) {
             auto& sprite = pData.spriteData;
 
@@ -139,8 +133,8 @@ void Particle::initData(nlohmann::json& json)
     amount = json["amount"];
     amountMin = json["amount_min"];
     amountMax = json["amount_max"];
-    rect.width = json["size"][0];
-    rect.height = json["size"][1];
+    rect = { json["offset"][0], json["offset"][1],
+             json["size"][0], json["size"][1] };
     delay = json["delay"];
 
     sf::Image blank = sf::Image();
@@ -178,7 +172,7 @@ void Particle::resetSpriteData(ParticleData::SpriteData &spriteData, const sf::V
 {
     auto& s = spriteData.sprite;
 
-    s->setPosition(ePosition + _offset);
+    s->setPosition(ePosition + rect.getPosition());
     s->setColor(spriteData.color);
     spriteData.currentColor = spriteData.color;
 }

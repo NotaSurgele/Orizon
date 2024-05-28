@@ -119,7 +119,6 @@ private:
 
     nlohmann::json _json{};
 
-    sf::Vector2f _offset = {0, 0};
 };
 
 class ParticlesEmitter : public IComponent {
