@@ -76,7 +76,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
         initData(_json["emitter"]);
 
         load();
-        for (auto& pData : _particles) {
+        for (auto& pData : _deadParticle) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
@@ -104,9 +104,9 @@ void Particle::load(const std::size_t& nb)
             pData.spriteData.sprite = sprite;
             pData.lifeTimer.set(lifeTime);
             pData.id = amount + i;
-            _particles.push_back(pData);
+            _deadParticle.push_back(pData);
         }
-        for (auto &pData: _particles) {
+        for (auto &pData: _deadParticle) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
@@ -123,7 +123,7 @@ void Particle::reload()
 {
     destroy();
     load();
-    for (auto& pData : _particles) {
+    for (auto& pData : _deadParticle) {
         for (auto &data: _json["data"]) {
             std::string dataName = data["data_name"];
             auto behaviour = _behaviourMap[dataName];
@@ -170,7 +170,7 @@ void Particle::load()
         pData.spriteData.sprite = sprite;
         pData.lifeTimer.set(lifeTime);
         pData.id = i;
-        _particles.push_back(pData);
+        _deadParticle.push_back(pData);
     }
 }
 
@@ -301,7 +301,7 @@ bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &remove
 {
     pData.isDead = true;
     pData.set = false;
-    _deadParticle.push(pData);
+    _deadParticle.push_back(pData);
     _removeQueue.push(pData.id);
     _totalDeadParticle += 1;
     return true;
@@ -318,7 +318,7 @@ void Particle::updateDelayTimer(Timer &delayTimer)
             if (_particles.size() + 1 < amount && loop) {
                 _particles.push_back(_deadParticle.front());
             }
-            _deadParticle.pop();
+            _deadParticle.pop_front();
         }
         delayTimer.reset();
     }
@@ -407,7 +407,7 @@ void Particle::destroy()
     while (!_removeQueue.empty())
         _removeQueue.pop();
     while (!_deadParticle.empty())
-       _deadParticle.pop();
+       _deadParticle.pop_front();
 
     for (auto& s : _particles) {
         delete s.spriteData.sprite;

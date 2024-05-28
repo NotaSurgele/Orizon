@@ -1173,7 +1173,7 @@ void EngineHud::renderParticleWindow()
     ImGui::BeginChild("Data part");
 
     ImGui::Separator();
-    if (ImGui::TreeNode("Emitter")) {
+    if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
         renderEmitterTreeNode(_particle, _particleEmitter, position);
         ImGui::TreePop();
     }

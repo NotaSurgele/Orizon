@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <queue>
+#include <deque>
 
 #include "Components/Sprite.hpp"
 #include "IComponent.hpp"
@@ -114,7 +115,7 @@ private:
 
     // Handle particles
     std::list<ParticleData> _particles;
-    std::queue<ParticleData> _deadParticle;
+    std::deque<ParticleData> _deadParticle;
 
     nlohmann::json _json{};
 
