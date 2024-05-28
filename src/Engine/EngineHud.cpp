@@ -1100,6 +1100,7 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     auto amount = particle->amount;
     auto& amountMin = particle->amountMin;
     auto& amountMax = particle->amountMax;
+    auto& delay = particle->delay;
 
     // LifeTime
     ImGui::InputFloat("Particle life time", &particle->lifeTime);
@@ -1126,6 +1127,12 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
         }
         particle->amount = amount;
     }
+
+    // Delay
+    ImGui::InputFloat("Delay", &delay);
+
+    // Loop
+    ImGui::Checkbox("Loop", &particle->loop);
 }
 
 void EngineHud::renderParticleWindow()
@@ -1155,7 +1162,7 @@ void EngineHud::renderParticleWindow()
     if (!e) return;
     auto& position = e->getComponent<Transform2D>()->position;
 
-    _particle->play(true, position);
+    _particle->play(position);
     _particleRenderTexture.draw(*(sf::Drawable *)_batch);
     ImGui::Image(_particleRenderTexture);
     ImGui::EndChild();

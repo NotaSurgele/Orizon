@@ -210,9 +210,12 @@ void Particle::fadeSystem(ParticleData::SpriteData &spriteData, std::optional<Pa
 {
     if (fadeIn.has_value() && !fadeIn->end)
         fadeInSystem(spriteData, fadeIn);
+
     if (!fadeOut.has_value()) return;
-    if (fadeOut->timer.ended())
+    if (fadeOut->timer.ended()) {
         fadeOutSystem(spriteData, fadeOut);
+        return;
+    }
     fadeOut->timer.update();
 }
 
@@ -294,38 +297,44 @@ void Particle::fadeInSystem(ParticleData::SpriteData &pData, std::optional<Parti
     a = static_cast<sf::Uint8>(aFloat);
 }
 
-bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue, int& deadParticle)
+bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue)
 {
     pData.isDead = true;
     pData.set = false;
-    deadParticle += 1;
     _deadParticle.push(pData);
     _removeQueue.push(pData.id);
+    _totalDeadParticle += 1;
     return true;
 }
 
-void Particle::play(bool loop, const sf::Vector2f& entityPosition)
+void Particle::updateDelayTimer(Timer &delayTimer)
 {
-    //Base draw
-    std::size_t length = _particles.size();
 
-    if (_totalDeadParticle >= amount) _hasFinished = true;
-    if (!loop && _hasFinished) return;
-
-    // it should have 10 entities not 13
-    //Handle delay
-
+    if (delayTimer.to() != delay)
+        delayTimer.set(delay);
     delayTimer.update();
     if (delayTimer.ended()) {
         if (!_deadParticle.empty()) {
-            if (_particles.size() + 1 < amount) {
-                _totalDeadParticle += 1;
+            if (_particles.size() + 1 < amount && loop) {
                 _particles.push_back(_deadParticle.front());
             }
             _deadParticle.pop();
         }
         delayTimer.reset();
     }
+}
+
+void Particle::play(const sf::Vector2f& entityPosition)
+{
+    //Base draw
+    if (_deadParticle.size() >= amount) {
+        _totalDeadParticle = 0;
+        _hasFinished = true;
+    }
+    if (!loop && _hasFinished) return;
+
+    //Handle delay
+    updateDelayTimer(delayTimer);
 
     // Particle loop
     for (auto& pData : _particles) {
@@ -341,7 +350,6 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             resetParticleData(pData);
             resetFadeOut(fadeOut, spriteData);
             resetFadeIn(fadeIn, spriteData);
-            _totalDeadParticle -= 1;
             _hasFinished = false;
             continue;
         }
@@ -350,7 +358,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 
         lifeTimer.update();
         if (lifeTimer.ended()) {
-            killParticle(pData, _removeQueue,  _totalDeadParticle);
+            killParticle(pData, _removeQueue );
             continue;
         }
 
@@ -358,7 +366,6 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
         if (velocityData.has_value()) fixedPosition += velocityData->velocity * Time::deltaTime;
         fadeSystem(spriteData, fadeIn, fadeOut);
         s->setPosition(fixedPosition);
-        // FIXME alpha does not apply when fading
         s->setColor(spriteData.currentColor);
         DRAW_BATCH(s);
     }
