@@ -23,6 +23,7 @@ public:
     void set(float to)
     {
         _to = to;
+        reset();
     }
 
     void reset()

@@ -16,12 +16,6 @@ void ParticlesEmitter::destroy()
 // Particle
 Particle::Particle(const std::string &file) : _behaviourMap({
     {
-        "offset", [&] (ParticleData& pData[[maybe_unused]], nlohmann::json& json) {
-            _offset.x = json["offset"][0];
-            _offset.y = json["offset"][1];
-        }
-    },
-    {
         "sprite", [&] (ParticleData& pData, nlohmann::json& json) {
             auto& sprite = pData.spriteData;
 
@@ -47,14 +41,25 @@ Particle::Particle(const std::string &file) : _behaviourMap({
         }
     },
     {
-        "fade_in", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeOutData = ParticleData::FadeOutData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
+        "fade_out", [&] (ParticleData& pData, nlohmann::json& json) {
+            auto fadeOutData = ParticleData::FadeOutData();
+
+            fadeOutData.end = false;
+            fadeOutData.timer = Timer{ json["start_time"] };
+            fadeOutData.speed = json["speed"];
+            fadeOutData.to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] };
+            pData.fadeOutData = fadeOutData;
         }
 
     },
     {
-        "fade_out", [&] (ParticleData& pData, nlohmann::json& json) {
-            pData.fadeInData = ParticleData::FadeInData(false, json["speed"], { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] });
+        "fade_in", [&] (ParticleData& pData, nlohmann::json& json) {
+            auto fadeInData = ParticleData::FadeInData();
+
+            fadeInData.end = false;
+            fadeInData.speed = json["speed"];
+            fadeInData.to = { json["to"][0],  json["to"][1], json["to"][2], json["to"][3] };
+            pData.fadeInData = fadeInData;
         }
     }
 })
@@ -65,7 +70,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
         initData(_json["emitter"]);
 
         load();
-        for (auto& pData : _particles) {
+        for (auto& pData : _deadParticle) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
@@ -93,9 +98,9 @@ void Particle::load(const std::size_t& nb)
             pData.spriteData.sprite = sprite;
             pData.lifeTimer.set(lifeTime);
             pData.id = amount + i;
-            _particles.push_back(pData);
+            _deadParticle.push_back(pData);
         }
-        for (auto &pData: _particles) {
+        for (auto &pData: _deadParticle) {
             for (auto &data: _json["data"]) {
                 std::string dataName = data["data_name"];
                 auto behaviour = _behaviourMap[dataName];
@@ -104,7 +109,7 @@ void Particle::load(const std::size_t& nb)
             }
         }
     } catch (std::exception& e) {
-        std::cout << "[PARTICLE] failed loading n: " << nb << "particles cause " << e.what() << std::endl;
+        throw "[PARTICLE] failed loading n: " + std::to_string(nb) + " particles cause " + e.what();
     }
 }
 
@@ -112,7 +117,7 @@ void Particle::reload()
 {
     destroy();
     load();
-    for (auto& pData : _particles) {
+    for (auto& pData : _deadParticle) {
         for (auto &data: _json["data"]) {
             std::string dataName = data["data_name"];
             auto behaviour = _behaviourMap[dataName];
@@ -128,8 +133,8 @@ void Particle::initData(nlohmann::json& json)
     amount = json["amount"];
     amountMin = json["amount_min"];
     amountMax = json["amount_max"];
-    rect.width = json["size"][0];
-    rect.height = json["size"][1];
+    rect = { json["offset"][0], json["offset"][1],
+             json["size"][0], json["size"][1] };
     delay = json["delay"];
 
     sf::Image blank = sf::Image();
@@ -159,7 +164,7 @@ void Particle::load()
         pData.spriteData.sprite = sprite;
         pData.lifeTimer.set(lifeTime);
         pData.id = i;
-        _particles.push_back(pData);
+        _deadParticle.push_back(pData);
     }
 }
 
@@ -167,7 +172,7 @@ void Particle::resetSpriteData(ParticleData::SpriteData &spriteData, const sf::V
 {
     auto& s = spriteData.sprite;
 
-    s->setPosition(ePosition + _offset);
+    s->setPosition(ePosition + rect.getPosition());
     s->setColor(spriteData.color);
     spriteData.currentColor = spriteData.color;
 }
@@ -191,16 +196,21 @@ void Particle::resetFadeOut(std::optional<ParticleData::FadeOutData>& fadeOut, P
     if (!fadeOut.has_value()) return;
     fadeOut->end = false;
     spriteData.currentColor.a = spriteData.color.a;
+    fadeOut->timer.reset();
 }
 
 void Particle::fadeSystem(ParticleData::SpriteData &spriteData, std::optional<ParticleData::FadeInData> &fadeIn,
                           std::optional<ParticleData::FadeOutData> &fadeOut)
 {
-    if (fadeIn.has_value() && !fadeIn->end) {
+    if (fadeIn.has_value() && !fadeIn->end)
         fadeInSystem(spriteData, fadeIn);
+
+    if (!fadeOut.has_value()) return;
+    if (fadeOut->timer.ended()) {
+        fadeOutSystem(spriteData, fadeOut);
         return;
     }
-    fadeOutSystem(spriteData, fadeOut);
+    fadeOut->timer.update();
 }
 
 void Particle::fadeOutSystem(ParticleData::SpriteData &pData, std::optional<ParticleData::FadeOutData> &fadeOut)
@@ -281,39 +291,49 @@ void Particle::fadeInSystem(ParticleData::SpriteData &pData, std::optional<Parti
     a = static_cast<sf::Uint8>(aFloat);
 }
 
-bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue, int& deadParticle)
+bool Particle::killParticle(ParticleData& pData, std::queue<std::size_t> &removeQueue)
 {
     pData.isDead = true;
     pData.set = false;
-    deadParticle += 1;
-    _deadParticle.push(pData);
+    _deadParticle.push_back(pData);
     _removeQueue.push(pData.id);
+    _totalDeadParticle += 1;
     return true;
 }
 
-void Particle::play(bool loop, const sf::Vector2f& entityPosition)
+void Particle::updateDelayTimer(Timer &delayTimer)
 {
-    //Base draw
-    std::size_t length = _particles.size();
 
-    if (_totalDeadParticle >= amount) _hasFinished = true;
-    if (!loop && _hasFinished) return;
-
-    // it should have 10 entities not 13
-    //Handle delay
+    if (delayTimer.to() != delay)
+        delayTimer.set(delay);
     delayTimer.update();
     if (delayTimer.ended()) {
         if (!_deadParticle.empty()) {
-            _totalDeadParticle += 1;
-            _particles.push_back(_deadParticle.front());
-            _deadParticle.pop();
+            if (_particles.size() + 1 < amount && loop) {
+                _particles.push_back(_deadParticle.front());
+            }
+            _deadParticle.pop_front();
         }
         delayTimer.reset();
     }
+}
+
+void Particle::play(const sf::Vector2f& entityPosition)
+{
+    //Base draw
+    if (_deadParticle.size() >= amount) {
+        _totalDeadParticle = 0;
+        _hasFinished = true;
+    }
+    if (!loop && _hasFinished) return;
+
+    //Handle delay
+    updateDelayTimer(delayTimer);
+
     // Particle loop
     for (auto& pData : _particles) {
         auto& spriteData = pData.spriteData;
-        auto s = spriteData.sprite;
+        auto& s = spriteData.sprite;
         auto& velocityData = pData.velocityData;
         auto& fadeIn = pData.fadeInData;
         auto& fadeOut = pData.fadeOutData;
@@ -324,7 +344,6 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
             resetParticleData(pData);
             resetFadeOut(fadeOut, spriteData);
             resetFadeIn(fadeIn, spriteData);
-            _totalDeadParticle -= 1;
             _hasFinished = false;
             continue;
         }
@@ -333,7 +352,7 @@ void Particle::play(bool loop, const sf::Vector2f& entityPosition)
 
         lifeTimer.update();
         if (lifeTimer.ended()) {
-            killParticle(pData, _removeQueue,  _totalDeadParticle);
+            killParticle(pData, _removeQueue );
             continue;
         }
 
@@ -382,7 +401,7 @@ void Particle::destroy()
     while (!_removeQueue.empty())
         _removeQueue.pop();
     while (!_deadParticle.empty())
-       _deadParticle.pop();
+       _deadParticle.pop_front();
 
     for (auto& s : _particles) {
         delete s.spriteData.sprite;

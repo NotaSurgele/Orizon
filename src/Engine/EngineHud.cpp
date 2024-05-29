@@ -1005,7 +1005,7 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _pPath = path;
             _particleEmitter = pEmitter;
             _particle = new Particle( path );
-            _batch = GET_BATCH(particle.texture);
+            _batch = GET_BATCH(_particle->texture);
         }
     }
     ImGui::Separator();
@@ -1094,21 +1094,52 @@ void EngineHud::saveEntity(nlohmann::json &json)
 }
 
 void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emitter,
-                                      sf::Vector2f& position)
-{
-    auto seed = particle->seed;
+                                      sf::Vector2f& position) {
+    auto &seed = particle->seed;
     auto amount = particle->amount;
-    auto amountMin = particle->amountMin;
-    auto amountMax = particle->amountMax;
+    auto &amountMin = particle->amountMin;
+    auto &amountMax = particle->amountMax;
+    auto &delay = particle->delay;
+    auto offset = particle->rect.getPosition();
+    float offsetF[2] = {offset.x, offset.y };
 
+    // LifeTime
     ImGui::InputFloat("Particle life time", &particle->lifeTime);
+
+    // Seed
     ImGui::InputInt("Seed", &seed);
+
+    // Amount
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Min", &amountMin);
+    amountMin = std::max(1, amountMin);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(300);
     ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Max", &amountMax);
+    amountMax = std::max(1, amountMax);
 
     if (amount != particle->amount) {
-        // particle crash maybe because ref got destroyed
-        particle->load( amount - particle->amount);
+        if (particle->amount < amount) {
+            // particle crash maybe because ref got destroyed
+            particle->load(amount - particle->amount);
+        }
         particle->amount = amount;
+    }
+
+    // Delay
+    ImGui::InputFloat("Delay", &delay);
+
+    // Loop
+    ImGui::Checkbox("Loop", &particle->loop);
+
+    // Position offset + size handling
+    ImGui::InputFloat2("position", offsetF);
+    if (offsetF[0] != offset.x || offsetF[1] != offset.y) {
+        particle->rect.left = offsetF[0];
+        particle->rect.top = offsetF[1];
     }
 }
 
@@ -1129,18 +1160,18 @@ void EngineHud::renderParticleWindow()
     _particleRenderTexture.clear(sf::Color::White);
 
     ImGui::SetNextWindowSize(ImVec2(1800, 900));
+    ImGui::SetNextWindowPos(ImVec2(85, 50));
     ImGui::Begin("Particle window", &_renderPWindow);
 
     // Render particle part
     ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
-    // Render particles
 
     auto e = _particleEmitter->getEntity();
 
     if (!e) return;
     auto& position = e->getComponent<Transform2D>()->position;
 
-    _particle->play(true, position);
+    _particle->play(position);
     _particleRenderTexture.draw(*(sf::Drawable *)_batch);
     ImGui::Image(_particleRenderTexture);
     ImGui::EndChild();
@@ -1151,7 +1182,7 @@ void EngineHud::renderParticleWindow()
     ImGui::BeginChild("Data part");
 
     ImGui::Separator();
-    if (ImGui::TreeNode("Emitter")) {
+    if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
         renderEmitterTreeNode(_particle, _particleEmitter, position);
         ImGui::TreePop();
     }

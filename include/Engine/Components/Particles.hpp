@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <queue>
+#include <deque>
 
 #include "Components/Sprite.hpp"
 #include "IComponent.hpp"
@@ -33,19 +34,13 @@ struct ParticleData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
-
-       FadeInData(bool end, float speed, sf::Color to)
-            : end(end), speed(speed), to(to) {}
-
     };
 
     struct FadeOutData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
-
-        FadeOutData(bool end, float speed, sf::Color to)
-                : end(end), speed(speed), to(to) {}
+        Timer timer;
     };
 
     std::optional<VelocityData> velocityData;
@@ -70,13 +65,14 @@ public:
     void load();
     void load(const std::size_t& amount);
     void initData(nlohmann::json& json);
-    void play(bool loop, const sf::Vector2f& entityPosition);
+    void play(const sf::Vector2f& entityPosition);
     bool hasFinished() const;
     void reset();
     void destroy();
     std::list<ParticleData>& getParticlesData();
 
 private:
+    void updateDelayTimer(Timer &timer);
     void resetSpriteData(ParticleData::SpriteData& spriteData, const sf::Vector2f& ePosition);
     void resetParticleData(ParticleData& pData) const;
     void resetFadeIn(std::optional<ParticleData::FadeInData>& fadeIn, ParticleData::SpriteData& spriteData);
@@ -87,7 +83,7 @@ private:
     void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
                     std::optional<ParticleData::FadeOutData>& fadeOut);
 
-    bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue, int& deadParticle);
+    bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue);
 
 public:
     std::string path;
@@ -111,6 +107,7 @@ public:
     bool loop = true;
 
 private:
+    int _totalDeadParticle = 0;
     std::queue<std::size_t> _removeQueue;
     Timer delayTimer;
     bool _hasFinished = false;
@@ -118,12 +115,10 @@ private:
 
     // Handle particles
     std::list<ParticleData> _particles;
-    std::queue<ParticleData> _deadParticle;
-    int _totalDeadParticle = 0;
+    std::deque<ParticleData> _deadParticle;
 
     nlohmann::json _json{};
 
-    sf::Vector2f _offset = {0, 0};
 };
 
 class ParticlesEmitter : public IComponent {

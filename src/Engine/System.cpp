@@ -449,7 +449,7 @@ void System::particleEmitterSystem(Entity *e)
     for (auto& it : emitter->particles) {
         auto& p = it.second;
 
-        p.play(p.loop, position);
+        p.play(position);
     }
 }
 

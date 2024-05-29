@@ -1,5 +1,6 @@
 {
   "emitter": {
+    "offset": [0, 0],
     "life_time": 1,
     "size": [100, 50],
     "amount": 10,
@@ -10,10 +11,6 @@
     "seed": 4242
   },
   "data": [
-    {
-      "data_name": "offset",
-      "offset": [0, 0]
-    },
     {
       "data_name": "sprite",
       "color": [255, 255, 255, 255],
@@ -31,7 +28,8 @@
     },
     {
       "data_name": "fade_out",
-      "speed": 400,
+      "start_time": 0.6,
+      "speed": 600,
       "to": [255, 255, 255, 0]
     }
   ]
