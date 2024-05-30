@@ -1096,12 +1096,18 @@ void EngineHud::saveEntity(nlohmann::json &json)
 void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emitter,
                                       sf::Vector2f& position) {
     auto &seed = particle->seed;
+
     auto amount = particle->amount;
     auto &amountMin = particle->amountMin;
     auto &amountMax = particle->amountMax;
+
     auto &delay = particle->delay;
+
     auto offset = particle->rect.getPosition();
     float offsetF[2] = {offset.x, offset.y };
+
+    auto size = particle->rect.getSize();
+    float sizeF[2] = { size.x, size.y };
 
     // LifeTime
     ImGui::InputFloat("Particle life time", &particle->lifeTime);
@@ -1122,10 +1128,8 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     amountMax = std::max(1, amountMax);
 
     if (amount != particle->amount) {
-        if (particle->amount < amount) {
-            // particle crash maybe because ref got destroyed
+        if (particle->amount < amount)
             particle->load(amount - particle->amount);
-        }
         particle->amount = amount;
     }
 
@@ -1136,10 +1140,16 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     ImGui::Checkbox("Loop", &particle->loop);
 
     // Position offset + size handling
-    ImGui::InputFloat2("position", offsetF);
+    ImGui::InputFloat2("Position", offsetF);
     if (offsetF[0] != offset.x || offsetF[1] != offset.y) {
         particle->rect.left = offsetF[0];
         particle->rect.top = offsetF[1];
+    }
+
+    ImGui::InputFloat2("Size", sizeF);
+    if (sizeF[0] != size.x || sizeF[1] != size.y) {
+        particle->rect.width = sizeF[0];
+        particle->rect.height = sizeF[1];
     }
 }
 
