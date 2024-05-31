@@ -127,6 +127,11 @@ void Particle::reload()
     }
 }
 
+sf::RectangleShape& Particle::getEmitterShape()
+{
+    return _shape;
+}
+
 void Particle::initData(nlohmann::json& json)
 {
     lifeTime = json["life_time"];
@@ -136,6 +141,15 @@ void Particle::initData(nlohmann::json& json)
     rect = { json["offset"][0], json["offset"][1],
              json["size"][0], json["size"][1] };
     delay = json["delay"];
+
+    // Set shape data
+    _shape = sf::RectangleShape();
+    _shape.setPosition(rect.left, rect.top);
+    _shape.setSize(rect.getSize());
+    _shape.setFillColor(sf::Color::White);
+    _shape.setOutlineColor(sf::Color::Green);
+    _shape.setOutlineThickness(4.0f);
+    //
 
     sf::Image blank = sf::Image();
     blank.create(100, 100, color);
@@ -329,6 +343,8 @@ void Particle::play(const sf::Vector2f& entityPosition)
 
     //Handle delay
     updateDelayTimer(delayTimer);
+    _shape.setPosition(entityPosition + rect.getPosition());
+    _shape.setSize(rect.getSize());
 
     // Particle loop
     for (auto& pData : _particles) {

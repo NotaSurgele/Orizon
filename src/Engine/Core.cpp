@@ -83,6 +83,24 @@ void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
 #endif
 }
 
+void Core::CoreDrawBatch(const sf::Shape &shape)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        auto textureId = shape.getTexture()->getNativeHandle();
+
+        if (batch->textureId == textureId) {
+            batch->draw(shape);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = shape.getTexture();
+    newBatch->textureId = newBatch->texture->getNativeHandle();
+    newBatch->draw(shape);
+    _batches.push_back(newBatch);
+}
+
 void Core::CoreDrawBatch(Sprite *sprite)
 {
     if (!_isTextureLoaded) return;

@@ -1115,6 +1115,7 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     // Seed
     ImGui::InputInt("Seed", &seed);
 
+
     // Amount
     ImGui::SetNextItemWidth(100);
     ImGui::InputInt("Min", &amountMin);
@@ -1169,6 +1170,8 @@ void EngineHud::renderParticleWindow()
     }
     _particleRenderTexture.clear(sf::Color::White);
 
+    auto& shape = _particle->getEmitterShape();
+
     ImGui::SetNextWindowSize(ImVec2(1800, 900));
     ImGui::SetNextWindowPos(ImVec2(85, 50));
     ImGui::Begin("Particle window", &_renderPWindow);
@@ -1183,6 +1186,7 @@ void EngineHud::renderParticleWindow()
 
     _particle->play(position);
     _particleRenderTexture.draw(*(sf::Drawable *)_batch);
+    _particleRenderTexture.draw(shape);
     ImGui::Image(_particleRenderTexture);
     ImGui::EndChild();
 

@@ -70,6 +70,7 @@ public:
     void reset();
     void destroy();
     std::list<ParticleData>& getParticlesData();
+    sf::RectangleShape& getEmitterShape();
 
 private:
     void updateDelayTimer(Timer &timer);
@@ -112,6 +113,8 @@ private:
     Timer delayTimer;
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
+
+    sf::RectangleShape _shape;
 
     // Handle particles
     std::list<ParticleData> _particles;
