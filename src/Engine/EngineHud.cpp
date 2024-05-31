@@ -1172,37 +1172,44 @@ void EngineHud::renderParticleWindow()
 
     auto& shape = _particle->getEmitterShape();
 
+    auto e = _particleEmitter->getEntity();
+
+    if (!e) return;
+    auto& position = e->getComponent<Transform2D>()->position;
+    auto sprite = e->getComponent<Sprite>();
+
     ImGui::SetNextWindowSize(ImVec2(1800, 900));
     ImGui::SetNextWindowPos(ImVec2(85, 50));
     ImGui::Begin("Particle window", &_renderPWindow);
 
     // Render particle part
-    ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
+    {
+        ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
 
-    auto e = _particleEmitter->getEntity();
-
-    if (!e) return;
-    auto& position = e->getComponent<Transform2D>()->position;
-
-    _particle->play(position);
-    _particleRenderTexture.draw(*(sf::Drawable *)_batch);
-    _particleRenderTexture.draw(shape);
-    ImGui::Image(_particleRenderTexture);
-    ImGui::EndChild();
+        _particle->play(position);
+        _particleRenderTexture.draw(*(sf::Drawable *)_batch);
+        _particleRenderTexture.draw(shape);
+        if (sprite)
+            _particleRenderTexture.draw(*(sf::Drawable *)sprite);
+        ImGui::Image(_particleRenderTexture);
+        ImGui::EndChild();
+    }
 
     ImGui::SameLine();
 
     // Data part
-    ImGui::BeginChild("Data part");
+    {
+        ImGui::BeginChild("Data part");
 
-    ImGui::Separator();
-    if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
-        renderEmitterTreeNode(_particle, _particleEmitter, position);
-        ImGui::TreePop();
+        ImGui::Separator();
+        if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
+            renderEmitterTreeNode(_particle, _particleEmitter, position);
+            ImGui::TreePop();
+        }
+        _batch->clear();
+        ImGui::Separator();
+        ImGui::EndChild();
     }
-    _batch->clear();
-    ImGui::Separator();
-    ImGui::EndChild();
     ImGui::End();
 }
 
