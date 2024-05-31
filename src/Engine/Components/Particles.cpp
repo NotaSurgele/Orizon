@@ -186,7 +186,7 @@ void Particle::resetSpriteData(ParticleData::SpriteData &spriteData, const sf::V
 {
     auto& s = spriteData.sprite;
 
-    s->setPosition(ePosition + rect.getPosition());
+    s->setPosition(ePosition + (rect.getPosition() + (rect.getSize() / 2.0f)));
     s->setColor(spriteData.color);
     spriteData.currentColor = spriteData.color;
 }
