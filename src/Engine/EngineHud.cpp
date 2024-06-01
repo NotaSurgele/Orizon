@@ -1187,10 +1187,18 @@ void EngineHud::renderParticleWindow()
         ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
 
         _particle->play(position);
-        _particleRenderTexture.draw(*(sf::Drawable *)_batch);
+        _particleRenderTexture.draw(*(sf::Drawable *) _batch);
         _particleRenderTexture.draw(shape);
         if (sprite)
-            _particleRenderTexture.draw(*(sf::Drawable *)sprite);
+            _particleRenderTexture.draw(*(sf::Drawable *) sprite);
+
+        // drag emitter
+        if (ImGui::IsWindowFocused()) {
+            auto mousePos = _particleRenderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
+            sf::FloatRect updatedRect = { shape.getPosition(), shape.getSize() };
+            std::cout << updatedRect.contains(mousePos) << std::endl;
+        }
+
         ImGui::Image(_particleRenderTexture);
         ImGui::EndChild();
     }
