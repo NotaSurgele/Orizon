@@ -147,7 +147,7 @@ void Particle::initData(nlohmann::json& json)
     _shape = sf::RectangleShape();
     _shape.setPosition(rect.left, rect.top);
     _shape.setSize(rect.getSize());
-    _shape.setFillColor(sf::Color::White);
+    _shape.setFillColor(sf::Color::Transparent);
     _shape.setOutlineColor(sf::Color::Green);
     _shape.setOutlineThickness(4.0f);
     //

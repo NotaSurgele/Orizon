@@ -1168,7 +1168,12 @@ void EngineHud::renderParticleWindow()
         _particle = nullptr;
         return;
     }
-    _particleRenderTexture.clear(sf::Color::Black);
+    static sf::Color clear = sf::Color::White;
+    static float colorF[4] = { static_cast<float>(clear.r / 255),
+                               static_cast<float>(clear.g / 255),
+                               static_cast<float>(clear.b / 255),
+                               static_cast<float>(clear.a / 255) };
+
 
     auto& shape = _particle->getEmitterShape();
 
@@ -1186,11 +1191,12 @@ void EngineHud::renderParticleWindow()
     {
         ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
 
+        _particleRenderTexture.clear(clear);
+
         _particle->play(position);
         _particleRenderTexture.draw(*(sf::Drawable *) _batch);
         _particleRenderTexture.draw(shape);
-        if (sprite)
-            _particleRenderTexture.draw(*(sf::Drawable *) sprite);
+        if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);
 
         // drag emitter
         if (ImGui::IsWindowFocused()) {
@@ -1208,7 +1214,13 @@ void EngineHud::renderParticleWindow()
     // Data part
     {
         ImGui::BeginChild("Data part");
-
+        ImGui::ColorEdit4("Background color", colorF);
+        clear = {
+                static_cast<sf::Uint8>(colorF[0] * 255),
+                static_cast<sf::Uint8>(colorF[1] * 255),
+                static_cast<sf::Uint8>(colorF[2] * 255),
+                static_cast<sf::Uint8>(colorF[3] * 255)
+        };
         ImGui::Separator();
         if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
             renderEmitterTreeNode(_particle, _particleEmitter, position);
