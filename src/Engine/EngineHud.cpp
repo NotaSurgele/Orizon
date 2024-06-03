@@ -1168,7 +1168,7 @@ void EngineHud::renderParticleWindow()
         _particle = nullptr;
         return;
     }
-    _particleRenderTexture.clear(sf::Color::White);
+    _particleRenderTexture.clear(sf::Color::Black);
 
     auto& shape = _particle->getEmitterShape();
 

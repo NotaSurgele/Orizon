@@ -46,7 +46,12 @@
         },
         {
             "name": "hobbit",
-            "path": "./assets/Hobbit/pngs/hobbit_idle_spritesheet.png",
+            "path": "./assets/torch.png",
+            "type": "Texture"
+        },
+        {
+            "name": "smoke",
+            "path": "./assets/smoke.png",
             "type": "Texture"
         },
         {
