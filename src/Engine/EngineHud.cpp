@@ -1158,7 +1158,7 @@ void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mou
 {
     auto pos = shape.getPosition();
     auto size = shape.getSize();
-    static sf::FloatRect edge[4] = {
+    sf::FloatRect edge[4] = {
         { pos.x, pos.y, 10, 10 },
         { pos.x + size.x, pos.y, 10 , 10 },
         { pos.x + size.x, pos.y + size.y, 10, 10 },
@@ -1166,8 +1166,8 @@ void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mou
     };
 
     static sf::RectangleShape shapes[4];
-    static sf::RectangleShape mouse;
-
+    static sf::RectangleShape mouse{};
+    static int selectedCorner = -1;
 
     mouse.setPosition(mousePos);
     mouse.setSize({ 5, 5 });
@@ -1177,7 +1177,7 @@ void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mou
 
     _particleRenderTexture.draw(mouse);
 
-    for (std::size_t i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         sf::Vector2f cornerPos = { edge[i].left, edge[i].top };
 
         shapes[i].setPosition(cornerPos);
@@ -1187,27 +1187,21 @@ void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mou
 
         _particleRenderTexture.draw(shapes[i]);
 
-
-        if (edge[i].contains(mousePos)) {
-            std::cout << "mouse pos " << mousePos.x << " " << mousePos.y << std::endl;
-            std::cout << "point pos " << edge[i].left << " " << edge[i].top << std::endl;
-            if (ImGui::IsMouseDragging(ImGuiButtonFlags_MouseButtonLeft)) {
-                std::cout << "Dragging" << std::endl;
-                ImVec2 delta = ImGui::GetMouseDragDelta();
-
-                if (i & 1) size.x += delta.x;
-                else size.x -= delta.x;
-
-                if (i & 2) size.y += delta.y;
-                else size.y -= delta.y;
-
-                size.x = std::max(size.x, 0.0f);
-                size.y = std::max(size.y, 0.0f);
-            }
-            edge[i].left = cornerPos.x + size.x;
-            edge[i].top = cornerPos.y + size.y;
+        if (!ImGui::IsMouseDown(0))  {
+            selectedCorner = -1;
+            continue;
         }
-        shape.setSize(size);
+        if (edge[i].contains(mousePos)) {
+            std::cout << "Dragging" << std::endl;
+            selectedCorner = i;
+        }
+    }
+    if (selectedCorner != -1) {
+        auto corner = sf::Vector2f{ edge[selectedCorner].left, edge[selectedCorner].top };
+        auto output = size + (mousePos - corner);
+
+        std::cout << "Corner " << output.x << " " << output.y << " " <<  std::endl;
+        shape.setSize(size + (mousePos - corner));
     }
 }
 
@@ -1263,7 +1257,7 @@ void EngineHud::renderParticleWindow()
             sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
             sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
 
-            renderTextureMousePos -= { 85, 50 };
+            renderTextureMousePos -= { 100, 80 };
             resizeEmitter(shape, renderTextureMousePos);
         }
 
