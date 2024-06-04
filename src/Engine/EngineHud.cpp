@@ -1154,6 +1154,63 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     }
 }
 
+void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mousePos)
+{
+    auto pos = shape.getPosition();
+    auto size = shape.getSize();
+    static sf::FloatRect edge[4] = {
+        { pos.x, pos.y, 10, 10 },
+        { pos.x + size.x, pos.y, 10 , 10 },
+        { pos.x + size.x, pos.y + size.y, 10, 10 },
+        { pos.x , pos.y + size.y, 10, 10 }
+    };
+
+    static sf::RectangleShape shapes[4];
+    static sf::RectangleShape mouse;
+
+
+    mouse.setPosition(mousePos);
+    mouse.setSize({ 5, 5 });
+    mouse.setFillColor(sf::Color::Transparent);
+    mouse.setOutlineColor(sf::Color::Red);
+    mouse.setOutlineThickness(2.0f);
+
+    _particleRenderTexture.draw(mouse);
+
+    for (std::size_t i = 0; i < 4; i++) {
+        sf::Vector2f cornerPos = { edge[i].left, edge[i].top };
+
+        shapes[i].setPosition(cornerPos);
+        shapes[i].setFillColor(sf::Color::Red);
+        shapes[i].setOutlineThickness(2.0F);
+        shapes[i].setSize({ 10, 10 });
+
+        _particleRenderTexture.draw(shapes[i]);
+
+
+        if (edge[i].contains(mousePos)) {
+            std::cout << "mouse pos " << mousePos.x << " " << mousePos.y << std::endl;
+            std::cout << "point pos " << edge[i].left << " " << edge[i].top << std::endl;
+            if (ImGui::IsMouseDragging(ImGuiButtonFlags_MouseButtonLeft)) {
+                std::cout << "Dragging" << std::endl;
+                ImVec2 delta = ImGui::GetMouseDragDelta();
+
+                if (i & 1) size.x += delta.x;
+                else size.x -= delta.x;
+
+                if (i & 2) size.y += delta.y;
+                else size.y -= delta.y;
+
+                size.x = std::max(size.x, 0.0f);
+                size.y = std::max(size.y, 0.0f);
+            }
+            edge[i].left = cornerPos.x + size.x;
+            edge[i].top = cornerPos.y + size.y;
+        }
+        shape.setSize(size);
+    }
+}
+
 void EngineHud::renderParticleWindow()
 {
     if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
@@ -1200,9 +1257,14 @@ void EngineHud::renderParticleWindow()
 
         // drag emitter
         if (ImGui::IsWindowFocused()) {
-            auto mousePos = _particleRenderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
-            sf::FloatRect updatedRect = { shape.getPosition(), shape.getSize() };
-            std::cout << updatedRect.contains(mousePos) << std::endl;
+            // retrieve mouse coordinate according to the renderTexture
+            sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
+            sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
+            sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
+            sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
+
+            renderTextureMousePos -= { 85, 50 };
+            resizeEmitter(shape, renderTextureMousePos);
         }
 
         ImGui::Image(_particleRenderTexture);
