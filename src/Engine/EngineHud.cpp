@@ -1154,7 +1154,7 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     }
 }
 
-void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mousePos)
+void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos)
 {
     auto pos = shape.getPosition();
     auto size = shape.getSize();
@@ -1201,7 +1201,8 @@ void EngineHud::resizeEmitter(sf::RectangleShape &shape, const sf::Vector2f& mou
         auto output = size + (mousePos - corner);
 
         std::cout << "Corner " << output.x << " " << output.y << " " <<  std::endl;
-        shape.setSize(size + (mousePos - corner));
+        shape.width = (size.x + (mousePos.x - corner.x));
+        shape.height = (size.y + (mousePos.y - corner.y));
     }
 }
 
@@ -1258,7 +1259,7 @@ void EngineHud::renderParticleWindow()
             sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
 
             renderTextureMousePos -= { 100, 80 };
-            resizeEmitter(shape, renderTextureMousePos);
+            resizeEmitter(_particle->rect, renderTextureMousePos);
         }
 
         ImGui::Image(_particleRenderTexture);
