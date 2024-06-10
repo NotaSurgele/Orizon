@@ -1159,8 +1159,8 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
     auto pos = shape.getPosition();
     auto size = shape.getSize();
     sf::FloatRect edge[4] = {
-        { pos.x, pos.y, 10, 10 },
         { pos.x + size.x, pos.y, 10 , 10 },
+        { pos.x, pos.y, 10, 10 },
         { pos.x + size.x, pos.y + size.y, 10, 10 },
         { pos.x , pos.y + size.y, 10, 10 }
     };
@@ -1178,7 +1178,8 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
     _particleRenderTexture.draw(mouse);
 
     for (int i = 0; i < 4; i++) {
-        sf::Vector2f cornerPos = { edge[i].left, edge[i].top };
+        sf::Vector2f cornerPos = { edge[i].left,
+                                   edge[i].top };
 
         shapes[i].setPosition(cornerPos);
         shapes[i].setFillColor(sf::Color::Red);
@@ -1191,18 +1192,16 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
             selectedCorner = -1;
             continue;
         }
-        if (edge[i].contains(mousePos)) {
-            std::cout << "Dragging" << std::endl;
-            selectedCorner = i;
-        }
+        if (edge[i].contains(mousePos)) selectedCorner = i;
     }
     if (selectedCorner != -1) {
         auto corner = sf::Vector2f{ edge[selectedCorner].left, edge[selectedCorner].top };
-        auto output = size + (mousePos - corner);
+        if (selectedCorner % 2 == 0) {
+            auto output = size + (mousePos - corner);
 
-        std::cout << "Corner " << output.x << " " << output.y << " " <<  std::endl;
-        shape.width = (output.x < 0) ? -output.x : output.x;
-        shape.height = (output.y < 0) ? -output.y : output.y;
+            shape.width = (output.x < 0) ? -output.x : output.x;
+            return;
+        }
     }
 }
 
@@ -1228,6 +1227,7 @@ void EngineHud::renderParticleWindow()
 
 
     auto& shape = _particle->getEmitterShape();
+    auto shapePos = shape.getPosition();
 
     auto e = _particleEmitter->getEntity();
 
@@ -1259,7 +1259,16 @@ void EngineHud::renderParticleWindow()
             sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
 
             renderTextureMousePos -= { 100, 80 };
-            resizeEmitter(_particle->rect, renderTextureMousePos);
+
+            sf::FloatRect fixedShape = { _particle->rect.left + shapePos.x,
+                                         _particle->rect.top + shapePos.y,
+                                         _particle->rect.width,
+                                         _particle->rect.height };
+            resizeEmitter(fixedShape, renderTextureMousePos);
+
+            //[FIXME pas ouf
+            _particle->rect.width = fixedShape.width;
+            _particle->rect.height = fixedShape.height;
         }
 
         ImGui::Image(_particleRenderTexture);
