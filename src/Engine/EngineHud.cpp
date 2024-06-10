@@ -1201,8 +1201,8 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
         auto output = size + (mousePos - corner);
 
         std::cout << "Corner " << output.x << " " << output.y << " " <<  std::endl;
-        shape.width = (size.x + (mousePos.x - corner.x));
-        shape.height = (size.y + (mousePos.y - corner.y));
+        shape.width = (output.x < 0) ? -output.x : output.x;
+        shape.height = (output.y < 0) ? -output.y : output.y;
     }
 }
 

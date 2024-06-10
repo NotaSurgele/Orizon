@@ -76,16 +76,22 @@ public:
     }
 
     // Particle
-    void renderParticleWindow();
-    void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
-    void resizeEmitter(sf::FloatRect& shape, const sf::Vector2f& mousePos);
+        void renderParticleWindow();
+        void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
+        void resizeEmitter(sf::FloatRect& shape, const sf::Vector2f& mousePos);
     //
-    void saveScene();
-    void saveResource(nlohmann::json& json, const std::string& entityPath);
-    void saveEntity(nlohmann::json& json);
-    void createEntity();
-    void createComponent();
-    void destroyEntity(Entity *e, const std::string& name);
+
+    // Scene
+        void saveScene();
+        void saveResource(nlohmann::json& json, const std::string& entityPath);
+        void saveEntity(nlohmann::json& json);
+    //
+
+    // Entity related
+        void createEntity();
+        void createComponent();
+        void destroyEntity(Entity *e, const std::string& name);
+    //
     void destroyTilemap(TileMap *tilemap, const std::string& name);
     void destroyComponent(IComponent *c, const std::string& name);
 
