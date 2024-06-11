@@ -1154,7 +1154,7 @@ void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emit
     }
 }
 
-void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos)
+void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos, const sf::Vector2f& offset)
 {
     auto pos = shape.getPosition();
     auto size = shape.getSize();
@@ -1196,12 +1196,18 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
     }
     if (selectedCorner != -1) {
         auto corner = sf::Vector2f{ edge[selectedCorner].left, edge[selectedCorner].top };
+
         if (selectedCorner % 2 == 0) {
             auto output = size + (mousePos - corner);
 
             shape.width = (output.x < 0) ? -output.x : output.x;
             return;
         }
+        // X part
+        auto x = mousePos.x - corner.x;
+        x = (x < 0) ? (corner.x + -x) : (corner.x - x);
+        shape.left = mousePos.x;
+        //shape.width = (x < 0) ? size.x - x : size.x + x;
     }
 }
 
@@ -1260,15 +1266,15 @@ void EngineHud::renderParticleWindow()
 
             renderTextureMousePos -= { 100, 80 };
 
-            sf::FloatRect fixedShape = { _particle->rect.left + shapePos.x,
-                                         _particle->rect.top + shapePos.y,
-                                         _particle->rect.width,
-                                         _particle->rect.height };
-            resizeEmitter(fixedShape, renderTextureMousePos);
+            static sf::FloatRect fixedShape = { shapePos.x,
+                                         shapePos.y,
+                                     _particle->rect.width,
+                                     _particle->rect.height };
+            resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
 
-            //[FIXME pas ouf
             _particle->rect.width = fixedShape.width;
             _particle->rect.height = fixedShape.height;
+            _particle->rect.left = fixedShape.left - position.x;
         }
 
         ImGui::Image(_particleRenderTexture);
