@@ -9,6 +9,9 @@ public:
     ~SpriteBatch() override = default;
 
     void draw(Sprite *sprite);
+    void draw(const sf::Shape& shape);
+    void draw(const sf::Shape& shape, sf::BlendMode& mode);
+
     void draw(Sprite *sprite, sf::BlendMode& mode);
 
     void clear();

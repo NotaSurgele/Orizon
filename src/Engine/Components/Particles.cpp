@@ -20,6 +20,7 @@ Particle::Particle(const std::string &file) : _behaviourMap({
             auto& sprite = pData.spriteData;
 
             texture = R_GET_RESSOURCE(sf::Texture, json["texture"]);
+            if (json.contains("blended")) sprite.blended = json["blended"];
             sprite.color  = { json["color"][0], json["color"][1], json["color"][2], json["color"][3] };
             sprite.scale = { json["scale"][0], json["scale"][1] };
             sprite.sprite->setTexture(texture, true);
@@ -127,6 +128,11 @@ void Particle::reload()
     }
 }
 
+sf::RectangleShape& Particle::getEmitterShape()
+{
+    return _shape;
+}
+
 void Particle::initData(nlohmann::json& json)
 {
     lifeTime = json["life_time"];
@@ -136,6 +142,15 @@ void Particle::initData(nlohmann::json& json)
     rect = { json["offset"][0], json["offset"][1],
              json["size"][0], json["size"][1] };
     delay = json["delay"];
+
+    // Set shape data
+    _shape = sf::RectangleShape();
+    _shape.setPosition(rect.left, rect.top);
+    _shape.setSize(rect.getSize());
+    _shape.setFillColor(sf::Color::Transparent);
+    _shape.setOutlineColor(sf::Color::Green);
+    _shape.setOutlineThickness(4.0f);
+    //
 
     sf::Image blank = sf::Image();
     blank.create(100, 100, color);
@@ -172,7 +187,7 @@ void Particle::resetSpriteData(ParticleData::SpriteData &spriteData, const sf::V
 {
     auto& s = spriteData.sprite;
 
-    s->setPosition(ePosition + rect.getPosition());
+    s->setPosition(ePosition + (rect.getPosition() + (rect.getSize() / 2.0f)));
     s->setColor(spriteData.color);
     spriteData.currentColor = spriteData.color;
 }
@@ -318,6 +333,22 @@ void Particle::updateDelayTimer(Timer &delayTimer)
     }
 }
 
+void Particle::velocitySystem(std::optional<ParticleData::VelocityData> &velocityData, sf::Vector2f &position)
+{
+    if (velocityData.has_value())
+        position += velocityData->velocity * Time::deltaTime;
+}
+
+void Particle::spriteSystem(ParticleData::SpriteData &spriteData, Sprite *s, const sf::Vector2f& fixedPosition)
+{
+    s->setPosition(fixedPosition);
+    s->setColor(spriteData.currentColor);
+    if (spriteData.blended)
+        DRAW_BATCH_BLENDED(s, sf::BlendAdd);
+    else
+        DRAW_BATCH(s);
+}
+
 void Particle::play(const sf::Vector2f& entityPosition)
 {
     //Base draw
@@ -329,6 +360,8 @@ void Particle::play(const sf::Vector2f& entityPosition)
 
     //Handle delay
     updateDelayTimer(delayTimer);
+    _shape.setPosition(entityPosition + rect.getPosition());
+    _shape.setSize(rect.getSize());
 
     // Particle loop
     for (auto& pData : _particles) {
@@ -355,13 +388,11 @@ void Particle::play(const sf::Vector2f& entityPosition)
             killParticle(pData, _removeQueue );
             continue;
         }
-
         auto fixedPosition = s->getPosition();
-        if (velocityData.has_value()) fixedPosition += velocityData->velocity * Time::deltaTime;
+
+        velocitySystem(velocityData, fixedPosition);
         fadeSystem(spriteData, fadeIn, fadeOut);
-        s->setPosition(fixedPosition);
-        s->setColor(spriteData.currentColor);
-        DRAW_BATCH(s);
+        spriteSystem(spriteData, s, fixedPosition);
     }
 
     // remove dead particles from array

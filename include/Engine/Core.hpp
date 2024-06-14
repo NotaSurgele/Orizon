@@ -59,6 +59,8 @@ class Core : public ICore {
         void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
         void CoreDrawBatch(Sprite *sprite);
         void CoreDrawBatch(Sprite *sprite, sf::BlendMode mode);
+        void CoreDrawBatch(const sf::Shape& drawable);
+
         SpriteBatch *getBatch(sf::Texture *texture);
         SpriteBatch *getBatch(Sprite *sprite);
         void CoreClose();

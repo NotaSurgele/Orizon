@@ -28,6 +28,7 @@ struct ParticleData {
         sf::Color color = sf::Color::White;
         sf::Color currentColor = sf::Color::White;
         sf::Vector2f scale = { 1, 1 };
+        bool blended = false;
     };
 
     struct FadeInData {
@@ -70,6 +71,7 @@ public:
     void reset();
     void destroy();
     std::list<ParticleData>& getParticlesData();
+    sf::RectangleShape& getEmitterShape();
 
 private:
     void updateDelayTimer(Timer &timer);
@@ -82,6 +84,9 @@ private:
     void fadeOutSystem(ParticleData::SpriteData& pData, std::optional<ParticleData::FadeOutData>& fadeOut);
     void fadeSystem(ParticleData::SpriteData& spriteData, std::optional<ParticleData::FadeInData>& fadeIn,
                     std::optional<ParticleData::FadeOutData>& fadeOut);
+
+    void velocitySystem(std::optional<ParticleData::VelocityData>& velocityData, sf::Vector2f& position);
+    void spriteSystem(ParticleData::SpriteData& spriteData, Sprite *s, const sf::Vector2f& fixedPosition);
 
     bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue);
 
@@ -112,6 +117,8 @@ private:
     Timer delayTimer;
     bool _hasFinished = false;
     std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
+
+    sf::RectangleShape _shape;
 
     // Handle particles
     std::list<ParticleData> _particles;

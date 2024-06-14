@@ -21,7 +21,6 @@ sf::Time Time::end()
 
     deltaTime = dt.asSeconds();
     if (deltaTime > 2.0f) {
-        std::cout << "ahaha" << std::endl;
         deltaTime = .1f;
     }
     return dt;

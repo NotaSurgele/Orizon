@@ -7,30 +7,31 @@
     "amount_min": 1,
     "amount_max": 20,
     "loop": true,
-    "delay": 0.3,
+    "delay": 0.2,
     "seed": 4242
   },
   "data": [
     {
       "data_name": "sprite",
-      "color": [255, 255, 255, 255],
-      "scale": [1, 1],
-      "texture": "cross"
+      "color": [255, 140, 0, 0],
+      "scale": [0.2, 0.2],
+      "blended": true,
+      "texture": "smoke"
     },
     {
       "data_name": "velocity",
-      "value": [0, 255]
+      "value": [0, -255]
     },
     {
       "data_name": "fade_in",
       "speed": 600,
-      "to": [125, 125, 125, 255]
+      "to": [255, 140, 0, 255]
     },
     {
       "data_name": "fade_out",
-      "start_time": 0.6,
+      "start_time": 0.7,
       "speed": 600,
-      "to": [255, 255, 255, 0]
+      "to": [255, 140, 0, 0]
     }
   ]
 }
