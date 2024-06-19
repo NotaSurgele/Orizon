@@ -1204,11 +1204,34 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
             return;
         }
         // X part
-        auto x = mousePos.x - corner.x;
-        x = (x < 0) ? (corner.x + -x) : (corner.x - x);
         shape.left = mousePos.x;
-        //shape.width = (x < 0) ? size.x - x : size.x + x;
+        shape.top = mousePos.y;
     }
+}
+
+void EngineHud::handleEmitter(const sf::Vector2f& shapePos, const sf::Vector2f& ePosition)
+{
+    if (!ImGui::IsWindowFocused())
+        return;
+
+    // retrieve mouse coordinate according to the renderTexture
+    sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
+    sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
+    sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
+    sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
+
+    renderTextureMousePos -= { 100, 80 };
+
+    static sf::FloatRect fixedShape = { shapePos.x,
+                                        shapePos.y,
+                                        _particle->rect.width,
+                                        _particle->rect.height };
+    resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
+
+    _particle->rect.width = fixedShape.width;
+    _particle->rect.height = fixedShape.height;
+    _particle->rect.left = fixedShape.left - ePosition.x;
+    _particle->rect.top = fixedShape.top - ePosition.y;
 }
 
 void EngineHud::renderParticleWindow()
@@ -1218,6 +1241,7 @@ void EngineHud::renderParticleWindow()
         _pPath = {};
         _particleEmitter = nullptr;
         _batch = nullptr;
+
         if (_particle) {
             _particle->destroy();
             delete _particle;
@@ -1225,6 +1249,7 @@ void EngineHud::renderParticleWindow()
         _particle = nullptr;
         return;
     }
+
     static sf::Color clear = sf::Color::White;
     static float colorF[4] = { static_cast<float>(clear.r / 255),
                                static_cast<float>(clear.g / 255),
@@ -1257,25 +1282,7 @@ void EngineHud::renderParticleWindow()
         if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);
 
         // drag emitter
-        if (ImGui::IsWindowFocused()) {
-            // retrieve mouse coordinate according to the renderTexture
-            sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
-            sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
-            sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
-            sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
-
-            renderTextureMousePos -= { 100, 80 };
-
-            static sf::FloatRect fixedShape = { shapePos.x,
-                                         shapePos.y,
-                                     _particle->rect.width,
-                                     _particle->rect.height };
-            resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
-
-            _particle->rect.width = fixedShape.width;
-            _particle->rect.height = fixedShape.height;
-            _particle->rect.left = fixedShape.left - position.x;
-        }
+        handleEmitter(shapePos, position);
 
         ImGui::Image(_particleRenderTexture);
         ImGui::EndChild();
@@ -1294,10 +1301,35 @@ void EngineHud::renderParticleWindow()
                 static_cast<sf::Uint8>(colorF[3] * 255)
         };
         ImGui::Separator();
-        if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
-            renderEmitterTreeNode(_particle, _particleEmitter, position);
-            ImGui::TreePop();
+        // Emitter
+        {
+            if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
+                renderEmitterTreeNode(_particle, _particleEmitter, position);
+                ImGui::TreePop();
+            }
         }
+
+        // Particle Data
+        static ParticleData pData = {};
+        static bool set = false;
+
+        if (!set) {
+            for (auto &data: _particle->jsonData["data"]) {
+                std::string dataName = data["data_name"];
+                auto behaviour = _particle->behaviourMap[dataName];
+
+                behaviour(pData, data);
+            }
+            set = true;
+        }
+
+        //Sprite
+        {
+            auto front = _particle->getParticlesData().front();
+
+            std::cout << "toto " << (front == pData) << std::endl;
+        }
+
         _batch->clear();
         ImGui::Separator();
         ImGui::EndChild();

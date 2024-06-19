@@ -16,11 +16,30 @@ struct ParticleData {
     ParticleData() = default;
     ~ParticleData() = default;
 
+    bool operator==(ParticleData const& other)
+    {
+        return !(
+            other.velocityData != velocityData
+        );
+    }
+
     struct VelocityData {
         sf::Vector2f velocity { 0, 0 };
         sf::Vector2f minVelocity { 0, 0 };
         sf::Vector2f maxVelocity { 0, 0 };
         bool random = false;
+
+        bool operator!=(const VelocityData& other) const
+        {
+            return (
+                other.velocity.x != velocity.x ||
+                other.velocity.y != velocity.y ||
+                other.minVelocity.x != minVelocity.x ||
+                other.minVelocity.y != minVelocity.y ||
+                other.maxVelocity.x != maxVelocity.x ||
+                other.maxVelocity.y != maxVelocity.y
+            );
+        }
     };
 
     struct SpriteData {
@@ -29,6 +48,12 @@ struct ParticleData {
         sf::Color currentColor = sf::Color::White;
         sf::Vector2f scale = { 1, 1 };
         bool blended = false;
+
+        bool operator!=(const SpriteData& other)
+        {
+            //[TODO] keep going
+            return true;
+        }
     };
 
     struct FadeInData {
@@ -64,6 +89,7 @@ public:
 
     void reload();
     void load();
+
     void load(const std::size_t& amount);
     void initData(nlohmann::json& json);
     void play(const sf::Vector2f& entityPosition);
@@ -91,6 +117,10 @@ private:
     bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue);
 
 public:
+
+    std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> behaviourMap;
+    nlohmann::json jsonData{};
+
     std::string path;
     int seed = 0;
 
@@ -116,7 +146,6 @@ private:
     std::queue<std::size_t> _removeQueue;
     Timer delayTimer;
     bool _hasFinished = false;
-    std::unordered_map<std::string, std::function<void(ParticleData&, nlohmann::json&)>> _behaviourMap;
 
     sf::RectangleShape _shape;
 
@@ -124,7 +153,6 @@ private:
     std::list<ParticleData> _particles;
     std::deque<ParticleData> _deadParticle;
 
-    nlohmann::json _json{};
 
 };
 

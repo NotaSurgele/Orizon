@@ -14,7 +14,7 @@ void ParticlesEmitter::destroy()
 }
 
 // Particle
-Particle::Particle(const std::string &file) : _behaviourMap({
+Particle::Particle(const std::string &file) : behaviourMap({
     {
         "sprite", [&] (ParticleData& pData, nlohmann::json& json) {
             auto& sprite = pData.spriteData;
@@ -65,16 +65,16 @@ Particle::Particle(const std::string &file) : _behaviourMap({
     }
 })
 {
-    _json = Utils::readfileToJson(file);
+    jsonData = Utils::readfileToJson(file);
     path = file;
     try {
-        initData(_json["emitter"]);
+        initData(jsonData["emitter"]);
 
         load();
         for (auto& pData : _deadParticle) {
-            for (auto &data: _json["data"]) {
+            for (auto &data: jsonData["data"]) {
                 std::string dataName = data["data_name"];
-                auto behaviour = _behaviourMap[dataName];
+                auto behaviour = behaviourMap[dataName];
 
                 behaviour(pData, data);
             }
@@ -102,9 +102,9 @@ void Particle::load(const std::size_t& nb)
             _deadParticle.push_back(pData);
         }
         for (auto &pData: _deadParticle) {
-            for (auto &data: _json["data"]) {
+            for (auto &data: jsonData["data"]) {
                 std::string dataName = data["data_name"];
-                auto behaviour = _behaviourMap[dataName];
+                auto behaviour = behaviourMap[dataName];
 
                 behaviour(pData, data);
             }
@@ -119,9 +119,9 @@ void Particle::reload()
     destroy();
     load();
     for (auto& pData : _deadParticle) {
-        for (auto &data: _json["data"]) {
+        for (auto &data: jsonData["data"]) {
             std::string dataName = data["data_name"];
-            auto behaviour = _behaviourMap[dataName];
+            auto behaviour = behaviourMap[dataName];
 
             behaviour(pData, data);
         }
