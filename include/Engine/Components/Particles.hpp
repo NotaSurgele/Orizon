@@ -51,8 +51,19 @@ struct ParticleData {
 
         bool operator!=(const SpriteData& other)
         {
-            //[TODO] keep going
-            return true;
+            return (
+                other.sprite != sprite ||
+                other.currentColor.r != currentColor.r ||
+                other.currentColor.g != currentColor.g ||
+                other.currentColor.b != currentColor.b ||
+                other.currentColor.a != currentColor.a ||
+                other.color.r != color.r ||
+                other.color.g != color.g ||
+                other.color.b != color.b ||
+                other.color.a != color.a ||
+                other.scale.x != scale.x ||
+                other.scale.y != scale.y
+            );
         }
     };
 
