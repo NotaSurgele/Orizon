@@ -19,7 +19,8 @@ struct ParticleData {
     bool operator!=(ParticleData const& other) const
     {
         return !(
-            other.velocityData != velocityData
+            velocityData != other.velocityData ||
+            spriteData != other.spriteData
         );
     }
 
@@ -71,6 +72,18 @@ struct ParticleData {
         bool end = false;
         float speed = 1;
         sf::Color to = sf::Color::White;
+
+        bool operator!=(const FadeInData& other)
+        {
+            return (
+                end != other.end ||
+                speed != other.speed ||
+                to.r != other.to.r ||
+                to.g != other.to.g ||
+                to.b != other.to.b ||
+                to.a != other.to.a
+            );
+        }
     };
 
     struct FadeOutData {
@@ -78,6 +91,18 @@ struct ParticleData {
         float speed = 1;
         sf::Color to = sf::Color::White;
         Timer timer;
+
+        bool operator!=(const FadeOutData& other)
+        {
+            return (
+                end != other.end ||
+                speed != other.speed ||
+                to.r != other.to.r ||
+                to.g != other.to.g ||
+                to.b != other.to.b ||
+                to.a != other.to.a
+            );
+        }
     };
 
     std::optional<VelocityData> velocityData;
