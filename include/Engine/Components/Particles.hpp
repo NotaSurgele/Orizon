@@ -16,7 +16,7 @@ struct ParticleData {
     ParticleData() = default;
     ~ParticleData() = default;
 
-    bool operator==(ParticleData const& other)
+    bool operator!=(ParticleData const& other) const
     {
         return !(
             other.velocityData != velocityData
@@ -49,7 +49,7 @@ struct ParticleData {
         sf::Vector2f scale = { 1, 1 };
         bool blended = false;
 
-        bool operator!=(const SpriteData& other)
+        bool operator!=(const SpriteData& other) const
         {
             return (
                 other.sprite != sprite ||

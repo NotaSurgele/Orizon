@@ -23,8 +23,11 @@ Particle::Particle(const std::string &file) : behaviourMap({
             if (json.contains("blended")) sprite.blended = json["blended"];
             sprite.color  = { json["color"][0], json["color"][1], json["color"][2], json["color"][3] };
             sprite.scale = { json["scale"][0], json["scale"][1] };
+
+            sprite.sprite = new Sprite(texture);
             sprite.sprite->setTexture(texture, true);
             sprite.sprite->setScale(sprite.scale.x, sprite.scale.y);
+
             sprite.currentColor = color;
         }
     },

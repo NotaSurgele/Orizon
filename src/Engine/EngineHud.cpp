@@ -1327,7 +1327,6 @@ void EngineHud::renderParticleWindow()
         {
             auto front = _particle->getParticlesData().front();
 
-            std::cout << "toto " << (front == pData) << std::endl;
         }
 
         _batch->clear();
