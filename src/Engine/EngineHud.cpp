@@ -1326,7 +1326,12 @@ void EngineHud::renderParticleWindow()
         //Sprite
         {
             auto front = _particle->getParticlesData().front();
+            auto& spriteData = front.spriteData;
 
+            if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
+                ComponentTreeNodeFactory::create(spriteData.sprite);
+                ImGui::TreePop();
+            }
         }
 
         _batch->clear();
@@ -1417,11 +1422,7 @@ void EngineHud::destroyEntity(Entity *e, const std::string& name)
 {
     auto popUpName = name + " Entity actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
@@ -1438,11 +1439,7 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
 {
     auto popUpName = name + " Layer actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             tilemap->destroy();
@@ -1539,11 +1536,11 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
             for (auto& e : layer->getAllEntities()) {
                 auto tag = e->getComponent<Tag>();
                 std::string name = "Entity " + std::to_string(index);
+
                 if (tag)
                     name = tag->value();
-                if (ImGui::Selectable(name.c_str())) {
+                if (ImGui::Selectable(name.c_str()))
                     _selected = e;
-                }
                 destroyEntity(e, name);
                 index++;
             }
