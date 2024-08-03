@@ -723,7 +723,6 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
-                auto size = it.second->getSize();
                 sprite->setTextureName(s);
                 sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();

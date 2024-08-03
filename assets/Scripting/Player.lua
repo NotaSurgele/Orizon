@@ -1,6 +1,6 @@
 local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
-local Utils = require 'assets.Scripting.Utils'
+
 
 local Player = {
     entity = {},

@@ -1,11 +1,15 @@
+-- Import
 local Player = require 'assets.Scripting.Player'
 local EnemyManager = require 'assets.Scripting.EnemyManager'
 local GameManager = require 'assets.Scripting.GameManager'
+local TiledMap = require 'assets.Scripting.TiledMap'
 GlobalVariable = require 'assets.Scripting.Global'
 
 local player = Player.new()
 local enemyManager = EnemyManager.new()
 local gameManager = GameManager.new()
+local tiledMap = TiledMap.new()
+
 local transition = {
     sprite = nil,
     color = Color.Black,
@@ -35,14 +39,15 @@ function Start()
     transition.sprite:setScale(10, 10)
     transition.sprite:setPosition(0, 0)
 
-    enemyManager:Start(gameManager)
     player:Start(enemyManager)
-    gameManager:Start(player, enemyManager)
+    for k,v in pairs(tiledMap) do
+    	print(k,v)
+    end
+    tiledMap.load("./assets/map_test.tmj")
 end
 
 function Update()
     transition.play()
-    gameManager:Update()
 end
 
 function Destroy()

@@ -1,4 +1,4 @@
-local Utils = require 'assets.Scripting.Utils'
+
 local StateMachine = require 'assets.Scripting.StateMachine'
 local GlobalVariable = require 'assets.Scripting.Global'
 
