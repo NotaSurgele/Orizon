@@ -78,6 +78,7 @@ public:
     // Particle
         void renderParticleWindow();
         void renderEmitterTreeNode(Particle* particle, ParticlesEmitter *emitter, sf::Vector2f& position);
+        void renderSpriteEmitterTreeNode(ParticleData::SpriteData& particleData, Particle *particle);
         void resizeEmitter(sf::FloatRect& shape, const sf::Vector2f& mousePos, const sf::Vector2f& offset);
         void handleEmitter(const sf::Vector2f& shapePos, const sf::Vector2f& ePosition);
     //

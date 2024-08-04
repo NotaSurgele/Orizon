@@ -40,10 +40,7 @@ function Start()
     transition.sprite:setPosition(0, 0)
 
     player:Start(enemyManager)
-    for k,v in pairs(tiledMap) do
-    	print(k,v)
-    end
-    tiledMap.load("./assets/map_test.tmj")
+    --tiledMap.load("./assets/map_test.tmj")
 end
 
 function Update()

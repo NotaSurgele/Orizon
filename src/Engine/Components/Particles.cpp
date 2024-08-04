@@ -24,8 +24,10 @@ Particle::Particle(const std::string &file) : behaviourMap({
             sprite.color  = { json["color"][0], json["color"][1], json["color"][2], json["color"][3] };
             sprite.scale = { json["scale"][0], json["scale"][1] };
 
-            sprite.sprite = new Sprite(texture);
+            if (!sprite.sprite)
+                sprite.sprite = new Sprite(texture);
             sprite.sprite->setTexture(texture, true);
+            sprite.sprite->setTextureName(json["texture"]);
             sprite.sprite->setScale(sprite.scale.x, sprite.scale.y);
 
             sprite.currentColor = color;

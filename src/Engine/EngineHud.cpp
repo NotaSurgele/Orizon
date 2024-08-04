@@ -1233,6 +1233,50 @@ void EngineHud::handleEmitter(const sf::Vector2f& shapePos, const sf::Vector2f& 
     _particle->rect.top = fixedShape.top - ePosition.y;
 }
 
+void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData, Particle *particle)
+{
+    auto sprite = spriteData.sprite;
+    auto texture = sprite->getTexture();
+    auto name = sprite->getTextureName();
+
+    // Handle texture
+    {
+        if (name.empty()) {
+            std::cout << "What" << std::endl;
+            name = RESOURCE_MANAGER().textureToName(texture);
+            std::cout << "Coucou " << name << std::endl;
+            sprite->setTextureName(name);
+        }
+        ImGui::Text("Current texture: ");
+        ImGui::SameLine();
+        ImGui::PushID(id++);
+        std::cout << "Name " << name << std::endl;
+        if (ImGui::Button(name.data())) {
+            ImGui::OpenPopup("Textures buffer");
+        }
+        ImGui::SameLine();
+        if (ImGui::ImageButton(*texture, sf::Vector2f(64, 64))) _imgWindow = true;
+        if (_imgWindow) imageViewer(texture);
+        if (ImGui::BeginPopup("Textures buffer")) {
+            for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
+                auto& s = it.first;
+
+                if (ImGui::Selectable(s.data())) {
+                    for (auto& pd : particle->getParticlesData()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+                    ImGui::CloseCurrentPopup();
+                    break;
+                }
+            }
+            ImGui::EndPopup();
+        }
+    }
+}
+
 void EngineHud::renderParticleWindow()
 {
     if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
@@ -1324,12 +1368,14 @@ void EngineHud::renderParticleWindow()
 
         //Sprite
         {
-            auto front = _particle->getParticlesData().front();
-            auto& spriteData = front.spriteData;
+            if (!_particle->getParticlesData().empty()) {
+                auto front = _particle->getParticlesData().front();
+                auto& spriteData = front.spriteData;
 
-            if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
-                ComponentTreeNodeFactory::create(spriteData.sprite);
-                ImGui::TreePop();
+                if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    renderSpriteEmitterTreeNode(spriteData, _particle);
+                    ImGui::TreePop();
+                }
             }
         }
 
