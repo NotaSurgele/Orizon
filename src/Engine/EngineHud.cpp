@@ -1242,15 +1242,13 @@ void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData
     // Handle texture
     {
         if (name.empty()) {
-            std::cout << "What" << std::endl;
             name = RESOURCE_MANAGER().textureToName(texture);
-            std::cout << "Coucou " << name << std::endl;
             sprite->setTextureName(name);
         }
         ImGui::Text("Current texture: ");
         ImGui::SameLine();
         ImGui::PushID(id++);
-        std::cout << "Name " << name << std::endl;
+
         if (ImGui::Button(name.data())) {
             ImGui::OpenPopup("Textures buffer");
         }
@@ -1268,6 +1266,18 @@ void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData
                         pdSprite->setTextureName(s);
                         pdSprite->setTexture(it.second, true);
                     }
+
+                    for (auto& pd : particle->getDeadParticle()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+                    particle->texture = it.second;
+                    _batch = GET_BATCH(_particle->texture);
+
+                    if (!_batch)
+                        _batch = CREATE_BATCH(spriteData.sprite);
                     ImGui::CloseCurrentPopup();
                     break;
                 }
@@ -1320,6 +1330,7 @@ void EngineHud::renderParticleWindow()
         _particleRenderTexture.clear(clear);
 
         _particle->play(position);
+
         _particleRenderTexture.draw(*(sf::Drawable *) _batch);
         _particleRenderTexture.draw(shape);
         if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);

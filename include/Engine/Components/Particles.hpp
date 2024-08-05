@@ -133,6 +133,7 @@ public:
     void reset();
     void destroy();
     std::list<ParticleData>& getParticlesData();
+    std::deque<ParticleData>& getDeadParticle();
     sf::RectangleShape& getEmitterShape();
 
 private:

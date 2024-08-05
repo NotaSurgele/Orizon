@@ -431,6 +431,11 @@ std::list<ParticleData>& Particle::getParticlesData()
     return _particles;
 }
 
+std::deque<ParticleData>& Particle::getDeadParticle()
+{
+    return _deadParticle;
+}
+
 void Particle::destroy()
 {
     // clear queue

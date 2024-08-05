@@ -101,6 +101,32 @@ void Core::CoreDrawBatch(const sf::Shape &shape)
     _batches.push_back(newBatch);
 }
 
+SpriteBatch *Core::createBatch(Sprite *sprite)
+{
+    auto newBatch = new SpriteBatch();
+
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite);
+
+    _batches.push_back(newBatch);
+    return newBatch;
+}
+
+SpriteBatch *Core::createBatch(const sf::Shape& shape)
+{
+    auto newBatch = new SpriteBatch();
+
+    newBatch->texture = shape.getTexture();
+    newBatch->textureId = newBatch->texture->getNativeHandle();
+    newBatch->draw(shape);
+    _batches.push_back(newBatch);
+    return newBatch;
+}
+
+
 void Core::CoreDrawBatch(Sprite *sprite)
 {
     if (!_isTextureLoaded) return;
