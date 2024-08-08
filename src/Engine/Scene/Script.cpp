@@ -43,7 +43,7 @@ void Script::create(const std::string& scriptPath, bool insert)
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
-    (*_state)["Utils"] = Utils();
+    //(*_state)["Utils"] = Utils();
     (*_state)["Draw"] = sol::overload(
             [](Core* core, Drawable *drawable) {
                 return core->CoreDraw(drawable);
@@ -261,15 +261,27 @@ void Script::registerUtilsType()
 {
     _state->new_usertype<Utils>(
             "Utils", sol::constructors<Utils()>(),
-            "readFile", &Utils::readFile,
+            "readFile", sol::overload(
+                [] (const std::string& fp) {
+                    return Utils::readFile(fp);
+                },
+                [] (const std::string& fp, bool ret) {
+                    return Utils::readFile(fp, ret);
+                }
+            ),
             "writeFile", &Utils::writeFile);
 }
 
 void Script::registerResourceManager()
 {
     _state->new_usertype<ResourcesManager>(
-    "ResourceManager",
-    "addTile", &ResourcesManager::loadTileFromSpriteSheet,
+    "ResourceManager", sol::constructors<ResourcesManager()>(),
+        "addTile", sol::overload(
+            [] (std::string const& tilename,
+                std::string const& filepath, float x, float y, float w, float h) {
+                return R_ADD_TILE(tilename, filepath, x, y, w, h);
+            }
+        ),
         "getTexture", sol::overload(
             [] (const std::string& resourceName) {
                 return Core::resourceManager().getRessource<sf::Texture>(resourceName);

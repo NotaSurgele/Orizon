@@ -2,13 +2,14 @@ cmake_minimum_required(VERSION 3.15)
 project(Orizon)
 
 set(CMAKE_USE_PTHREADS_INIT true)
+set(SOL_SAFE_NUMERICS 1)
 
 # careful
-set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Release)
 
-if (CMAKE_BUILD_TYPE MATCHES DEBUG)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
 	message("Debug Mode")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1 -gdwarf-2")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O4 -gdwarf-2")
 else ()
 	message("Release Mode")
 endif ()

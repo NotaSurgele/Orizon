@@ -108,13 +108,13 @@ void SpriteBatch::draw(Sprite *sprite)
     counter++;
 }
 
-void SpriteBatch::draw(const sf::Shape& shape, sf::BlendMode& mode)
+void SpriteBatch::draw(const sf::Shape& shape, const sf::BlendMode& mode)
 {
     _blendMode = mode;
     draw(shape);
 }
 
-void SpriteBatch::draw(Sprite *sprite, sf::BlendMode &mode)
+void SpriteBatch::draw(Sprite *sprite, const sf::BlendMode &mode)
 {
     _blendMode = mode;
     draw(sprite);

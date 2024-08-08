@@ -1,7 +1,9 @@
-tiledMap = {}
+local json = require "assets.Scripting.json"
+
+TiledMap = {}
+TiledMap.__index = TiledMap
 
 local tileMap = {}
-local json = require "json"
 local mapJson = nil
 
 local saveEntity = {}
@@ -18,7 +20,12 @@ function displayTable(tbl)
     end
 end
 
-function tiledMap.load(mapPath)
+function TiledMap.new()
+    local self = setmetatable({}, TiledMap)
+    return self
+end
+
+function TiledMap.load(mapPath)
     for k,v in pairs(tileMap) do
         v:destroy()
     end
@@ -29,12 +36,12 @@ function tiledMap.load(mapPath)
         return false
     end
     mapJson = json.decode(mapContent)
-    tiledMap.loadTileSet()
-    tiledMap.loadTileMap()
+    TiledMap.loadTileSet()
+    TiledMap.loadTileMap()
     return true
 end
 
-function tiledMap.loadTileSet()
+function TiledMap.loadTileSet()
     local tilesets = mapJson["tilesets"]
 
     for k, tileset in pairs(tilesets) do
@@ -52,7 +59,7 @@ function tiledMap.loadTileSet()
         local id = 1
         for y=0, imgHeight - 1, tileSize.y do
             for x=0, imgWidth - 1, tileSize.x do
-                ResourceManager:addTile(tostring(id), imagePath, x, y, tileSize.x, tileSize.y)
+                ResourceManager.addTile(tostring(id), imagePath, x, y, tileSize.x, tileSize.y)
                 id = id + 1
             end
         end
@@ -60,7 +67,7 @@ function tiledMap.loadTileSet()
     return true
 end
 
-function tiledMap.loadTileMap()
+function TiledMap.loadTileMap()
     local layers = mapJson["layers"]
 
     layerIndex = 0
@@ -108,19 +115,19 @@ function tiledMap.loadTileMap()
     end
 end
 
-function tiledMap.hide()
+function TiledMap.hide()
     for k, v in pairs(tileMap) do
         v:hide()
     end
 end
 
-function tiledMap.render()
+function TiledMap.render()
     for k, v in pairs(tileMap) do
         v:render()
     end
 end
 
-function tiledMap.drawBox()
+function TiledMap.drawBox()
     for k, e in pairs(saveEntity) do
         collider = e:getBoxCollider()
         if collider ~= nil then
@@ -129,7 +136,7 @@ function tiledMap.drawBox()
     end
 end
 
-function tiledMap.destroy()
+function TiledMap.destroy()
     for k,v in pairs(saveMap) do
         v:destroy()
     end
@@ -139,4 +146,4 @@ function tiledMap.destroy()
     end
 end
 
-return tiledMap
+return TiledMap

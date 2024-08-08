@@ -323,7 +323,7 @@ void System::systems()
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
-            if (!e->active) continue;
+            if (!e || !e->active) continue;
             pushEntity(e);
         }
     }
@@ -553,7 +553,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
             collisionResolution(box, collider);
         }
-        box->collide = (!box->getSides().empty()) ? true : false;
+        box->collide = (!box->getSides().empty());
     }
 }
 

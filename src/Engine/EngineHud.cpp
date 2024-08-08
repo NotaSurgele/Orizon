@@ -723,7 +723,6 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
-                auto size = it.second->getSize();
                 sprite->setTextureName(s);
                 sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();
@@ -1005,7 +1004,7 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _pPath = path;
             _particleEmitter = pEmitter;
             _particle = new Particle( path );
-            _batch = GET_BATCH(_particle->texture);
+            _batch = nullptr;
         }
     }
     ImGui::Separator();
@@ -1204,20 +1203,100 @@ void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos
             return;
         }
         // X part
-        auto x = mousePos.x - corner.x;
-        x = (x < 0) ? (corner.x + -x) : (corner.x - x);
         shape.left = mousePos.x;
-        //shape.width = (x < 0) ? size.x - x : size.x + x;
+        shape.top = mousePos.y;
+    }
+}
+
+void EngineHud::handleEmitter(const sf::Vector2f& shapePos, const sf::Vector2f& ePosition)
+{
+    if (!ImGui::IsWindowFocused())
+        return;
+
+    // retrieve mouse coordinate according to the renderTexture
+    sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
+    sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
+    sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
+    sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
+
+    renderTextureMousePos -= { 100, 80 };
+
+    static sf::FloatRect fixedShape = { shapePos.x,
+                                        shapePos.y,
+                                        _particle->rect.width,
+                                        _particle->rect.height };
+    resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
+
+    _particle->rect.width = fixedShape.width;
+    _particle->rect.height = fixedShape.height;
+    _particle->rect.left = fixedShape.left - ePosition.x;
+    _particle->rect.top = fixedShape.top - ePosition.y;
+}
+
+void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData, Particle *particle)
+{
+    auto sprite = spriteData.sprite;
+    auto texture = sprite->getTexture();
+    auto name = sprite->getTextureName();
+
+    // Handle texture
+    {
+        if (name.empty()) {
+            name = RESOURCE_MANAGER().textureToName(texture);
+            sprite->setTextureName(name);
+        }
+        ImGui::Text("Current texture: ");
+        ImGui::SameLine();
+        ImGui::PushID(id++);
+
+        if (ImGui::Button(name.data())) {
+            ImGui::OpenPopup("Textures buffer");
+        }
+        ImGui::SameLine();
+        if (ImGui::ImageButton(*texture, sf::Vector2f(64, 64))) _imgWindow = true;
+        if (_imgWindow) imageViewer(texture);
+        if (ImGui::BeginPopup("Textures buffer")) {
+            for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
+                auto& s = it.first;
+
+                if (ImGui::Selectable(s.data())) {
+                    for (auto& pd : particle->getParticlesData()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+
+                    for (auto& pd : particle->getDeadParticle()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+                    particle->texture = it.second;
+
+                    if (_batch)
+                        DESTROY_BATCH(_batch);
+                    _batch = CREATE_BATCH(spriteData.sprite);
+
+                    ImGui::CloseCurrentPopup();
+                    break;
+                }
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::PopID();
     }
 }
 
 void EngineHud::renderParticleWindow()
 {
-    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_particle) {
         _renderPWindow = false;
         _pPath = {};
         _particleEmitter = nullptr;
         _batch = nullptr;
+
         if (_particle) {
             _particle->destroy();
             delete _particle;
@@ -1225,6 +1304,7 @@ void EngineHud::renderParticleWindow()
         _particle = nullptr;
         return;
     }
+
     static sf::Color clear = sf::Color::White;
     static float colorF[4] = { static_cast<float>(clear.r / 255),
                                static_cast<float>(clear.g / 255),
@@ -1251,31 +1331,16 @@ void EngineHud::renderParticleWindow()
 
         _particleRenderTexture.clear(clear);
 
-        _particle->play(position);
-        _particleRenderTexture.draw(*(sf::Drawable *) _batch);
+        _particle->play(position, _batch);
+
+        if (_batch)
+            _particleRenderTexture.draw(*(sf::Drawable *) _batch);
+
         _particleRenderTexture.draw(shape);
         if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);
 
         // drag emitter
-        if (ImGui::IsWindowFocused()) {
-            // retrieve mouse coordinate according to the renderTexture
-            sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
-            sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
-            sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
-            sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
-
-            renderTextureMousePos -= { 100, 80 };
-
-            static sf::FloatRect fixedShape = { shapePos.x,
-                                         shapePos.y,
-                                     _particle->rect.width,
-                                     _particle->rect.height };
-            resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
-
-            _particle->rect.width = fixedShape.width;
-            _particle->rect.height = fixedShape.height;
-            _particle->rect.left = fixedShape.left - position.x;
-        }
+        handleEmitter(shapePos, position);
 
         ImGui::Image(_particleRenderTexture);
         ImGui::EndChild();
@@ -1294,11 +1359,45 @@ void EngineHud::renderParticleWindow()
                 static_cast<sf::Uint8>(colorF[3] * 255)
         };
         ImGui::Separator();
-        if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
-            renderEmitterTreeNode(_particle, _particleEmitter, position);
-            ImGui::TreePop();
+        // Emitter
+        {
+            if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
+                renderEmitterTreeNode(_particle, _particleEmitter, position);
+                ImGui::TreePop();
+            }
         }
-        _batch->clear();
+
+        // Particle Data
+        static ParticleData pData = {};
+        static bool set = false;
+
+        if (!set) {
+            for (auto &data: _particle->jsonData["data"]) {
+                std::string dataName = data["data_name"];
+                auto behaviour = _particle->behaviourMap[dataName];
+
+                behaviour(pData, data);
+            }
+            set = true;
+        }
+
+        //Sprite
+        {
+            if (!_particle->getParticlesData().empty()) {
+                auto front = _particle->getParticlesData().front();
+                auto& spriteData = front.spriteData;
+
+                if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    renderSpriteEmitterTreeNode(spriteData, _particle);
+                    ImGui::TreePop();
+                }
+                if (!_batch)
+                    _batch = CREATE_BATCH(spriteData.sprite);
+            }
+        }
+
+        if (_batch)
+            _batch->clear();
         ImGui::Separator();
         ImGui::EndChild();
     }
@@ -1386,11 +1485,7 @@ void EngineHud::destroyEntity(Entity *e, const std::string& name)
 {
     auto popUpName = name + " Entity actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
@@ -1407,11 +1502,7 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
 {
     auto popUpName = name + " Layer actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             tilemap->destroy();
@@ -1508,11 +1599,11 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
             for (auto& e : layer->getAllEntities()) {
                 auto tag = e->getComponent<Tag>();
                 std::string name = "Entity " + std::to_string(index);
+
                 if (tag)
                     name = tag->value();
-                if (ImGui::Selectable(name.c_str())) {
+                if (ImGui::Selectable(name.c_str()))
                     _selected = e;
-                }
                 destroyEntity(e, name);
                 index++;
             }

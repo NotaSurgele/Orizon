@@ -10,9 +10,9 @@ public:
 
     void draw(Sprite *sprite);
     void draw(const sf::Shape& shape);
-    void draw(const sf::Shape& shape, sf::BlendMode& mode);
+    void draw(const sf::Shape& shape, const sf::BlendMode& mode);
 
-    void draw(Sprite *sprite, sf::BlendMode& mode);
+    void draw(Sprite *sprite, const sf::BlendMode& mode);
 
     void clear();
 

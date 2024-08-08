@@ -61,8 +61,9 @@ class ResourcesManager {
         ResourcesManager& loadTileFromSpriteSheet(std::string const& tilename,
                                                   std::string const& filepath, int x, int y, int w, int h)
         {
-            sf::Texture *tile = new sf::Texture();
+            auto tile = new sf::Texture();
             if (!tile->loadFromFile(filepath,
+
                sf::IntRect{x, y, w, h})) {
                 std::cerr << "[ResourceManager] ERROR cannot load Tile " << filepath << " at position "
                     << x << " " << y << std::endl;

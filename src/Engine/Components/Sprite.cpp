@@ -14,6 +14,7 @@ Sprite::Sprite( Entity *self,
     setTexture(texture);
     _textureId = texture->getNativeHandle();
     _sprite.setScale(scaleX, scaleY);
+    _signature = "Sprite";
 }
 
 /*Sprite::Sprite( Entity *self,
@@ -38,6 +39,7 @@ Sprite::Sprite(Entity *self, const std::string& textureName, const float& w, con
     _textureId = text->getNativeHandle();
     setTexture(text);
     _sprite.setScale(w, h);
+    _signature = "Sprite";
 }
 
 Sprite::Sprite(sf::Texture*texture) : _self(nullptr)
@@ -46,6 +48,7 @@ Sprite::Sprite(sf::Texture*texture) : _self(nullptr)
     _texture = texture;
     setTexture(texture);
     _sprite.setScale(1, 1);
+    _signature = "Sprite";
 }
 
 sf::Sprite& Sprite::getSprite()
