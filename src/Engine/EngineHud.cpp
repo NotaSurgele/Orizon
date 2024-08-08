@@ -1004,7 +1004,7 @@ void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
             _pPath = path;
             _particleEmitter = pEmitter;
             _particle = new Particle( path );
-            _batch = GET_BATCH(_particle->texture);
+            _batch = nullptr;
         }
     }
     ImGui::Separator();
@@ -1274,22 +1274,24 @@ void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData
                         pdSprite->setTexture(it.second, true);
                     }
                     particle->texture = it.second;
-                    _batch = GET_BATCH(_particle->texture);
 
-                    if (!_batch)
-                        _batch = CREATE_BATCH(spriteData.sprite);
+                    if (_batch)
+                        DESTROY_BATCH(_batch);
+                    _batch = CREATE_BATCH(spriteData.sprite);
+
                     ImGui::CloseCurrentPopup();
                     break;
                 }
             }
             ImGui::EndPopup();
         }
+        ImGui::PopID();
     }
 }
 
 void EngineHud::renderParticleWindow()
 {
-    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_batch || !_particle) {
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_particle) {
         _renderPWindow = false;
         _pPath = {};
         _particleEmitter = nullptr;
@@ -1329,9 +1331,11 @@ void EngineHud::renderParticleWindow()
 
         _particleRenderTexture.clear(clear);
 
-        _particle->play(position);
+        _particle->play(position, _batch);
 
-        _particleRenderTexture.draw(*(sf::Drawable *) _batch);
+        if (_batch)
+            _particleRenderTexture.draw(*(sf::Drawable *) _batch);
+
         _particleRenderTexture.draw(shape);
         if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);
 
@@ -1387,10 +1391,13 @@ void EngineHud::renderParticleWindow()
                     renderSpriteEmitterTreeNode(spriteData, _particle);
                     ImGui::TreePop();
                 }
+                if (!_batch)
+                    _batch = CREATE_BATCH(spriteData.sprite);
             }
         }
 
-        _batch->clear();
+        if (_batch)
+            _batch->clear();
         ImGui::Separator();
         ImGui::EndChild();
     }

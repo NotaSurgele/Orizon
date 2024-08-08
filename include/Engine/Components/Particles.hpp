@@ -11,6 +11,7 @@
 #include "IComponent.hpp"
 #include "Timer.hpp"
 #include "json.hpp"
+#include "SpriteBatch.hpp"
 
 struct ParticleData {
     ParticleData() = default;
@@ -129,6 +130,11 @@ public:
     void load(const std::size_t& amount);
     void initData(nlohmann::json& json);
     void play(const sf::Vector2f& entityPosition);
+
+#ifdef ENGINE_GUI
+    void play(const sf::Vector2f& entityPosition, SpriteBatch *batch);
+#endif
+
     bool hasFinished() const;
     void reset();
     void destroy();
@@ -150,6 +156,11 @@ private:
 
     void velocitySystem(std::optional<ParticleData::VelocityData>& velocityData, sf::Vector2f& position);
     void spriteSystem(ParticleData::SpriteData& spriteData, Sprite *s, const sf::Vector2f& fixedPosition);
+
+#ifdef ENGINE_GUI
+    void spriteSystem(ParticleData::SpriteData& spriteData, Sprite *s,
+                      const sf::Vector2f& fixedPosition, SpriteBatch *batch);
+#endif
 
     bool killParticle(ParticleData& pData, std::queue<std::size_t>& removeQueue);
 

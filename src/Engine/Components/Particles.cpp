@@ -354,6 +354,87 @@ void Particle::spriteSystem(ParticleData::SpriteData &spriteData, Sprite *s, con
         DRAW_BATCH(s);
 }
 
+#ifdef ENGINE_GUI
+
+    void Particle::play(const sf::Vector2f& entityPosition, SpriteBatch *batch)
+    {
+
+        //Base draw
+        if (_deadParticle.size() >= amount) {
+            _totalDeadParticle = 0;
+            _hasFinished = true;
+        }
+        if (!loop && _hasFinished) return;
+
+        //Handle delay
+        updateDelayTimer(delayTimer);
+        _shape.setPosition(entityPosition + rect.getPosition());
+        _shape.setSize(rect.getSize());
+
+        // Particle loop
+        for (auto& pData : _particles) {
+            auto& spriteData = pData.spriteData;
+            auto& s = spriteData.sprite;
+            auto& velocityData = pData.velocityData;
+            auto& fadeIn = pData.fadeInData;
+            auto& fadeOut = pData.fadeOutData;
+            auto& lifeTimer = pData.lifeTimer;
+
+            if (!pData.set) {
+                resetSpriteData(spriteData, entityPosition);
+                resetParticleData(pData);
+                resetFadeOut(fadeOut, spriteData);
+                resetFadeIn(fadeIn, spriteData);
+                _hasFinished = false;
+                continue;
+            }
+
+            if (lifeTimer.to() != lifeTime) lifeTimer.set(lifeTime);
+
+            lifeTimer.update();
+            if (lifeTimer.ended()) {
+                killParticle(pData, _removeQueue );
+                continue;
+            }
+            auto fixedPosition = s->getPosition();
+
+            velocitySystem(velocityData, fixedPosition);
+            fadeSystem(spriteData, fadeIn, fadeOut);
+            spriteSystem(spriteData, s, fixedPosition, batch);
+        }
+
+        // remove dead particles from array
+        while (!_removeQueue.empty()) {
+            std::size_t current = _removeQueue.front();
+
+            for (auto it = _particles.begin(); it != _particles.end(); it++) {
+                auto& pData = it;
+
+                if (pData->id == current) {
+                    _particles.erase(it);
+                    break;
+                }
+            }
+            _removeQueue.pop();
+        }
+    }
+
+void Particle::spriteSystem(ParticleData::SpriteData &spriteData, Sprite *s, const sf::Vector2f &fixedPosition,
+                            SpriteBatch *batch)
+{
+    s->setPosition(fixedPosition);
+    s->setColor(spriteData.currentColor);
+
+    if (!batch) return;
+
+    if (spriteData.blended)
+        batch->draw(s, sf::BlendAdd);
+    else
+        batch->draw(s);
+}
+
+#endif
+
 void Particle::play(const sf::Vector2f& entityPosition)
 {
     //Base draw

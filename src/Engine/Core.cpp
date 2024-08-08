@@ -127,6 +127,22 @@ SpriteBatch *Core::createBatch(const sf::Shape& shape)
 }
 
 
+bool Core::destroyBatch(SpriteBatch *batch)
+{
+    std::size_t index = 0;
+
+
+    for (auto b : _batches) {
+        if (b == batch) {
+            _batches.erase(_batches.begin() + index);
+            delete batch;
+            return true;
+        }
+        index++;
+    }
+    return false;
+}
+
 void Core::CoreDrawBatch(Sprite *sprite)
 {
     if (!_isTextureLoaded) return;
