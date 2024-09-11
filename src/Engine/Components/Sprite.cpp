@@ -4,14 +4,17 @@
 #include <iostream>
 
 Sprite::Sprite( Entity *self,
-                sf::Texture& texture,
+                sf::Texture*texture,
                 float const& scaleX,
                 float const& scaleY) :  _sprite(),
                                         _texture(),
                                         _self(self)
 {
+    _texture = texture;
     setTexture(texture);
+    _textureId = texture->getNativeHandle();
     _sprite.setScale(scaleX, scaleY);
+    _signature = "Sprite";
 }
 
 /*Sprite::Sprite( Entity *self,
@@ -30,14 +33,22 @@ Sprite::Sprite(Entity *self, const std::string& textureName, const float& w, con
                                                                                                 _sprite(),
                                                                                                 _texture()
 {
-    sf::Texture text = R_GET_RESSOURCE(sf::Texture, textureName);
+    sf::Texture*text = R_GET_RESSOURCE(sf::Texture, textureName);
+
+    _texture = text;
+    _textureId = text->getNativeHandle();
     setTexture(text);
     _sprite.setScale(w, h);
+    _signature = "Sprite";
 }
 
-Sprite::Sprite(sf::Texture& texture) : _self(nullptr)
+Sprite::Sprite(sf::Texture*texture) : _self(nullptr)
 {
+    _textureId = texture->getNativeHandle();
+    _texture = texture;
     setTexture(texture);
+    _sprite.setScale(1, 1);
+    _signature = "Sprite";
 }
 
 sf::Sprite& Sprite::getSprite()
@@ -47,7 +58,7 @@ sf::Sprite& Sprite::getSprite()
 
 const sf::Texture* Sprite::getTexture()
 {
-    return _sprite.getTexture();
+    return _texture;
 }
 
 const sf::Vector2f& Sprite::getPosition()
@@ -115,6 +126,11 @@ void Sprite::setPosition(const float& x, const float& y)
     _sprite.setPosition(x, y);
 }
 
+std::size_t Sprite::getTextureId()
+{
+    return _textureId;
+}
+
 const sf::Color& Sprite::getColor()
 {
     return _sprite.getColor();
@@ -125,17 +141,19 @@ bool Sprite::isLightApply()
     return _light;
 }
 
-Sprite& Sprite::setTexture(sf::Texture& texture, bool reset)
+Sprite& Sprite::setTexture(sf::Texture*texture, bool reset)
 {
     _texture = texture;
-    _sprite.setTexture(_texture, reset);
+    _sprite.setTexture(*_texture, reset);
+    _textureId = texture->getNativeHandle();
     return *this;
 }
 
 Sprite& Sprite::setTexture(std::string const &filePath)
 {
-    _texture.loadFromFile(filePath);
-    _sprite.setTexture(_texture);
+    _texture->loadFromFile(filePath);
+    _sprite.setTexture(*_texture);
+    _textureId = _texture->getNativeHandle();
     return *this;
 }
 
@@ -147,6 +165,4 @@ Sprite& Sprite::setTextureRect(sf::IntRect const &rect)
 
 void Sprite::destroy()
 {
-    _sprite.~Sprite();
-    _texture.~Texture();
 }

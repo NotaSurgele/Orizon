@@ -1,4 +1,5 @@
 #include "Engine/Time.hpp"
+#include <iostream>
 
 Time::Time() : _clock()
 {
@@ -19,7 +20,8 @@ sf::Time Time::end()
     sf::Time dt = _clock.getElapsedTime();
 
     deltaTime = dt.asSeconds();
-    if (deltaTime > 2.0f)
+    if (deltaTime > 2.0f) {
         deltaTime = .1f;
+    }
     return dt;
 }

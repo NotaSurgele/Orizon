@@ -18,10 +18,9 @@ function StateMachine:play(name, ...)
 
     if state then
         self.currentState = name
-        state(...)
-    else
-        print("State", name, "Does not exist !")
+        return state(...)
     end
+    print("State", name, "Does not exist !")
 end
 
 function StateMachine:getCurrentState()

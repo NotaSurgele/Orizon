@@ -110,7 +110,7 @@ void Light::emit()
     auto fixedPositionY = _transform->position.y  - ((textureSize.y * scale.y) / 2);
     _sprite->setPosition(fixedPositionX, fixedPositionY);
 
-    DRAW_BLEND(_sprite, sf::BlendAdd);
+    DRAW_BATCH_BLENDED(_sprite, sf::BlendAdd);
 }
 
 void Light::setSprite(Sprite *s)

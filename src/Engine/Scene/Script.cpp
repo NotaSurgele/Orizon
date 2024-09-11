@@ -43,13 +43,19 @@ void Script::create(const std::string& scriptPath, bool insert)
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
-    (*_state)["Utils"] = Utils();
-    (*_state)["DRAW"] = sol::overload(
+    //(*_state)["Utils"] = Utils();
+    (*_state)["Draw"] = sol::overload(
             [](Core* core, Drawable *drawable) {
                 return core->CoreDraw(drawable);
             },
             [] (Core* core, const sf::Drawable& drawable) {
                 return core->CoreDraw(drawable);
+            },
+            [] (Core *core, Sprite *sprite) {
+                return core->CoreDrawBatch(sprite);
+            },
+            [] (Core *core, sf::RectangleShape& shape) {
+                return core->CoreDraw(shape);
             }
     );
     _state->set_function("Import", &loadScript);
@@ -255,21 +261,40 @@ void Script::registerUtilsType()
 {
     _state->new_usertype<Utils>(
             "Utils", sol::constructors<Utils()>(),
-            "readFile", &Utils::readFile,
+            "readFile", sol::overload(
+                [] (const std::string& fp) {
+                    return Utils::readFile(fp);
+                },
+                [] (const std::string& fp, bool ret) {
+                    return Utils::readFile(fp, ret);
+                }
+            ),
             "writeFile", &Utils::writeFile);
 }
 
 void Script::registerResourceManager()
 {
     _state->new_usertype<ResourcesManager>(
-    "ResourceManager",
-    "addTile", &ResourcesManager::loadTileFromSpriteSheet,
-        "getResource", sol::overload(
+    "ResourceManager", sol::constructors<ResourcesManager()>(),
+        "addTile", sol::overload(
+            [] (std::string const& tilename,
+                std::string const& filepath, float x, float y, float w, float h) {
+                return R_ADD_TILE(tilename, filepath, x, y, w, h);
+            }
+        ),
+        "getTexture", sol::overload(
             [] (const std::string& resourceName) {
                 return Core::resourceManager().getRessource<sf::Texture>(resourceName);
-            },
-            [] (const std::string& resourceName) {
-                return Core::resourceManager().getRessource<sf::SoundBuffer>(resourceName);
+            }
+        ),
+        "getShader", sol::overload(
+            [] (const std::string& resource) {
+                return R_GET_RESSOURCE(Shader, resource);
+            }
+        ),
+        "getSound", sol::overload(
+            [] (const std::string& name) {
+                return R_GET_RESSOURCE(sf::SoundBuffer, name);
             }
         )
     );
@@ -356,7 +381,7 @@ void Script::registerCanvasTypes()
     );
 
     _state->new_usertype<Image>(
-        "Image", sol::constructors<Image(sf::Texture&, const sf::Vector2f&,
+        "Image", sol::constructors<Image(sf::Texture *, const sf::Vector2f&,
                                          const sf::Vector2f& scale, const sf::Color& color)>(),
         "setPosition", sol::overload(
             [](Image *img, const float& x, const float& y) {
@@ -400,13 +425,13 @@ void Script::registerCanvasTypes()
         "NOTHING", Button::States::NOTHING
     );
     _state->new_usertype<Button>(
-        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture&)>(),
+        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture*)>(),
         "getSprite", &Button::getSprite,
         "setTexture", sol::overload(
-            [](Button *button, sf::Texture& texture) {
+            [](Button *button, sf::Texture *texture) {
                 return button->setTexture(texture);
             },
-            [](Button *button, sf::Texture& texture, const std::string& name) {
+            [](Button *button, sf::Texture *texture, const std::string& name) {
                 return button->setTexture(texture, name);
             }
         ),
@@ -496,6 +521,71 @@ void Script::registerLineType()
     );
 }
 
+void Script::registerShaderType()
+{
+
+    _state->new_enum("ShaderType",
+                     "Vertex", sf::Shader::Type::Vertex,
+                     "Geometry", sf::Shader::Type::Geometry,
+                     "Fragment", sf::Shader::Type::Fragment
+    );
+    _state->new_usertype<Shader>(
+        "Shader", sol::constructors<Shader()>(),
+        "isAvailable", &Shader::isAvailable,
+        "loadFromFile", sol::overload(
+            [] (Shader *shader, const std::string& path, const sf::Shader::Type& type) {
+                return shader->loadFromFile(path, type);
+            },
+            [] (Shader *shader, const std::string& vertex, const std::string& fragment) {
+                return shader->loadFromFile(vertex, fragment);
+            }
+        ),
+        "setUniform", sol::overload(
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec2& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec3& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec4& vector) {
+                return shader->setUniform(name, vector);
+            },
+            [] (Shader *shader, const std::string& name, bool x) {
+                return shader->setUniform(name, x);
+            },
+            [] (Shader *shader, const std::string& name, sf::Texture& texture) {
+                return shader->setUniform(name, texture);
+            },
+            [] (Shader *shader, const std::string& name, float x) {
+                return shader->setUniform(name, x);
+            }
+        ),
+        "setUniformArray", sol::overload(
+            [] (Shader *shader, const std::string& name, const float *array, std::size_t length) {
+                return shader->setUniformArray(name, array, length);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            },
+            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4 *array, std::size_t size) {
+                return shader->setUniformArray(name, array, size);
+            }
+        )
+    );
+}
+
 void Script::registerBaseTypes()
 {
     registerInputSystem();
@@ -504,12 +594,13 @@ void Script::registerBaseTypes()
     registerRectType();
     registerTileMap();
     registerUtilsType();
-    registerResourceManager();
+    registerShaderType();
     registerSystemType();
     registerDrawableType();
     registerCanvasTypes();
     registerCoreType();
     registerLineType();
+    registerResourceManager();
 }
 
 void Script::registerTransform2DComponent()
@@ -626,16 +717,16 @@ void Script::registerSpriteComponent()
 {
     _state->new_usertype<Sprite>(
         "Sprite", sol::constructors<
-                            Sprite(Entity *, sf::Texture, float, float),
-                            Sprite(Entity *, sf::Texture),
+                            Sprite(Entity *, sf::Texture*, float, float),
+                            Sprite(Entity *, sf::Texture*),
                             Sprite(Entity *, std::string, float, float),
-                            Sprite(sf::Texture texture)>(),
+                            Sprite(sf::Texture*)>(),
         "setScale", &Sprite::setScale,
         "setTexture", sol::overload(
                 [] (Sprite *sprite, const std::string& texturePath) {
                     return sprite->setTexture(texturePath);
                 },
-                [] (Sprite *sprite, sf::Texture& texture) {
+                [] (Sprite *sprite, sf::Texture* texture) {
                     return sprite->setTexture(texture);
                 }
         ),
@@ -652,6 +743,8 @@ void Script::registerSpriteComponent()
         "setTransform", &Sprite::setTransform,
         "setTextureRect", &Sprite::setTextureRect,
         "setSprite", &Sprite::setSprite,
+        "attachShader", &Sprite::attachShader,
+        "dropShader", &Sprite::dropShader,
         "getPosition", &Sprite::getPosition,
         "getTexture", &Sprite::getTexture,
         "getScale", &Sprite::getScale,
@@ -660,6 +753,8 @@ void Script::registerSpriteComponent()
         "getSprite", &Sprite::getSprite,
         "getGlobalBounds", &Sprite::getGlobalBounds,
         "rotate", &Sprite::rotate,
+        "shader", &Sprite::shader,
+        "hasShader", &Sprite::hasShader,
         "destroy", &Sprite::destroy
     );
 }
@@ -740,12 +835,12 @@ void Script::registerCanvasComponent()
             }
         ),
         "addButton", sol::overload(
-            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, const sf::Texture& text) {
+            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, sf::Texture* text) {
                 return canvas->addButton(pos, scale, text, false);
             }
         ),
         "addImage", sol::overload(
-            [] (Canvas *canvas, sf::Texture texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
+            [] (Canvas *canvas, sf::Texture* texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
                 return canvas->addImage(texture, position, scale, false);
             }
         ),
@@ -841,10 +936,10 @@ void Script::registerEntityFunction()
                     }
             ),
             "addSprite", sol::overload(
-                    [](Entity *entity, sf::Texture texture, float width=1, float height=1) {
+                    [](Entity *entity, sf::Texture *texture, float width=1, float height=1) {
                         return entity->addComponent<Sprite>(texture, width, height);
                     },
-                    [](Entity *entity, sf::Texture texture) {
+                    [](Entity *entity, sf::Texture *texture) {
                         return entity->addComponent<Sprite>(texture);
                     },
                     [](Entity *entity, std::string texturePath, float width=1, float height=1) {

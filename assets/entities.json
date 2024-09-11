@@ -3,51 +3,6 @@
         {
             "components": [
                 {
-                    "loop": true,
-                    "music_name": "tata",
-                    "type": "Music"
-                },
-                {
-                    "tag": "player",
-                    "type": "Tag"
-                },
-                {
-                    "animations": [
-                        {
-                            "frames_number": 4,
-                            "name": "idle",
-                            "rect": [
-                                0.0,
-                                0.0,
-                                18.0,
-                                18.0
-                            ],
-                            "speed": 0.20000000298023224
-                        }
-                    ],
-                    "type": "Animator"
-                },
-                {
-                    "type": "Velocity"
-                },
-                {
-                    "texture_name": "hobbit",
-                    "type": "Sprite"
-                },
-                {
-                    "collision_type": "Dynamic",
-                    "position": [
-                        0,
-                        0
-                    ],
-                    "range": 10,
-                    "size": [
-                        16.0,
-                        16.0
-                    ],
-                    "type": "BoxCollider"
-                },
-                {
                     "position": [
                         350.0,
                         500.0
@@ -64,34 +19,57 @@
                     "type": "Transform2D"
                 },
                 {
+                    "collision_type": "Dynamic",
+                    "position": [
+                        350.0,
+                        500.0
+                    ],
+                    "range": 10,
+                    "size": [
+                        16.0,
+                        16.0
+                    ],
+                    "type": "BoxCollider"
+                },
+                {
+                    "texture_name": "hobbit",
+                    "type": "Sprite"
+                },
+                {
+                    "animations": [
+                    ],
+                    "type": "Animator"
+                },
+                {
+                    "tag": "player",
+                    "type": "Tag"
+                },
+                {
+                    "type": "Velocity"
+                },
+                {
+                    "loop": true,
+                    "music_name": "tata",
+                    "type": "Music"
+                },
+                {
                     "type": "Layer",
                     "value": 1
+                },
+                {
+                    "type": "ParticlesEmitter",
+                    "particles":[
+                        {
+                            "name": "test",
+                            "path": "./assets/Particle/test.json"
+                        }
+                    ]
                 }
             ],
             "name": "player"
         },
         {
             "components": [
-                {
-                    "tag": "Camera",
-                    "type": "Tag"
-                },
-                {
-                    "follow": true,
-                    "type": "View",
-                    "view_bounds": [
-                        160.0,
-                        140.0,
-                        1280.0,
-                        720.0
-                    ],
-                    "viewport": [
-                        0.0,
-                        0.0,
-                        1.0,
-                        1.0
-                    ]
-                },
                 {
                     "position": [
                         800.0,
@@ -109,6 +87,26 @@
                     "type": "Transform2D"
                 },
                 {
+                    "follow": true,
+                    "type": "View",
+                    "view_bounds": [
+                        268.5,
+                        140.0,
+                        1063.0,
+                        720.0
+                    ],
+                    "viewport": [
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "tag": "Camera",
+                    "type": "Tag"
+                },
+                {
                     "type": "Layer",
                     "value": 0
                 }
@@ -117,10 +115,6 @@
         },
         {
             "components": [
-                {
-                    "tag": "Hud",
-                    "type": "Tag"
-                },
                 {
                     "position": [
                         0.0,
@@ -136,6 +130,10 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "tag": "Hud",
+                    "type": "Tag"
                 },
                 {
                     "type": "Layer",
@@ -151,14 +149,6 @@
         {
             "components": [
                 {
-                    "texture_name": "background",
-                    "type": "Sprite"
-                },
-                {
-                    "tag": "MapManager",
-                    "type": "Tag"
-                },
-                {
                     "position": [
                         0.0,
                         0.0
@@ -173,6 +163,14 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "tag": "MapManager",
+                    "type": "Tag"
+                },
+                {
+                    "texture_name": "background",
+                    "type": "Sprite"
                 },
                 {
                     "type": "Layer",
@@ -184,10 +182,6 @@
         {
             "components": [
                 {
-                    "tag": "EnemyManager",
-                    "type": "Tag"
-                },
-                {
                     "position": [
                         0.0,
                         0.0
@@ -202,6 +196,10 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "tag": "EnemyManager",
+                    "type": "Tag"
                 },
                 {
                     "type": "Layer",
@@ -213,9 +211,8 @@
         {
             "components": [
                 {
-                    "loop": false,
-                    "sound_name": "card_select",
-                    "type": "Sound"
+                    "tag": "SoundManager",
+                    "type": "Tag"
                 },
                 {
                     "position": [
@@ -234,8 +231,9 @@
                     "type": "Transform2D"
                 },
                 {
-                    "tag": "SoundManager",
-                    "type": "Tag"
+                    "loop": false,
+                    "sound_name": "card_select",
+                    "type": "Sound"
                 },
                 {
                     "type": "Layer",
@@ -247,10 +245,6 @@
         {
             "components": [
                 {
-                    "tag": "GameManager",
-                    "type": "Tag"
-                },
-                {
                     "position": [
                         0.0,
                         0.0
@@ -265,6 +259,10 @@
                         1.0
                     ],
                     "type": "Transform2D"
+                },
+                {
+                    "tag": "GameManager",
+                    "type": "Tag"
                 },
                 {
                     "type": "Layer",

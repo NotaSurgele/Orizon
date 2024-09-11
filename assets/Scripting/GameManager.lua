@@ -1,47 +1,72 @@
 local StateMachine = require 'assets.Scripting.StateMachine'
 
-local hud = nil
-local endTourButton = nil
-local stateMachine = StateMachine.new()
-local playerTurn = true
+GameManager = {
+    player = nil,
+    enemyManager = nil,
+    button = nil,
+    turn = true,
+}
+GameManager.__index = GameManager
 
-local enemiesManager = nil
-local player = nil
+function GameManager.new()
+    local self = setmetatable({}, GameManager)
 
-local function defineState()
-	stateMachine:insert("onHover", function ()
-        endTourButton:setColor(Color.Red)
-	end)
-
-	stateMachine:insert("onNothing", function ()
-        endTourButton:setColor(Color.White)
-	end)
+    self.player = nil
+    self.enemyManager = nil
+    self.turn = true
+    self.button = nil
+    return self
 end
 
-function Start()
-    enemiesManager = System.getEntity("EnemyManager"):getScript()
-    player = System.getEntity("player"):getScript()
-    hud = System.getEntity("Hud"):getCanvas()
+function GameManager:hasPlayed()
+    self.turn = true
+end
 
-    local buttonTexture = ResourceManager.getResource("end_tour")
-    endTourButton = hud:addButton(Vector2f.new(50, 50), Vector2f.new(1, 1), buttonTexture)
+function GameManager:Start(player, enemyManager)
+    local canvas = System.getEntity("Hud"):getCanvas()
+    self.player = player
+    self.enemyManager = enemyManager
 
-    endTourButton:setCallback(function ()
-        endTourButton.clickable = not endTourButton.clickable
-        playerTurn = not playerTurn
-        player:call("setTurn", playerTurn)
-        enemiesManager:call("setTurn", true)
+    -- setup endTour button
+    local texture = ResourceManager.getTexture("end_tour")
+
+    self.button = canvas:addButton(Vector2f.new(300, 300), Vector2f.new(1, 1), texture)
+    self.button:setCallback(function ()
+        if self.turn == false then
+        	return
+        end
+    	self.turn = false
     end)
-    defineState()
 end
 
-function Update()
-    if endTourButton:isHovered() == true then
-        stateMachine:play("onHover")
-    else
-        stateMachine:play("onNothing")
+function GameManager:buttonColor()
+    -- if its not player turn
+    if self.turn == false then
+    	self.button:setColor(Color.new(114, 116, 116, 255))
+    	return
     end
+
+    -- if player turn
+    if self.button:isHovered() then
+        self.button:setColor(Color.Red)
+        return
+    end
+    self.button:setColor(Color.White)
 end
 
-function Destroy()
+function GameManager:Update()
+    self:buttonColor()
+
+--  Play State
+    self.player:Play(self.turn)
+    self.enemyManager:Play(not self.turn)
+
+--  Update state
+    self.player:Update()
+    self.enemyManager:Update(self.player)
 end
+
+function GameManager:Destroy()
+end
+
+return GameManager

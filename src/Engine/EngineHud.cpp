@@ -123,8 +123,8 @@ void EngineHud::ComponentCreationFactory::createSprite(Entity *e)
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture* texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     e->addComponent<Sprite>(texture, 1, 1)->setTextureName("Default");
 }
 
@@ -183,8 +183,8 @@ void EngineHud::ComponentCreationFactory::createLight(Entity *e)
     sf::Image blankImage;
     blankImage.create(16, 16, sf::Color::White);
 
-    sf::Texture texture;
-    texture.loadFromImage(blankImage);
+    sf::Texture *texture = new sf::Texture;
+    texture->loadFromImage(blankImage);
     auto *s  = new Sprite(texture);
     s->setTextureName("Default");
     e->addComponent<Light>(s);
@@ -206,7 +206,7 @@ void EngineHud::ComponentCreationFactory::createCanvas(Entity *e)
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComponent *c)
 {
     auto transform = dynamic_cast<Transform2D *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Transform2D";
     json["position"] = { transform->position.x, transform->position.y };
@@ -219,7 +219,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTransform2D(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComponent *c)
 {
     auto box = dynamic_cast<BoxCollider *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "BoxCollider";
     json["position"] = { box->getPosition().x, box->getPosition().y };
@@ -232,17 +232,21 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeBoxCollider(IComp
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSprite(IComponent *c)
 {
     auto sprite = dynamic_cast<Sprite *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Sprite";
 
     if (sprite->getTextureName().empty()) json["texture_name"] = RESOURCE_MANAGER().textureToName(sprite->getTexture());
     else json["texture_name"] = sprite->getTextureName();
+    if (sprite->hasShader) {
+        auto name = sprite->shader->name;
+        json["shader"]["name"] = name;
+    }
     return json;
 }
 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(IComponent *c)
 {
-    nlohmann::json json;
+    nlohmann::json json {};
     json["type"] = "Velocity";
     return json;
 }
@@ -250,7 +254,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeVelocity(ICompone
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(IComponent *c)
 {
     auto animator = dynamic_cast<Animator *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Animator";
     for (auto& animation : animator->getAnimations()) {
@@ -270,7 +274,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeAnimation(ICompon
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *c)
 {
     auto view = dynamic_cast<View *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
     auto viewBounds = view->getViewBounds();
     auto viewPort = view->getViewport();
 
@@ -284,7 +288,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeView(IComponent *
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c)
 {
     auto tag = dynamic_cast<Tag *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Tag";
     json["tag"] = tag->value();
@@ -294,7 +298,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeTag(IComponent *c
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent *c)
 {
     auto layer = dynamic_cast<Layer *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Layer";
     json["value"] = layer->value();
@@ -304,7 +308,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLayer(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent *c)
 {
     auto sound = dynamic_cast<Sound *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Sound";
     json["sound_name"] = sound->name();
@@ -315,7 +319,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeSound(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeMusic(IComponent *c)
 {
     auto music = dynamic_cast<OrizonMusic *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Music";
     json["music_name"] = music->name();
@@ -328,7 +332,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
     auto light = dynamic_cast<Light *>(c);
     float intensity = light->getIntensity();
     Sprite *sprite = light->getSprite();
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Light";
     json["intensity"] = intensity;
@@ -339,7 +343,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeLight(IComponent 
 nlohmann::json EngineHud::ComponentSerializerFactory::serializeGravity(IComponent *c)
 {
     auto gravity = dynamic_cast<Gravity *>(c);
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Gravity";
     json["force"] = gravity->force;
@@ -352,7 +356,7 @@ nlohmann::json EngineHud::ComponentSerializerFactory::serializeCanvas(IComponent
     auto buttons = canvas->getButtons();
     auto texts = canvas->getTexts();
     auto images = canvas->getImages();
-    nlohmann::json json;
+    nlohmann::json json {};
 
     json["type"] = "Canvas";
     json["canvas_objects"] = nlohmann::json::array();
@@ -719,7 +723,6 @@ void EngineHud::ComponentTreeNodeFactory::buildSpriteTreeNode(IComponent *c)
             auto& s = it.first;
 
             if (ImGui::Selectable(s.data())) {
-                auto size = it.second.getSize();
                 sprite->setTextureName(s);
                 sprite->setTexture(it.second, true);
                 ImGui::CloseCurrentPopup();
@@ -986,6 +989,27 @@ void EngineHud::ComponentTreeNodeFactory::buildCanvasTreeNode(IComponent *c)
     }
 }
 
+void EngineHud::ComponentTreeNodeFactory::buildParticleEmitter(IComponent *c)
+{
+    auto pEmitter = dynamic_cast<ParticlesEmitter *>(c);
+
+    for (auto& it : pEmitter->particles) {
+        auto &particle = it.second;
+        auto &path = particle.path;
+
+        ImGui::Separator();
+        ImGui::Text(("Particle path: " + path).data());
+        if (ImGui::Button("View")) {
+            _renderPWindow = true;
+            _pPath = path;
+            _particleEmitter = pEmitter;
+            _particle = new Particle( path );
+            _batch = nullptr;
+        }
+    }
+    ImGui::Separator();
+}
+
 void EngineHud::componentSerializer(nlohmann::json &entityJson, Entity *e)
 {
     auto components = e->getComponents();
@@ -1066,6 +1090,318 @@ void EngineHud::saveEntity(nlohmann::json &json)
     }
     auto c = json["entities"].dump(4);
     std::cout << c << std::endl;
+}
+
+void EngineHud::renderEmitterTreeNode(Particle *particle, ParticlesEmitter *emitter,
+                                      sf::Vector2f& position) {
+    auto &seed = particle->seed;
+
+    auto amount = particle->amount;
+    auto &amountMin = particle->amountMin;
+    auto &amountMax = particle->amountMax;
+
+    auto &delay = particle->delay;
+
+    auto offset = particle->rect.getPosition();
+    float offsetF[2] = {offset.x, offset.y };
+
+    auto size = particle->rect.getSize();
+    float sizeF[2] = { size.x, size.y };
+
+    // LifeTime
+    ImGui::InputFloat("Particle life time", &particle->lifeTime);
+
+    // Seed
+    ImGui::InputInt("Seed", &seed);
+
+
+    // Amount
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Min", &amountMin);
+    amountMin = std::max(1, amountMin);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(300);
+    ImGui::SliderInt("Particle amount", &amount, amountMin, amountMax);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("Max", &amountMax);
+    amountMax = std::max(1, amountMax);
+
+    if (amount != particle->amount) {
+        if (particle->amount < amount)
+            particle->load(amount - particle->amount);
+        particle->amount = amount;
+    }
+
+    // Delay
+    ImGui::InputFloat("Delay", &delay);
+
+    // Loop
+    ImGui::Checkbox("Loop", &particle->loop);
+
+    // Position offset + size handling
+    ImGui::InputFloat2("Position", offsetF);
+    if (offsetF[0] != offset.x || offsetF[1] != offset.y) {
+        particle->rect.left = offsetF[0];
+        particle->rect.top = offsetF[1];
+    }
+
+    ImGui::InputFloat2("Size", sizeF);
+    if (sizeF[0] != size.x || sizeF[1] != size.y) {
+        particle->rect.width = sizeF[0];
+        particle->rect.height = sizeF[1];
+    }
+}
+
+void EngineHud::resizeEmitter(sf::FloatRect &shape, const sf::Vector2f& mousePos, const sf::Vector2f& offset)
+{
+    auto pos = shape.getPosition();
+    auto size = shape.getSize();
+    sf::FloatRect edge[4] = {
+        { pos.x + size.x, pos.y, 10 , 10 },
+        { pos.x, pos.y, 10, 10 },
+        { pos.x + size.x, pos.y + size.y, 10, 10 },
+        { pos.x , pos.y + size.y, 10, 10 }
+    };
+
+    static sf::RectangleShape shapes[4];
+    static sf::RectangleShape mouse{};
+    static int selectedCorner = -1;
+
+    mouse.setPosition(mousePos);
+    mouse.setSize({ 5, 5 });
+    mouse.setFillColor(sf::Color::Transparent);
+    mouse.setOutlineColor(sf::Color::Red);
+    mouse.setOutlineThickness(2.0f);
+
+    _particleRenderTexture.draw(mouse);
+
+    for (int i = 0; i < 4; i++) {
+        sf::Vector2f cornerPos = { edge[i].left,
+                                   edge[i].top };
+
+        shapes[i].setPosition(cornerPos);
+        shapes[i].setFillColor(sf::Color::Red);
+        shapes[i].setOutlineThickness(2.0F);
+        shapes[i].setSize({ 10, 10 });
+
+        _particleRenderTexture.draw(shapes[i]);
+
+        if (!ImGui::IsMouseDown(0))  {
+            selectedCorner = -1;
+            continue;
+        }
+        if (edge[i].contains(mousePos)) selectedCorner = i;
+    }
+    if (selectedCorner != -1) {
+        auto corner = sf::Vector2f{ edge[selectedCorner].left, edge[selectedCorner].top };
+
+        if (selectedCorner % 2 == 0) {
+            auto output = size + (mousePos - corner);
+
+            shape.width = (output.x < 0) ? -output.x : output.x;
+            return;
+        }
+        // X part
+        shape.left = mousePos.x;
+        shape.top = mousePos.y;
+    }
+}
+
+void EngineHud::handleEmitter(const sf::Vector2f& shapePos, const sf::Vector2f& ePosition)
+{
+    if (!ImGui::IsWindowFocused())
+        return;
+
+    // retrieve mouse coordinate according to the renderTexture
+    sf::Vector2i globalMousePos = sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow());
+    sf::Vector2f windowMousePos = _particleRenderTexture.mapPixelToCoords(globalMousePos);
+    sf::Vector2f renderTexturePos = _particleRenderTexture.getView().getCenter();
+    sf::Vector2f renderTextureMousePos = windowMousePos - renderTexturePos + sf::Vector2f(_particleRenderTexture.getSize().x / 2, _particleRenderTexture.getSize().y / 2);
+
+    renderTextureMousePos -= { 100, 80 };
+
+    static sf::FloatRect fixedShape = { shapePos.x,
+                                        shapePos.y,
+                                        _particle->rect.width,
+                                        _particle->rect.height };
+    resizeEmitter(fixedShape, renderTextureMousePos, {0, 0});
+
+    _particle->rect.width = fixedShape.width;
+    _particle->rect.height = fixedShape.height;
+    _particle->rect.left = fixedShape.left - ePosition.x;
+    _particle->rect.top = fixedShape.top - ePosition.y;
+}
+
+void EngineHud::renderSpriteEmitterTreeNode(ParticleData::SpriteData &spriteData, Particle *particle)
+{
+    auto sprite = spriteData.sprite;
+    auto texture = sprite->getTexture();
+    auto name = sprite->getTextureName();
+
+    // Handle texture
+    {
+        if (name.empty()) {
+            name = RESOURCE_MANAGER().textureToName(texture);
+            sprite->setTextureName(name);
+        }
+        ImGui::Text("Current texture: ");
+        ImGui::SameLine();
+        ImGui::PushID(id++);
+
+        if (ImGui::Button(name.data())) {
+            ImGui::OpenPopup("Textures buffer");
+        }
+        ImGui::SameLine();
+        if (ImGui::ImageButton(*texture, sf::Vector2f(64, 64))) _imgWindow = true;
+        if (_imgWindow) imageViewer(texture);
+        if (ImGui::BeginPopup("Textures buffer")) {
+            for (auto& it : R_GET_RESSOURCES(sf::Texture)) {
+                auto& s = it.first;
+
+                if (ImGui::Selectable(s.data())) {
+                    for (auto& pd : particle->getParticlesData()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+
+                    for (auto& pd : particle->getDeadParticle()) {
+                        auto pdSprite = pd.spriteData.sprite;
+
+                        pdSprite->setTextureName(s);
+                        pdSprite->setTexture(it.second, true);
+                    }
+                    particle->texture = it.second;
+
+                    if (_batch)
+                        DESTROY_BATCH(_batch);
+                    _batch = CREATE_BATCH(spriteData.sprite);
+
+                    ImGui::CloseCurrentPopup();
+                    break;
+                }
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::PopID();
+    }
+}
+
+void EngineHud::renderParticleWindow()
+{
+    if (!_pPath.has_value() || !_particleEmitter || !_renderPWindow || !_particle) {
+        _renderPWindow = false;
+        _pPath = {};
+        _particleEmitter = nullptr;
+        _batch = nullptr;
+
+        if (_particle) {
+            _particle->destroy();
+            delete _particle;
+        }
+        _particle = nullptr;
+        return;
+    }
+
+    static sf::Color clear = sf::Color::White;
+    static float colorF[4] = { static_cast<float>(clear.r / 255),
+                               static_cast<float>(clear.g / 255),
+                               static_cast<float>(clear.b / 255),
+                               static_cast<float>(clear.a / 255) };
+
+
+    auto& shape = _particle->getEmitterShape();
+    auto shapePos = shape.getPosition();
+
+    auto e = _particleEmitter->getEntity();
+
+    if (!e) return;
+    auto& position = e->getComponent<Transform2D>()->position;
+    auto sprite = e->getComponent<Sprite>();
+
+    ImGui::SetNextWindowSize(ImVec2(1800, 900));
+    ImGui::SetNextWindowPos(ImVec2(85, 50));
+    ImGui::Begin("Particle window", &_renderPWindow);
+
+    // Render particle part
+    {
+        ImGui::BeginChild("Rendering window",  ImVec2(900, 900), true);
+
+        _particleRenderTexture.clear(clear);
+
+        _particle->play(position, _batch);
+
+        if (_batch)
+            _particleRenderTexture.draw(*(sf::Drawable *) _batch);
+
+        _particleRenderTexture.draw(shape);
+        if (sprite) _particleRenderTexture.draw(*(sf::Drawable *) sprite);
+
+        // drag emitter
+        handleEmitter(shapePos, position);
+
+        ImGui::Image(_particleRenderTexture);
+        ImGui::EndChild();
+    }
+
+    ImGui::SameLine();
+
+    // Data part
+    {
+        ImGui::BeginChild("Data part");
+        ImGui::ColorEdit4("Background color", colorF);
+        clear = {
+                static_cast<sf::Uint8>(colorF[0] * 255),
+                static_cast<sf::Uint8>(colorF[1] * 255),
+                static_cast<sf::Uint8>(colorF[2] * 255),
+                static_cast<sf::Uint8>(colorF[3] * 255)
+        };
+        ImGui::Separator();
+        // Emitter
+        {
+            if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_DefaultOpen)) {
+                renderEmitterTreeNode(_particle, _particleEmitter, position);
+                ImGui::TreePop();
+            }
+        }
+
+        // Particle Data
+        static ParticleData pData = {};
+        static bool set = false;
+
+        if (!set) {
+            for (auto &data: _particle->jsonData["data"]) {
+                std::string dataName = data["data_name"];
+                auto behaviour = _particle->behaviourMap[dataName];
+
+                behaviour(pData, data);
+            }
+            set = true;
+        }
+
+        //Sprite
+        {
+            if (!_particle->getParticlesData().empty()) {
+                auto front = _particle->getParticlesData().front();
+                auto& spriteData = front.spriteData;
+
+                if (ImGui::TreeNodeEx("Sprite", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    renderSpriteEmitterTreeNode(spriteData, _particle);
+                    ImGui::TreePop();
+                }
+                if (!_batch)
+                    _batch = CREATE_BATCH(spriteData.sprite);
+            }
+        }
+
+        if (_batch)
+            _batch->clear();
+        ImGui::Separator();
+        ImGui::EndChild();
+    }
+    ImGui::End();
 }
 
 void EngineHud::saveScene()
@@ -1149,11 +1485,7 @@ void EngineHud::destroyEntity(Entity *e, const std::string& name)
 {
     auto popUpName = name + " Entity actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             _toSave.erase(std::remove(_toSave.begin(), _toSave.end(), e), _toSave.end());
@@ -1170,11 +1502,7 @@ void EngineHud::destroyTilemap(TileMap *tilemap, const std::string& name)
 {
     auto popUpName = name + " Layer actions";
 
-    if (ImGui::IsItemHovered()) {
-        if (ImGui::IsMouseDown(1)) {
-            ImGui::OpenPopup(popUpName.data());
-        }
-    }
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1)) ImGui::OpenPopup(popUpName.data());
     if (ImGui::BeginPopup(popUpName.data())) {
         if (ImGui::Selectable("Destroy")) {
             tilemap->destroy();
@@ -1271,11 +1599,11 @@ void EngineHud::layersEntity(std::size_t& index, const std::vector<TileMap *>& t
             for (auto& e : layer->getAllEntities()) {
                 auto tag = e->getComponent<Tag>();
                 std::string name = "Entity " + std::to_string(index);
+
                 if (tag)
                     name = tag->value();
-                if (ImGui::Selectable(name.c_str())) {
+                if (ImGui::Selectable(name.c_str()))
                     _selected = e;
-                }
                 destroyEntity(e, name);
                 index++;
             }
@@ -1469,7 +1797,7 @@ void EngineHud::resourceManager()
 
     if (ImGui::TreeNode("Textures")) {
         auto& resource = R_GET_RESSOURCES(sf::Texture);
-        resourceManagerResourceTreeNodeContent<sf::Texture>(resource);
+        resourceManagerResourceTreeNodeContent<sf::Texture *>(resource);
         ImGui::TreePop();
     }
 
@@ -1480,8 +1808,8 @@ void EngineHud::resourceManager()
     }
 
     if (ImGui::TreeNode("Sound")) {
-        auto& resource = R_GET_RESSOURCES(sf::SoundBuffer);
-        resourceManagerResourceTreeNodeContent<sf::SoundBuffer>(resource);
+        auto resource = R_GET_RESSOURCES(sf::SoundBuffer);
+        resourceManagerResourceTreeNodeContent<sf::SoundBuffer *>(resource);
         ImGui::TreePop();
     }
 

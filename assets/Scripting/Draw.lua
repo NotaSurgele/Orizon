@@ -4,7 +4,7 @@ local Draw = {}
 Draw.__index = Draw
 
 function Draw.new(hud, player)
-    local texture = ResourceManager.getResource('card_back')
+    local texture = ResourceManager.getTexture('card_back')
     local self = setmetatable(Draw, Card)
     local button = hud:addButton(Vector2f.new(400, 90),
             Vector2f.new(0.8, 0.8), texture)
@@ -17,7 +17,6 @@ function Draw.new(hud, player)
         sprite = Sprite.new(texture),
         play = false
     }
-
     self.animation.sprite:setPosition(1200, 590)
     self.animation.sprite:setScale(0.8, 0.8)
     return self

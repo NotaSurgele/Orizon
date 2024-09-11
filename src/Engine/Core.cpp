@@ -16,6 +16,7 @@ Core::Core(std::string const& name, std::size_t width, std::size_t height) :
     if (!(_isTextureLoaded = _windowTexture.create(1063, 951)))
         std::cerr << "[CORE] Couldn't create RenderTexture" << std::endl;
 #endif
+    _status = sf::RenderStates();
     _r_manager = ResourcesManager();
     _time = Time();
     instance = this;
@@ -80,6 +81,120 @@ void Core::CoreDraw(sf::Drawable const& draw, const sf::BlendMode& blendMode)
 #else
     _window.draw(component, blendMode);
 #endif
+}
+
+void Core::CoreDrawBatch(const sf::Shape &shape)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        auto textureId = shape.getTexture()->getNativeHandle();
+
+        if (batch->textureId == textureId) {
+            batch->draw(shape);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = shape.getTexture();
+    newBatch->textureId = newBatch->texture->getNativeHandle();
+    newBatch->draw(shape);
+    _batches.push_back(newBatch);
+}
+
+SpriteBatch *Core::createBatch(Sprite *sprite)
+{
+    auto newBatch = new SpriteBatch();
+
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite);
+
+    _batches.push_back(newBatch);
+    return newBatch;
+}
+
+SpriteBatch *Core::createBatch(const sf::Shape& shape)
+{
+    auto newBatch = new SpriteBatch();
+
+    newBatch->texture = shape.getTexture();
+    newBatch->textureId = newBatch->texture->getNativeHandle();
+    newBatch->draw(shape);
+    _batches.push_back(newBatch);
+    return newBatch;
+}
+
+
+bool Core::destroyBatch(SpriteBatch *batch)
+{
+    std::size_t index = 0;
+
+
+    for (auto b : _batches) {
+        if (b == batch) {
+            _batches.erase(_batches.begin() + index);
+            delete batch;
+            return true;
+        }
+        index++;
+    }
+    return false;
+}
+
+void Core::CoreDrawBatch(Sprite *sprite)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite);
+    _batches.push_back(newBatch);
+}
+
+void Core::CoreDrawBatch(Sprite *sprite, sf::BlendMode mode)
+{
+    if (!_isTextureLoaded) return;
+    for (auto batch : _batches) {
+        if (batch->textureId == sprite->getTextureId()) {
+            batch->draw(sprite, mode);
+            return;
+        }
+    }
+    auto newBatch = new SpriteBatch();
+    newBatch->texture = sprite->getTexture();
+    newBatch->textureCpy = *sprite->getTexture();
+    newBatch->textureId = sprite->getTextureId();
+    newBatch->savedSprite = sprite;
+    newBatch->draw(sprite, mode);
+    _batches.push_back(newBatch);
+}
+
+SpriteBatch *Core::getBatch(Sprite *sprite)
+{
+    for (auto& batch : _batches) {
+        if (sprite->getTextureId() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
+}
+
+SpriteBatch *Core::getBatch(sf::Texture *texture)
+{
+    for (auto& batch : _batches) {
+        if (texture->getNativeHandle() == batch->textureId)
+            return batch;
+    }
+    return nullptr;
 }
 
 void Core::CoreDisplay()
@@ -159,7 +274,7 @@ void Core::fpsCalculation()
     } else {
         fpsText.setPosition(10, 10);
     }
-    if (_fpsTime < .5f) {
+    if (_fpsTime < 1.0f) {
         _fpsTime += _time.getClock().getElapsedTime().asSeconds();
         return;
     }
@@ -199,6 +314,7 @@ void Core::updateGUI()
     });
     if (_guiThread.joinable()) _guiThread.join();
     _gui.gameWindow(_windowTexture);
+    _gui.renderParticleWindow();
     ImGui::SFML::Render(*_window.getSFMLRenderWindow());
 #endif
 }
@@ -227,14 +343,15 @@ void Core::run()
         _window.clear(_clearColor);
 #endif
         _system_handler.systems();
+        renderBatch();
+        clearBatch();
         render();
 #ifdef  ENGINE_GUI
         auto old = WindowInstance.getView();
         _windowTexture.setView(_hud);
-        //WindowInstance.getSFMLRenderWindow()->setView(_hud);
         updateGUI();
         if (old) _windowTexture.setView(*old);
-        EngineHud::writeConsole<std::string, std::string>("FPS ", fpsText.getString());
+        EngineHud::writeConsole<std::string, std::string>("", fpsText.getString());
 #else
         _window.draw(fpsText);
 #endif
@@ -246,4 +363,21 @@ void Core::run()
     destroyGUI();
     destroy();
     _window.close();
+}
+
+void Core::renderBatch()
+{
+    for (auto batch : _batches) {
+#ifdef ENGINE_GUI
+        _windowTexture.draw(*((sf::Drawable *)batch));
+#else
+        _window.draw(*((sf::Drawable *)batch));
+#endif
+    }
+}
+
+void Core::clearBatch()
+{
+    for (auto batch : _batches)
+        batch->clear();
 }

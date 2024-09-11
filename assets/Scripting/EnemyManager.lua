@@ -1,15 +1,21 @@
 local Enemy = require "assets.Scripting.Enemy"
 
 local EnemyManager = {
-    enemies = {}
+    enemies = {},
+    turn = false,
+    gameManager = nil
 }
 
 EnemyManager.__index = EnemyManager
+
+local index = 1
 
 --824 472
 
 function EnemyManager.new()
     local self = setmetatable({}, EnemyManager)
+    self.turn = false
+    self.gameManager = nil
     return self
 end
 
@@ -19,7 +25,7 @@ function EnemyManager:createEnemies()
 
     for i=0, 3 do
         local enemy = Enemy.new()
-        local texture = ResourceManager.getResource("cross")
+        local texture = ResourceManager.getTexture("cross")
         local bounds = nil
 
         enemy.entity:addSprite(texture)
@@ -44,13 +50,34 @@ function EnemyManager:contain(bounds)
     return nil
 end
 
-function EnemyManager:Start()
+function EnemyManager:Start(gameManager)
     self:createEnemies()
+    self.gameManager = gameManager
 end
 
-function EnemyManager:Update()
+function EnemyManager:Play(turn)
+	self.turn = turn
+end
+
+function EnemyManager:hasPlayed()
+    self.enemies[index]:Play(false)
+    index = index + 1
+    if index > #self.enemies then
+        index = 1
+        self.turn = false
+        self.gameManager:hasPlayed()
+    end
+end
+
+function EnemyManager:Update(player)
+    -- Set the current enemy to play
+    if self.turn == true then
+        print(#self.enemies, index)
+        self.enemies[index]:Play(true)
+    end
+
     for k, enemy in pairs(self.enemies) do
-        enemy:Update()
+        enemy:Update(player, self)
     end
 end
 
@@ -63,7 +90,6 @@ function EnemyManager:Destroy()
         enemy = nil
         table.remove(self.enemies, pos)
     end
-    print(#self.enemies)
 end
 
 return EnemyManager

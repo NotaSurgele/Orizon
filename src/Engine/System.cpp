@@ -149,7 +149,7 @@ void System::spriteSystem(Entity *e, std::vector<IComponent *> componentCache)
         return;
     sprite->setTransform(transform);
     sprite->setLightApply(false);
-    DRAW(sprite);
+    DRAW_BATCH(sprite);
 }
 
 void System::canvasSystem(Entity *e)
@@ -221,7 +221,7 @@ void System::canvasSystem(Entity *e)
                 }
             } else b->state = Button::NOTHING;
         }
-        DRAW(b);
+        DRAW_BATCH(b->getSprite());
 
         //Handle button text
         if (text != nullptr) {
@@ -284,7 +284,7 @@ sf::Vector2f System::getGlobalMousePosition()
 
     auto coord = renderTexture.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
 
-    return { coord.x - (float)renderTexture.getSize().x / 2, coord.y };
+    return { coord.x - (float)(renderTexture.getSize().x / 2.5f), coord.y };
 #else
     return WindowInstance.mapPixelToCoords(sf::Mouse::getPosition(*WindowInstance.getSFMLRenderWindow()));
 #endif
@@ -323,7 +323,7 @@ void System::systems()
         auto entities = m->getEntityInBounds(WindowInstance.getView()->getViewBounds());
 
         for (auto& e : entities) {
-            if (!e->active) continue;
+            if (!e || !e->active) continue;
             pushEntity(e);
         }
     }
@@ -347,6 +347,7 @@ void System::systems()
         BoxSystem(e);
         colliderSystem(e);
         velocitySystem(e);
+        particleEmitterSystem(e);
     }
 
     // Light source system
@@ -434,6 +435,21 @@ void System::lightSystem(Entity *e)
             return;
         }
         light->emit();
+    }
+}
+
+void System::particleEmitterSystem(Entity *e)
+{
+    auto emitter = e->getComponent<ParticlesEmitter>();
+    auto transform = e->getComponent<Transform2D>();
+
+    if (!emitter || !transform) return;
+
+    auto position = transform->position;
+    for (auto& it : emitter->particles) {
+        auto& p = it.second;
+
+        p.play(position);
     }
 }
 
@@ -537,7 +553,7 @@ void System::handleLayerCollision(BoxCollider *box, int range, Entity *e)
             auto collider = entity->getComponent<BoxCollider>();
             collisionResolution(box, collider);
         }
-        box->collide = (!box->getSides().empty()) ? true : false;
+        box->collide = (!box->getSides().empty());
     }
 }
 

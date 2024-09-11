@@ -1,6 +1,6 @@
-Utils = {}
+Toto = {}
 
-function Utils.lerp(start, target, dt, epsilon)
+function Toto.lerp(start, target, dt, epsilon)
     epsilon = epsilon or 0.0001
 
     local lerpedValue = start + (target - start) * dt
@@ -10,13 +10,13 @@ function Utils.lerp(start, target, dt, epsilon)
     return lerpedValue
 end
 
-function Utils.lerp2(start, target, dt)
+function Toto.lerp2(start, target, dt)
     return Vector2f.new(
             self:lerp(start.x, target.y, dt),
             self:lerp(start.y, target.y, dt))
 end
 
-function Utils.arraySize(array)
+function Toto.arraySize(array)
     local counter = 0
 
     for _, _ in pairs(array) do
@@ -25,4 +25,4 @@ function Utils.arraySize(array)
     return counter
 end
 
-return Utils
+return Toto

@@ -7,8 +7,10 @@
 #include "Engine/Components/Drawable.hpp"
 #include "Engine/Entity.hpp"
 #include "Engine/EngineHud.hpp"
+#include "Engine/SpriteBatch.hpp"
 #include "external/json.hpp"
 #include "SceneManager.hpp"
+
 #include <SFML/System.hpp>
 #include <string>
 #include <unordered_map>
@@ -55,6 +57,16 @@ class Core : public ICore {
         void CoreDraw(Drawable *component, const sf::BlendMode& blendMode);
         void CoreDraw(sf::Drawable const& drawable);
         void CoreDraw(sf::Drawable const& drawable, const sf::BlendMode& blendMode);
+        void CoreDrawBatch(Sprite *sprite);
+        void CoreDrawBatch(Sprite *sprite, sf::BlendMode mode);
+        void CoreDrawBatch(const sf::Shape& drawable);
+
+        SpriteBatch *createBatch(Sprite *sprite);
+        SpriteBatch *createBatch(const sf::Shape& shape);
+        bool destroyBatch(SpriteBatch *batch);
+        SpriteBatch *getBatch(sf::Texture *texture);
+        SpriteBatch *getBatch(Sprite *sprite);
+
         void CoreClose();
 
         void run();
@@ -67,6 +79,8 @@ class Core : public ICore {
     private:
         bool CoreEvent(sf::Event& event);
         void CoreDisplay();
+        void clearBatch();
+        void renderBatch();
 
         void inputHandler(sf::Event& event);
         void fpsCalculation();
@@ -92,6 +106,10 @@ protected:
 private:
     static inline Time _time;
     static inline ResourcesManager _r_manager;
+
+    //Batch
+    std::vector<SpriteBatch *> _batches;
+    sf::RenderStates _status;
 
     //Utils
     RenderWindow _window;
@@ -126,6 +144,9 @@ private:
 
 #define R_ADD_TILE(name, path, x, y, w, h)\
         Core::resourceManager().loadTileFromSpriteSheet(name, path, x, y, w, h)
+
+#define R_ADD_SHADER(name, vertex, fragment) \
+        Core::resourceManager().loadShader(name, vertex, fragment)
 
 #define R_ADD_TAG(tag) \
         Core::resourceManager().addTag(tag)
@@ -179,6 +200,21 @@ private:
 
 #define DRAW_BLEND(to_draw, blendMode) \
         Core::instance->CoreDraw(to_draw, blendMode)
+
+#define DRAW_BATCH(to_draw) \
+        Core::instance->CoreDrawBatch(to_draw);
+
+#define DRAW_BATCH_BLENDED(toDraw, blendMode) \
+        Core::instance->CoreDrawBatch(toDraw, blendMode)
+
+#define GET_BATCH(sprite) \
+        Core::instance->getBatch(sprite)
+
+#define DESTROY_BATCH(batch) \
+        Core::instance->destroyBatch(batch)
+
+#define CREATE_BATCH(toDraw) \
+        Core::instance->createBatch(toDraw)
 
 #define DRAW_QUEUE(to_draw) \
         System::addInDrawQueue(to_draw)

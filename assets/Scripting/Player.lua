@@ -1,12 +1,13 @@
 local Card = require 'assets.Scripting.Card'
 local Draw = require 'assets.Scripting.Draw'
-local Utils = require 'assets.Scripting.Utils'
-local StateMachine = require 'assets.Scripting.StateMachine'
 
-local Player = {}
+
+local Player = {
+    entity = {},
+    enemyManager = nil,
+    turn = true
+}
 Player.__index = Player
-
--- Others
 
 -- Camera
 local hud = nil
@@ -16,7 +17,6 @@ local camera = nil
 local cards = {}
 local draw = {}
 
-local myTurn = true
 local Stats = {
     health = 100,
     shield = 0,
@@ -42,10 +42,11 @@ function Player:createCard()
     card:initState()
     card:setCallback(function()
         local bounds = card:getBounds()
-        local enemy = GlobalVariable.enemyManager:contain(bounds)
+        local enemy = self.enemyManager:contain(bounds)
 
         GlobalVariable.selectedCard = nil
-        if enemy == nil then
+        if enemy == nil or
+            self.turn == false then
             return
         end
         enemy:takeDamage(100)
@@ -84,16 +85,22 @@ end
 function Player.new()
     local self = setmetatable({}, Player)
     self.entity = nil
+    self.enemyManager = nil
+    self.turn = true
     return self
 end
 
-function Player:Start()
+function Player:Play(turn)
+    self.turn = turn
+end
+
+function Player:Start(enemyManager)
     self.entity = System.getEntity("player")
+    self.enemyManager = enemyManager
     transform = self.entity:getTransform2D()
     animator = self.entity:getAnimator()
     hud = System.getEntity("Hud"):getCanvas()
     camera = System.getEntity("Camera"):getView()
-
     self:cardInit()
 end
 
@@ -102,12 +109,12 @@ function Player:Update()
 
     if Stats.health <= 0 then
     	print("Player is dead restart")
+    	self:Destroy()
     	return
     end
     for v, card in pairs(cards) do
         card:update()
     end
-    draw:update()
 end
 
 function Player:Destroy()
@@ -117,8 +124,8 @@ function Player:Destroy()
     self.entity:destroy()
 end
 
-function Player:setTurn(turn)
-    myTurn = turn
+function Player:getTurn()
+    return self.turn
 end
 
 function Player:takeDamage(amount)

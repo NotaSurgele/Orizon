@@ -1,4 +1,4 @@
-local Utils = require 'assets.Scripting.Utils'
+
 local StateMachine = require 'assets.Scripting.StateMachine'
 local GlobalVariable = require 'assets.Scripting.Global'
 
@@ -22,7 +22,7 @@ end
 -- Class methods
 function Card.new(hud, position, scale, camera)
     local self = setmetatable({}, Card)
-    local texture = ResourceManager.getResource('card')
+    local texture = ResourceManager.getTexture('card')
 
     self.soundManager = System.getEntity("SoundManager"):getSound()
     self.soundIsPlaying = false

@@ -3,7 +3,8 @@
         "deltaTime",
         "selected",
         "System",
-        "ResourceManager"
+        "ResourceManager",
+        "Color"
     ],
     "diagnostics.disable": [
         "undefined-field",
