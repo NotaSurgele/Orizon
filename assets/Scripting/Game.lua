@@ -34,6 +34,7 @@ end
 
 function Start()
     local texture = ResourceManager.getTexture("black_rect")
+
     transition.sprite = Sprite.new(texture)
     transition.sprite:setColor(transition.color)
     transition.sprite:setScale(10, 10)
