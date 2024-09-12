@@ -21,17 +21,25 @@
 
 #include <string>
 
+#define MSG_SUCCESS_IMPORT  "[SCRIPT] Successfully imported script ! "
+#define MSG_SUCCESS_WRITING "[SCRIPT] Successfully create the script "
+
+#define MSG_FAILED_IMPORT "[SCRIPT] Failed to import script ! "
+#define MSG_FAILED_WRITING "[SCRIPT] Failed to create the script "
+
+
 typedef unsigned int uint;
 
-class Script : public Scene {
+class Script : public IComponent {
 public:
-    Script(const std::string& scriptPath);
+    Script(Entity *e, const std::string& scriptPath);
 
 	Script() = delete;
     ~Script() = default;
 
-    void start() override;
-    void update() override;
+    void start();
+    void update();
+
     void destroy() override;
 
     const std::string& getFile() const

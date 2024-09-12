@@ -1,3 +1,4 @@
+#include <format>
 #include "Script.hpp"
 #include "Transform2D.hpp"
 #include "Animator.hpp"
@@ -18,19 +19,24 @@
 #include "Core.hpp"
 #include "Line.hpp"
 
-void loadScript(sol::state *state, const std::string& path)
+int loadScript(sol::state *state, const std::string& path)
 {
     auto res = state->script_file(path);
 
     if (!res.valid()) {
         std::cerr << "[SCRIPT] error cannot import script " << path << std::endl;
-        return;
+        return -1;
     }
     std::cout << "[SCRIPT] successfully import script " << path << std::endl;
+    return 0;
 }
 
-Script::Script(const std::string& scriptPath) : _filepath(scriptPath)
+Script::Script(Entity *e, const std::string& scriptPath) : _filepath(scriptPath)
 {
+    if (e) {
+        auto tagComponent = e->getComponent<Tag>();
+        if (tagComponent) _className = tagComponent->value();
+    }
     create(scriptPath);
 }
 
@@ -60,17 +66,36 @@ void Script::create(const std::string& scriptPath, bool insert)
     );
     _state->set_function("Import", &loadScript);
 
-    try {
-        auto result = _state->script_file(scriptPath);
+    auto result = loadScript(_state, scriptPath);
 
-        if (!result.valid()) {
-            sol::error res = result;
-            std::cerr << "[SCRIPT] Error executing lua script " << res.what() << std::endl;
+
+    if (result < 0) {
+        std::cerr << MSG_FAILED_IMPORT << scriptPath << std::endl;
+        std::string formattedString = std::format("{0} = {{}}\n"
+                                                  "{0}.__index = {0}\n"
+                                                  "\n"
+                                                  "function {0}.new()\n"
+                                                  "    local self = setmetatable({{}}, {0})\n"
+                                                  "    return self\n"
+                                                  "end\n"
+                                                  "\n"
+                                                  "function {0}:Start()\n"
+                                                  "end\n"
+                                                  "\n"
+                                                  "function {0}:Update()\n"
+                                                  "end\n"
+                                                  "\n"
+                                                  "function {0}:Destroy()\n"
+                                                  "end\n"
+                                                  "\n"
+                                                  "return {0}", _className);
+        if (!Utils::writeFile(scriptPath, formattedString)) {
+            std::cerr << MSG_FAILED_WRITING << scriptPath << std::endl;
+            return;
         }
-        std::cout << "[SCRIPT] Successfully imported scripted scene: " << scriptPath << "!" << std::endl;
-    } catch (std::exception& err) {
-        std::cerr << err.what() << std::endl;
+        std::cout << MSG_SUCCESS_WRITING << scriptPath << std::endl;
     }
+    std::cout << MSG_SUCCESS_IMPORT << std::endl;
 }
 
 void Script::setScript(const std::string& filePath)
@@ -814,15 +839,15 @@ void Script::registerViewComponent()
 
 void Script::registerScriptComponent()
 {
-    _state->new_usertype<Scene>(
-        "Scene",
-        "loadSceneFromFile", &Scene::loadSceneFromFile
-    );
-    _state->new_usertype<Script>(
-            "Script",
-            "loadSceneFromFile", &Script::loadSceneFromFile
-    );
-    _state->set_function("loadSceneFromFile", &Script::loadSceneFromFile);
+    //_state->new_usertype<Scene>(
+    //    "Scene",
+    //    "loadSceneFromFile", &Scene::loadSceneFromFile
+    //);
+    //_state->new_usertype<Script>(
+    //        "Script",
+    //        "loadSceneFromFile", &Script::loadSceneFromFile
+    //);
+    //_state->set_function("loadSceneFromFile", &Script::loadSceneFromFile);
 }
 
 void Script::registerCanvasComponent()
@@ -1027,7 +1052,8 @@ void Script::update()
     }
 }
 
-void Script::destroy() {
+void Script::destroy()
+{
     try {
         sol::function destroy = (*_state)["Destroy"];
         destroy();

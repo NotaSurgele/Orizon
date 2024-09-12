@@ -10,9 +10,9 @@
 #include "OrizonMusic.hpp"
 #include "TiledMap.hpp"
 
-class GameScene : public Script {
+class GameScene : public Scene {
 public:
-    GameScene(const std::string& path) : Script(path) {}
+    GameScene() : Scene() {}
 
     void start() final;
     void update() final;

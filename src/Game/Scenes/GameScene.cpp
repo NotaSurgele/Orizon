@@ -6,17 +6,17 @@
 void GameScene::start()
 {
     loadSceneFromFile("../assets/game.json");
-    Script::start();
+    Scene::start();
 }
 
 void GameScene::update()
 {
     if (Input::isActionKeyPressed("Exit"))
         CLOSE();
-    Script::update();
+    Scene::update();
 }
 
 void GameScene::destroy()
 {
-    Script::destroy();
+    Scene::destroy();
 }
