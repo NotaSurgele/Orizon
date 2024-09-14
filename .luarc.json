@@ -8,6 +8,7 @@
     ],
     "diagnostics.disable": [
         "undefined-field",
-        "lowercase-global"
+        "lowercase-global",
+        "undefined-global"
     ]
 }

@@ -7,7 +7,7 @@ void App::start()
     loadInputFromFile(INPUT_FILE);
 
     //game_scene.create();
-    _sceneManager.addScene(new GameScene);
+    _sceneManager.addScene(new GameScene("./assets/Scripting/Game.lua"));
     _sceneManager.create();
 }
 

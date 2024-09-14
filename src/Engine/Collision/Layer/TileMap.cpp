@@ -143,7 +143,7 @@ std::vector<Entity *> TileMap::getEntityInBounds(const sf::FloatRect& bounds)
         for (int y = startPos.y; y <= endPos.y; y++) {
             auto& e = _layer[x][y];
 
-            if (e != nullptr)
+            if (e != nullptr && e->active)
                 arr.push_back(e);
         }
     }

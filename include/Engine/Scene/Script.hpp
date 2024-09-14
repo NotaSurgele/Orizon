@@ -21,25 +21,17 @@
 
 #include <string>
 
-#define MSG_SUCCESS_IMPORT  "[SCRIPT] Successfully imported script ! "
-#define MSG_SUCCESS_WRITING "[SCRIPT] Successfully create the script "
-
-#define MSG_FAILED_IMPORT "[SCRIPT] Failed to import script ! "
-#define MSG_FAILED_WRITING "[SCRIPT] Failed to create the script "
-
-
 typedef unsigned int uint;
 
-class Script : public IComponent {
+class Script : public Scene {
 public:
-    Script(Entity *e, const std::string& scriptPath);
+    Script(const std::string& scriptPath);
 
-	Script() = delete;
+    Script() = delete;
     ~Script() = default;
 
-    void start();
-    void update();
-
+    void start() override;
+    void update() override;
     void destroy() override;
 
     const std::string& getFile() const
@@ -103,18 +95,18 @@ private:
     }
 
     std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
-    sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color,
-    sol::nil_t, sol::table,sol::object>getTableValue(const sol::object& res);
+            sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color,
+            sol::nil_t, sol::table,sol::object>getTableValue(const sol::object& res);
 
     sol::table deserializeTable(const sol::table& table);
 
     std::variant<
-    Script *,
-    Entity *, sf::FloatRect,
-    sf::Vector2f, sf::Vector2i,
-    sf::Vector2u, sf::IntRect,
-    sf::Color, sol::nil_t, sol::table,
-    sol::object> call(const std::string& function, sol::variadic_args args);
+            Script *,
+            Entity *, sf::FloatRect,
+            sf::Vector2f, sf::Vector2i,
+            sf::Vector2u, sf::IntRect,
+            sf::Color, sol::nil_t, sol::table,
+            sol::object> call(const std::string& function, sol::variadic_args args);
 
 private:
     std::vector<std::function<sol::object(sol::userdata&)>> typesArray = {

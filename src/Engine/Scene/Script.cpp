@@ -1,4 +1,3 @@
-#include <format>
 #include "Script.hpp"
 #include "Transform2D.hpp"
 #include "Animator.hpp"
@@ -19,24 +18,19 @@
 #include "Core.hpp"
 #include "Line.hpp"
 
-int loadScript(sol::state *state, const std::string& path)
+void loadScript(sol::state *state, const std::string& path)
 {
     auto res = state->script_file(path);
 
     if (!res.valid()) {
         std::cerr << "[SCRIPT] error cannot import script " << path << std::endl;
-        return -1;
+        return;
     }
     std::cout << "[SCRIPT] successfully import script " << path << std::endl;
-    return 0;
 }
 
-Script::Script(Entity *e, const std::string& scriptPath) : _filepath(scriptPath)
+Script::Script(const std::string& scriptPath) : _filepath(scriptPath)
 {
-    if (e) {
-        auto tagComponent = e->getComponent<Tag>();
-        if (tagComponent) _className = tagComponent->value();
-    }
     create(scriptPath);
 }
 
@@ -45,7 +39,7 @@ void Script::create(const std::string& scriptPath, bool insert)
     _state = new sol::state();
     _state->open_libraries(sol::lib::base
             , sol::lib::math, sol::lib::string, sol::lib::table,
-            sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
+                           sol::lib::package, sol::lib::io, sol::lib::os, sol::lib::debug);
     registerBaseTypes();
     registerComponentsType();
     registerEntityFunction();
@@ -66,36 +60,17 @@ void Script::create(const std::string& scriptPath, bool insert)
     );
     _state->set_function("Import", &loadScript);
 
-    auto result = loadScript(_state, scriptPath);
+    try {
+        auto result = _state->script_file(scriptPath);
 
-
-    if (result < 0) {
-        std::cerr << MSG_FAILED_IMPORT << scriptPath << std::endl;
-        std::string formattedString = std::format("{0} = {{}}\n"
-                                                  "{0}.__index = {0}\n"
-                                                  "\n"
-                                                  "function {0}.new()\n"
-                                                  "    local self = setmetatable({{}}, {0})\n"
-                                                  "    return self\n"
-                                                  "end\n"
-                                                  "\n"
-                                                  "function {0}:Start()\n"
-                                                  "end\n"
-                                                  "\n"
-                                                  "function {0}:Update()\n"
-                                                  "end\n"
-                                                  "\n"
-                                                  "function {0}:Destroy()\n"
-                                                  "end\n"
-                                                  "\n"
-                                                  "return {0}", _className);
-        if (!Utils::writeFile(scriptPath, formattedString)) {
-            std::cerr << MSG_FAILED_WRITING << scriptPath << std::endl;
-            return;
+        if (!result.valid()) {
+            sol::error res = result;
+            std::cerr << "[SCRIPT] Error executing lua script " << res.what() << std::endl;
         }
-        std::cout << MSG_SUCCESS_WRITING << scriptPath << std::endl;
+        std::cout << "[SCRIPT] Successfully imported scripted scene: " << scriptPath << "!" << std::endl;
+    } catch (std::exception& err) {
+        std::cerr << err.what() << std::endl;
     }
-    std::cout << MSG_SUCCESS_IMPORT << std::endl;
 }
 
 void Script::setScript(const std::string& filePath)
@@ -107,22 +82,22 @@ void Script::setScript(const std::string& filePath)
 void Script::registerInputSystem()
 {
     sol::usertype<Input> inputType = _state->new_usertype<Input>(
-        "Input", sol::constructors<Input()>(),
-        // Action key
-        "isActionKeyDown", &Input::isActionKeyDown,
-        "isActionKeyReleased", &Input::isActionKeyReleased,
-        "isActionKeyPressed", &Input::isActionKeyPressed,
-        "isKeyDown", &Input::isKeyDown,
-        "isAnyKeyPressed", &Input::isAnyKeyPressed,
-        "isKeyReleased", &Input::isKeyReleased,
-        "isKeyPressed", &Input::isKeyPressed,
-        "isButtonPressed", &Input::isButtonPressed,
-        "isButtonDown", &Input::isButtonDown,
-        "isAnyButtonPressed", &Input::isAnyButtonPressed,
-        "isButtonReleased", &Input::isButtonReleased,
-        "isActionButtonDown", &Input::isActionButtonDown,
-        "isActionButtonReleased", &Input::isActionButtonReleased,
-        "isActionButtonPressed", &Input::isActionButtonPressed
+            "Input", sol::constructors<Input()>(),
+            // Action key
+            "isActionKeyDown", &Input::isActionKeyDown,
+            "isActionKeyReleased", &Input::isActionKeyReleased,
+            "isActionKeyPressed", &Input::isActionKeyPressed,
+            "isKeyDown", &Input::isKeyDown,
+            "isAnyKeyPressed", &Input::isAnyKeyPressed,
+            "isKeyReleased", &Input::isKeyReleased,
+            "isKeyPressed", &Input::isKeyPressed,
+            "isButtonPressed", &Input::isButtonPressed,
+            "isButtonDown", &Input::isButtonDown,
+            "isAnyButtonPressed", &Input::isAnyButtonPressed,
+            "isButtonReleased", &Input::isButtonReleased,
+            "isActionButtonDown", &Input::isActionButtonDown,
+            "isActionButtonReleased", &Input::isActionButtonReleased,
+            "isActionButtonPressed", &Input::isActionButtonPressed
     );
 }
 
@@ -233,20 +208,20 @@ void Script::registerRectType()
 void Script::registerSystemType()
 {
     _state->new_usertype<System>(
-        "System", sol::constructors<System()>(),
-        "pushEntity", &System::forceUpdate,
-        "getEntity", sol::overload(
-            [](const std::string& signature) {
-                return System::getEntity(signature);
-            },
-            [] (const std::size_t& id) {
-                return System::getEntity(id);
-            }
-        ),
-        "getLocalMousePosition", &System::getLocalMousePosition,
-        "getGlobalMousePosition", &System::getGlobalMousePosition,
-        "localToGlobalCoordinate", &System::localToGlobalCoordinate,
-        "globalToLocalCoordinate", &System::globalToLocalCoordinate
+            "System", sol::constructors<System()>(),
+            "pushEntity", &System::forceUpdate,
+            "getEntity", sol::overload(
+                    [](const std::string& signature) {
+                        return System::getEntity(signature);
+                    },
+                    [] (const std::size_t& id) {
+                        return System::getEntity(id);
+                    }
+            ),
+            "getLocalMousePosition", &System::getLocalMousePosition,
+            "getGlobalMousePosition", &System::getGlobalMousePosition,
+            "localToGlobalCoordinate", &System::localToGlobalCoordinate,
+            "globalToLocalCoordinate", &System::globalToLocalCoordinate
     );
     (*_state)["system"] = System();
 }
@@ -287,12 +262,12 @@ void Script::registerUtilsType()
     _state->new_usertype<Utils>(
             "Utils", sol::constructors<Utils()>(),
             "readFile", sol::overload(
-                [] (const std::string& fp) {
-                    return Utils::readFile(fp);
-                },
-                [] (const std::string& fp, bool ret) {
-                    return Utils::readFile(fp, ret);
-                }
+                    [] (const std::string& fp) {
+                        return Utils::readFile(fp);
+                    },
+                    [] (const std::string& fp, bool ret) {
+                        return Utils::readFile(fp, ret);
+                    }
             ),
             "writeFile", &Utils::writeFile);
 }
@@ -300,28 +275,28 @@ void Script::registerUtilsType()
 void Script::registerResourceManager()
 {
     _state->new_usertype<ResourcesManager>(
-    "ResourceManager", sol::constructors<ResourcesManager()>(),
-        "addTile", sol::overload(
-            [] (std::string const& tilename,
-                std::string const& filepath, float x, float y, float w, float h) {
-                return R_ADD_TILE(tilename, filepath, x, y, w, h);
-            }
-        ),
-        "getTexture", sol::overload(
-            [] (const std::string& resourceName) {
-                return Core::resourceManager().getRessource<sf::Texture>(resourceName);
-            }
-        ),
-        "getShader", sol::overload(
-            [] (const std::string& resource) {
-                return R_GET_RESSOURCE(Shader, resource);
-            }
-        ),
-        "getSound", sol::overload(
-            [] (const std::string& name) {
-                return R_GET_RESSOURCE(sf::SoundBuffer, name);
-            }
-        )
+            "ResourceManager", sol::constructors<ResourcesManager()>(),
+            "addTile", sol::overload(
+                    [] (std::string const& tilename,
+                        std::string const& filepath, float x, float y, float w, float h) {
+                        return R_ADD_TILE(tilename, filepath, x, y, w, h);
+                    }
+            ),
+            "getTexture", sol::overload(
+                    [] (const std::string& resourceName) {
+                        return Core::resourceManager().getRessource<sf::Texture>(resourceName);
+                    }
+            ),
+            "getShader", sol::overload(
+                    [] (const std::string& resource) {
+                        return R_GET_RESSOURCE(Shader, resource);
+                    }
+            ),
+            "getSound", sol::overload(
+                    [] (const std::string& name) {
+                        return R_GET_RESSOURCE(sf::SoundBuffer, name);
+                    }
+            )
     );
 }
 
@@ -334,19 +309,19 @@ void Script::registerDrawableType()
 void Script::registerCoreType()
 {
     _state->new_usertype<Core>(
-        "Core",
-        "draw", sol::overload(
-            [] (Core *core, BoxCollider *drawable) {
-                return core->CoreDraw(drawable);
-            },
-            [] (Core *core, Sprite *sprite) {
-                return core->CoreDraw(sprite);
-            },
-            [] (Core *core, const sf::Drawable& drawable) {
-                return core->CoreDraw(drawable);
-            }
-        )
-   );
+            "Core",
+            "draw", sol::overload(
+                    [] (Core *core, BoxCollider *drawable) {
+                        return core->CoreDraw(drawable);
+                    },
+                    [] (Core *core, Sprite *sprite) {
+                        return core->CoreDraw(sprite);
+                    },
+                    [] (Core *core, const sf::Drawable& drawable) {
+                        return core->CoreDraw(drawable);
+                    }
+            )
+    );
     (*_state)["Core"] = Core::instance;
 }
 
@@ -356,193 +331,193 @@ void Script::registerCanvasTypes()
                      "WORLD", CanvasObject::CoordType::WORLD,
                      "LOCAL", CanvasObject::CoordType::LOCAL);
     _state->new_usertype<CanvasObject>(
-        "CanvasObject",
-        "coordType", &CanvasObject::coordType,
-        "getOffset", &CanvasObject::getOffset,
-        "setOffset", sol::overload(
-            [] (CanvasObject *obj, const sf::Vector2f& offset) {
-                return obj->setOffset(offset);
-            },
-            [] (CanvasObject *obj, const float& x, const float& y) {
-                return obj->setOffset(x, y);
-            }
-        ),
-        "getZ", &CanvasObject::getZ,
-        "setZ", &CanvasObject::setZ,
-        "setBasePosition", sol::overload(
-            [](CanvasObject *obj, const sf::Vector2f& position) {
-                return obj->setBasePosition(position);
-            },
-            [](CanvasObject *obj, const float& x, const float& y) {
-                return obj->setBasePosition(x, y);
-            }
-        ),
-        "getBasePosition", &CanvasObject::getBasePosition
+            "CanvasObject",
+            "coordType", &CanvasObject::coordType,
+            "getOffset", &CanvasObject::getOffset,
+            "setOffset", sol::overload(
+                    [] (CanvasObject *obj, const sf::Vector2f& offset) {
+                        return obj->setOffset(offset);
+                    },
+                    [] (CanvasObject *obj, const float& x, const float& y) {
+                        return obj->setOffset(x, y);
+                    }
+            ),
+            "getZ", &CanvasObject::getZ,
+            "setZ", &CanvasObject::setZ,
+            "setBasePosition", sol::overload(
+                    [](CanvasObject *obj, const sf::Vector2f& position) {
+                        return obj->setBasePosition(position);
+                    },
+                    [](CanvasObject *obj, const float& x, const float& y) {
+                        return obj->setBasePosition(x, y);
+                    }
+            ),
+            "getBasePosition", &CanvasObject::getBasePosition
     );
 
     _state->new_usertype<Text>(
-    "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
-        "coordType", &Text::coordType,
-        "getOffset", &Text::getOffset,
-        "getZ", &Text::getZ,
-        "setZ", &Text::setZ,
-        "setOffset", sol::overload(
-            [] (Text *obj, const sf::Vector2f& offset) {
-                return obj->setOffset(offset);
-            },
-            [] (Text *obj, const float& x, const float& y) {
-                return obj->setOffset(x, y);
-            }
-        ),
-        "setBasePosition", sol::overload(
-            [](Text *obj, const sf::Vector2f& position) {
-                return obj->setBasePosition(position);
-            },
-            [](Text *obj, const float& x, const float& y) {
-                return obj->setBasePosition(x, y);
-            }
-        ),
-        "getBasePosition", &Text::getBasePosition
+            "Text", sol::constructors<Text(), Text(const std::string&, const sf::Font&, const std::size_t&)>(),
+            "coordType", &Text::coordType,
+            "getOffset", &Text::getOffset,
+            "getZ", &Text::getZ,
+            "setZ", &Text::setZ,
+            "setOffset", sol::overload(
+                    [] (Text *obj, const sf::Vector2f& offset) {
+                        return obj->setOffset(offset);
+                    },
+                    [] (Text *obj, const float& x, const float& y) {
+                        return obj->setOffset(x, y);
+                    }
+            ),
+            "setBasePosition", sol::overload(
+                    [](Text *obj, const sf::Vector2f& position) {
+                        return obj->setBasePosition(position);
+                    },
+                    [](Text *obj, const float& x, const float& y) {
+                        return obj->setBasePosition(x, y);
+                    }
+            ),
+            "getBasePosition", &Text::getBasePosition
     );
 
     _state->new_usertype<Image>(
-        "Image", sol::constructors<Image(sf::Texture *, const sf::Vector2f&,
-                                         const sf::Vector2f& scale, const sf::Color& color)>(),
-        "setPosition", sol::overload(
-            [](Image *img, const float& x, const float& y) {
-                return img->setPosition(x, y);
-            },
-            [](Image *img, const sf::Vector2f& position) {
-                return img->setPosition(position);
-            }
-        ),
-        "setColor", &Image::setColor,
-        "getPosition", &Image::getPosition,
-        "getTextureSize", &Image::getTextureSize,
-        "setSize", &Image::setSize,
-        "getImage", &Image::getImage,
-        "getOffset", &Image::getOffset,
-        "setOffset", sol::overload(
-            [] (Image *obj, const sf::Vector2f& offset) {
-                return obj->setOffset(offset);
-            },
-            [] (Image *obj, const float& x, const float& y) {
-                return obj->setOffset(x, y);
-            }
-        ),
-        "getZ", &Image::getZ,
-        "setZ", &Image::setZ,
-        "setBasePosition", sol::overload(
-            [](Image *obj, const sf::Vector2f& position) {
-                return obj->setBasePosition(position);
-            },
-            [](Image *obj, const float& x, const float& y) {
-                return obj->setBasePosition(x, y);
-            }
-        ),
-        "getBasePosition", &Image::getBasePosition,
-        "coordType", &Image::coordType
+            "Image", sol::constructors<Image(sf::Texture *, const sf::Vector2f&,
+                                             const sf::Vector2f& scale, const sf::Color& color)>(),
+            "setPosition", sol::overload(
+                    [](Image *img, const float& x, const float& y) {
+                        return img->setPosition(x, y);
+                    },
+                    [](Image *img, const sf::Vector2f& position) {
+                        return img->setPosition(position);
+                    }
+            ),
+            "setColor", &Image::setColor,
+            "getPosition", &Image::getPosition,
+            "getTextureSize", &Image::getTextureSize,
+            "setSize", &Image::setSize,
+            "getImage", &Image::getImage,
+            "getOffset", &Image::getOffset,
+            "setOffset", sol::overload(
+                    [] (Image *obj, const sf::Vector2f& offset) {
+                        return obj->setOffset(offset);
+                    },
+                    [] (Image *obj, const float& x, const float& y) {
+                        return obj->setOffset(x, y);
+                    }
+            ),
+            "getZ", &Image::getZ,
+            "setZ", &Image::setZ,
+            "setBasePosition", sol::overload(
+                    [](Image *obj, const sf::Vector2f& position) {
+                        return obj->setBasePosition(position);
+                    },
+                    [](Image *obj, const float& x, const float& y) {
+                        return obj->setBasePosition(x, y);
+                    }
+            ),
+            "getBasePosition", &Image::getBasePosition,
+            "coordType", &Image::coordType
     );
 
     _state->new_enum("States",
-        "HOVERED", Button::States::HOVERED,
-        "PRESSED", Button::States::PRESSED,
-        "NOTHING", Button::States::NOTHING
+                     "HOVERED", Button::States::HOVERED,
+                     "PRESSED", Button::States::PRESSED,
+                     "NOTHING", Button::States::NOTHING
     );
     _state->new_usertype<Button>(
-        "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture*)>(),
-        "getSprite", &Button::getSprite,
-        "setTexture", sol::overload(
-            [](Button *button, sf::Texture *texture) {
-                return button->setTexture(texture);
-            },
-            [](Button *button, sf::Texture *texture, const std::string& name) {
-                return button->setTexture(texture, name);
-            }
-        ),
-        "setColor", &Button::setColor,
-        "setCallback", &Button::setCallback,
-        "setText", sol::overload(
-            [](Button *button, const std::string& content, const std::size_t& size) {
-                return button->setText(content, size);
-            },
-            [](Button button, const std::string& content, const std::size_t& size, const sf::Color& color) {
-                return button.setText(content, size, color);
-            }
-        ),
-        "setPosition", sol::overload(
-            [](Button *button, const float& x, const float& y) {
-                return button->setPosition(x, y);
-            },
-            [](Button *button, const sf::Vector2f& position) {
-                return button->setPosition(position);
-            }
-        ),
-        "setScale", sol::overload(
-            [](Button *button, const sf::Vector2f& size) {
-                return button->setScale(size);
-            },
-            [](Button *button, const float& x, const float& y) {
-                return button->setScale(x, y);
-            }
-        ),
-        "clickable", &Button::clickable,
-        "isHovered", &Button::isHovered,
-        "isClicked", &Button::isClicked,
-        "getPosition", &Button::getPosition,
-        "getSize", &Button::getSize,
-        "getTextureSize", &Button::getTextureSize,
-        "getZ", &Button::getZ,
-        "setZ", &Button::setZ,
-        "coordType", &Button::coordType,
-        "getOffset", &Button::getOffset,
-        "setOffset", sol::overload(
-            [] (Button *obj, const sf::Vector2f& offset) {
-                return obj->setOffset(offset);
-            },
-            [] (Button *obj, const float& x, const float& y) {
-                return obj->setOffset(x, y);
-            }
-        ),
-        "text", &Button::text,
-        "getBasePosition", &Button::getBasePosition,
-        "setBasePosition", sol::overload(
-            [](Button *obj, const sf::Vector2f& position) {
-                return obj->setBasePosition(position);
-            },
-            [](Button *obj, const float& x, const float& y) {
-                return obj->setBasePosition(x, y);
-            }
-        )
+            "Button", sol::constructors<Button(const sf::Vector2f&, const sf::Vector2f&, sf::Texture*)>(),
+            "getSprite", &Button::getSprite,
+            "setTexture", sol::overload(
+                    [](Button *button, sf::Texture *texture) {
+                        return button->setTexture(texture);
+                    },
+                    [](Button *button, sf::Texture *texture, const std::string& name) {
+                        return button->setTexture(texture, name);
+                    }
+            ),
+            "setColor", &Button::setColor,
+            "setCallback", &Button::setCallback,
+            "setText", sol::overload(
+                    [](Button *button, const std::string& content, const std::size_t& size) {
+                        return button->setText(content, size);
+                    },
+                    [](Button button, const std::string& content, const std::size_t& size, const sf::Color& color) {
+                        return button.setText(content, size, color);
+                    }
+            ),
+            "setPosition", sol::overload(
+                    [](Button *button, const float& x, const float& y) {
+                        return button->setPosition(x, y);
+                    },
+                    [](Button *button, const sf::Vector2f& position) {
+                        return button->setPosition(position);
+                    }
+            ),
+            "setScale", sol::overload(
+                    [](Button *button, const sf::Vector2f& size) {
+                        return button->setScale(size);
+                    },
+                    [](Button *button, const float& x, const float& y) {
+                        return button->setScale(x, y);
+                    }
+            ),
+            "clickable", &Button::clickable,
+            "isHovered", &Button::isHovered,
+            "isClicked", &Button::isClicked,
+            "getPosition", &Button::getPosition,
+            "getSize", &Button::getSize,
+            "getTextureSize", &Button::getTextureSize,
+            "getZ", &Button::getZ,
+            "setZ", &Button::setZ,
+            "coordType", &Button::coordType,
+            "getOffset", &Button::getOffset,
+            "setOffset", sol::overload(
+                    [] (Button *obj, const sf::Vector2f& offset) {
+                        return obj->setOffset(offset);
+                    },
+                    [] (Button *obj, const float& x, const float& y) {
+                        return obj->setOffset(x, y);
+                    }
+            ),
+            "text", &Button::text,
+            "getBasePosition", &Button::getBasePosition,
+            "setBasePosition", sol::overload(
+                    [](Button *obj, const sf::Vector2f& position) {
+                        return obj->setBasePosition(position);
+                    },
+                    [](Button *obj, const float& x, const float& y) {
+                        return obj->setBasePosition(x, y);
+                    }
+            )
     );
 }
 
 void Script::registerLineType()
 {
     _state->new_usertype<Line>(
-        "Line", sol::constructors<Line(float, float, float, float, float, sf::Color),
-        Line(float, float, float, float), Line(float, float, float, float, float)>(),
-        "setColor", &Line::setColor,
-        "setEndPoint", sol::overload(
-            [](Line& line, float x2, float y2) {
-                return line.setEndPoint(x2, y2);
-            },
-            [](Line& line, const sf::Vector2f& point) {
-                return line.setEndPoint(point);
-            }
-        ),
-        "setStartPoint", sol::overload(
-            [] (Line& line, const sf::Vector2f& point) {
-                return line.setStartPoint(point);
-            },
-            [] (Line& line, float x1, float y1) {
-                return line.setStartPoint(x1, y1);
-            }
-        ),
-        "setThickness", &Line::setThickness,
-        "getStartPoint", &Line::getStartPoint,
-        "getEndPoint", &Line::getEndPoint,
-        "draw", &Line::draw
+            "Line", sol::constructors<Line(float, float, float, float, float, sf::Color),
+                    Line(float, float, float, float), Line(float, float, float, float, float)>(),
+            "setColor", &Line::setColor,
+            "setEndPoint", sol::overload(
+                    [](Line& line, float x2, float y2) {
+                        return line.setEndPoint(x2, y2);
+                    },
+                    [](Line& line, const sf::Vector2f& point) {
+                        return line.setEndPoint(point);
+                    }
+            ),
+            "setStartPoint", sol::overload(
+                    [] (Line& line, const sf::Vector2f& point) {
+                        return line.setStartPoint(point);
+                    },
+                    [] (Line& line, float x1, float y1) {
+                        return line.setStartPoint(x1, y1);
+                    }
+            ),
+            "setThickness", &Line::setThickness,
+            "getStartPoint", &Line::getStartPoint,
+            "getEndPoint", &Line::getEndPoint,
+            "draw", &Line::draw
     );
 }
 
@@ -555,59 +530,59 @@ void Script::registerShaderType()
                      "Fragment", sf::Shader::Type::Fragment
     );
     _state->new_usertype<Shader>(
-        "Shader", sol::constructors<Shader()>(),
-        "isAvailable", &Shader::isAvailable,
-        "loadFromFile", sol::overload(
-            [] (Shader *shader, const std::string& path, const sf::Shader::Type& type) {
-                return shader->loadFromFile(path, type);
-            },
-            [] (Shader *shader, const std::string& vertex, const std::string& fragment) {
-                return shader->loadFromFile(vertex, fragment);
-            }
-        ),
-        "setUniform", sol::overload(
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec2& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec3& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec4& vector) {
-                return shader->setUniform(name, vector);
-            },
-            [] (Shader *shader, const std::string& name, bool x) {
-                return shader->setUniform(name, x);
-            },
-            [] (Shader *shader, const std::string& name, sf::Texture& texture) {
-                return shader->setUniform(name, texture);
-            },
-            [] (Shader *shader, const std::string& name, float x) {
-                return shader->setUniform(name, x);
-            }
-        ),
-        "setUniformArray", sol::overload(
-            [] (Shader *shader, const std::string& name, const float *array, std::size_t length) {
-                return shader->setUniformArray(name, array, length);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2 *array, std::size_t size) {
-                return shader->setUniformArray(name, array, size);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3 *array, std::size_t size) {
-                return shader->setUniformArray(name, array, size);
-            },
-            [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4 *array, std::size_t size) {
-                return shader->setUniformArray(name, array, size);
-            }
-        )
+            "Shader", sol::constructors<Shader()>(),
+            "isAvailable", &Shader::isAvailable,
+            "loadFromFile", sol::overload(
+                    [] (Shader *shader, const std::string& path, const sf::Shader::Type& type) {
+                        return shader->loadFromFile(path, type);
+                    },
+                    [] (Shader *shader, const std::string& vertex, const std::string& fragment) {
+                        return shader->loadFromFile(vertex, fragment);
+                    }
+            ),
+            "setUniform", sol::overload(
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec2& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec3& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Ivec4& vector) {
+                        return shader->setUniform(name, vector);
+                    },
+                    [] (Shader *shader, const std::string& name, bool x) {
+                        return shader->setUniform(name, x);
+                    },
+                    [] (Shader *shader, const std::string& name, sf::Texture& texture) {
+                        return shader->setUniform(name, texture);
+                    },
+                    [] (Shader *shader, const std::string& name, float x) {
+                        return shader->setUniform(name, x);
+                    }
+            ),
+            "setUniformArray", sol::overload(
+                    [] (Shader *shader, const std::string& name, const float *array, std::size_t length) {
+                        return shader->setUniformArray(name, array, length);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec2 *array, std::size_t size) {
+                        return shader->setUniformArray(name, array, size);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec3 *array, std::size_t size) {
+                        return shader->setUniformArray(name, array, size);
+                    },
+                    [] (Shader *shader, const std::string& name, const sf::Glsl::Vec4 *array, std::size_t size) {
+                        return shader->setUniformArray(name, array, size);
+                    }
+            )
     );
 }
 
@@ -643,14 +618,14 @@ void Script::registerTransform2DComponent()
 void Script::registerAnimatorComponent()
 {
     _state->new_usertype<Animator>(
-        "Animator", sol::constructors<Animator(Entity *)>(),
-        "newAnimation", &Animator::newAnimation,
-        "playAnimation", &Animator::playAnimation,
-        "reset", &Animator::reset,
-        "resetCurrentAnimation", &Animator::resetCurrentAnimation,
-        "getAnimationsFrames", &Animator::getAnimationFrames,
-        "destroy", &Animator::destroy,
-        "currentAnimation", &Animator::currentAnimation
+            "Animator", sol::constructors<Animator(Entity *)>(),
+            "newAnimation", &Animator::newAnimation,
+            "playAnimation", &Animator::playAnimation,
+            "reset", &Animator::reset,
+            "resetCurrentAnimation", &Animator::resetCurrentAnimation,
+            "getAnimationsFrames", &Animator::getAnimationFrames,
+            "destroy", &Animator::destroy,
+            "currentAnimation", &Animator::currentAnimation
     );
 }
 
@@ -673,218 +648,218 @@ void Script::registerBoxColliderComponent()
 void Script::registerGravityComponent()
 {
     _state->new_usertype<Gravity>(
-        "Gravity", sol::constructors<Gravity(Entity *), Gravity(Entity *, double)>(),
-        "force", &Gravity::force,
-        "destroy", &Gravity::destroy
+            "Gravity", sol::constructors<Gravity(Entity *), Gravity(Entity *, double)>(),
+            "force", &Gravity::force,
+            "destroy", &Gravity::destroy
     );
 }
 
 void Script::registerLayerComponent()
 {
     _state->new_usertype<Layer>(
-        "Layer", sol::constructors<Layer(Entity *, std::size_t)>(),
-        "set", &Layer::set,
-        "value", &Layer::value,
-        "destroy", &Layer::destroy
+            "Layer", sol::constructors<Layer(Entity *, std::size_t)>(),
+            "set", &Layer::set,
+            "value", &Layer::value,
+            "destroy", &Layer::destroy
     );
 }
 
 void Script::registerLightComponent()
 {
     _state->new_usertype<Light>(
-        "Light", sol::constructors<
-                Light(Entity *, Sprite *),
-                Light(Entity *, Sprite *, float)>(),
-        "setColor", &Light::setColor,
-        "setEmission", &Light::setEmission,
-        "getEmission", &Light::getEmission,
-        "destroy", &Light::destroy,
-        "loadColorFromIntensity", &Light::loadColorFromIntensity
+            "Light", sol::constructors<
+                    Light(Entity *, Sprite *),
+                    Light(Entity *, Sprite *, float)>(),
+            "setColor", &Light::setColor,
+            "setEmission", &Light::setEmission,
+            "getEmission", &Light::getEmission,
+            "destroy", &Light::destroy,
+            "loadColorFromIntensity", &Light::loadColorFromIntensity
     );
 }
 
 void Script::registerOrizonMusicComponent()
 {
     _state->new_usertype<OrizonMusic>(
-        "OrizonMusic", sol::constructors<OrizonMusic(Entity *, const std::string&)>(),
-        "destroy", &OrizonMusic::destroy,
-        "load", &OrizonMusic::load,
-        "loadFromName", &OrizonMusic::loadFromName,
-        "stop", &OrizonMusic::stop,
-        "play", &OrizonMusic::play,
-        "pause", &OrizonMusic::pause,
-        "isLoop", &OrizonMusic::isLoop,
-        "getDuration", &OrizonMusic::getDuration,
-        "getVolume", &OrizonMusic::getVolume,
-        "setLoop", &OrizonMusic::setLoop
+            "OrizonMusic", sol::constructors<OrizonMusic(Entity *, const std::string&)>(),
+            "destroy", &OrizonMusic::destroy,
+            "load", &OrizonMusic::load,
+            "loadFromName", &OrizonMusic::loadFromName,
+            "stop", &OrizonMusic::stop,
+            "play", &OrizonMusic::play,
+            "pause", &OrizonMusic::pause,
+            "isLoop", &OrizonMusic::isLoop,
+            "getDuration", &OrizonMusic::getDuration,
+            "getVolume", &OrizonMusic::getVolume,
+            "setLoop", &OrizonMusic::setLoop
     );
 }
 
 void Script::registerSoundComponent()
 {
     _state->new_usertype<Sound>(
-        "Sound", sol::constructors<Sound(Entity *, const std::string&)>(),
-        "load", &Sound::load,
-        "loadFromName", &Sound::loadFromName,
-        "reload", &Sound::reload,
-        "loadFromName", &Sound::loadFromName,
-        "stop", &Sound::stop,
-        "play", &Sound::play,
-        "pause", &Sound::pause,
-        "isLoop", &Sound::isLoop,
-        "getVolume", &Sound::getVolume,
-        "destroy", &Sound::destroy,
-        "setLoop", &Sound::setLoop
+            "Sound", sol::constructors<Sound(Entity *, const std::string&)>(),
+            "load", &Sound::load,
+            "loadFromName", &Sound::loadFromName,
+            "reload", &Sound::reload,
+            "loadFromName", &Sound::loadFromName,
+            "stop", &Sound::stop,
+            "play", &Sound::play,
+            "pause", &Sound::pause,
+            "isLoop", &Sound::isLoop,
+            "getVolume", &Sound::getVolume,
+            "destroy", &Sound::destroy,
+            "setLoop", &Sound::setLoop
     );
 }
 
 void Script::registerSpriteComponent()
 {
     _state->new_usertype<Sprite>(
-        "Sprite", sol::constructors<
-                            Sprite(Entity *, sf::Texture*, float, float),
-                            Sprite(Entity *, sf::Texture*),
-                            Sprite(Entity *, std::string, float, float),
-                            Sprite(sf::Texture*)>(),
-        "setScale", &Sprite::setScale,
-        "setTexture", sol::overload(
-                [] (Sprite *sprite, const std::string& texturePath) {
-                    return sprite->setTexture(texturePath);
-                },
-                [] (Sprite *sprite, sf::Texture* texture) {
-                    return sprite->setTexture(texture);
-                }
-        ),
-        "setScale", &Sprite::setScale,
-        "setColor", &Sprite::setColor,
-        "setPosition", sol::overload(
-                [] (Sprite *sprite, const sf::Vector2f& position) {
-                    return sprite->setPosition(position);
-                },
-                [] (Sprite *sprite, const float& x, const float& y) {
-                    return sprite->setPosition(x, y);
-                }
-        ),
-        "setTransform", &Sprite::setTransform,
-        "setTextureRect", &Sprite::setTextureRect,
-        "setSprite", &Sprite::setSprite,
-        "attachShader", &Sprite::attachShader,
-        "dropShader", &Sprite::dropShader,
-        "getPosition", &Sprite::getPosition,
-        "getTexture", &Sprite::getTexture,
-        "getScale", &Sprite::getScale,
-        "getColor", &Sprite::getColor,
-        "getRotation", &Sprite::getRotation,
-        "getSprite", &Sprite::getSprite,
-        "getGlobalBounds", &Sprite::getGlobalBounds,
-        "rotate", &Sprite::rotate,
-        "shader", &Sprite::shader,
-        "hasShader", &Sprite::hasShader,
-        "destroy", &Sprite::destroy
+            "Sprite", sol::constructors<
+                    Sprite(Entity *, sf::Texture*, float, float),
+                    Sprite(Entity *, sf::Texture*),
+                    Sprite(Entity *, std::string, float, float),
+                    Sprite(sf::Texture*)>(),
+            "setScale", &Sprite::setScale,
+            "setTexture", sol::overload(
+                    [] (Sprite *sprite, const std::string& texturePath) {
+                        return sprite->setTexture(texturePath);
+                    },
+                    [] (Sprite *sprite, sf::Texture* texture) {
+                        return sprite->setTexture(texture);
+                    }
+            ),
+            "setScale", &Sprite::setScale,
+            "setColor", &Sprite::setColor,
+            "setPosition", sol::overload(
+                    [] (Sprite *sprite, const sf::Vector2f& position) {
+                        return sprite->setPosition(position);
+                    },
+                    [] (Sprite *sprite, const float& x, const float& y) {
+                        return sprite->setPosition(x, y);
+                    }
+            ),
+            "setTransform", &Sprite::setTransform,
+            "setTextureRect", &Sprite::setTextureRect,
+            "setSprite", &Sprite::setSprite,
+            "attachShader", &Sprite::attachShader,
+            "dropShader", &Sprite::dropShader,
+            "getPosition", &Sprite::getPosition,
+            "getTexture", &Sprite::getTexture,
+            "getScale", &Sprite::getScale,
+            "getColor", &Sprite::getColor,
+            "getRotation", &Sprite::getRotation,
+            "getSprite", &Sprite::getSprite,
+            "getGlobalBounds", &Sprite::getGlobalBounds,
+            "rotate", &Sprite::rotate,
+            "shader", &Sprite::shader,
+            "hasShader", &Sprite::hasShader,
+            "destroy", &Sprite::destroy
     );
 }
 
 void Script::registerVelocityComponent()
 {
     _state->new_usertype<Velocity>(
-        "Velocity", sol::constructors<Velocity(Entity *)>(),
-        "getX", &Velocity::getX,
-        "getY", &Velocity::getY,
-        "setX", &Velocity::setX,
-        "setY", &Velocity::setY,
-        "values", &Velocity::values,
-        "destroy", &Velocity::destroy
+            "Velocity", sol::constructors<Velocity(Entity *)>(),
+            "getX", &Velocity::getX,
+            "getY", &Velocity::getY,
+            "setX", &Velocity::setX,
+            "setY", &Velocity::setY,
+            "values", &Velocity::values,
+            "destroy", &Velocity::destroy
     );
 }
 
 void Script::registerTagComponent()
 {
     _state->new_usertype<Tag>(
-        "Tag", sol::constructors<Tag(Entity *, std::string)>(),
-        "value", &Tag::value,
-        "equals", &Tag::equals,
-        "destroy", &Tag::destroy
+            "Tag", sol::constructors<Tag(Entity *, std::string)>(),
+            "value", &Tag::value,
+            "equals", &Tag::equals,
+            "destroy", &Tag::destroy
     );
 }
 
 void Script::registerViewComponent()
 {
     _state->new_usertype<View>(
-        "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(),
-        "setViewport", &View::setViewport,
-        "setSize", sol::overload(
-                [] (View *view, const sf::Vector2f& size) {
-                    return view->setSize(size);
-                },
-                [] (View *view, const float& w, const float& h) {
-                    return view->setSize(w, h);
-                }
-        ),
-        "setCenter", sol::overload(
-                [] (View *view, const sf::Vector2f& position) {
-                    return view->setCenter(position);
-                },
-                [] (View *view, const float& x, const float& y) {
-                    return view->setCenter(x, y);
-                }
-        ),
-        "setRotation", &View::setRotation,
-        "getSize", &View::getSize,
-        "getCenter", &View::getCenter,
-        "getTransform",  &View::getTransform,
-        "getInverseTransform", &View::getInverseTransform,
-        "getRotation", &View::getRotation
+            "View", sol::constructors<View(Entity *, float, float, float, float, bool)>(),
+            "setViewport", &View::setViewport,
+            "setSize", sol::overload(
+                    [] (View *view, const sf::Vector2f& size) {
+                        return view->setSize(size);
+                    },
+                    [] (View *view, const float& w, const float& h) {
+                        return view->setSize(w, h);
+                    }
+            ),
+            "setCenter", sol::overload(
+                    [] (View *view, const sf::Vector2f& position) {
+                        return view->setCenter(position);
+                    },
+                    [] (View *view, const float& x, const float& y) {
+                        return view->setCenter(x, y);
+                    }
+            ),
+            "setRotation", &View::setRotation,
+            "getSize", &View::getSize,
+            "getCenter", &View::getCenter,
+            "getTransform",  &View::getTransform,
+            "getInverseTransform", &View::getInverseTransform,
+            "getRotation", &View::getRotation
     );
 }
 
 void Script::registerScriptComponent()
 {
-    //_state->new_usertype<Scene>(
-    //    "Scene",
-    //    "loadSceneFromFile", &Scene::loadSceneFromFile
-    //);
-    //_state->new_usertype<Script>(
-    //        "Script",
-    //        "loadSceneFromFile", &Script::loadSceneFromFile
-    //);
-    //_state->set_function("loadSceneFromFile", &Script::loadSceneFromFile);
+    _state->new_usertype<Scene>(
+            "Scene",
+            "loadSceneFromFile", &Scene::loadSceneFromFile
+    );
+    _state->new_usertype<Script>(
+            "Script",
+            "loadSceneFromFile", &Script::loadSceneFromFile
+    );
+    _state->set_function("loadSceneFromFile", &Script::loadSceneFromFile);
 }
 
 void Script::registerCanvasComponent()
 {
     _state->new_usertype<Canvas>(
-        "Canvas", sol::constructors<Canvas(Entity *)>(),
-        "addText", sol::overload(
-            [] (Canvas *canvas, const std::string& content, const sf::Vector2f& pos, const std::size_t& size) {
-                return canvas->addText(content, pos, size, false);
-            }
-        ),
-        "addButton", sol::overload(
-            [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, sf::Texture* text) {
-                return canvas->addButton(pos, scale, text, false);
-            }
-        ),
-        "addImage", sol::overload(
-            [] (Canvas *canvas, sf::Texture* texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
-                return canvas->addImage(texture, position, scale, false);
-            }
-        ),
-        "removeObject", sol::overload(
-        [](Canvas *canvas, Button *button) {
-                return canvas->removeObject<Button *>(button);
-            },
+            "Canvas", sol::constructors<Canvas(Entity *)>(),
+            "addText", sol::overload(
+                    [] (Canvas *canvas, const std::string& content, const sf::Vector2f& pos, const std::size_t& size) {
+                        return canvas->addText(content, pos, size, false);
+                    }
+            ),
+            "addButton", sol::overload(
+                    [] (Canvas *canvas, const sf::Vector2f& pos, const sf::Vector2f& scale, sf::Texture* text) {
+                        return canvas->addButton(pos, scale, text, false);
+                    }
+            ),
+            "addImage", sol::overload(
+                    [] (Canvas *canvas, sf::Texture* texture, const sf::Vector2f& position, const sf::Vector2f& scale) {
+                        return canvas->addImage(texture, position, scale, false);
+                    }
+            ),
+            "removeObject", sol::overload(
+                    [](Canvas *canvas, Button *button) {
+                        return canvas->removeObject<Button *>(button);
+                    },
 
-            [](Canvas *canvas, Text *text) {
-                return canvas->removeObject<Text *>(text);
-            },
+                    [](Canvas *canvas, Text *text) {
+                        return canvas->removeObject<Text *>(text);
+                    },
 
-            [] (Canvas *canvas, Image *img) {
-                return canvas->removeObject<Image *>(img);
-            }
-        ),
-        "getTexts", &Canvas::getTexts,
-        "getButtons", &Canvas::getButtons,
-        "getImages", &Canvas::getImages
+                    [] (Canvas *canvas, Image *img) {
+                        return canvas->removeObject<Image *>(img);
+                    }
+            ),
+            "getTexts", &Canvas::getTexts,
+            "getButtons", &Canvas::getButtons,
+            "getImages", &Canvas::getImages
     );
 }
 
@@ -992,9 +967,9 @@ void Script::registerEntityFunction()
                     }
             ),*/
             "addCanvas", sol::overload(
-                [](Entity *e) {
-                    return e->addComponent<Canvas>();
-                }
+                    [](Entity *e) {
+                        return e->addComponent<Canvas>();
+                    }
             ),
             "destroy", &Entity::destroy
     );
@@ -1052,8 +1027,7 @@ void Script::update()
     }
 }
 
-void Script::destroy()
-{
+void Script::destroy() {
     try {
         sol::function destroy = (*_state)["Destroy"];
         destroy();
@@ -1063,7 +1037,7 @@ void Script::destroy()
 }
 
 std::variant<Script *,Entity *, sf::FloatRect,sf::Vector2f,
-sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::table,sol::object>
+        sf::Vector2i,sf::Vector2u, sf::IntRect,sf::Color, sol::nil_t, sol::table,sol::object>
 Script::getTableValue(const sol::object& res)
 {
     auto ud = res.as<sol::userdata>();
@@ -1099,7 +1073,7 @@ sol::table Script::deserializeTable(const sol::table &table)
 }
 
 std::variant<Script *, Entity *, sf::FloatRect, sf::Vector2f,
-sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::table, sol::object>
+        sf::Vector2i, sf::Vector2u, sf::IntRect, sf::Color, sol::nil_t, sol::table, sol::object>
 Script::call(const std::string &function, sol::variadic_args args)
 {
     {
@@ -1142,4 +1116,3 @@ void Script::handleTypeTransformation(std::vector<sol::object> &modifiedArgs, in
         }
     }
 }
-

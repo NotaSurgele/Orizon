@@ -1,6 +1,6 @@
 local json = require "assets.Scripting.json"
 
-TiledMap = {}
+local TiledMap = {}
 TiledMap.__index = TiledMap
 
 local tileMap = {}

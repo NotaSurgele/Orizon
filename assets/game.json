@@ -1,77 +1,76 @@
 {
-    "entities": [
-        "MapManager",
-        "player",
-        "Camera",
-        "Hud",
-        "EnemyManager",
-        "SoundManager",
-        "GameManager"
-    ],
-    "resources": [
-        {
-            "name": "background",
-            "path": "./assets/background.png",
-            "type": "Texture"
-        },
-        {
-            "name": "black_rect",
-            "path": "./assets/black.png",
-            "type": "Texture"
-        },
-        {
-            "name": "block",
-            "path": "./assets/generic-rpg-tile02.png",
-            "type": "Texture"
-        },
-        {
-            "name": "card",
-            "path": "./assets/card_template.png",
-            "type": "Texture"
-        },
-        {
-            "name": "card_back",
-            "path": "./assets/card_template_back.png",
-            "type": "Texture"
-        },
-        {
-            "name": "cross",
-            "path": "./assets/cross.png",
-            "type": "Texture"
-        },
-        {
-            "name": "end_tour",
-            "path": "./assets/EndTourButton.png",
-            "type": "Texture"
-        },
-        {
-            "name": "hobbit",
-            "path": "./assets/torch.png",
-            "type": "Texture"
-        },
-        {
-            "name": "smoke",
-            "path": "./assets/smoke.png",
-            "type": "Texture"
-        },
-        {
-            "name": "light_texture",
-            "path": "./assets/light_2.png",
-            "type": "Texture"
-        },
-        {
-            "name": "card_select",
-            "path": "./assets/card_select.ogg",
-            "type": "Sound"
-        },
-        {
-            "name": "tata",
-            "path": "./assets/Freedom.wav",
-            "type": "Music"
-        },
-        {
-            "path": "../assets/entities.json",
-            "type": "Entities"
-        }
-    ]
+  "entities": [
+    "MapManager",
+    "player",
+    "Hud",
+    "EnemyManager",
+    "SoundManager",
+    "GameManager"
+  ],
+  "resources": [
+    {
+      "name": "background",
+      "path": "./assets/background.png",
+      "type": "Texture"
+    },
+    {
+      "name": "black_rect",
+      "path": "./assets/black.png",
+      "type": "Texture"
+    },
+    {
+      "name": "block",
+      "path": "./assets/generic-rpg-tile02.png",
+      "type": "Texture"
+    },
+    {
+      "name": "card",
+      "path": "./assets/card_template.png",
+      "type": "Texture"
+    },
+    {
+      "name": "card_back",
+      "path": "./assets/card_template_back.png",
+      "type": "Texture"
+    },
+    {
+      "name": "cross",
+      "path": "./assets/cross.png",
+      "type": "Texture"
+    },
+    {
+      "name": "end_tour",
+      "path": "./assets/EndTourButton.png",
+      "type": "Texture"
+    },
+    {
+      "name": "hobbit",
+      "path": "./assets/torch.png",
+      "type": "Texture"
+    },
+    {
+      "name": "smoke",
+      "path": "./assets/smoke.png",
+      "type": "Texture"
+    },
+    {
+      "name": "light_texture",
+      "path": "./assets/light_2.png",
+      "type": "Texture"
+    },
+    {
+      "name": "card_select",
+      "path": "./assets/card_select.ogg",
+      "type": "Sound"
+    },
+    {
+      "name": "tata",
+      "path": "./assets/Freedom.wav",
+      "type": "Music"
+    },
+    {
+      "path": "../assets/entities.json",
+      "type": "Entities"
+    }
+  ]
 }
