@@ -244,7 +244,7 @@ void Script::registerTileMap()
                     [] (TileMap *map, Entity *e) {
                         return map->removeEntity(e);
                     },
-                    [] (TileMap *map, const float& x, const float& y) {
+                    [] (TileMap *map, const int& x, const int& y) {
                         return map->removeEntity(x, y);
                     }
             ),
@@ -885,6 +885,7 @@ void Script::registerEntityFunction()
 {
     sol::usertype<Entity> entityType = _state->new_usertype<Entity>(
             "Entity", sol::constructors<Entity()>(),
+            "registryPosition", &Entity::__registryPosition,
             "addTransform2D",sol::overload(
                     [](Entity *entity, float a, float b, float c, float d) {
                         return entity->addComponent<Transform2D>(a, b, c, d);

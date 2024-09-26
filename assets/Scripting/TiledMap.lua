@@ -104,6 +104,7 @@ function TiledMap.loadTileMap()
                             Vector2f.new(tileSize.x, tileSize.y)):setType(BoxColliderType.DYNAMIC)
                 end
                 tilemap:emplaceEntity(e)
+                --print("Block nb ", index, e.registryPosition)
                 table.insert(saveEntity, e)
             end
             posY = posY + tileSize.x

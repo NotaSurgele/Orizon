@@ -69,7 +69,7 @@
       "type": "Music"
     },
     {
-      "path": "../assets/entities.json",
+      "path": "./assets/entities.json",
       "type": "Entities"
     }
   ]

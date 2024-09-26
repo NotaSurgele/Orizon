@@ -162,6 +162,7 @@ public:
 
         // if the layer value already exist
         if (_orders_values.contains(value)) {
+            //std::cout << "Contain value " << value << "at position " << _orders_values[value] << std::endl;
             for (auto& v : _orders_values) {
                 if (v.first >= value) {
                     v.second++;
@@ -169,6 +170,7 @@ public:
             }
             return;
         }
+
         // Find the correct position to insert the Entity
         for (auto& values : _orders_values) {
             auto layer = values.first;

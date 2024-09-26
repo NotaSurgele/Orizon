@@ -24,8 +24,21 @@ end
 
 function Player:Update()
     if Input.isActionKeyPressed("MoveLeft") then
-        transform.position.x = transform.position.x - (10 * deltaTime)
+        transform.position.x = transform.position.x - (100.0 * deltaTime)
     end
+
+    if Input.isActionKeyPressed("MoveRight") then
+        transform.position.x = transform.position.x + (100.0 * deltaTime)
+    end
+
+    if Input.isActionKeyPressed("MoveDown") then
+        transform.position.y = transform.position.y + (100.0 * deltaTime)
+    end
+
+    if Input.isActionKeyPressed("MoveUp") then
+        transform.position.y = transform.position.y - (100.0 * deltaTime)
+    end
+    --print("Registry position player", self.entity.registryPosition)
 end
 
 function Player:Destroy()

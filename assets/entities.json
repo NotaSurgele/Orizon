@@ -34,7 +34,7 @@
                     "type": "Animator"
                 },
                 {
-                    "texture_name": "hobbit",
+                    "texture_name": "block",
                     "type": "Sprite"
                 },
                 {
@@ -68,7 +68,7 @@
                 },
                 {
                     "type": "Layer",
-                    "value": 1
+                    "value": 2
                 },
                 {
                     "type": "ParticlesEmitter",

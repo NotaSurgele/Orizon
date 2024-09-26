@@ -30,13 +30,27 @@ void System::pushEntity(Entity *entity)
     auto position = _orders_values[value];
     if (position >= _registry_size) {
         _registry.push_back(entity);
+        position = _registry_size + 1;
         entity->__registryPosition = _registry_size + 1;
     }
     else {
         auto it = _registry.begin();
+        //EngineHud::writeConsole<std::string, std::size_t>("Offset ", position);
         std::advance(it, position);
         _registry.insert(it, entity);
         entity->__registryPosition = position;
+    }
+
+    int i = 0;
+
+    for (auto& e : _registry) {
+        auto tag = e->getComponent<Tag>();
+
+        if (tag && tag->value().find("player")) {
+            EngineHud::writeConsole<std::string, std::size_t,
+            std::string, int>("Value inserted to position ", position,  " ", i);
+        }
+        i++;
     }
 }
 
@@ -64,6 +78,7 @@ void System::forceDestroy()
 
         _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
     }
+    _orders_values.clear();
     _destroy_tilemap.clear();
     _to_destroy.clear();
     _hashGrid->clear();
@@ -311,12 +326,6 @@ void System::systems()
     _registry.clear();
     std::vector<IComponent *> componentCache;
 
-    // Handle force update entity
-    for (auto& e : _forceUpdate) {
-        if (!e->active) continue;
-        pushEntity(e);
-    }
-
     // Go through layers
     for (auto& m : _layers) {
         if (!m->isRender() || !isInView(m)) continue;
@@ -331,9 +340,15 @@ void System::systems()
     //EngineHud::writeConsole<std::string, std::size_t>("Inside dynamic collider ", _dynamic_collider.size());
     // Handle hashGrid moving entity
     EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
-    for (auto e : _dynamic_collider) {
-        if (!e || !e->active) continue;
-        _hashGrid->insert(e);
+    //for (auto e : _dynamic_collider) {
+    //    if (!e || !e->active) continue;
+    //    _hashGrid->insert(e);
+    //}
+
+    // Handle force update entity
+    for (auto& e : _forceUpdate) {
+        if (!e->active) continue;
+        pushEntity(e);
     }
 
     for (auto e : _registry) {
@@ -367,6 +382,10 @@ void System::systems()
         scriptSystem(e);
     }*/
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
+    EngineHud::writeConsole<std::string, std::size_t>("Registry size ", _registry.size());
+    for (auto& v : _orders_values) {
+        EngineHud::writeConsole<std::string, std::size_t, std::string,  int>("Value Position ", v.first, " ", v.second);
+    }
     clearComponentCache(componentCache);
     componentCache.clear();
     destroyEntity();
@@ -728,6 +747,7 @@ void System::destroyEntity()
 
         _layers.erase(std::remove(_layers.begin(), _layers.end(), l), _layers.end());
     }
+    _orders_values.clear();
     _destroy_tilemap.clear();
     _to_destroy.clear();
     _hashGrid->clear();
