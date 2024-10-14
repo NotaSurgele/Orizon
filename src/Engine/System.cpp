@@ -28,29 +28,25 @@ void System::pushEntity(Entity *entity)
     ___insert_entity_at_location(entity);
     auto value = l->value();
     auto position = _orders_values[value];
-    if (position >= _registry_size) {
+
+    if (position.first >= _registry_size) {
+        //std::cout << "Register at the end" << std::endl;
         _registry.push_back(entity);
-        position = _registry_size + 1;
         entity->__registryPosition = _registry_size + 1;
     }
     else {
         auto it = _registry.begin();
         //EngineHud::writeConsole<std::string, std::size_t>("Offset ", position);
-        std::advance(it, position);
+        std::advance(it, position.first);
         _registry.insert(it, entity);
-        entity->__registryPosition = position;
+        entity->__registryPosition = position.first;
     }
 
-    int i = 0;
 
-    for (auto& e : _registry) {
-        auto tag = e->getComponent<Tag>();
+    for (auto& v : _orders_values) {
+        auto& p2 = v.second;
 
-        if (tag && tag->value().find("player")) {
-            EngineHud::writeConsole<std::string, std::size_t,
-            std::string, int>("Value inserted to position ", position,  " ", i);
-        }
-        i++;
+        EngineHud::writeConsole<std::string, std::size_t, std::string, int, std::string, int>("Value Position ", v.first, " ", p2.first, " ", p2.second);
     }
 }
 
@@ -340,10 +336,10 @@ void System::systems()
     //EngineHud::writeConsole<std::string, std::size_t>("Inside dynamic collider ", _dynamic_collider.size());
     // Handle hashGrid moving entity
     EngineHud::writeConsole<std::string, std::size_t>("Dynamic collider ", _dynamic_collider.size());
-    //for (auto e : _dynamic_collider) {
-    //    if (!e || !e->active) continue;
-    //    _hashGrid->insert(e);
-    //}
+    for (auto e : _dynamic_collider) {
+        if (!e || !e->active) continue;
+        _hashGrid->insert(e);
+    }
 
     // Handle force update entity
     for (auto& e : _forceUpdate) {
@@ -382,14 +378,11 @@ void System::systems()
         scriptSystem(e);
     }*/
     //EngineHud::writeConsole<std::string, std::size_t>("the size of the registry is ", _registry.size());
-    EngineHud::writeConsole<std::string, std::size_t>("Registry size ", _registry.size());
-    for (auto& v : _orders_values) {
-        EngineHud::writeConsole<std::string, std::size_t, std::string,  int>("Value Position ", v.first, " ", v.second);
-    }
+    //EngineHud::writeConsole<std::string, std::size_t>("Registry size ", _registry.size());
+
     clearComponentCache(componentCache);
     componentCache.clear();
     destroyEntity();
-    _orders_values.clear();
     Light::set = true;
 }
 

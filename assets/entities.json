@@ -34,7 +34,7 @@
                     "type": "Animator"
                 },
                 {
-                    "texture_name": "block",
+                    "texture_name": "cross",
                     "type": "Sprite"
                 },
                 {

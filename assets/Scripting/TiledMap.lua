@@ -70,7 +70,7 @@ end
 function TiledMap.loadTileMap()
     local layers = mapJson["layers"]
 
-    layerIndex = 0
+    layerIndex = 1
     for x, layer in pairs(layers) do
         height = layer["height"]
         width = layer["width"]
@@ -112,7 +112,7 @@ function TiledMap.loadTileMap()
         end
         table.insert(saveMap, tilemap)
         tilemap:render()
-        layerIndex = layerIndex + 3
+        layerIndex = layerIndex + 2
     end
 end
 

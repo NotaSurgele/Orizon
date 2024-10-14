@@ -157,40 +157,71 @@ public:
 
     static void ___insert_entity_at_location(Entity *e)
     {
-        auto value = e->getComponent<Layer>()->value();
-        int oldPosition = -1;
+        auto toInsertLayerValue = e->getComponent<Layer>()->value();
 
         // if the layer value already exist
-        if (_orders_values.contains(value)) {
+        if (_orders_values.contains(toInsertLayerValue)) {
             //std::cout << "Contain value " << value << "at position " << _orders_values[value] << std::endl;
+
             for (auto& v : _orders_values) {
-                if (v.first >= value) {
-                    v.second++;
+                auto& layerValue = v.first;
+                auto& registryRange = v.second;
+
+                if (layerValue >= toInsertLayerValue) {
+                    auto& end = registryRange.second;
+
+                    if (layerValue > toInsertLayerValue) {
+                        auto& start = registryRange.first;
+
+                        start++;
+                    }
+                    end++;
                 }
             }
             return;
         }
 
-        // Find the correct position to insert the Entity
-        for (auto& values : _orders_values) {
-            auto layer = values.first;
-            auto position = values.second;
+        std::size_t tmpLayerValue = 0;
+        std::pair oldValue = {-1, -1};
 
-            if (value < layer) {
-                _orders_values.insert(std::pair<std::size_t, int>(value, position));
+        for (auto& values : _orders_values) {
+            auto layerValue = values.first;
+
+            if (toInsertLayerValue < layerValue) {
+                // Range 1 : 0 - 180 | Range 3: 180 - 300 | actual layer value = 2
+                int start = 0;
+                int end = 0;
+
+                if (_orders_values.contains(tmpLayerValue)) {
+                    auto& before = _orders_values[tmpLayerValue];
+
+                    start = before.second + 1;
+                }
+
+                // start = 181
+                end = start + 1;
+                // end = 182
+
+                _orders_values.insert(std::pair(toInsertLayerValue,
+                    std::pair(start, end)));
 
                 // Update greater values
                 for (auto& v : _orders_values) {
-                    if (v.first > value) {
-                        v.second++;
+                    if (v.first > toInsertLayerValue) {
+                        auto& range = v.second;
+
+                        range.first += 1;
+                        range.second += 1;
                     }
                 }
                 return;
             }
-            oldPosition = position;
+            oldValue = _orders_values[layerValue];
+            tmpLayerValue = layerValue;
         }
         // if value is greater than everything in the array then insert at the end
-        _orders_values.insert(std::pair<std::size_t, int>(value, oldPosition + 1));
+        _orders_values.insert(std::pair<std::size_t,
+            std::pair<int, int>>(toInsertLayerValue, std::pair(oldValue.second + 1, oldValue.second + 2)));
     }
 
 //#endif // SYSTEM_CALLER
@@ -270,8 +301,8 @@ private:
 
     // Destroy
     void destroyEntity();
-private:
 
+private:
     static inline HashGrid *_hashGrid = new HashGrid();
     static inline std::size_t _id = 0;
     static inline std::list<Entity *> _registry;
@@ -280,7 +311,7 @@ private:
     static inline std::list<Entity *> _dynamic_collider;
     static inline std::list<Entity *> _scripted_entity;
     static inline std::list<Entity *> _canvas;
-    static inline std::map<std::size_t, int> _orders_values;
+    static inline std::map<std::size_t, std::pair<int, int>> _orders_values;
     static inline std::list<Entity *> _to_destroy;
     static inline std::vector<TileMap *> _destroy_tilemap;
     static inline std::list<Entity *> _lightSource;
