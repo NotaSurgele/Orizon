@@ -155,17 +155,13 @@ public:
         _lightSource.erase(std::remove(_lightSource.begin(), _lightSource.end(), e), _lightSource.end());
     }
 
-    static void ___insert_entity_at_location(Entity *e)
+    static void ___insert_entity_at_location(Entity *e, const std::size_t toInsertLayerValue)
     {
-        auto toInsertLayerValue = e->getComponent<Layer>()->value();
-
         // if the layer value already exist
         if (_orders_values.contains(toInsertLayerValue)) {
             //std::cout << "Contain value " << value << "at position " << _orders_values[value] << std::endl;
 
-            for (auto& v : _orders_values) {
-                auto& layerValue = v.first;
-                auto& registryRange = v.second;
+            for (auto& [layerValue, registryRange] : _orders_values) {
 
                 if (layerValue >= toInsertLayerValue) {
                     auto& end = registryRange.second;

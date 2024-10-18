@@ -5,7 +5,7 @@
 
 class SpriteBatch : public sf::Drawable {
 public:
-    SpriteBatch();
+    SpriteBatch(const int& z=0);
     ~SpriteBatch() override = default;
 
     void draw(Sprite *sprite);
@@ -29,6 +29,7 @@ public:
     std::size_t textureId = 0;
     std::size_t counter = 1;
     std::size_t length = 5;
+    int zIndex = 0;
     Sprite *savedSprite = nullptr;
 };
 

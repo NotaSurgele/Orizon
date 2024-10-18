@@ -1,8 +1,9 @@
 #include "SpriteBatch.hpp"
 #include "Time.hpp"
+
 #include <Math.hpp>
 
-SpriteBatch::SpriteBatch()
+SpriteBatch::SpriteBatch(const int& z) : zIndex(z)
 {
 }
 

@@ -24,9 +24,10 @@ void System::pushEntity(Entity *entity)
         std::cerr << "PUSH ENTITY " << "THIS SHOULD NOT HAPPEN" << std::endl;
         return;
     }
-    _registry_size = _registry.size();
-    ___insert_entity_at_location(entity);
     auto value = l->value();
+
+    _registry_size = _registry.size();
+    ___insert_entity_at_location(entity, value);
     auto position = _orders_values[value];
 
     if (position.first >= _registry_size) {
@@ -37,11 +38,14 @@ void System::pushEntity(Entity *entity)
     else {
         auto it = _registry.begin();
         //EngineHud::writeConsole<std::string, std::size_t>("Offset ", position);
+
         std::advance(it, position.first);
+
         _registry.insert(it, entity);
         entity->__registryPosition = position.first;
     }
 
+   // std::cout << "Value " << value << " position " << position.first << " " << position.second << std::endl;
 
     for (auto& v : _orders_values) {
         auto& p2 = v.second;
